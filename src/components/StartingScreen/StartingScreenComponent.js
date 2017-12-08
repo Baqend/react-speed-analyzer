@@ -14,9 +14,18 @@ class StartingScreenComponent extends Component {
     this.props.onMobileSwitch()
   }
 
+  handleCachingSwitch = () => {
+    this.props.onCachingSwitch()
+  }
+
+  handleSubmit = (event) => {
+    event.preventDefault()
+    this.props.onSubmit();
+  }
+
   render() {
     return (
-      <form>
+      <form onSubmit={this.handleSubmit}>
         <div>
           <input type="text"
                  inputMode="url"
@@ -68,6 +77,30 @@ class StartingScreenComponent extends Component {
             Yes
           </label>
         </div>
+        <div>
+          Caching:
+          <label>
+            <input type="radio"
+                   name="caching"
+                   value={false}
+                   onChange={this.handleCachingSwitch}
+                   checked={!this.props.caching}
+            />
+            No
+          </label>
+          <label>
+            <input type="radio"
+                   name="caching"
+                   value={true}
+                   onChange={this.handleCachingSwitch}
+                   checked={this.props.caching}
+            />
+            Yes
+          </label>
+        </div>
+        <div>
+          <button type="submit">Go</button>
+        </div>
       </form>
     )
   }
@@ -76,9 +109,12 @@ class StartingScreenComponent extends Component {
 StartingScreenComponent.propTypes = {
   url: PropTypes.string,
   location: PropTypes.string,
+  mobile: PropTypes.bool,
   onUrlChange: PropTypes.func,
   onLocationChange: PropTypes.func,
   onMobileSwitch: PropTypes.func,
+  onCachingSwitch: PropTypes.func,
+  onSubmit: PropTypes.func
 }
 
 export default StartingScreenComponent

@@ -1,4 +1,4 @@
-import { CHANGE_URL, CHANGE_LOCATION, SWITCH_MOBILE } from './types';
+import { CHANGE_URL, CHANGE_LOCATION, SWITCH_MOBILE, SWITCH_CACHING } from './types';
 
 export function handleUrlInput(url) {
     return {
@@ -17,6 +17,13 @@ export function handleLocationChange(location) {
 export function handleMobileSwitch(mobile) {
   return {
     type: SWITCH_MOBILE,
-    payload: mobile
+    payload: !mobile
+  }
+}
+
+export function handleCachingSwitch(caching) {
+  return {
+    type: SWITCH_CACHING,
+    payload: !caching
   }
 }
