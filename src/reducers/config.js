@@ -8,7 +8,6 @@ const initialState = {
 }
 
 export default function config(state = initialState, action = {}) {
-  console.log(action.payload);
   switch (action.type) {
     case CHANGE_URL:
       return { ...state, url: action.payload }

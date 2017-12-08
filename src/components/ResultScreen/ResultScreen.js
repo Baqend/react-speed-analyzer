@@ -6,24 +6,22 @@ import { connect } from 'react-redux'
 import ResultScreenComponent from './ResultScreenComponent'
 
 class ResultScreen extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {}
-    }
+  constructor(props) {
+    super(props)
+    this.state = {}
+  }
 
-    componentDidMount() {
+  componentDidMount() {
+  }
 
-    }
+  componentWillUnmount() {
+  }
 
-    componentWillUnmount() {
-
-    }
-
-    render() {
-        return (
-            <ResultScreenComponent state={this.state}/>
-        )
-    }
+  render() {
+    return (
+      <ResultScreenComponent state={this.state} />
+    )
+  }
 }
 
 ResultScreen.propTypes = {
@@ -31,11 +29,11 @@ ResultScreen.propTypes = {
 }
 
 function mapStateToProps(state) {
-    return { }
+  return { }
 }
 
 function mapDispatchToProps(dispatch) {
-    return { }
+  return { }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ResultScreen)

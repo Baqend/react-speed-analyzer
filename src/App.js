@@ -17,7 +17,7 @@ import ResultScreen from './components/ResultScreen/ResultScreen'
 
 const store = createStore()
 
-class App extends Component<{}> {
+class App extends Component {
   render() {
     return (
       <Provider store={store}>

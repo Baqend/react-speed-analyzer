@@ -19,30 +19,32 @@ class StartingScreenComponent extends Component {
       <form>
         <div>
           <input type="text"
-                 inputMode="url"
-                 spellCheck="false"
-                 value={this.props.url}
-                 onChange={this.handleUrlChange}
-                 placeholder="Enter URL here..."
+            inputMode="url"
+            spellCheck="false"
+            value={this.props.url}
+            onChange={this.handleUrlChange}
+            placeholder="Enter URL here..."
           />
         </div>
         <div>
           Location:
           <label>
-            <input type="radio"
-                   name="location"
-                   value="US"
-                   onChange={this.handleLocationChange}
-                   checked={this.props.location === 'us-east-1:Chrome.Native'}
+            <input
+              type="radio"
+              name="location"
+              value="US"
+              onChange={this.handleLocationChange}
+              checked={this.props.location === 'us-east-1:Chrome.Native'}
             />
             USA
           </label>
           <label>
-            <input type="radio"
-                   name="location"
-                   value="EU"
-                   onChange={this.handleLocationChange}
-                   checked={this.props.location === 'eu-central-1:Chrome.Native'}
+            <input
+              type="radio"
+              name="location"
+              value="EU"
+              onChange={this.handleLocationChange}
+              checked={this.props.location === 'eu-central-1:Chrome.Native'}
             />
             EU
           </label>
@@ -50,20 +52,22 @@ class StartingScreenComponent extends Component {
         <div>
           Mobile:
           <label>
-            <input type="radio"
-                   name="mobile"
-                   value={false}
-                   onChange={this.handleMobileSwitch}
-                   checked={!this.props.mobile}
+            <input
+              type="radio"
+              name="mobile"
+              value={false}
+              onChange={this.handleMobileSwitch}
+              checked={!this.props.mobile}
             />
             No
           </label>
           <label>
-            <input type="radio"
-                   name="mobile"
-                   value={true}
-                   onChange={this.handleMobileSwitch}
-                   checked={this.props.mobile}
+            <input
+              type="radio"
+              name="mobile"
+              value
+              onChange={this.handleMobileSwitch}
+              checked={this.props.mobile}
             />
             Yes
           </label>
@@ -74,11 +78,11 @@ class StartingScreenComponent extends Component {
 }
 
 StartingScreenComponent.propTypes = {
-  url: PropTypes.string,
-  location: PropTypes.string,
-  onUrlChange: PropTypes.func,
-  onLocationChange: PropTypes.func,
-  onMobileSwitch: PropTypes.func,
+  url: PropTypes.string.isRequired,
+  location: PropTypes.string.isRequired,
+  onUrlChange: PropTypes.func.isRequired,
+  onLocationChange: PropTypes.func.isRequired,
+  onMobileSwitch: PropTypes.func.isRequired,
 }
 
 export default StartingScreenComponent

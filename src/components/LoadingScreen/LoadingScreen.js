@@ -1,29 +1,22 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+
 import LoadingScreenComponent from './LoadingScreenComponent'
 
 class LoadingScreen extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {}
-    }
+  constructor(props) {
+    super(props)
+    this.state = {}
+  }
 
-    componentDidMount() {
-
-    }
-
-    componentWillUnmount() {
-
-    }
-
-    render() {
-        return (
-            <LoadingScreenComponent state={this.state}/>
-        )
-    }
+  render() {
+    return (
+      <LoadingScreenComponent state={this.state} />
+    )
+  }
 }
 
 LoadingScreen.propTypes = {
@@ -31,11 +24,11 @@ LoadingScreen.propTypes = {
 }
 
 function mapStateToProps(state) {
-    return { }
+  return {}
 }
 
 function mapDispatchToProps(dispatch) {
-    return { }
+  return {}
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoadingScreen)

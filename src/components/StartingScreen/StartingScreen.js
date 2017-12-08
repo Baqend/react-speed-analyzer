@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -32,16 +33,23 @@ class StartingScreen extends Component {
   }
 }
 
+StartingScreen.propTypes = {
+  actions: PropTypes.object.isRequired,
+  url: PropTypes.string.isRequired,
+  location: PropTypes.string.isRequired,
+  mobile: PropTypes.bool.isRequired,
+}
+
 function mapStateToProps(state) {
   return {
     url: state.config.url,
     location: state.config.location,
-    mobile: state.config.mobile
+    mobile: state.config.mobile,
   }
 }
 
 function mapDispatchToProps(dispatch) {
-  return { actions: bindActionCreators({ handleUrlInput, handleLocationChange, handleMobileSwitch}, dispatch) }
+  return { actions: bindActionCreators({ handleUrlInput, handleLocationChange, handleMobileSwitch }, dispatch) }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(StartingScreen)

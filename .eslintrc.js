@@ -1,8 +1,11 @@
 module.exports = {
   "parser": "babel-eslint",
-  "extends": require.resolve("baqend-coding-standard/eslint"),
+  "extends": [
+    "react-app",
+  ],
   "rules": {
-    "semi": [2, "never"],
+    "semi": [1, "never"],
+    "indent": [1, 2, {"SwitchCase": 1}],
     "no-trailing-spaces": ["error", { "skipBlankLines": true }],
     "arrow-body-style": [1, "as-needed"],
     "react/prefer-stateless-function": "off",
