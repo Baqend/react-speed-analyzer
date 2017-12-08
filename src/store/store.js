@@ -13,7 +13,7 @@ export default (initialState = {}) => {
   })
   const middleware = applyMiddleware(...middlewares)
   return createStoreWithBaqend(
-    db.connect('app-starter', true),
+    db.connect('makefast', true),
     reducer,
     initialState,
     middleware,
