@@ -8,39 +8,29 @@ import StartingScreenComponent from './StartingScreenComponent'
 import { handleUrlInput } from '../../actions/config'
 
 class StartingScreen extends Component {
-    constructor(props) {
-        super(props);
-    }
+  onUrlChange = (data) => {
+    this.props.actions.handleUrlInput(data)
+  }
 
-    componentDidMount() {
-
-    }
-
-    componentWillUnmount() {
-
-    }
-
-    onUrlChange = (data) => {
-        this.props.actions.handleUrlInput(data)
-    }
-
-    render() {
-        return (
-            <StartingScreenComponent onUrlChange={this.onUrlChange}/>
-        )
-    }
+  render() {
+    return (
+      <StartingScreenComponent onUrlChange={this.onUrlChange} />
+    )
+  }
 }
 
 StartingScreen.propTypes = {
-    url: PropTypes.string
+  url: PropTypes.string,
+  actions: PropTypes.object.isRequired,
+  handleUrlInput: PropTypes.func.isRequired,
 }
 
 function mapStateToProps(state) {
-    return { url: state.config.url }
+  return { url: state.config.url }
 }
 
 function mapDispatchToProps(dispatch) {
-    return { actions: bindActionCreators({ handleUrlInput }, dispatch) }
+  return { actions: bindActionCreators({ handleUrlInput }, dispatch) }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(StartingScreen)

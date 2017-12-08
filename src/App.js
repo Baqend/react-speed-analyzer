@@ -1,11 +1,14 @@
+/* @flow */
 import React, { Component } from 'react'
-import logo from './logo.svg'
-import './App.css'
 
 import { Route, Switch } from 'react-router'
 import { BrowserRouter } from 'react-router-dom'
 
 import { Provider } from 'react-redux'
+
+import logo from './logo.svg'
+import './App.css'
+
 import createStore from './store/store'
 
 import StartingScreen from './components/StartingScreen/StartingScreen'
@@ -14,7 +17,7 @@ import ResultScreen from './components/ResultScreen/ResultScreen'
 
 const store = createStore()
 
-class App extends Component {
+class App extends Component<{}> {
   render() {
     return (
       <Provider store={store}>
