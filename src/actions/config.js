@@ -1,4 +1,10 @@
-import { CHANGE_URL, CHANGE_LOCATION, SWITCH_MOBILE, SWITCH_CACHING } from './types';
+import {
+  CHANGE_URL,
+  CHANGE_LOCATION,
+  CHANGE_WHITELIST,
+  SWITCH_MOBILE,
+  SWITCH_CACHING
+} from './types'
 
 export function handleUrlInput(url) {
   return {
@@ -14,10 +20,17 @@ export function handleLocationChange(location) {
   }
 }
 
-export function handleMobileSwitch(mobile) {
+export function handleWhitelistChange(whitelist) {
+  return {
+    type: CHANGE_WHITELIST,
+    payload: whitelist,
+  }
+}
+
+export function handleMobileSwitch(isMobile) {
   return {
     type: SWITCH_MOBILE,
-    payload: !mobile,
+    payload: !isMobile,
   }
 }
 

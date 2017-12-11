@@ -67,7 +67,7 @@ class StartingScreenComponent extends Component {
               name="mobile"
               value={false}
               onChange={this.handleMobileSwitch}
-              checked={!this.props.mobile}
+              checked={!this.props.isMobile}
             />
             No
           </label>
@@ -77,7 +77,7 @@ class StartingScreenComponent extends Component {
               name="mobile"
               value
               onChange={this.handleMobileSwitch}
-              checked={this.props.mobile}
+              checked={this.props.isMobile}
             />
             Yes
           </label>
@@ -116,7 +116,9 @@ class StartingScreenComponent extends Component {
 StartingScreenComponent.propTypes = {
   url: PropTypes.string,
   location: PropTypes.string,
-  mobile: PropTypes.bool,
+  isMobile: PropTypes.bool,
+  isRateLimited: PropTypes.bool,
+  isBaqendApp: PropTypes.bool,
   onUrlChange: PropTypes.func,
   onLocationChange: PropTypes.func,
   onMobileSwitch: PropTypes.func,
