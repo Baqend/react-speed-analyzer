@@ -2,11 +2,12 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
 class StartingScreenComponent extends Component {
-  handleUrlChange = (changeEvent) => {
+
+  handleUrlChange = (changeEvent: any) => {
     this.props.onUrlChange(changeEvent.target.value)
   }
 
-  handleLocationChange = (changeEvent) => {
+  handleLocationChange = (changeEvent: any) => {
     this.props.onLocationChange(changeEvent.target.value)
   }
 
@@ -18,7 +19,7 @@ class StartingScreenComponent extends Component {
     this.props.onCachingSwitch()
   }
 
-  handleSubmit = (event) => {
+  handleSubmit = (event: any) => {
     event.preventDefault()
     this.props.onSubmit()
   }
