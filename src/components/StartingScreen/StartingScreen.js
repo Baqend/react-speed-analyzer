@@ -1,33 +1,18 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import StartingScreenComponent from './StartingScreenComponent'
+import './StartingScreen.css'
+
 import { getObjectKey } from '../../helper/utils'
 
-import { handleUrlInput, handleLocationChange, handleMobileSwitch, handleCachingSwitch } from '../../actions/config'
+import StartingScreenComponent from './StartingScreenComponent'
+
 import { normalizeUrl, checkRateLimit } from '../../actions/prepareTest'
 import { createTestOverview, startCompetitorTest, startSpeedKitTest } from '../../actions/startTest'
 
 
 class StartingScreen extends Component {
-  onUrlChange = (data) => {
-    this.props.actions.handleUrlInput(data)
-  }
-
-  onLocationChange = (data) => {
-    this.props.actions.handleLocationChange(data)
-  }
-
-  onMobileSwitch = () => {
-    this.props.actions.handleMobileSwitch(this.props.mobile)
-  }
-
-  onCachingSwitch = () => {
-    this.props.actions.handleCachingSwitch(this.props.caching)
-  }
-
   onSubmit = async () => {
     // check whether the user has typed in an input
     if (this.props.config.url.length > 0) {
@@ -69,10 +54,6 @@ class StartingScreen extends Component {
         config={this.props.config}
         isRateLimited={this.props.isRateLimited}
         isBaqendApp={this.props.isBaqendApp}
-        onUrlChange={this.onUrlChange}
-        onLocationChange={this.onLocationChange}
-        onMobileSwitch={this.onMobileSwitch}
-        onCachingSwitch={this.onCachingSwitch}
         onSubmit={this.onSubmit}
       />
     )
@@ -103,10 +84,6 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     actions: bindActionCreators({
-      handleUrlInput,
-      handleLocationChange,
-      handleMobileSwitch,
-      handleCachingSwitch,
       checkRateLimit,
       normalizeUrl,
       createTestOverview,

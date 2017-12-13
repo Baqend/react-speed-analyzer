@@ -1,0 +1,16 @@
+.device {
+  width: 100%;
+  max-width: 1170px;
+  max-height: 664px;
+  flex-grow: 1;
+}
+
+.device__laptop {
+  background: url('../../assets/laptop.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  padding-top: 40px;
+  padding-right: 140px;
+  padding-bottom: 70px;
+  padding-left: 140px;
+}
