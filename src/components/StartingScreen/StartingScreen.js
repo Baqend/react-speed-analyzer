@@ -8,7 +8,13 @@ import { getObjectKey } from '../../helper/utils'
 
 import { handleUrlInput, handleLocationChange, handleMobileSwitch, handleCachingSwitch } from '../../actions/config'
 import { normalizeUrl, checkRateLimit } from '../../actions/prepareTest'
-import { createTestOverview, startCompetitorTest, startSpeedKitTest } from '../../actions/startTest'
+import { getTestStatus } from '../../actions/testStatus'
+import {
+  createTestOverview,
+  startCompetitorTest,
+  startSpeedKitTest,
+  subscribeOnCompetitorTestResult
+} from '../../actions/startTest'
 
 
 class StartingScreen extends Component {
@@ -49,6 +55,11 @@ class StartingScreen extends Component {
 
           // start competitor test and speed kit test
           await this.startTests()
+
+          // start interval to get the status of the test
+          this.checkTestStatus(this.props.competitorTest.id)
+
+          this.props.actions.subscribeOnCompetitorTestResult(this.props.competitorTest.id)
         }
       }
     }
@@ -61,6 +72,18 @@ class StartingScreen extends Component {
       // Test the SpeedKit site
       this.props.actions.startSpeedKitTest(this.props.config)
     ])
+  }
+
+  checkTestStatus(baqendId) {
+    const interval = setInterval(() => {
+      this.props.actions.getTestStatus(baqendId)
+        .then((status) => {
+          if (status.statusCode === 100 || status.statusCode === 200) {
+            clearInterval(interval)
+          }
+        }).catch(e => clearInterval(interval))
+    }, 2000
+    )
   }
 
   render() {
@@ -111,7 +134,9 @@ function mapDispatchToProps(dispatch) {
       normalizeUrl,
       createTestOverview,
       startCompetitorTest,
-      startSpeedKitTest
+      startSpeedKitTest,
+      getTestStatus,
+      subscribeOnCompetitorTestResult
     }, dispatch),
   }
 }

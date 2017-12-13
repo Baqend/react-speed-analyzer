@@ -5,7 +5,8 @@ import {
   START_TEST_COMPETITOR_POST_FAILURE,
   START_TEST_SPEED_KIT_POST_REQUEST,
   START_TEST_SPEED_KIT_POST_SUCCESS,
-  START_TEST_SPEED_KIT_POST_FAILURE
+  START_TEST_SPEED_KIT_POST_FAILURE,
+  COMPETITOR_RESULT_NEXT
 } from './types'
 
 import { generateSpeedKitConfig } from '../helper/configHelper'
@@ -87,4 +88,18 @@ export function startSpeedKitTest({
       })
     },
   }
+}
+
+export function subscribeOnCompetitorTestResult(competitorBaqendId) {
+  const competitorOnNext = result => test()
+  return {
+    'BAQEND': {
+      type: COMPETITOR_RESULT_NEXT,
+      payload: (db) => db.TestResult.find().equal('id', `/db/TestResult/${competitorBaqendId}`).resultStream()
+    }
+  }
+}
+
+function test() {
+  console.log('Huhu wir haben ein neues Ergebnis')
 }
