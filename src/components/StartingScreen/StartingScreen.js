@@ -4,20 +4,12 @@ import PropTypes from 'prop-types'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import StartingScreenComponent from './StartingScreenComponent'
+import { getObjectKey } from '../../helper/utils'
 
 import { handleUrlInput, handleLocationChange, handleMobileSwitch, handleCachingSwitch } from '../../actions/config'
-import { testRateLimit } from '../../actions/rateLimiter'
-import { normalizeUrl } from '../../actions/normalizeUrl'
-import { generateSpeedKitConfig } from '../../actions/speedKitUrl'
-import { startCompetitorTest, startSpeedKitTest } from '../../actions/startTest'
-import {
-  createTestOverview,
-  saveTestOverview,
-  updateURL,
-  updateIsMobile,
-  updateWhitelist,
-  updateCaching
-} from '../../actions/testOverview'
+import { normalizeUrl, checkRateLimit } from '../../actions/prepareTest'
+import { createTestOverview, startCompetitorTest, startSpeedKitTest } from '../../actions/startTest'
+
 
 class StartingScreen extends Component {
   onUrlChange = (data) => {
@@ -38,63 +30,43 @@ class StartingScreen extends Component {
 
   onSubmit = async () => {
     // check whether the user has typed in an input
-    if (this.props.url.length > 0) {
+    if (this.props.config.url.length > 0) {
       // test if the user is allowed (not rate limited) to start a new test
-      await this.props.actions.testRateLimit()
+      await this.props.actions.checkRateLimit()
 
       // the user is not rate limited => a new test is allowed
       if (!this.props.isRateLimited) {
         // normalize the user input and get further information (is baqend app etc.) of the website
-        await this.props.actions.normalizeUrl(this.props.url, this.props.isMobile)
+        await this.props.actions.normalizeUrl(this.props.config.url, this.props.config.isMobile)
 
         // the website is not a baqend app
         if (!this.props.isBaqendApp) {
           // create a new testOverview object with uniqueId (input url required for id)
-          await this.props.actions.createTestOverview(this.props.url)
+          await this.props.actions.createTestOverview(this.props.config)
 
-          // generate the speedKit config based on the config params
-          this.props.actions.generateSpeedKitConfig(this.props.url, this.props.whitelist, this.props.isMobile)
+          // add test id as a query parameter
+          this.props.history.push(`?testId=${getObjectKey(this.props.testOverview)}`)
 
-          // transfer relevant config variable to the testOverview
-          this.props.actions.updateURL(this.props.url)
-          this.props.actions.updateIsMobile(this.props.isMobile)
-          this.props.actions.updateWhitelist(this.props.whitelist)
-          this.props.actions.updateCaching(this.props.caching)
-
-          await Promise.all([
-            // Test the competitor site
-            this.props.actions.startCompetitorTest(
-              this.props.url,
-              this.props.isSpeedKitComparison,
-              this.props.location,
-              this.props.caching,
-              this.props.isMobile
-            ),
-            // Test the SpeedKit site
-            this.props.actions.startSpeedKitTest(
-              this.props.url,
-              this.props.isSpeedKitComparison,
-              this.props.speedKitConfig,
-              this.props.location,
-              this.props.caching,
-              this.props.isMobile
-            )
-          ])
-
-          // save the updated testOverview
-          await this.props.actions.saveTestOverview(this.props.testOverview)
+          // start competitor test and speed kit test
+          await this.startTests()
         }
       }
     }
   }
 
+  startTests() {
+    return Promise.all([
+      // Test the competitor site
+      this.props.actions.startCompetitorTest(this.props.config),
+      // Test the SpeedKit site
+      this.props.actions.startSpeedKitTest(this.props.config)
+    ])
+  }
+
   render() {
     return (
       <StartingScreenComponent
-        url={this.props.url}
-        location={this.props.location}
-        isMobile={this.props.isMobile}
-        caching={this.props.caching}
+        config={this.props.config}
         isRateLimited={this.props.isRateLimited}
         isBaqendApp={this.props.isBaqendApp}
         onUrlChange={this.onUrlChange}
@@ -110,33 +82,21 @@ class StartingScreen extends Component {
 StartingScreen.propTypes = {
   testOverview: PropTypes.object,
   actions: PropTypes.object.isRequired,
-  url: PropTypes.string.isRequired,
-  location: PropTypes.string.isRequired,
-  isMobile: PropTypes.bool.isRequired,
-  isSpeedKitComparison: PropTypes.bool,
-  caching: PropTypes.bool.isRequired,
-  whitelist: PropTypes.string.isRequired,
-  speedKitConfig: PropTypes.string,
+  config: PropTypes.object.isRequired,
   isRateLimited: PropTypes.bool.isRequired,
   isBaqendApp: PropTypes.bool.isRequired,
-  competitorTestId: PropTypes.string,
-  speedKitTestId: PropTypes.string
+  competitorTest: PropTypes.object,
+  speedKitTest: PropTypes.object
 }
 
 function mapStateToProps(state) {
   return {
-    testOverview: state.testOverview.testOverview,
-    url: state.config.url,
-    location: state.config.location,
-    isMobile: state.config.isMobile,
-    caching: state.config.caching,
-    isSpeedKitComparison: state.config.isSpeedKitComparison,
-    whitelist: state.config.whitelist,
-    speedKitConfig: state.config.speedKitConfig,
-    isRateLimited: state.error.isRateLimited,
-    isBaqendApp: state.error.isBaqendApp,
-    competitorTestId: state.competitorTestResult.testId,
-    speedKitTestId: state.speedKitTestResult.testId
+    testOverview: state.result.testOverview,
+    config: state.config,
+    isRateLimited: state.result.isRateLimited,
+    isBaqendApp: state.result.isBaqendApp,
+    competitorTest: state.result.competitorTest,
+    speedKitTest: state.speedKitTest,
   }
 }
 
@@ -147,15 +107,9 @@ function mapDispatchToProps(dispatch) {
       handleLocationChange,
       handleMobileSwitch,
       handleCachingSwitch,
-      testRateLimit,
+      checkRateLimit,
       normalizeUrl,
       createTestOverview,
-      saveTestOverview,
-      updateURL,
-      updateIsMobile,
-      updateWhitelist,
-      updateCaching,
-      generateSpeedKitConfig,
       startCompetitorTest,
       startSpeedKitTest
     }, dispatch),

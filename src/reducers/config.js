@@ -4,8 +4,7 @@ import {
   CHANGE_WHITELIST,
   SWITCH_MOBILE,
   SWITCH_CACHING,
-  NORMALIZE_URL_POST_SUCCESS,
-  GENERATE_SPEED_KIT_CONFIG
+  NORMALIZE_URL_POST_SUCCESS
 } from '../actions/types'
 
 const initialState = {
@@ -15,7 +14,6 @@ const initialState = {
   isMobile: false,
   whitelist: '',
   isSpeedKitComparison: false,
-  speedKitConfig: ''
 }
 
 export default function config(state = initialState, action = {}) {
@@ -32,8 +30,6 @@ export default function config(state = initialState, action = {}) {
       return { ...state, caching: action.payload }
     case NORMALIZE_URL_POST_SUCCESS:
       return { ...state, url: action.payload[0].url, isSpeedKitComparison: action.payload[0].isSpeedKitComparison }
-    case GENERATE_SPEED_KIT_CONFIG:
-      return { ...state, speedKitConfig: action.payload }
     default:
       return state
   }

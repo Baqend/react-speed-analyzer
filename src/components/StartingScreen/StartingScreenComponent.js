@@ -31,7 +31,7 @@ class StartingScreenComponent extends Component {
           <input type="text"
             inputMode="url"
             spellCheck="false"
-            value={this.props.url}
+            value={this.props.config.url}
             onChange={this.handleUrlChange}
             placeholder="Enter URL here..."
           />
@@ -44,7 +44,7 @@ class StartingScreenComponent extends Component {
               name="location"
               value="US"
               onChange={this.handleLocationChange}
-              checked={this.props.location === 'us-east-1:Chrome.Native'}
+              checked={this.props.config.location === 'us-east-1:Chrome.Native'}
             />
             USA
           </label>
@@ -54,7 +54,7 @@ class StartingScreenComponent extends Component {
               name="location"
               value="EU"
               onChange={this.handleLocationChange}
-              checked={this.props.location === 'eu-central-1:Chrome.Native'}
+              checked={this.props.config.location === 'eu-central-1:Chrome.Native'}
             />
             EU
           </label>
@@ -67,7 +67,7 @@ class StartingScreenComponent extends Component {
               name="mobile"
               value={false}
               onChange={this.handleMobileSwitch}
-              checked={!this.props.isMobile}
+              checked={!this.props.config.isMobile}
             />
             No
           </label>
@@ -77,7 +77,7 @@ class StartingScreenComponent extends Component {
               name="mobile"
               value
               onChange={this.handleMobileSwitch}
-              checked={this.props.isMobile}
+              checked={this.props.config.isMobile}
             />
             Yes
           </label>
@@ -90,7 +90,7 @@ class StartingScreenComponent extends Component {
               name="caching"
               value={false}
               onChange={this.handleCachingSwitch}
-              checked={!this.props.caching}
+              checked={!this.props.config.caching}
             />
             No
           </label>
@@ -100,7 +100,7 @@ class StartingScreenComponent extends Component {
               name="caching"
               value={true}
               onChange={this.handleCachingSwitch}
-              checked={this.props.caching}
+              checked={this.props.config.caching}
             />
             Yes
           </label>
@@ -114,9 +114,7 @@ class StartingScreenComponent extends Component {
 }
 
 StartingScreenComponent.propTypes = {
-  url: PropTypes.string,
-  location: PropTypes.string,
-  isMobile: PropTypes.bool,
+  config: PropTypes.object,
   isRateLimited: PropTypes.bool,
   isBaqendApp: PropTypes.bool,
   onUrlChange: PropTypes.func,

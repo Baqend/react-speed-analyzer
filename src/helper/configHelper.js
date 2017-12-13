@@ -44,3 +44,26 @@ export function generateRules(originalUrl, whitelist) {
   // Create parts for the regexp
   return `/^(?:[\\w-]*\\.){0,3}(?:${[domain, ...whitelist].map(item => escapeRegExp(item)).join('|')})/`
 }
+
+/**
+ * Returns the URL to send to Speed Kit.
+ *
+ * @param {string} originalUrl The URL to make fast. ;-)
+ * @param {string} whitelistStr The whitelist string with comma-separated values.
+ * @param {boolean} enableUserAgentDetection Enables the user agent detection in makefast
+ * @return {string} A URL to send to Speed Kit.
+ */
+export function generateSpeedKitConfig(originalUrl, whitelistStr, enableUserAgentDetection) {
+  const whitelistDomains = whitelistStr
+    .split(',')
+    .map(item => item.trim())
+    .filter(item => !!item)
+
+  const whitelist = generateRules(originalUrl, whitelistDomains)
+
+  return `{
+    appName: "makefast-dev",
+    whitelist: [{ host: [ ${whitelist} ] }],
+    userAgentDetection: ${enableUserAgentDetection},
+  }`
+}
