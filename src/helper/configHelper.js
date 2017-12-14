@@ -36,7 +36,7 @@ export function escapeRegExp(str) {
  *
  * @param {string} originalUrl The original URL to the site.
  * @param {string[]} whitelist An array of whitelist domains.
- * @return {string} A regexp string representing the white listed domains
+ * @return {string} A regexp string representing the white listed domains.
  */
 export function generateRules(originalUrl, whitelist) {
   const domain = getTLD(originalUrl)
@@ -48,9 +48,9 @@ export function generateRules(originalUrl, whitelist) {
 /**
  * Returns the URL to send to Speed Kit.
  *
- * @param {string} originalUrl The URL to make fast. ;-)
+ * @param {string} originalUrl The URL to make fast.
  * @param {string} whitelistStr The whitelist string with comma-separated values.
- * @param {boolean} enableUserAgentDetection Enables the user agent detection in makefast
+ * @param {boolean} enableUserAgentDetection Enables the user agent detection in makefast.
  * @return {string} A URL to send to Speed Kit.
  */
 export function generateSpeedKitConfig(originalUrl, whitelistStr, enableUserAgentDetection) {

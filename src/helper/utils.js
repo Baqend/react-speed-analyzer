@@ -2,7 +2,7 @@
 
 /**
  * @param {number} bytes The file size in bytes to format.
- * @param {number} [decimals] The number of decimals
+ * @param {number} [decimals] The number of decimals.
  * @return {string}
  */
 export function formatFileSize(bytes, decimals) {
@@ -28,7 +28,7 @@ export function sleep(millis) {
 }
 
 /**
- * Verify whether the device is IOS or not
+ * Verify whether the device is IOS or not.
  */
 export function isDeviceIOS() {
   return window.navigator.userAgent.match(/iPhone|iPod/i)
@@ -38,8 +38,8 @@ export function isDeviceIOS() {
  * Sort an Array of Objects by a given sort criterion
  *
  * @param {Array} dataArray An Array of Objects.
- * @param {string} sortCriterion Criterion for sort mechanism
- * @return {Array} The sorted Array of objects
+ * @param {string} sortCriterion Criterion for sort mechanism.
+ * @return {Array} The sorted Array of objects.
  */
 export function sortArray(dataArray, sortCriterion) {
   return dataArray[sortCriterion].sort((a, b) => parseFloat(b.requests) - parseFloat(a.requests))
@@ -60,10 +60,26 @@ export function getParameterByName(name) {
 }
 
 /**
- * @param {object} object The object to get the key attribute from
+ * @param {object} object The object to get the key attribute from.
  * @return {string}
  */
 export function getObjectKey(object) {
   const objectSplit = object.id.split('/')
   return objectSplit[objectSplit.length - 1]
+}
+
+/**
+ * Check if a given string is a valid url.
+ * @param str The string to be checked.
+ * @returns {boolean}
+ */
+export function isURL(str) {
+  const pattern =
+    new RegExp('((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name and extension
+      '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+      '(\\:\\d+)?' + // port
+      '(\\/[-a-z\\d%@_.~+&:]*)*' + // path
+      '(\\?[;&a-z\\d%@_.,~+&:=-]*)?' + // query string
+      '(\\#[-a-z\\d_]*)?$', 'i') // fragment locator
+  return pattern.test(str)
 }

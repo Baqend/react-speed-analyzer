@@ -5,8 +5,8 @@ import { connect } from 'react-redux'
 import './StartingScreen.css'
 
 import { getObjectKey } from '../../helper/utils'
-
 import StartingScreenComponent from './StartingScreenComponent'
+import { isURL } from '../../helper/utils'
 
 import { normalizeUrl, checkRateLimit } from '../../actions/prepareTest'
 import { getTestStatus } from '../../actions/testStatus'
@@ -19,29 +19,22 @@ import {
 
 
 class StartingScreen extends Component {
+  componentWillReceiveProps(nextProps) {
+    console.log(this.props.location)
+    console.log(nextProps)
+  }
+
   onSubmit = async () => {
-    // check whether the user has typed in an input
-    if (this.props.config.url.length > 0) {
-      // test if the user is allowed (not rate limited) to start a new test
+    if (isURL(this.props.config.url)) {
       await this.props.actions.checkRateLimit()
 
-      // the user is not rate limited => a new test is allowed
       if (!this.props.isRateLimited) {
-        // normalize the user input and get further information (is baqend app etc.) of the website
         await this.props.actions.normalizeUrl(this.props.config.url, this.props.config.isMobile)
 
-        // the website is not a baqend app
         if (!this.props.isBaqendApp) {
-          // create a new testOverview object with uniqueId (input url required for id)
           await this.props.actions.createTestOverview(this.props.config)
-
-          // add test id as a query parameter
           this.props.history.push(`?testId=${getObjectKey(this.props.testOverview)}`)
-
-          // start competitor test and speed kit test
           await this.startTests()
-
-          // start interval to get the status of the test
           this.checkTestStatus(this.props.competitorTest.id)
 
           this.props.actions.subscribeOnCompetitorTestResult(this.props.competitorTest.id)
@@ -50,6 +43,9 @@ class StartingScreen extends Component {
     }
   }
 
+  /**
+   * start the competitor test and the speedKit test.
+   */
   startTests() {
     return Promise.all([
       // Test the competitor site
@@ -59,6 +55,10 @@ class StartingScreen extends Component {
     ])
   }
 
+  /**
+   * Start an interval to get the status of a test.
+   * @param baqendId The id of the corresponding test object.
+   */
   checkTestStatus(baqendId) {
     const interval = setInterval(() => {
       this.props.actions.getTestStatus(baqendId)

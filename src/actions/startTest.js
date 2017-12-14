@@ -12,6 +12,13 @@ import {
 import { generateSpeedKitConfig } from '../helper/configHelper'
 import { getTLD } from '../helper/configHelper'
 
+/**
+ * Create a new testOverview object with uniqueId based on the url.
+ * @param url The url to be tested.
+ * @param caching A flag to detect whether to use caching or not.
+ * @param isMobile A flag to detect whether it i a mobile website or not.
+ * @param whitelist A comma separated list of strings.
+ */
 export function createTestOverview({ url, caching, isMobile, whitelist }) {
   return {
     'BAQEND': {
@@ -31,6 +38,15 @@ export function createTestOverview({ url, caching, isMobile, whitelist }) {
   }
 }
 
+/**
+ * Start test for the competitor by calling the queueTest module.
+ * @param url The url of the website to be tested.
+ * @param isSpeedKitComparison A flag to detect whether the website already uses speedKit.
+ * @param location The location of the test instance.
+ * @param caching A flag to detect whether to use caching or not.
+ * @param mobile A flag to detect whether it i a mobile website or not.
+ * @param activityTimeout A time to wait after the last request.
+ */
 export function startCompetitorTest({
   url,
   isSpeedKitComparison,
@@ -59,6 +75,16 @@ export function startCompetitorTest({
   }
 }
 
+/**
+ * Start test for the speedKit by calling the queueTest module.
+ * @param url The url of the website to be tested.
+ * @param isSpeedKitComparison A flag to detect whether the website already uses speedKit.
+ * @param location The location of the test instance.
+ * @param caching A flag to detect whether to use caching or not.
+ * @param whitelist The whitelist string with comma-separated values.
+ * @param mobile A flag to detect whether it i a mobile website or not.
+ * @param activityTimeout A time to wait after the last request.
+ */
 export function startSpeedKitTest({
   url,
   isSpeedKitComparison,
@@ -90,16 +116,15 @@ export function startSpeedKitTest({
   }
 }
 
+/**
+ * Subscribe to on a object by its id.
+ * @param competitorBaqendId The id of the test to subscribe on.
+ */
 export function subscribeOnCompetitorTestResult(competitorBaqendId) {
-  const competitorOnNext = result => test()
   return {
     'BAQEND': {
       type: COMPETITOR_RESULT_NEXT,
       payload: (db) => db.TestResult.find().equal('id', `/db/TestResult/${competitorBaqendId}`).resultStream()
     }
   }
-}
-
-function test() {
-  console.log('Huhu wir haben ein neues Ergebnis')
 }

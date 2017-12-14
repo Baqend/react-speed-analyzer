@@ -4,7 +4,10 @@ import {
   TEST_STATUS_GET_FAILURE,
 } from './types'
 
-
+/**
+ * Get the status of a given test by its id.
+ * @param baqendId The id of the test object to get the status from.
+ */
 export function getTestStatus(baqendId) {
   return {
     'BAQEND': {

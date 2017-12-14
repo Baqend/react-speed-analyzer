@@ -7,6 +7,11 @@ import {
   RATE_LIMITER_GET_FAILURE
 } from './types'
 
+/**
+ * Normalize a url and get further information (is baqend app etc.) of the website.
+ * @param url The url to be normalized.
+ * @param mobile A flag to detect whether it i a mobile website or not.
+ */
 export function normalizeUrl(url, mobile) {
   return {
     'BAQEND': {
@@ -19,7 +24,9 @@ export function normalizeUrl(url, mobile) {
     }
   }
 }
-
+/**
+ * Check whether the user is rate limited or not.
+ */
 export function checkRateLimit() {
   return {
     'BAQEND': {
