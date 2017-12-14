@@ -5,8 +5,6 @@ import { BrowserRouter } from 'react-router-dom'
 
 import { Provider } from 'react-redux'
 
-import './styles/App.css'
-
 import createStore from './store/store'
 
 import StartingScreen from './components/StartingScreen/StartingScreen'

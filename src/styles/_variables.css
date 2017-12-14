@@ -1,0 +1,13 @@
+@import 'tachyons/src/_colors';
+@import 'tachyons/src/_media-queries';
+
+:root {
+  --spacing-none: 0;
+  --spacing-extra-small: 8px;
+  --spacing-small: 16px;
+  --spacing-medium: 24px;
+  --spacing-large: 32px;
+  --spacing-extra-large: 48px;
+  --spacing-extra-extra-large: 64px;
+  --spacing-extra-extra-extra-large: 96px;
+}

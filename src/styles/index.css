@@ -1,3 +1,10 @@
+@import "tachyons/src/_normalize";
+@import "tachyons/src/_flexbox";
+@import "tachyons/src/_widths";
+@import "tachyons/src/_spacing";
+
+@import "./_variables";
+
 :root {
   --dark-blue: #162939;
 }
@@ -6,20 +13,23 @@
   box-sizing: border-box;
 }
 
-body {
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif;
-  background: var(--dark-blue);
-}
-
 html {
   height: 100%;
 }
 
 body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+body {
   display: flex;
   height: 100%;
+}
+
+body {
+  background: var(--dark-blue);
 }
 
 #root, #main {

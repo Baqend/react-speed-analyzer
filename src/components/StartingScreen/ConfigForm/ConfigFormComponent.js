@@ -26,89 +26,91 @@ class ConfigFormComponent extends Component {
 
   render() {
     return (
-      <form onSubmit={this.handleSubmit}>
-        <div>
-          <input type="text"
-            inputMode="url"
-            spellCheck="false"
-            value={this.props.config.url}
-            onChange={this.handleUrlChange}
-            placeholder="Enter URL here..."
-          />
-        </div>
-        <div>
-          Location:
-          <label>
-            <input
-              type="radio"
-              name="location"
-              value="US"
-              onChange={this.handleLocationChange}
-              checked={this.props.config.location === 'us-east-1:Chrome.Native'}
+      <div className="pa2">
+        <form onSubmit={this.handleSubmit}>
+          <div>
+            <input type="text"
+              inputMode="url"
+              spellCheck="false"
+              value={this.props.config.url}
+              onChange={this.handleUrlChange}
+              placeholder="Enter URL here..."
             />
-            USA
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="location"
-              value="EU"
-              onChange={this.handleLocationChange}
-              checked={this.props.config.location === 'eu-central-1:Chrome.Native'}
-            />
-            EU
-          </label>
-        </div>
-        <div>
-          Mobile:
-          <label>
-            <input
-              type="radio"
-              name="mobile"
-              value={false}
-              onChange={this.handleMobileSwitch}
-              checked={!this.props.config.isMobile}
-            />
-            No
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="mobile"
-              value
-              onChange={this.handleMobileSwitch}
-              checked={this.props.config.isMobile}
-            />
-            Yes
-          </label>
-        </div>
-        <div>
-          Caching:
-          <label>
-            <input
-              type="radio"
-              name="caching"
-              value={false}
-              onChange={this.handleCachingSwitch}
-              checked={!this.props.config.caching}
-            />
-            No
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="caching"
-              value={true}
-              onChange={this.handleCachingSwitch}
-              checked={this.props.config.caching}
-            />
-            Yes
-          </label>
-        </div>
-        <div>
-          <button type="submit">Go</button>
-        </div>
-      </form>
+          </div>
+          <div>
+            Location:
+            <label>
+              <input
+                type="radio"
+                name="location"
+                value="US"
+                onChange={this.handleLocationChange}
+                checked={this.props.config.location === 'us-east-1:Chrome.Native'}
+              />
+              USA
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="location"
+                value="EU"
+                onChange={this.handleLocationChange}
+                checked={this.props.config.location === 'eu-central-1:Chrome.Native'}
+              />
+              EU
+            </label>
+          </div>
+          <div>
+            Mobile:
+            <label>
+              <input
+                type="radio"
+                name="mobile"
+                value={false}
+                onChange={this.handleMobileSwitch}
+                checked={!this.props.config.isMobile}
+              />
+              No
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="mobile"
+                value
+                onChange={this.handleMobileSwitch}
+                checked={this.props.config.isMobile}
+              />
+              Yes
+            </label>
+          </div>
+          <div>
+            Caching:
+            <label>
+              <input
+                type="radio"
+                name="caching"
+                value={false}
+                onChange={this.handleCachingSwitch}
+                checked={!this.props.config.caching}
+              />
+              No
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="caching"
+                value={true}
+                onChange={this.handleCachingSwitch}
+                checked={this.props.config.caching}
+              />
+              Yes
+            </label>
+          </div>
+          <div>
+            <button type="submit">Go</button>
+          </div>
+        </form>
+      </div>
     )
   }
 }
