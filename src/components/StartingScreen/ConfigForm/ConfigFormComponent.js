@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import './ConfigForm.css'
 
 class ConfigFormComponent extends Component {
 
@@ -26,10 +27,12 @@ class ConfigFormComponent extends Component {
 
   render() {
     return (
-      <div className="pa2">
+      <div className="pa2 config__form">
         <form onSubmit={this.handleSubmit}>
           <div>
-            <input type="text"
+            <input
+              className="w-100 pa2 config__form-input"
+              type="text"
               inputMode="url"
               spellCheck="false"
               value={this.props.config.url}

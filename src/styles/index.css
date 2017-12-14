@@ -4,13 +4,10 @@
 @import "tachyons/src/_spacing";
 
 @import "./_variables";
+@import "./_reset.css";
 
 :root {
   --dark-blue: #162939;
-}
-
-* {
-  box-sizing: border-box;
 }
 
 html {
