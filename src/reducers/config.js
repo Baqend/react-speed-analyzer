@@ -4,7 +4,8 @@ import {
   CHANGE_WHITELIST,
   SWITCH_MOBILE,
   SWITCH_CACHING,
-  NORMALIZE_URL_POST_SUCCESS
+  NORMALIZE_URL_POST_SUCCESS,
+  UPDATE_CONFIG
 } from '../actions/types'
 
 const initialState = {
@@ -30,6 +31,11 @@ export default function config(state = initialState, action = {}) {
       return { ...state, caching: action.payload }
     case NORMALIZE_URL_POST_SUCCESS:
       return { ...state, url: action.payload[0].url, isSpeedKitComparison: action.payload[0].isSpeedKitComparison }
+    case UPDATE_CONFIG:
+      return {
+        ...state, url: action.payload.url, location: action.payload.location,
+        caching: action.payload.caching, isMobile: action.payload.isMobile, whitelist: action.payload.whitelist
+      }
     default:
       return state
   }

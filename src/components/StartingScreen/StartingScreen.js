@@ -4,24 +4,37 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import './StartingScreen.css'
 
+import { parse } from 'query-string'
 import { getObjectKey } from '../../helper/utils'
 import StartingScreenComponent from './StartingScreenComponent'
 import { isURL } from '../../helper/utils'
 
 import { normalizeUrl, checkRateLimit } from '../../actions/prepareTest'
 import { getTestStatus } from '../../actions/testStatus'
+import { updateConfigByTestOverview } from '../../actions/config'
 import {
   createTestOverview,
+  loadTestOverviewByTestId,
+  saveTestOverview,
   startCompetitorTest,
   startSpeedKitTest,
-  subscribeOnCompetitorTestResult
+  subscribeOnCompetitorTestResult,
+  subscribeOnSpeedKitTestResult
 } from '../../actions/startTest'
 
 
 class StartingScreen extends Component {
-  componentWillReceiveProps(nextProps) {
-    console.log(this.props.location)
-    console.log(nextProps)
+  constructor(props) {
+    super(props)
+    this.state = {
+      competitorSubscription: null,
+      speedKitSubscription: null
+    }
+  }
+
+  componentWillMount() {
+    const testId = parse(this.props.location.search)['testId']
+    this.watchTestById(testId)
   }
 
   onSubmit = async () => {
@@ -33,13 +46,33 @@ class StartingScreen extends Component {
 
         if (!this.props.isBaqendApp) {
           await this.props.actions.createTestOverview(this.props.config)
-          this.props.history.push(`?testId=${getObjectKey(this.props.testOverview)}`)
           await this.startTests()
-          this.checkTestStatus(this.props.competitorTest.id)
-
-          this.props.actions.subscribeOnCompetitorTestResult(this.props.competitorTest.id)
+          const testId = getObjectKey(this.props.testOverview.id)
+          this.props.history.push(`?testId=${testId}`)
+          this.watchTestById(testId)
         }
       }
+    }
+  }
+
+  /**
+   * Subscribe on tests based on the given testId and watch their status
+   * @param testId The id of the test (testOverview) to be watched
+   */
+  async watchTestById(testId) {
+    if(testId) {
+      if(!this.props.testOverview) {
+        await this.props.actions.loadTestOverviewByTestId(testId)
+      }
+
+      const competitorResult = this.props.testOverview.competitorTestResult
+      const speedKitResult = this.props.testOverview.speedKitTestResult
+
+      this.props.actions.updateConfigByTestOverview(this.props.testOverview)
+      this.checkTestStatus(getObjectKey(competitorResult))
+      await this.subscribeOnTestResults(competitorResult, speedKitResult)
+
+      this.checkSubscriptionTermination(this.props.competitorTest, this.props.speedKitTest)
     }
   }
 
@@ -48,11 +81,9 @@ class StartingScreen extends Component {
    */
   startTests() {
     return Promise.all([
-      // Test the competitor site
       this.props.actions.startCompetitorTest(this.props.config),
-      // Test the SpeedKit site
       this.props.actions.startSpeedKitTest(this.props.config)
-    ])
+    ]).then(() => this.props.actions.saveTestOverview(this.props.testOverview))
   }
 
   /**
@@ -69,6 +100,42 @@ class StartingScreen extends Component {
         }).catch(e => clearInterval(interval))
     }, 2000
     )
+  }
+
+  /**
+   * Subscribe on the given testResult objects.
+   * @param competitorResult The competitor test object.
+   * @param speedKitResult The speedKit test object.
+   * @returns {Promise.<void>}
+   */
+  async subscribeOnTestResults(competitorResult, speedKitResult) {
+    // Needs to be implemented synchronously because Reacts setState() works asynchronous
+    // and therefore would generate an endless loop in combination with our use of componentWillReceiveProps()
+    if(!this.state.competitorSubscription) {
+      this.state.competitorSubscription = await this.props.actions.subscribeOnCompetitorTestResult(competitorResult)
+    }
+    if(!this.state.speedKitSubscription) {
+      this.state.speedKitSubscription = await this.props.actions.subscribeOnSpeedKitTestResult(speedKitResult)
+    }
+  }
+
+  /**
+   * Check whether te single subscriptions can be unsubscribed.
+   * @param competitorResult The competitorTestResult object.
+   * @param speedKitResult The speedKitTestResult object.
+   */
+  checkSubscriptionTermination(competitorResult, speedKitResult) {
+    const competitorSubscription = this.state.competitorSubscription
+    const speedKitSubscription = this.state.speedKitSubscription
+
+    if(competitorResult && competitorResult.hasFinished && competitorSubscription) {
+      competitorSubscription.unsubscribe()
+      this.setState({competitorSubscription: null})
+    }
+    if(speedKitResult && speedKitResult.hasFinished && speedKitSubscription) {
+      speedKitSubscription.unsubscribe()
+      this.setState({speedKitSubscription: null})
+    }
   }
 
   render() {
@@ -100,7 +167,7 @@ function mapStateToProps(state) {
     isRateLimited: state.result.isRateLimited,
     isBaqendApp: state.result.isBaqendApp,
     competitorTest: state.result.competitorTest,
-    speedKitTest: state.speedKitTest,
+    speedKitTest: state.result.speedKitTest,
   }
 }
 
@@ -110,10 +177,14 @@ function mapDispatchToProps(dispatch) {
       checkRateLimit,
       normalizeUrl,
       createTestOverview,
+      loadTestOverviewByTestId,
+      saveTestOverview,
       startCompetitorTest,
       startSpeedKitTest,
       getTestStatus,
-      subscribeOnCompetitorTestResult
+      subscribeOnCompetitorTestResult,
+      subscribeOnSpeedKitTestResult,
+      updateConfigByTestOverview
     }, dispatch),
   }
 }
