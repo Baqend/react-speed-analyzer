@@ -19,7 +19,7 @@ import {
   startCompetitorTest,
   startSpeedKitTest,
   subscribeOnCompetitorTestResult,
-  subscribeOnSpeedKitTestResult
+  subscribeOnSpeedKitTestResult,
 } from '../../actions/startTest'
 
 
@@ -28,13 +28,20 @@ class StartingScreen extends Component {
     super(props)
     this.state = {
       competitorSubscription: null,
-      speedKitSubscription: null
+      speedKitSubscription: null,
     }
   }
 
   componentWillMount() {
     const testId = parse(this.props.location.search)['testId']
     this.watchTestById(testId)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.location !== this.props.location) {
+      const testId = parse(nextProps.location.search)['testId']
+      this.watchTestById(testId)
+    }
   }
 
   onSubmit = async () => {
@@ -49,7 +56,6 @@ class StartingScreen extends Component {
           await this.startTests()
           const testId = getObjectKey(this.props.testOverview.id)
           this.props.history.push(`?testId=${testId}`)
-          this.watchTestById(testId)
         }
       }
     }
@@ -60,8 +66,8 @@ class StartingScreen extends Component {
    * @param testId The id of the test (testOverview) to be watched
    */
   async watchTestById(testId) {
-    if(testId) {
-      if(!this.props.testOverview) {
+    if (testId) {
+      if (!this.props.testOverview) {
         await this.props.actions.loadTestOverviewByTestId(testId)
       }
 
@@ -82,7 +88,7 @@ class StartingScreen extends Component {
   startTests() {
     return Promise.all([
       this.props.actions.startCompetitorTest(this.props.config),
-      this.props.actions.startSpeedKitTest(this.props.config)
+      this.props.actions.startSpeedKitTest(this.props.config),
     ]).then(() => this.props.actions.saveTestOverview(this.props.testOverview))
   }
 
@@ -98,7 +104,7 @@ class StartingScreen extends Component {
             clearInterval(interval)
           }
         }).catch(e => clearInterval(interval))
-    }, 2000
+    }, 2000,
     )
   }
 
@@ -111,10 +117,10 @@ class StartingScreen extends Component {
   async subscribeOnTestResults(competitorResult, speedKitResult) {
     // Needs to be implemented synchronously because Reacts setState() works asynchronous
     // and therefore would generate an endless loop in combination with our use of componentWillReceiveProps()
-    if(!this.state.competitorSubscription) {
+    if (!this.state.competitorSubscription) {
       this.state.competitorSubscription = await this.props.actions.subscribeOnCompetitorTestResult(competitorResult)
     }
-    if(!this.state.speedKitSubscription) {
+    if (!this.state.speedKitSubscription) {
       this.state.speedKitSubscription = await this.props.actions.subscribeOnSpeedKitTestResult(speedKitResult)
     }
   }
@@ -128,13 +134,13 @@ class StartingScreen extends Component {
     const competitorSubscription = this.state.competitorSubscription
     const speedKitSubscription = this.state.speedKitSubscription
 
-    if(competitorResult && competitorResult.hasFinished && competitorSubscription) {
+    if (competitorResult && competitorResult.hasFinished && competitorSubscription) {
       competitorSubscription.unsubscribe()
-      this.setState({competitorSubscription: null})
+      this.setState({ competitorSubscription: null })
     }
-    if(speedKitResult && speedKitResult.hasFinished && speedKitSubscription) {
+    if (speedKitResult && speedKitResult.hasFinished && speedKitSubscription) {
       speedKitSubscription.unsubscribe()
-      this.setState({speedKitSubscription: null})
+      this.setState({ speedKitSubscription: null })
     }
   }
 
@@ -157,7 +163,7 @@ StartingScreen.propTypes = {
   isRateLimited: PropTypes.bool.isRequired,
   isBaqendApp: PropTypes.bool.isRequired,
   competitorTest: PropTypes.object,
-  speedKitTest: PropTypes.object
+  speedKitTest: PropTypes.object,
 }
 
 function mapStateToProps(state) {
@@ -184,7 +190,7 @@ function mapDispatchToProps(dispatch) {
       getTestStatus,
       subscribeOnCompetitorTestResult,
       subscribeOnSpeedKitTestResult,
-      updateConfigByTestOverview
+      updateConfigByTestOverview,
     }, dispatch),
   }
 }
