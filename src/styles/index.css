@@ -27,10 +27,6 @@ body {
   height: 100%;
 }
 
-body {
-  background: var(--dark-blue);
-}
-
 #root, #main {
   display: flex;
   flex-grow: 1;
@@ -40,6 +36,10 @@ body {
   align-items: center;
   justify-content: center;
   flex-direction: column;
+}
+
+#root {
+  background: var(--dark-blue);
 }
 
 .container {

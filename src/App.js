@@ -14,6 +14,8 @@ import StartingScreen from './components/StartingScreen/StartingScreen'
 import LoadingScreen from './components/LoadingScreen/LoadingScreen'
 import ResultScreen from './components/ResultScreen/ResultScreen'
 
+import './styles/index.css'
+
 const store = createStore()
 
 class App extends Component {
