@@ -1,14 +1,29 @@
 @import "../../../styles/_variables";
 
 .config__form {
+  &-input-wrapper {
+    position: relative;
+  }
   &-input {
     background: color(var(--white) a(30%));
     color: var(--white);
     border: none;
     border-radius: 3px;
     &::placeholder {
-      color: var(--white);
+      color: color(var(--white) a(75%));
       font-weight: 300;
     }
+  }
+  &-submit-wrapper {
+    position: absolute;
+    top: 11px;
+    right: 11px;
+  }
+  &-submit {
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: color(var(--white) a(30%));
   }
 }

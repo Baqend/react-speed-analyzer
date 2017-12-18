@@ -3,6 +3,8 @@
 @import "tachyons/src/_widths";
 @import "tachyons/src/_spacing";
 
+@import "./_toggle.css";
+
 @import "./_variables";
 @import "./_reset.css";
 
@@ -44,4 +46,16 @@ body {
   width: 100%;
   max-width: 1170px;
   margin: 0 auto;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
 }

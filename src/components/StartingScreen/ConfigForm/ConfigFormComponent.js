@@ -1,5 +1,9 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+
+import Toggle from 'react-toggle'
+
+import arrow from '../../../assets/arrow_right.svg'
 import './ConfigForm.css'
 
 class ConfigFormComponent extends Component {
@@ -29,9 +33,9 @@ class ConfigFormComponent extends Component {
     return (
       <div className="pa2 config__form">
         <form onSubmit={this.handleSubmit}>
-          <div>
+          <div className="config__form-input-wrapper">
             <input
-              className="w-100 pa2 config__form-input"
+              className="w-100 ph2 pv3 config__form-input"
               type="text"
               inputMode="url"
               spellCheck="false"
@@ -39,78 +43,50 @@ class ConfigFormComponent extends Component {
               onChange={this.handleUrlChange}
               placeholder="Enter URL here..."
             />
+            <div className="config__form-submit-wrapper">
+              <button className="config__form-submit flex justify-center items-center" type="submit">
+                <img src={arrow} alt="arrow"/>
+              </button>
+            </div>
           </div>
-          <div>
-            Location:
-            <label>
-              <input
-                type="radio"
-                name="location"
-                value="US"
-                onChange={this.handleLocationChange}
-                checked={this.props.config.location === 'us-east-1:Chrome.Native'}
-              />
-              USA
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="location"
-                value="EU"
-                onChange={this.handleLocationChange}
-                checked={this.props.config.location === 'eu-central-1:Chrome.Native'}
-              />
-              EU
-            </label>
-          </div>
-          <div>
-            Mobile:
-            <label>
-              <input
-                type="radio"
-                name="mobile"
-                value={false}
-                onChange={this.handleMobileSwitch}
-                checked={!this.props.config.isMobile}
-              />
-              No
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="mobile"
-                value
-                onChange={this.handleMobileSwitch}
-                checked={this.props.config.isMobile}
-              />
-              Yes
-            </label>
-          </div>
-          <div>
-            Caching:
-            <label>
-              <input
-                type="radio"
-                name="caching"
-                value={false}
-                onChange={this.handleCachingSwitch}
-                checked={!this.props.config.caching}
-              />
-              No
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="caching"
-                value={true}
-                onChange={this.handleCachingSwitch}
-                checked={this.props.config.caching}
-              />
-              Yes
-            </label>
-          </div>
-          <div>
-            <button type="submit">Go</button>
+          <div className="pa1">
+            <div className="pt1">
+              <div className="flex items-center">
+                <span className="flex-auto w-100 text-right">EU</span>
+                <Toggle
+                  className="mh1"
+                  defaultChecked={this.props.config.location === 'us-east-1:Chrome.Native'}
+                  icons={false}
+                  value={this.props.config.location === 'us-east-1:Chrome.Native' ? 'EU' : 'US'}
+                  onChange={this.handleLocationChange}
+                />
+                <span className="flex-auto w-100">USA</span>
+              </div>
+            </div>
+            <div className="pt1">
+              <div className="flex items-center">
+                <span className="flex-auto w-100 text-right">Desktop</span>
+                <Toggle
+                  className="mh1"
+                  defaultChecked={this.props.config.isMobile}
+                  icons={false}
+                  onChange={this.handleMobileSwitch}
+                />
+                <span className="flex-auto w-100">Mobile</span>
+              </div>
+            </div>
+            <div className="pt1">
+              <div className="flex items-center">
+                <span className="flex-auto w-100 text-right">No Cache</span>
+                <Toggle
+                  className="mh1"
+                  defaultChecked={this.props.config.caching}
+                  icons={false}
+                  onChange={this.handleCachingSwitch}
+                />
+                <span className="flex-auto w-100">Cache</span>
+              </div>
+            </div>
           </div>
         </form>
       </div>
