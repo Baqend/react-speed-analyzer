@@ -60,11 +60,11 @@ export function getParameterByName(name) {
 }
 
 /**
- * @param {object} object The object to get the key attribute from.
+ * @param {object} objectId The id of the corresponding object
  * @return {string}
  */
-export function getObjectKey(object) {
-  const objectSplit = object.id.split('/')
+export function getObjectKey(objectId) {
+  const objectSplit = objectId.split('/')
   return objectSplit[objectSplit.length - 1]
 }
 
@@ -82,4 +82,18 @@ export function isURL(str) {
       '(\\?[;&a-z\\d%@_.,~+&:=-]*)?' + // query string
       '(\\#[-a-z\\d_]*)?$', 'i') // fragment locator
   return pattern.test(str)
+}
+
+/**
+ * Check whether an object is empty or not
+ * @param obj The object to be checked
+ * @returns {boolean}
+ */
+export function isEmpty(obj) {
+  for(const prop in obj) {
+    if(obj.hasOwnProperty(prop))
+      return false
+  }
+
+  return true
 }
