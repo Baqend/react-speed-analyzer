@@ -3,10 +3,12 @@
 @import "tachyons/src/_widths";
 @import "tachyons/src/_spacing";
 
-@import "./_toggle.css";
+@import "./lib/animate.css";
+@import "./lib/toggle.css";
 
 @import "./_variables";
 @import "./_reset.css";
+@import "./_spinner.css";
 
 :root {
   --dark-blue: #162939;
@@ -19,12 +21,19 @@ html {
 body {
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
+  font-family: Open Sans;
+  font-weight: 300;
+  line-height: 1.48;
+  color: color(#fff a(80%));
 }
 
 body {
   display: flex;
   height: 100%;
+}
+
+#root, body {
+  background: var(--dark-blue);
 }
 
 #root, #main {
@@ -38,8 +47,8 @@ body {
   flex-direction: column;
 }
 
-#root {
-  background: var(--dark-blue);
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 400;
 }
 
 .container {

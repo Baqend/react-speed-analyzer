@@ -31,7 +31,7 @@ class ConfigFormComponent extends Component {
 
   render() {
     return (
-      <div className="pa2 config__form">
+      <div className="pa4 config__form">
         <form onSubmit={this.handleSubmit}>
           <div className="config__form-input-wrapper">
             <input

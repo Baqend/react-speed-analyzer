@@ -3,14 +3,82 @@
   max-width: 1170px;
   max-height: 664px;
   flex-grow: 1;
-  color: white;
+  display: flex;
+  flex-direction: column;
   &__laptop {
     background: url('../../assets/laptop.png');
     background-repeat: no-repeat;
     background-position: center;
-    padding-top: 40px;
-    padding-right: 140px;
+    padding-left: 142px;
+    padding-top: 42px;
+    padding-right: 142px;
     padding-bottom: 70px;
-    padding-left: 140px;
+  }
+}
+
+
+.loading {
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  flex-grow: 1;
+  &__spinner {
+    flex-basis: 50%;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  &__status {
+    flex-basis: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: show 0.5s 1 ease 2s both;
+    .text {
+      &__headline {
+        visibility: hidden;
+        animation: textSlideUp 0.8s 1 ease 2.5s;
+        animation-fill-mode: forwards;
+      }
+      &__details {
+        visibility: hidden;
+        animation: textSlideUp 0.6s 1 ease 2.7s;
+        animation-fill-mode: forwards;
+      }
+    }
+  }
+}
+
+@keyframes show {
+  0% {
+    flex-basis: 0;
+  }
+  100% {
+    flex-basis: 50%;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translate3d(-100%, 0, 0);
+    visibility: visible;
+  }
+
+  to {
+    transform: translate3d(0, 0, 0);
+    visibility: visible;
+  }
+}
+
+@keyframes textSlideUp {
+  from {
+    transform: translate3d(0, 100%, 0);
+    visibility: visible;
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+    visibility: visible;
   }
 }
