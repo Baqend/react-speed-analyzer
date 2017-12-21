@@ -11,8 +11,8 @@ import Navbar from './components/Navbar/Navbar'
 import Footer from './components/Footer/Footer'
 
 import './styles/index.css'
-import HomeWrapper from './components/ScreenWrapper/ScreenWrapper'
-
+import StartingScreen from './components/StartingScreen/StartingScreen'
+import ResultScreen from './components/ResultScreen/ResultScreen'
 const store = createStore()
 
 class App extends Component {
@@ -23,7 +23,8 @@ class App extends Component {
           <Navbar />
           <BrowserRouter>
             <Switch>
-              <Route exact path="/" component={HomeWrapper} />
+              <Route exact path="/" component={StartingScreen} />
+              <Route exact path="/result" component={ResultScreen} />
             </Switch>
           </BrowserRouter>
           <Footer />

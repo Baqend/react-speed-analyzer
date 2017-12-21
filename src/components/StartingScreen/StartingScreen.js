@@ -9,44 +9,41 @@ import { getObjectKey } from '../../helper/utils'
 import StartingScreenComponent from './StartingScreenComponent'
 import { isURL } from '../../helper/utils'
 
-import { normalizeUrl, checkRateLimit } from '../../actions/prepareTest'
 import { getTestStatus } from '../../actions/testStatus'
 import { updateConfigByTestOverview } from '../../actions/config'
+import { terminateTest } from '../../actions/terminateTest'
 import {
-  createTestOverview,
+  startTest,
   loadTestOverviewByTestId,
-  saveTestOverview,
-  startCompetitorTest,
-  startSpeedKitTest,
   subscribeOnCompetitorTestResult,
   subscribeOnSpeedKitTestResult,
 } from '../../actions/startTest'
 
 
 class StartingScreen extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      competitorSubscription: null,
-      speedKitSubscription: null,
-    }
-  }
-
   componentWillMount() {
     const testId = parse(this.props.location.search)['testId']
     this.watchTestById(testId)
   }
 
   componentWillReceiveProps(nextProps) {
+    const competitorTest = nextProps.competitorTest
+    const speedKitTest = nextProps.speedKitTest
+
     if(nextProps.location !== this.props.location) {
       const testId = parse(nextProps.location.search)['testId']
       this.watchTestById(testId)
+    }
+
+    if(competitorTest && competitorTest.hasFinished && speedKitTest && speedKitTest.hasFinished) {
+      this.props.actions.terminateTest()
     }
   }
 
   onSubmit = async () => {
     if (isURL(this.props.config.url)) {
-      await this.props.actions.checkRateLimit()
+      this.props.actions.startTest()
+/*      await this.props.actions.checkRateLimit()
 
       if (!this.props.isRateLimited) {
         await this.props.actions.normalizeUrl(this.props.config.url, this.props.config.isMobile)
@@ -57,7 +54,7 @@ class StartingScreen extends Component {
           const testId = getObjectKey(this.props.testOverview.id)
           this.props.history.push(`?testId=${testId}`)
         }
-      }
+      }*/
     }
   }
 
@@ -77,19 +74,7 @@ class StartingScreen extends Component {
       this.props.actions.updateConfigByTestOverview(this.props.testOverview)
       this.checkTestStatus(getObjectKey(competitorResult))
       await this.subscribeOnTestResults(competitorResult, speedKitResult)
-
-      this.checkSubscriptionTermination(this.props.competitorTest, this.props.speedKitTest)
     }
-  }
-
-  /**
-   * start the competitor test and the speedKit test.
-   */
-  startTests() {
-    return Promise.all([
-      this.props.actions.startCompetitorTest(this.props.config),
-      this.props.actions.startSpeedKitTest(this.props.config),
-    ]).then(() => this.props.actions.saveTestOverview(this.props.testOverview))
   }
 
   /**
@@ -114,34 +99,11 @@ class StartingScreen extends Component {
    * @param speedKitResult The speedKit test object.
    * @returns {Promise.<void>}
    */
-  async subscribeOnTestResults(competitorResult, speedKitResult) {
-    // Needs to be implemented synchronously because Reacts setState() works asynchronous
-    // and therefore would generate an endless loop in combination with our use of componentWillReceiveProps()
-    if (!this.state.competitorSubscription) {
-      this.state.competitorSubscription = await this.props.actions.subscribeOnCompetitorTestResult(competitorResult)
-    }
-    if (!this.state.speedKitSubscription) {
-      this.state.speedKitSubscription = await this.props.actions.subscribeOnSpeedKitTestResult(speedKitResult)
-    }
-  }
-
-  /**
-   * Check whether te single subscriptions can be unsubscribed.
-   * @param competitorResult The competitorTestResult object.
-   * @param speedKitResult The speedKitTestResult object.
-   */
-  checkSubscriptionTermination(competitorResult, speedKitResult) {
-    const competitorSubscription = this.state.competitorSubscription
-    const speedKitSubscription = this.state.speedKitSubscription
-
-    if (competitorResult && competitorResult.hasFinished && competitorSubscription) {
-      competitorSubscription.unsubscribe()
-      this.setState({ competitorSubscription: null })
-    }
-    if (speedKitResult && speedKitResult.hasFinished && speedKitSubscription) {
-      speedKitSubscription.unsubscribe()
-      this.setState({ speedKitSubscription: null })
-    }
+  subscribeOnTestResults(competitorResult, speedKitResult) {
+    Promise.all([
+      this.props.actions.subscribeOnCompetitorTestResult(competitorResult),
+      this.props.actions.subscribeOnSpeedKitTestResult(speedKitResult)
+    ])
   }
 
   render() {
@@ -163,7 +125,7 @@ StartingScreen.propTypes = {
   isRateLimited: PropTypes.bool.isRequired,
   isBaqendApp: PropTypes.bool.isRequired,
   competitorTest: PropTypes.object,
-  speedKitTest: PropTypes.object,
+  speedKitTest: PropTypes.object
 }
 
 function mapStateToProps(state) {
@@ -173,24 +135,20 @@ function mapStateToProps(state) {
     isRateLimited: state.result.isRateLimited,
     isBaqendApp: state.result.isBaqendApp,
     competitorTest: state.result.competitorTest,
-    speedKitTest: state.result.speedKitTest,
+    speedKitTest: state.result.speedKitTest
   }
 }
 
 function mapDispatchToProps(dispatch) {
   return {
     actions: bindActionCreators({
-      checkRateLimit,
-      normalizeUrl,
-      createTestOverview,
+      startTest,
       loadTestOverviewByTestId,
-      saveTestOverview,
-      startCompetitorTest,
-      startSpeedKitTest,
       getTestStatus,
       subscribeOnCompetitorTestResult,
       subscribeOnSpeedKitTestResult,
       updateConfigByTestOverview,
+      terminateTest,
     }, dispatch),
   }
 }
