@@ -35,16 +35,20 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    animation: show 0.5s 1 ease 2s both;
-    .text {
-      &__headline {
+    animation: show 0.5s 1 ease;
+    animation-delay: 2s;
+    animation-fill-mode: forwards;
+    .text-enter {
+      .text__headline {
         visibility: hidden;
-        animation: textSlideUp 0.8s 1 ease 2.5s;
+        animation: textSlideUp 0.8s 1 ease;
+        animation-delay: 2.5s;
         animation-fill-mode: forwards;
       }
-      &__details {
+      .text__details {
         visibility: hidden;
-        animation: textSlideUp 0.6s 1 ease 2.7s;
+        animation: textSlideUp 0.6s 1 ease;
+        animation-delay: 2.7s;
         animation-fill-mode: forwards;
       }
     }

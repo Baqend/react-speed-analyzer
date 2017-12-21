@@ -1,0 +1,37 @@
+.text-enter {
+}
+
+.text-enter.text-enter-active {
+  opacity: 1;
+  animation: textSlideUp 0.6s 1 ease;
+  animation-fill-mode: forwards;
+}
+
+.text-exit {
+  opacity: 1
+}
+
+.text-exit.text-exit-active {
+  animation: textFadeOut 0.6s 1 ease;
+  animation-fill-mode: forwards;
+}
+
+@keyframes textSlideUp {
+  from {
+    transform: translate3d(0, 100%, 0);
+    visibility: visible;
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+    visibility: visible;
+  }
+}
+
+@keyframes textFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

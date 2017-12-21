@@ -70,7 +70,7 @@ class StartingScreen extends Component {
       if (!this.props.testOverview) {
         await this.props.actions.loadTestOverviewByTestId(testId)
       }
-
+      
       const competitorResult = this.props.testOverview.competitorTestResult
       const speedKitResult = this.props.testOverview.speedKitTestResult
 

@@ -160,6 +160,23 @@ export function subscribeOnCompetitorTestResult(competitorId) {
   }
 }
 
+// export const loadTestOverviewByTestId = (testId) => ({
+//   'BAQEND': async ({ dispatch, getState, db }) => {
+//     const options = { depth: 0 }
+//     const result = await db.TestOverview.load(testId, options)
+//     dispatch({
+//       type: TESTOVERVIEW_LOAD,
+//       payload: result,
+//     }, options)
+//   }
+// })
+//
+// export const testAction = (json) => ({
+//   'BAQEND': [ json, ({ dispatch, getState, db }, ref) => {
+//     console.log(ref)
+//   }]
+// })
+
 /**
  * Subscribe to on a object by its id.
  * @param speedKitId The id of the speedKit test to subscribe on.
@@ -172,4 +189,3 @@ export function subscribeOnSpeedKitTestResult(speedKitId) {
     }
   }
 }
-
