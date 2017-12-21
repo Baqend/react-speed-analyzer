@@ -15,17 +15,18 @@ const initialState = {
   isRateLimited: false,
   isBaqendApp: false,
   testOverview: null,
-  running: false,
   statusCode: null,
   statusText: '',
   competitorTest: null,
-  speedKitTest: null
+  speedKitTest: null,
+  testRunning: false,
+  testFinished: false,
 }
 
 export default function result(state = initialState, action = {}) {
   switch (action.type) {
     case TESTOVERVIEW_CREATE:
-      return { ...state, testOverview: action.payload, running: true }
+      return { ...state, testOverview: action.payload, testRunning: true, testFinished: false }
     case TESTOVERVIEW_LOAD:
       return { ...state, testOverview: action.payload }
     case TESTOVERVIEW_SAVE:
