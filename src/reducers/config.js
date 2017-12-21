@@ -4,7 +4,7 @@ import {
   CHANGE_WHITELIST,
   SWITCH_MOBILE,
   SWITCH_CACHING,
-  NORMALIZE_URL_POST_SUCCESS,
+  NORMALIZE_URL_POST,
   UPDATE_CONFIG
 } from '../actions/types'
 
@@ -15,6 +15,7 @@ const initialState = {
   isMobile: false,
   whitelist: '',
   isSpeedKitComparison: false,
+  activityTimeout: 75,
 }
 
 export default function config(state = initialState, action = {}) {
@@ -29,8 +30,8 @@ export default function config(state = initialState, action = {}) {
       return { ...state, isMobile: action.payload }
     case SWITCH_CACHING:
       return { ...state, caching: action.payload }
-    case NORMALIZE_URL_POST_SUCCESS:
-      return { ...state, url: action.payload[0].url, isSpeedKitComparison: action.payload[0].isSpeedKitComparison }
+    case NORMALIZE_URL_POST:
+      return { ...state, url: action.payload.url, isSpeedKitComparison: action.payload.isSpeedKitComparison }
     case UPDATE_CONFIG:
       return {
         ...state, url: action.payload.url, location: action.payload.location,
