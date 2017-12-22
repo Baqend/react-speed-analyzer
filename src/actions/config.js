@@ -4,7 +4,6 @@ import {
   CHANGE_WHITELIST,
   SWITCH_MOBILE,
   SWITCH_CACHING,
-  UPDATE_CONFIG
 } from './types'
 
 export function handleUrlInput(url) {
@@ -39,18 +38,5 @@ export function handleCachingSwitch(caching) {
   return {
     type: SWITCH_CACHING,
     payload: !caching,
-  }
-}
-
-export function updateConfigByTestOverview(testOverview) {
-  return {
-    type: UPDATE_CONFIG,
-    payload: {
-      url: testOverview.url,
-      location: testOverview.location,
-      caching: testOverview.caching,
-      isMobile: testOverview.mobile,
-      whitelist: testOverview.whitelist
-    }
   }
 }
