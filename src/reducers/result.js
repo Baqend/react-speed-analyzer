@@ -1,4 +1,7 @@
 import {
+  INIT_TEST,
+  START_TEST,
+  CONTINUE_TEST,
   TESTOVERVIEW_LOAD,
   TESTOVERVIEW_SAVE,
   RATE_LIMITER_GET,
@@ -15,6 +18,8 @@ import {
 } from '../actions/types'
 
 const initialState = {
+  isInitiated: false,
+  isStarted: false,
   isRateLimited: false,
   isBaqendApp: false,
   testOverview: {},
@@ -36,6 +41,12 @@ export default function result(state = initialState, action = {}) {
       return { ...state, isRateLimited: action.payload }
     case NORMALIZE_URL_POST:
       return { ...state, isBaqendApp: action.payload.isBaqendApp }
+    case INIT_TEST:
+      return { ...state, isInitiated: true }
+    case START_TEST:
+      return { ...state, isStarted: true }
+    case CONTINUE_TEST:
+      return { ...state, isInitiated: true, isStarted: true }
     case START_TEST_COMPETITOR_POST:
       return {
         ...state, testOverview: {

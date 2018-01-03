@@ -23,10 +23,21 @@ export class StatusCarousel extends Component {
     this.durationOffset = 150
 
     this.state = {
+      show: true,
       initial: true,
       page: 0,
       pages: []
     }
+  }
+
+  createInterval = () => {
+    this.interval = setInterval(() => {
+      if (this.state.page >= this.state.pages.length - 1) {
+        this.setState({ page: 0 })
+      } else {
+        this.setState({ page: this.state.page + 1 })
+      }
+    }, 3000)
   }
 
   updatePages = (props) => {
@@ -34,25 +45,22 @@ export class StatusCarousel extends Component {
     const pageKeys = hash(pages.map(child => child.key))
     if (pageKeys !== this.pageKeys) {
       this.pageKeys = pageKeys
-
       this.setState({
         pages: [],
         initial: true
       }, () => setTimeout(() => {
         clearInterval(this.interval)
-        this.setState({ page: 0, pages: [ ...pages ] }, () => {
+        this.setState({ pages: [ ...pages ] }, () => {
           this.setState({ initial: false })
           if (this.state.pages.length > 1) {
-            this.interval = setInterval(() => {
-              if (this.state.page === this.state.pages.length - 1) {
-                this.setState({ page: 0,  })
-              } else {
-                this.setState({ page: this.state.page + 1 })
-              }
-            }, 6000)
+            this.createInterval()
           }
         })
       }, this.duration))
+    } else {
+      this.setState({ pages, initial: true }, () => {
+        this.setState({ initial: false })
+      })
     }
   }
 

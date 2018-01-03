@@ -1,5 +1,7 @@
 import { generateSpeedKitConfig, getTLD } from '../helper/configHelper'
 import {
+  INIT_TEST,
+  START_TEST,
   TESTOVERVIEW_SAVE,
   START_TEST_COMPETITOR_POST,
   START_TEST_SPEED_KIT_POST,
@@ -11,16 +13,15 @@ import {
 export const startTest = () => ({
   'BAQEND': async ({ dispatch, getState, db }) => {
     //reset the result store
-    dispatch({
-      type: RESET_TEST_RESULT,
-      payload: {}
-    })
+    dispatch({ type: RESET_TEST_RESULT })
+    dispatch({ type: INIT_TEST })
 
     try {
       await prepareTest({ dispatch, getState, db })
 
       const { isRateLimited, isBaqendApp } = getState().result
       if(!isRateLimited && !isBaqendApp) {
+        dispatch({ type: START_TEST })
         await createTestOverview({ dispatch, getState, db })
         await Promise.all([
           startCompetitorTest({ dispatch, getState, db }),
@@ -72,6 +73,7 @@ async function createTestOverview({ dispatch, getState, db }) {
   testOverview.caching = caching
   testOverview.mobile = isMobile
   testOverview.whitelist = whitelist
+
   dispatch({
     type: TESTOVERVIEW_SAVE,
     payload: await testOverview.save()

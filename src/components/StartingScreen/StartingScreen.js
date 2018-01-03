@@ -53,12 +53,7 @@ class StartingScreen extends Component {
 
   render() {
     return (
-      <StartingScreenComponent
-        config={this.props.config}
-        isRateLimited={this.props.isRateLimited}
-        isBaqendApp={this.props.isBaqendApp}
-        onSubmit={this.onSubmit}
-      />
+      <StartingScreenComponent { ...this.props } onSubmit={this.onSubmit} />
     )
   }
 }
@@ -81,6 +76,7 @@ function mapStateToProps(state) {
     isBaqendApp: state.result.isBaqendApp,
     competitorTest: state.result.competitorTest,
     speedKitTest: state.result.speedKitTest,
+    result: state.result,
   }
 }
 

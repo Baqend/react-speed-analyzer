@@ -28,6 +28,7 @@ class ConfigForm extends Component {
     return (
       <ConfigFormComponent
         config={this.props.config}
+        isInitiated={this.props.isInitiated}
         onSubmit={this.props.onSubmit}
         onUrlChange={this.onUrlChange}
         onLocationChange={this.onLocationChange}
@@ -44,6 +45,12 @@ ConfigForm.propTypes = {
   actions: PropTypes.object.isRequired,
 }
 
+function mapStateToProps(state) {
+  return {
+    isInitiated: state.result.isInitiated,
+  }
+}
+
 function mapDispatchToProps(dispatch) {
   return {
     actions: bindActionCreators({
@@ -55,4 +62,4 @@ function mapDispatchToProps(dispatch) {
   }
 }
 
-export default connect(null, mapDispatchToProps)(ConfigForm)
+export default connect(mapStateToProps, mapDispatchToProps)(ConfigForm)

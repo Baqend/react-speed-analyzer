@@ -1,4 +1,5 @@
 import {
+  CONTINUE_TEST,
   TESTOVERVIEW_LOAD,
   UPDATE_CONFIG,
   TEST_STATUS_GET,
@@ -10,6 +11,7 @@ import {
 
 export const monitorTest = (testId) => ({
   'BAQEND': async ({ dispatch, getState, db }) => {
+    dispatch({ type: CONTINUE_TEST })
     let { testOverview } = getState().result
     if(Object.keys(testOverview).length === 0) {
       await loadTestOverviewByTestId({ dispatch, getState, db , testId})
@@ -99,4 +101,3 @@ function subscribeOnSpeedKitTest({ dispatch, getState, db, speedKitBaqendId }) {
     payload: subscription
   })
 }
-

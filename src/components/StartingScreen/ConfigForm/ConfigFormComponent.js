@@ -45,7 +45,15 @@ class ConfigFormComponent extends Component {
             />
             <div className="config__form-submit-wrapper">
               <button className="config__form-submit flex justify-center items-center" type="submit">
-                <img src={arrow} alt="arrow"/>
+                {this.props.isInitiated ? (
+                  <div className="spinner__wrapper" style={{ width: '25px', height: '25px' }}>
+                    <svg className="spinner" width="100%" height="100%" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+                      <circle className="path" fill="none" strokeWidth="6" strokeLinecap="round" cx="33" cy="33" r="30"></circle>
+                    </svg>
+                  </div>
+                ) : (
+                  <img src={arrow} alt="arrow"/>
+                )}
               </button>
             </div>
           </div>

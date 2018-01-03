@@ -5,6 +5,7 @@
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   &__laptop {
     background: url('../../assets/laptop.png');
     background-repeat: no-repeat;
@@ -38,37 +39,13 @@
     animation: show 0.5s 1 ease;
     animation-delay: 2s;
     animation-fill-mode: forwards;
-    /* .text {
-      .text__headline {
-        visibility: hidden;
-        animation: textSlideUp 0.8s 1 ease;
-        animation-delay: 2.5s;
-        animation-fill-mode: forwards;
-      }
-      .text__details {
-        visibility: hidden;
-        animation: textSlideUp 0.6s 1 ease;
-        animation-delay: 2.7s;
-        animation-fill-mode: forwards;
-      }
-    } */
+    .text__headline {
+      margin-top: 0;
+    }
+    .text__details {
+    }
   }
 }
-
-/* .text {
-  .text__headline {
-    visibility: hidden;
-    animation: textSlideUp 0.8s 1 ease;
-    animation-delay: 2.5s;
-    animation-fill-mode: forwards;
-  }
-  .text__details {
-    visibility: hidden;
-    animation: textSlideUp 0.6s 1 ease;
-    animation-delay: 2.7s;
-    animation-fill-mode: forwards;
-  }
-} */
 
 @keyframes show {
   0% {
@@ -101,3 +78,12 @@
     visibility: visible;
   }
 }
+
+@keyframes blink {
+  50% {
+    color: transparent
+  }
+}
+.loader__dot { animation: 1s blink infinite }
+.loader__dot:nth-child(2) { animation-delay: 250ms }
+.loader__dot:nth-child(3) { animation-delay: 500ms }
