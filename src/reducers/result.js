@@ -5,26 +5,25 @@ import {
   NORMALIZE_URL_POST,
   START_TEST_COMPETITOR_POST,
   START_TEST_SPEED_KIT_POST,
-  TEST_STATUS_GET_SUCCESS,
+  TEST_STATUS_GET,
   COMPETITOR_RESULT_NEXT,
   SPEED_KIT_RESULT_NEXT,
-  COMPETITOR_RESULT_NEXT_SUBSCRIPTION,
-  SPEED_KIT_RESULT_NEXT_SUBSCRIPTION,
+  COMPETITOR_SUBSCRIPTION,
+  SPEED_KIT_SUBSCRIPTION,
   TERMINATE_TEST,
+  RESET_TEST_RESULT,
 } from '../actions/types'
 
 const initialState = {
   isRateLimited: false,
   isBaqendApp: false,
-  testOverview: null,
+  testOverview: {},
   statusCode: null,
   statusText: '',
   competitorSubscription: null,
   speedKitSubscription: null,
-  competitorTest: null,
-  speedKitTest: null,
-  testRunning: false,
-  testFinished: false,
+  competitorTest: {},
+  speedKitTest: {},
 }
 
 export default function result(state = initialState, action = {}) {
@@ -49,26 +48,24 @@ export default function result(state = initialState, action = {}) {
           ...state.testOverview, speedKitTestResult: `/db/TestResult/${action.payload.baqendId }`
         }
       }
-    case TEST_STATUS_GET_SUCCESS:
+    case TEST_STATUS_GET:
       return { ...state, statusCode: action.payload.statusCode, statusText: action.payload.statusText  }
     case COMPETITOR_RESULT_NEXT:
-      return { ...state, competitorTest: action.payload[0] }
+      const competitorTest = action.payload[0] ? action.payload[0] : {}
+      return { ...state, competitorTest }
     case SPEED_KIT_RESULT_NEXT:
-      return { ...state, speedKitTest: action.payload[0] }
-    case COMPETITOR_RESULT_NEXT_SUBSCRIPTION:
+      const speedKitTest = action.payload[0] ? action.payload[0] : {}
+      return { ...state, speedKitTest }
+    case COMPETITOR_SUBSCRIPTION:
       return { ...state, competitorSubscription: action.payload }
-    case SPEED_KIT_RESULT_NEXT_SUBSCRIPTION:
+    case SPEED_KIT_SUBSCRIPTION:
       return { ...state, speedKitSubscription: action.payload }
     case TERMINATE_TEST:
-      if(state.competitorSubscription) {
-        state.competitorSubscription.unsubscribe()
-      }
-      if(state.speedKitSubscription) {
-        state.speedKitSubscription.unsubscribe()
-      }
       return {
-        ...state, competitorSubscription: null, speedKitSubscription: null, testRunning: false, testFinished: true
+        ...state, competitorSubscription: null, speedKitSubscription: null
       }
+    case RESET_TEST_RESULT:
+      return { ...initialState }
     default:
       return state
   }
