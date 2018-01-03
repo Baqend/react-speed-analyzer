@@ -38,7 +38,7 @@
     animation: show 0.5s 1 ease;
     animation-delay: 2s;
     animation-fill-mode: forwards;
-    .text-enter {
+    /* .text {
       .text__headline {
         visibility: hidden;
         animation: textSlideUp 0.8s 1 ease;
@@ -51,9 +51,24 @@
         animation-delay: 2.7s;
         animation-fill-mode: forwards;
       }
-    }
+    } */
   }
 }
+
+/* .text {
+  .text__headline {
+    visibility: hidden;
+    animation: textSlideUp 0.8s 1 ease;
+    animation-delay: 2.5s;
+    animation-fill-mode: forwards;
+  }
+  .text__details {
+    visibility: hidden;
+    animation: textSlideUp 0.6s 1 ease;
+    animation-delay: 2.7s;
+    animation-fill-mode: forwards;
+  }
+} */
 
 @keyframes show {
   0% {

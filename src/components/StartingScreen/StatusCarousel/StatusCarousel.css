@@ -1,10 +1,14 @@
 .text-enter {
+  position: absolute;
+  left: -999em;
+  transform: translate3d(0, 100%, 0);
+  visibility: hidden;
 }
 
 .text-enter.text-enter-active {
   opacity: 1;
-  animation: textSlideUp 0.6s 1 ease;
-  animation-fill-mode: forwards;
+  animation: addElement 0s 1 ease 0s forwards, textSlideUp 3s 1 ease 0s forwards;
+  /* animation-fill-mode: forwards, forwards; */
 }
 
 .text-exit {
@@ -12,8 +16,15 @@
 }
 
 .text-exit.text-exit-active {
-  animation: textFadeOut 0.6s 1 ease;
-  animation-fill-mode: forwards;
+  animation: textFadeOut 3s 1 ease forwards;
+  /* animation-fill-mode: forwards; */
+}
+
+@keyframes addElement {
+  0%, 100% {
+    position: initial;
+    left: initial;
+  }
 }
 
 @keyframes textSlideUp {
