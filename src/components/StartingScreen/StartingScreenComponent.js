@@ -1,49 +1,48 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
+import { shuffle } from '../../helper/utils'
+
 import ConfigForm from './ConfigForm/ConfigForm'
 import { StatusCarousel, StatusPage } from './StatusCarousel/StatusCarousel'
+
+const funFacts = shuffle([
+  <StatusPage key="2">
+    <h2 className="text__headline">Fun Fact #1</h2>
+    <div className="text__details">Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Donec sed odio dui.</div>
+    <div className="text_details">Donec sed odio dui!</div>
+  </StatusPage>,
+  <StatusPage key="3">
+    <h2 className="text__headline">Fun Fact #2</h2>
+    <div className="text__details">Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras justo odio, dapibus ac facilisis in, egestas eget quam.</div>
+  </StatusPage>,
+  <StatusPage key="4">
+    <h2 className="text__headline">Fun Fact #3</h2>
+    <div className="text__details">Nulla vitae elit libero, a pharetra augue. Curabitur blandit tempus porttitor.</div>
+  </StatusPage>
+])
+
 
 class StartingScreenComponent extends Component {
   constructor(props) {
     super(props)
     this.state = {
       status: 0,
+      showCarousel: false,
+      showFacts: false,
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    const status = this.state.status
-    const statusCode = nextProps.result.statusCode
-
-    if (statusCode === 101 && status === 0) {
-      setTimeout(() => {
-        this.setState({ status: 1 })
-      }, 3000)
+    if (this.props.result.statusCode !== nextProps.result.statusCode) {
+      this.setState({ showFacts: false }, () => setTimeout(() => {
+        this.setState({ showFacts: true })
+      }, 6000))
     }
-    if (statusCode === 100 && status === 0) {
-      setTimeout(() => {
-        this.setState({ status: 1}, () => {
-          setTimeout(() => {
-            this.setState({ status: 2 })
-          }, 5000)
-        })
-      }, 3000)
-    }
-    if (statusCode === 100 && status === 1) {
-      setTimeout(() => {
-        this.setState({ status: 2 })
-      }, 5000)
-    }
-
     if (nextProps.result.isStarted) {
       setTimeout(() => this.setState({ showCarousel: true }), 2500)
     }
   }
-
-  // componentDidMount() {
-  //   setTimeout(() => this.setState({ showCarousel: true }), 3000)
-  // }
 
   render() {
     return (
@@ -67,22 +66,16 @@ class StartingScreenComponent extends Component {
                 </svg>
               </div>
             </div>
-            {/*{this.props.result.statusText.replace('...', '')}
-            <span className="loader">
-              <span className="loader__dot">.</span>
-              <span className="loader__dot">.</span>
-              <span className="loader__dot">.</span>
-            </span>*/}
             <div className="loading__status">
               {this.state.showCarousel &&
                 <StatusCarousel>
-                  {this.state.status === 0 &&
+                  {!this.props.result.statusCode &&
                     <StatusPage key="1">
                       <h2 className="text__headline">We will run a series of tests against your site</h2>
                       <div className="text__details">See how fast your current backend stack delivers your site to users. We will compare the results to a version of your site using Baqend Speed Kit</div>
                     </StatusPage>
                   }
-                  {this.state.status === 1 && this.props.result.statusCode === 101 &&
+                  {this.props.result.statusCode === 101 &&
                     <StatusPage key="101">
                       <h2 className="text__headline">
                         {this.props.result.statusText.replace('...', '')}
@@ -95,27 +88,13 @@ class StartingScreenComponent extends Component {
                       <div className="text__details">Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras justo odio, dapibus ac facilisis in, egestas eget quam.</div>
                     </StatusPage>
                   }
-                  {this.state.status === 1 && this.props.result.statusCode === 100 && [
+                  {this.props.result.statusCode === 100 &&
                     <StatusPage key="100">
                       <h2 className="text__headline">Your Test has been started</h2>
                       <div className="text__details">Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Donec sed odio dui.</div>
                     </StatusPage>
-                  ]}
-                  {this.state.status === 2 && [
-                    <StatusPage key="2">
-                      <h2 className="text__headline">Malesuada Cursus Sem Ultricies</h2>
-                      <div className="text__details">Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Donec sed odio dui.</div>
-                      <div className="text_details">Donec sed odio dui!</div>
-                    </StatusPage>,
-                    <StatusPage key="3">
-                      <h2 className="text__headline">Sem Aenean Fringilla Sollicitudin Tortor</h2>
-                      <div className="text__details">Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras justo odio, dapibus ac facilisis in, egestas eget quam.</div>
-                    </StatusPage>,
-                    <StatusPage key="4">
-                      <h2 className="text__headline">Vestibulum Tristique Vulputate Dapibus Elit</h2>
-                      <div className="text__details">Nulla vitae elit libero, a pharetra augue. Curabitur blandit tempus porttitor.</div>
-                    </StatusPage>
-                  ]}
+                  }
+                  {this.state.showFacts && funFacts}
                 </StatusCarousel>
               }
             </div>

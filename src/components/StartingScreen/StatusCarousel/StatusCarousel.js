@@ -30,13 +30,17 @@ export class StatusCarousel extends Component {
     }
   }
 
+  getNextPage = (current, pages) => {
+    if (current >= pages.length - 1) {
+      return 0
+    }
+    return current + 1
+  }
+
   createInterval = () => {
     this.interval = setInterval(() => {
-      if (this.state.page >= this.state.pages.length - 1) {
-        this.setState({ page: 0 })
-      } else {
-        this.setState({ page: this.state.page + 1 })
-      }
+      const page = this.getNextPage(this.state.page, this.state.pages)
+      this.setState({ page })
     }, 6000)
   }
 
@@ -44,15 +48,17 @@ export class StatusCarousel extends Component {
     const pages = flatten((Array.isArray(props.children) && props.children.filter((child) => child)) || [ props.children ])
     const pageKeys = hash(pages.map(child => child.key))
     if (pageKeys !== this.pageKeys) {
+      clearInterval(this.interval)
       this.pageKeys = pageKeys
       this.setState({
+        page: this.getNextPage(this.state.page, pages),
         pages: [],
         initial: true
       }, () => setTimeout(() => {
-        clearInterval(this.interval)
-        this.setState({ pages: [ ...pages ] }, () => {
+        this.setState({
+          pages: [ ...pages ]
+        }, () => {
           this.setState({ initial: false })
-          console.log(this.state.pages)
           if (this.state.pages.length > 1) {
             this.createInterval()
           }
@@ -81,7 +87,7 @@ export class StatusCarousel extends Component {
     return (
       <TransitionGroup>
         {this.state.pages.map((item, j) => item.props && item.props.children.map((child, i) => {
-          if (this.state.page === j) {
+          if (this.state.page === j || this.state.pages.length === 1) {
             return (
               <CSSTransition
                 key={i}

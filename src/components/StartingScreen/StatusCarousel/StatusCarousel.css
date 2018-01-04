@@ -1,18 +1,6 @@
 .text-enter {
-  /* position: absolute;
-  left: -999em; */
-  /* transform: translate3d(0, 100%, 0);
-  /* background: blue; */
-  /* max-height: 999px; */
-  /* width: 100%;
-  position: absolute; */
-  /* overflow: visible; */
-  /* position: initial;
-  left: initial; */
   max-height: 0;
-  /* display: none; */
   overflow: hidden;
-  /* display: none; */
   visibility: hidden;
   > * {
     transform: translate3d(0, 100%, 0);
@@ -22,7 +10,6 @@
 .text-enter.text-enter-active {
   opacity: 1;
   animation: addElement 0ms 1 linear 0s forwards;
-  /* animation-fill-mode: forwards, forwards; */
   > * {
     animation: textSlideUp 3s 1 ease 0s forwards
   }
@@ -34,22 +21,14 @@
 
 .text-exit.text-exit-active {
   animation: textFadeOut 3s 1 ease forwards;
-  /* animation-fill-mode: forwards; */
 }
 
 @keyframes addElement {
   0% {
-    /* background: red; */
-    /* position: absolute;
-    left: -999em; */
     max-height: 999px;
-    /* overflow: initial; */
-    /* display: block; */
   }
   100% {
     max-height: 999px;
-    /* overflow: initial; */
-    /* display: block; */
   }
 }
 
