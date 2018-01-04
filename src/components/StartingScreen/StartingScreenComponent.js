@@ -37,9 +37,13 @@ class StartingScreenComponent extends Component {
     }
 
     if (nextProps.result.isStarted) {
-      setTimeout(() => this.setState({ showCarousel: true }), 3000)
+      setTimeout(() => this.setState({ showCarousel: true }), 2500)
     }
   }
+
+  // componentDidMount() {
+  //   setTimeout(() => this.setState({ showCarousel: true }), 3000)
+  // }
 
   render() {
     return (

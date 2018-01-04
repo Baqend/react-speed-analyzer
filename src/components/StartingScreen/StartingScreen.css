@@ -17,7 +17,6 @@
   }
 }
 
-
 .loading {
   display: flex;
   position: relative;
@@ -31,14 +30,20 @@
     justify-content: center;
   }
   &__status {
-    flex-basis: 0;
+    width: 0%;
+    /* flex-basis: 0%; */
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
     animation: show 0.5s 1 ease;
     animation-delay: 2s;
-    animation-fill-mode: forwards;
+    animation-fill-mode: both;
+    > div {
+      /* display: block;
+      width: 100%;
+      height: 100%; */
+    }
     .text__headline {
       margin-top: 0;
     }
@@ -49,10 +54,12 @@
 
 @keyframes show {
   0% {
-    flex-basis: 0;
+    width: 0;
+    /* flex-basis: 0; */
   }
   100% {
-    flex-basis: 50%;
+    width: 50%;
+    /* flex-basis: 50%; */
   }
 }
 

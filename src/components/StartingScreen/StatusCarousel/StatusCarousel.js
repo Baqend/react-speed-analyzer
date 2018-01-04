@@ -37,7 +37,7 @@ export class StatusCarousel extends Component {
       } else {
         this.setState({ page: this.state.page + 1 })
       }
-    }, 3000)
+    }, 6000)
   }
 
   updatePages = (props) => {
@@ -52,6 +52,7 @@ export class StatusCarousel extends Component {
         clearInterval(this.interval)
         this.setState({ pages: [ ...pages ] }, () => {
           this.setState({ initial: false })
+          console.log(this.state.pages)
           if (this.state.pages.length > 1) {
             this.createInterval()
           }
@@ -78,32 +79,35 @@ export class StatusCarousel extends Component {
 
   render() {
     return (
-      <div>
-        <TransitionGroup>
-          {this.state.pages.map((item, j) => item.props && item.props.children.map((child, i) => {
-            if (this.state.page === j) {
-              return (
-                <CSSTransition
-                  key={i}
-                  timeout={{ enter: this.duration * 2, exit: this.duration }}
-                  classNames="text"
-                  onEnter={(node) => {
-                    const delayFactor = this.state.initial ? 0 : 1
-                    node.style.animationDuration = `0ms, ${this.duration}ms`
-                    node.style.animationDelay = `${delayFactor * this.duration}ms, ${(delayFactor * this.duration) + 50 + i * this.durationOffset}ms`
-                  }}
-                  onExit={(node) => {
-                    node.style.animationDuration = `${this.duration}ms`
-                    node.style.animationDelay = '0ms'
-                  }}
-                >
-                  {child}
-                </CSSTransition>
-              )
-            }
-          }))}
-        </TransitionGroup>
-      </div>
+      <TransitionGroup>
+        {this.state.pages.map((item, j) => item.props && item.props.children.map((child, i) => {
+          if (this.state.page === j) {
+            return (
+              <CSSTransition
+                key={i}
+                timeout={{ enter: this.duration * 2, exit: this.duration }}
+                classNames="text"
+                onEnter={(node) => {
+                  const delayFactor = this.state.initial ? 0 : 1
+                  node.style.animationDuration = `0.1ms`
+                  node.style.animationDelay = `${delayFactor * this.duration}ms`
+                  node.firstChild.style.animationDuration = `${this.duration}ms`
+                  node.firstChild.style.animationDelay = `${(delayFactor * this.duration) + 100 + i * this.durationOffset}ms`
+                  setTimeout(() => {
+                    node.style.overflow = 'visible'
+                  }, delayFactor * this.duration)
+                }}
+                onExit={(node) => {
+                  node.style.animationDuration = `${this.duration}ms`
+                  node.style.animationDelay = '0ms'
+                }}
+              >
+                <div>{child}</div>
+              </CSSTransition>
+            )
+          }
+        }))}
+      </TransitionGroup>
     )
   }
 
