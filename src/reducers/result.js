@@ -6,6 +6,7 @@ import {
   TESTOVERVIEW_SAVE,
   RATE_LIMITER_GET,
   NORMALIZE_URL_POST,
+  CALL_PAGESPEED_INSIGHTS_GET,
   START_TEST_COMPETITOR_POST,
   START_TEST_SPEED_KIT_POST,
   TEST_STATUS_GET,
@@ -47,6 +48,15 @@ export default function result(state = initialState, action = {}) {
       return { ...state, isStarted: true }
     case CONTINUE_TEST:
       return { ...state, isInitiated: true, isStarted: true }
+    case CALL_PAGESPEED_INSIGHTS_GET:
+      return {
+        ...state, testOverview: {
+          ...state.testOverview,
+          psiDomains: action.payload.domains,
+          psiRequests: action.payload.requests,
+          psiResponseSize: action.payload.bytes
+        }
+      }
     case START_TEST_COMPETITOR_POST:
       return {
         ...state, testOverview: {

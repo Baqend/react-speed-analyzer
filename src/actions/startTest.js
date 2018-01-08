@@ -3,6 +3,7 @@ import {
   INIT_TEST,
   START_TEST,
   TESTOVERVIEW_SAVE,
+  CALL_PAGESPEED_INSIGHTS_GET,
   START_TEST_COMPETITOR_POST,
   START_TEST_SPEED_KIT_POST,
   RATE_LIMITER_GET,
@@ -10,6 +11,9 @@ import {
   RESET_TEST_RESULT,
 } from './types'
 
+/**
+ * Triggers the start of a new test.
+ */
 export const startTest = () => ({
   'BAQEND': async ({ dispatch, getState, db }) => {
     //reset the result store
@@ -20,10 +24,13 @@ export const startTest = () => ({
       await prepareTest({ dispatch, getState, db })
 
       const { isRateLimited, isBaqendApp } = getState().result
+      const { url, isMobile } = getState().config
+
       if(!isRateLimited && !isBaqendApp) {
         dispatch({ type: START_TEST })
         await createTestOverview({ dispatch, getState, db })
         await Promise.all([
+          callPageSpeedInsightsAPI({ dispatch, getState, db, url, isMobile }),
           startCompetitorTest({ dispatch, getState, db }),
           startSpeedKitTest({ dispatch, getState, db })
         ])
@@ -35,6 +42,10 @@ export const startTest = () => ({
   }
 })
 
+/**
+ * Saves a given testOverview object to the baqend database
+ * @param testOverview The testOverview object to be saved.
+ */
 export const saveTestOverview = (testOverview) => ({
   'BAQEND': [testOverview, ({ dispatch, getState, db }, ref) => ref.save().then(() => dispatch({
     type: TESTOVERVIEW_SAVE,
@@ -42,7 +53,13 @@ export const saveTestOverview = (testOverview) => ({
   }))]
 })
 
-async function prepareTest({ dispatch, getState, db }) {
+/**
+ * Prepares the test before its execution (check rate limiting and normalize url).
+ * @param dispatch Method to dispatch an action input.
+ * @param getState Method to get the state of the redux store.
+ * @param db The baqend database instance.
+ */
+export const prepareTest = async ({ dispatch, getState, db }) => {
   const rateLimitResult = await db.modules.get('rateLimiter')
 
   dispatch({
@@ -61,7 +78,13 @@ async function prepareTest({ dispatch, getState, db }) {
   }
 }
 
-async function createTestOverview({ dispatch, getState, db }) {
+/**
+ * Creates a new testOverview object and generates a unique id for it.
+ * @param dispatch Method to dispatch an action input.
+ * @param getState Method to get the state of the redux store.
+ * @param db The baqend database instance.
+ */
+const createTestOverview = async ({ dispatch, getState, db }) => {
   const { url, location, caching, isMobile, whitelist } = getState().config
   const testOverview = new db.TestOverview()
   const tld = getTLD(url)
@@ -80,7 +103,29 @@ async function createTestOverview({ dispatch, getState, db }) {
   })
 }
 
-async function startCompetitorTest({ dispatch, getState, db }) {
+/**
+ * Call the Pagespeed Insights API of Google.
+ * @param dispatch Method to dispatch an action input.
+ * @param db The baqend database instance.
+ * @param url The URL to be tested.
+ * @param isMobile Boolean to verify whether the mobile version should be tested or not.
+ */
+const callPageSpeedInsightsAPI = async ({ dispatch, db,  url, isMobile }) => {
+  const pageSpeedInsightsResult = await db.modules.get('callPageSpeed', { url, mobile: isMobile })
+
+  dispatch({
+    type: CALL_PAGESPEED_INSIGHTS_GET,
+    payload: pageSpeedInsightsResult,
+  })
+}
+
+/**
+ * Starts the test for the competitor version.
+ * @param dispatch Method to dispatch an action input.
+ * @param getState Method to get the state of the redux store.
+ * @param db The baqend database instance.
+ */
+const startCompetitorTest = async ({ dispatch, getState, db }) => {
   const { url, isSpeedKitComparison, location, caching, isMobile:mobile, activityTimeout } = getState().config
 
   const competitorTestId = await db.modules.post('queueTest', {
@@ -99,9 +144,15 @@ async function startCompetitorTest({ dispatch, getState, db }) {
   })
 }
 
-async function startSpeedKitTest({ dispatch, getState, db }) {
-  const { url, isSpeedKitComparison, whitelist, location, caching, isMobile:mobile, activityTimeout } = getState().config
-  const speedKitConfig = generateSpeedKitConfig(url, whitelist, mobile)
+/**
+ * Starts the test for the speed kit version.
+ * @param dispatch Method to dispatch an action input.
+ * @param getState Method to get the state of the redux store.
+ * @param db The baqend database instance.
+ */
+const startSpeedKitTest = async ({ dispatch, getState, db }) => {
+  const { url, isSpeedKitComparison, whitelist, location, caching, isMobile, activityTimeout } = getState().config
+  const speedKitConfig = generateSpeedKitConfig(url, whitelist, isMobile)
 
   const competitorTestId = await db.modules.post('queueTest', {
     url,
@@ -111,7 +162,7 @@ async function startSpeedKitTest({ dispatch, getState, db }) {
     location,
     isClone: true,
     caching,
-    mobile,
+    mobile: isMobile,
   })
 
   dispatch({
