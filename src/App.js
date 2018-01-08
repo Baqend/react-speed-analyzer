@@ -19,12 +19,24 @@ class App extends Component {
   render() {
     return (
       <Provider store={store}>
-        <div id="main">
-          <Navbar />
+        <div id="wrapper">
           <BrowserRouter>
             <Switch>
-              <Route exact path="/" component={StartingScreen} />
-              <Route exact path="/result" component={ResultScreen} />
+              <Route exact path="/" render={props => (
+                <div id="main">
+                  <div className="content">
+                    <StartingScreen { ...props } />
+                  </div>
+                </div>
+              )}/>
+              <Route exact path="/result" render={props => (
+                <div id="main">
+                  <Navbar />
+                  <div className="content">
+                    <ResultScreen { ...props } />
+                  </div>
+                </div>
+              )}/>
             </Switch>
           </BrowserRouter>
           <Footer />

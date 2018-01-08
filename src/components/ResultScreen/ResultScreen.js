@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+
 import ResultScreenComponent from './ResultScreenComponent'
 
 class ResultScreen extends Component {
@@ -17,19 +18,25 @@ class ResultScreen extends Component {
   componentWillUnmount() {
   }
 
+  onSubmit = () => {
+
+  }
+
   render() {
     return (
-      <ResultScreenComponent state={this.state} />
+      <ResultScreenComponent { ...this.props } state={this.state} onSubmit={this.onSubmit}/>
     )
   }
 }
 
 ResultScreen.propTypes = {
-
+  config: PropTypes.object.isRequired,
 }
 
 function mapStateToProps(state) {
-  return { }
+  return {
+    config: state.config,
+  }
 }
 
 function mapDispatchToProps(dispatch) {

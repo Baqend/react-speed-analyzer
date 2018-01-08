@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 
 import ConfigFormComponent from './ConfigFormComponent'
 
-import { handleUrlInput, handleLocationChange, handleMobileSwitch, handleCachingSwitch } from '../../../actions/config'
+import { handleUrlInput, handleLocationChange, handleMobileSwitch, handleCachingSwitch } from '../../actions/config'
 
 class ConfigForm extends Component {
   onUrlChange = (data) => {
@@ -28,6 +28,7 @@ class ConfigForm extends Component {
     return (
       <ConfigFormComponent
         config={this.props.config}
+        showConfig={this.props.showConfig}
         isInitiated={this.props.isInitiated}
         onSubmit={this.props.onSubmit}
         onUrlChange={this.onUrlChange}
@@ -39,8 +40,13 @@ class ConfigForm extends Component {
   }
 }
 
+ConfigForm.defaultProps = {
+  showConfig: true,
+}
+
 ConfigForm.propTypes = {
   config: PropTypes.object.isRequired,
+  showConfig: PropTypes.bool,
   onSubmit: PropTypes.func.isRequired,
   actions: PropTypes.object.isRequired,
 }

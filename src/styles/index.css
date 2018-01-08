@@ -6,6 +6,7 @@
 @import "./lib/animate.css";
 @import "./lib/toggle.css";
 
+@import "./_common";
 @import "./_variables";
 @import "./_reset.css";
 @import "./_spinner.css";
@@ -21,14 +22,14 @@ html {
 body {
   margin: 0;
   padding: 0;
+  flex-grow: 1;
   font-family: Open Sans;
   font-weight: 300;
   line-height: 1.48;
   color: color(#fff a(80%));
 }
 
-body {
-  display: flex;
+body, #root {
   height: 100%;
 }
 
@@ -41,10 +42,22 @@ body {
   flex-grow: 1;
 }
 
+#wrapper {
+  width: 100%;
+}
+
 #main {
+  height: 100%;
   align-items: center;
   justify-content: center;
   flex-direction: column;
+}
+
+.content {
+  width: 100%;
+  display: flex;
+  flex-grow: 1;
+  justify-content: center;
 }
 
 h1, h2, h3, h4, h5, h6 {

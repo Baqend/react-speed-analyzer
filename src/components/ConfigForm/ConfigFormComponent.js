@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import Toggle from 'react-toggle'
 
-import arrow from '../../../assets/arrow_right.svg'
+import arrow from '../../assets/arrow_right.svg'
 import './ConfigForm.css'
 
 class ConfigFormComponent extends Component {
@@ -31,7 +31,7 @@ class ConfigFormComponent extends Component {
 
   render() {
     return (
-      <div className="pa4 config__form">
+      <div className="config__form">
         <form onSubmit={this.handleSubmit}>
           <div className="config__form-input-wrapper">
             <input
@@ -57,46 +57,48 @@ class ConfigFormComponent extends Component {
               </button>
             </div>
           </div>
-          <div className="pa1">
-            <div className="pt1">
-              <div className="flex items-center">
-                <span className="flex-auto w-100 text-right">Desktop</span>
-                <Toggle
-                  className="mh1"
-                  defaultChecked={this.props.config.isMobile}
-                  icons={false}
-                  onChange={this.handleMobileSwitch}
-                />
-                <span className="flex-auto w-100">Mobile</span>
+          {this.props.showConfig &&
+            <div className="pa1">
+              <div className="pt1">
+                <div className="flex items-center">
+                  <span className="flex-auto w-100 text-right">Desktop</span>
+                  <Toggle
+                    className="mh1"
+                    defaultChecked={this.props.config.isMobile}
+                    icons={false}
+                    onChange={this.handleMobileSwitch}
+                  />
+                  <span className="flex-auto w-100">Mobile</span>
+                </div>
               </div>
-            </div>
-            <div className="pt1">
-              <div className="flex items-center">
-                <span className="flex-auto w-100 text-right">EU</span>
-                <Toggle
-                  className="mh1"
-                  defaultChecked={this.props.config.location === 'us-east-1:Chrome.Native'}
-                  icons={false}
-                  value={this.props.config.location === 'us-east-1:Chrome.Native' ? 'EU' : 'US'}
-                  onChange={this.handleLocationChange}
-                />
-                <span className="flex-auto w-100">USA</span>
+              <div className="pt1">
+                <div className="flex items-center">
+                  <span className="flex-auto w-100 text-right">EU</span>
+                  <Toggle
+                    className="mh1"
+                    defaultChecked={this.props.config.location === 'us-east-1:Chrome.Native'}
+                    icons={false}
+                    value={this.props.config.location === 'us-east-1:Chrome.Native' ? 'EU' : 'US'}
+                    onChange={this.handleLocationChange}
+                  />
+                  <span className="flex-auto w-100">USA</span>
+                </div>
               </div>
-            </div>
-            {/*<div className="pt1">
-              <div className="flex items-center">
-                <span className="flex-auto w-100 text-right">No Cache</span>
-                <Toggle
-                  className="mh1"
-                  defaultChecked={this.props.config.caching}
-                  icons={false}
-                  onChange={this.handleCachingSwitch}
-                />
-                <span className="flex-auto w-100">Cache</span>
+              {/*<div className="pt1">
+                <div className="flex items-center">
+                  <span className="flex-auto w-100 text-right">No Cache</span>
+                  <Toggle
+                    className="mh1"
+                    defaultChecked={this.props.config.caching}
+                    icons={false}
+                    onChange={this.handleCachingSwitch}
+                  />
+                  <span className="flex-auto w-100">Cache</span>
+                </div>
               </div>
+              */}
             </div>
-            */}
-          </div>
+          }
         </form>
       </div>
     )

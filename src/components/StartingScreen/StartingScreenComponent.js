@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import { shuffle } from '../../helper/utils'
 
-import ConfigForm from './ConfigForm/ConfigForm'
+import ConfigForm from '../ConfigForm/ConfigForm'
 import { StatusCarousel, StatusPage } from './StatusCarousel/StatusCarousel'
 
 const funFacts = shuffle([
@@ -54,7 +54,9 @@ class StartingScreenComponent extends Component {
               <h1>Page Speed Analyzer</h1>
               <span>Test the performance of your site!</span>
             </div>
-            <ConfigForm config={this.props.config} onSubmit={this.props.onSubmit} />
+            <div className="pa4">
+              <ConfigForm config={this.props.config} onSubmit={this.props.onSubmit} />
+            </div>
           </div>
         }
 
