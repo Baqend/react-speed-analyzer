@@ -9,6 +9,10 @@ import {
   SPEED_KIT_SUBSCRIPTION
 } from './types'
 
+/**
+ * Checks the status of a given test and subscribes to the result.
+ * @param testId The id of the test to be monitored.
+ */
 export const monitorTest = (testId) => ({
   'BAQEND': async ({ dispatch, getState, db }) => {
     dispatch({ type: CONTINUE_TEST })
@@ -21,7 +25,7 @@ export const monitorTest = (testId) => ({
     dispatch(updateConfigByTestOverview(testOverview))
     const competitorBaqendId = testOverview.competitorTestResult
     const speedKitBaqendId = testOverview.speedKitTestResult
-    console.log(speedKitBaqendId)
+
     checkTestStatus({ dispatch, getState, db, competitorBaqendId })
 
     subscribeOnCompetitorTest({ dispatch, getState, db , competitorBaqendId})
@@ -29,14 +33,27 @@ export const monitorTest = (testId) => ({
   }
 })
 
-async function loadTestOverviewByTestId({ dispatch, getState, db, testId }) {
+/**
+ * Loads a given testOverview from the baqend database.
+ * @param dispatch Method to dispatch an action input.
+ * @param db The baqend database instance.
+ * @param testId The id of the test to be loaded.
+ */
+const loadTestOverviewByTestId = async ({ dispatch, db, testId }) => {
   dispatch({
     type: TESTOVERVIEW_LOAD,
     payload: await db.TestOverview.load(testId)
   })
 }
 
-function checkTestStatus({ dispatch, getState, db, competitorBaqendId }) {
+/**
+ * Checks the status of a given test in an interval of 2 seconds.
+ * @param dispatch Method to dispatch an action input.
+ * @param getState Method to get the state of the redux store.
+ * @param db The baqend database instance.
+ * @param competitorBaqendId The competitor test id to get the status for.
+ */
+const checkTestStatus = ({ dispatch, getState, db, competitorBaqendId }) => {
   const interval = setInterval(() => {
     getTestStatus({ dispatch, getState, db, competitorBaqendId })
       .then(() => {
@@ -49,7 +66,13 @@ function checkTestStatus({ dispatch, getState, db, competitorBaqendId }) {
   )
 }
 
-async function getTestStatus({ dispatch, getState, db, competitorBaqendId }) {
+/**
+ * Gets the status of the given test id.
+ * @param dispatch Method to dispatch an action input.
+ * @param db The baqend database instance.
+ * @param competitorBaqendId The competitor test id to get the status for.
+ */
+const getTestStatus = async ({ dispatch, db, competitorBaqendId }) => {
   const res = await db.modules.get('getTestStatus', { baqendId: competitorBaqendId })
   const status = { statusCode: res.status.statusCode, statusText: res.status.statusText }
 
@@ -59,7 +82,11 @@ async function getTestStatus({ dispatch, getState, db, competitorBaqendId }) {
   })
 }
 
-function updateConfigByTestOverview(testOverview) {
+/**
+ * Updates the config parameters based on the given testOverview.
+ * @param testOverview The testOverview object with the up-to-date config.
+ */
+const updateConfigByTestOverview = (testOverview) => {
   return {
     type: UPDATE_CONFIG,
     payload: {
@@ -72,7 +99,13 @@ function updateConfigByTestOverview(testOverview) {
   }
 }
 
-function subscribeOnCompetitorTest({ dispatch, getState, db, competitorBaqendId }) {
+/**
+ * Subscribes on the result of the given competitor baqend id
+ * @param dispatch Method to dispatch an action input.
+ * @param db The baqend database instance.
+ * @param competitorBaqendId The competitor baqend id to subscribe on.
+ */
+const subscribeOnCompetitorTest = ({ dispatch, db, competitorBaqendId }) => {
   const callback = (r) => {
     dispatch({
       type: COMPETITOR_RESULT_NEXT,
@@ -87,7 +120,13 @@ function subscribeOnCompetitorTest({ dispatch, getState, db, competitorBaqendId 
   })
 }
 
-function subscribeOnSpeedKitTest({ dispatch, getState, db, speedKitBaqendId }) {
+/**
+ * Subscribes on the result of the given speed kit baqend id
+ * @param dispatch Method to dispatch an action input.
+ * @param db The baqend database instance.
+ * @param competitorBaqendId The speed kit baqend id to subscribe on.
+ */
+const subscribeOnSpeedKitTest = ({ dispatch, db, speedKitBaqendId }) => {
   const callback = (r) => {
     dispatch({
       type: SPEED_KIT_RESULT_NEXT,

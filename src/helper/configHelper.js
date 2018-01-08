@@ -10,7 +10,7 @@ export function getTLD(url) {
 
   let { hostname } = dummyElement
   // Remove "www" in the beginning
-  if (hostname.includes('www.')) {
+  if (hostname.indexOf('www.') !== -1) {
     hostname = hostname.substr(hostname.indexOf('www.') + 4)
   }
 

@@ -1,5 +1,8 @@
 import { TERMINATE_TEST } from './types'
 
+/**
+ * Unsubscribes existing subscriptions.
+ */
 export const terminateTest = () => ({
   'BAQEND': async ({ dispatch, getState, db }) => {
     const { competitorSubscription, speedKitSubscription } = getState().result
