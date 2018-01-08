@@ -14,23 +14,38 @@
     padding-top: 42px;
     padding-right: 142px;
     padding-bottom: 70px;
+    display: flex;
+    height: 666px;
   }
   &__phone {
-    background: url('../../assets/phone.png');
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
-    width: 480px;
-    padding-top: 42px;
-    padding-bottom: 70px;
+    display: flex;
+    height: 666px;
+    justify-content: center;
+    .screen {
+      background: url('../../assets/phone.png');
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+      max-width: 480px;
+      padding-left: 22px;
+      padding-right: 22px;
+    }
   }
+}
+
+.screen {
+  display: flex;
+  flex-basis: 50%;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
 }
 
 .loading {
   display: flex;
   position: relative;
   overflow: hidden;
-  flex-grow: 1;
+  /* flex-grow: 1; */
   &__spinner {
     flex-basis: 50%;
     flex-grow: 1;

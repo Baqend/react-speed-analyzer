@@ -46,29 +46,30 @@ class StartingScreenComponent extends Component {
 
   render() {
     // <div className="device device__laptop">
+    // <div className={this.props.config.isMobile ? 'device' : 'device device__laptop'}>
     return (
-      <div className={this.props.config.isMobile ? 'device device__phone' : 'device device__laptop'}>
-        {!this.props.result.isStarted &&
-          <div>
-            <div className="text-center">
-              <h1>Page Speed Analyzer</h1>
-              <span>Test the performance of your site!</span>
-            </div>
-            <div className="pa4">
-              <ConfigForm config={this.props.config} onSubmit={this.props.onSubmit} />
-            </div>
-          </div>
-        }
-
-        {this.props.result.isStarted &&
-          <div className="loading">
-            <div className="loading__spinner animated slideInUp">
-              <div className="spinner__wrapper">
+      <div className="device">
+        <div className={`${this.props.config.isMobile && 'device__phone' || 'device__laptop'} ${this.props.result.isStarted && 'loading'}`} style={{ overflow: 'hidden' }}>
+          <div className={`screen ${this.props.result.isStarted && 'loading__spinner'}`}>
+            {!this.props.result.isStarted ? (
+              <div className="flex-grow-1 flex flex-column">
+                <div className="text-center">
+                  <h1>Page Speed Analyzer</h1>
+                  <span>Test the performance of your site!</span>
+                </div>
+                <div className="pa4">
+                  <ConfigForm config={this.props.config} onSubmit={this.props.onSubmit} />
+                </div>
+              </div>
+            ) : (
+              <div className="spinner__wrapper animated slideInUp">
                 <svg className="spinner" width="100%" height="100%" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
                   <circle className="path" fill="none" strokeWidth="2" strokeLinecap="round" cx="33" cy="33" r="30"></circle>
                 </svg>
               </div>
-            </div>
+            )}
+          </div>
+          {(this.props.result.isStarted) &&
             <div className="loading__status">
               {this.state.showCarousel &&
                 <StatusCarousel>
@@ -101,8 +102,8 @@ class StartingScreenComponent extends Component {
                 </StatusCarousel>
               }
             </div>
-          </div>
-        }
+          }
+        </div>
       </div>
     )
   }
