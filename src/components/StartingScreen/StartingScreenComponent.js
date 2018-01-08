@@ -45,12 +45,13 @@ class StartingScreenComponent extends Component {
   }
 
   render() {
+    // <div className="device device__laptop">
     return (
-      <div className="device device__laptop">
+      <div className={this.props.config.isMobile ? 'device device__phone' : 'device device__laptop'}>
         {!this.props.result.isStarted &&
           <div>
             <div className="text-center">
-              <h1>Page Speed Analyzer isInitiated: {this.props.result.isStarted ? 'true' : 'false'}</h1>
+              <h1>Page Speed Analyzer</h1>
               <span>Test the performance of your site!</span>
             </div>
             <ConfigForm config={this.props.config} onSubmit={this.props.onSubmit} />

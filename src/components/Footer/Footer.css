@@ -1,0 +1,9 @@
+footer {
+  align-self: stretch;
+  text-align: center;
+  padding: 16px;
+  background: color(#fff a(10%));
+  a {
+    color: white;
+  }
+}

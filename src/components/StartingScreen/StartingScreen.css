@@ -1,7 +1,7 @@
 .device {
   width: 100%;
   max-width: 1170px;
-  max-height: 664px;
+  /* max-height: 664px; */
   flex-grow: 1;
   display: flex;
   flex-direction: column;
@@ -13,6 +13,15 @@
     padding-left: 142px;
     padding-top: 42px;
     padding-right: 142px;
+    padding-bottom: 70px;
+  }
+  &__phone {
+    background: url('../../assets/phone.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    width: 480px;
+    padding-top: 42px;
     padding-bottom: 70px;
   }
 }

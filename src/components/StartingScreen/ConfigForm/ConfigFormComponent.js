@@ -60,19 +60,6 @@ class ConfigFormComponent extends Component {
           <div className="pa1">
             <div className="pt1">
               <div className="flex items-center">
-                <span className="flex-auto w-100 text-right">EU</span>
-                <Toggle
-                  className="mh1"
-                  defaultChecked={this.props.config.location === 'us-east-1:Chrome.Native'}
-                  icons={false}
-                  value={this.props.config.location === 'us-east-1:Chrome.Native' ? 'EU' : 'US'}
-                  onChange={this.handleLocationChange}
-                />
-                <span className="flex-auto w-100">USA</span>
-              </div>
-            </div>
-            <div className="pt1">
-              <div className="flex items-center">
                 <span className="flex-auto w-100 text-right">Desktop</span>
                 <Toggle
                   className="mh1"
@@ -85,6 +72,19 @@ class ConfigFormComponent extends Component {
             </div>
             <div className="pt1">
               <div className="flex items-center">
+                <span className="flex-auto w-100 text-right">EU</span>
+                <Toggle
+                  className="mh1"
+                  defaultChecked={this.props.config.location === 'us-east-1:Chrome.Native'}
+                  icons={false}
+                  value={this.props.config.location === 'us-east-1:Chrome.Native' ? 'EU' : 'US'}
+                  onChange={this.handleLocationChange}
+                />
+                <span className="flex-auto w-100">USA</span>
+              </div>
+            </div>
+            {/*<div className="pt1">
+              <div className="flex items-center">
                 <span className="flex-auto w-100 text-right">No Cache</span>
                 <Toggle
                   className="mh1"
@@ -95,6 +95,7 @@ class ConfigFormComponent extends Component {
                 <span className="flex-auto w-100">Cache</span>
               </div>
             </div>
+            */}
           </div>
         </form>
       </div>
