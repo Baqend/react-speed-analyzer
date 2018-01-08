@@ -14,7 +14,7 @@ class ResultScreenComponent extends Component {
     console.log(this.props.config)
     // const { state } = this.props
     return (
-      <div className="flex flex-column results__wrapper animated slideInUp">
+      <div className="flex flex-column results__wrapper animated slideInUp" style={{animationDuration: '0.8s'}}>
         <div className="container pa2 pb7">
           <div>Result</div>
           <ConfigForm config={this.props.config} showConfig={false} onSubmit={this.props.onSubmit} />
@@ -25,8 +25,57 @@ class ResultScreenComponent extends Component {
               Results yo<br />
               Results yo<br />
               Results yo<br />
+              Results yo<br />
+              Results yo<br />
+              Results yo<br />
+              Results yo<br />
+              Results yo<br />
+              Results yo<br />
+              Results yo<br />
+              Results yo<br />
+              Results yo<br />
+              Results yo<br />
+              Results yo<br />
+              Results yo<br />
+              Results yo<br />
+              Results yo<br />
+              Results yo<br />
+              Results yo<br />
+              Results yo<br />
+              Results yo<br />
+              Results yo<br />
+              Results yo<br />
+              Results yo<br />
+              Results yo<br />
+              Results yo<br />
+              Results yo<br />
+              Results yo<br />
+              Results yo<br />
+              Results yo<br />
+              Results yo<br />
+              Results yo<br />
+              Results yo<br />
+              Results yo<br />
+              Results yo<br />
+              Results yo<br />
               Results yo
             </div>
+            Results yo<br />
+            Results yo<br />
+            Results yo<br />
+            Results yo<br />
+            Results yo<br />
+            Results yo<br />
+            Results yo<br />
+            Results yo<br />
+            Results yo<br />
+            Results yo<br />
+            Results yo<br />
+            Results yo<br />
+            Results yo<br />
+            Results yo<br />
+            Results yo<br />
+            Results yo<br />
           </div>
         </div>
       </div>
