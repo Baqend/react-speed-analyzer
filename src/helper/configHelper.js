@@ -62,7 +62,7 @@ export function generateSpeedKitConfig(originalUrl, whitelistStr, enableUserAgen
   const whitelist = generateRules(originalUrl, whitelistDomains)
 
   return `{
-    appName: "makefast-dev",
+    appName: "makefast",
     whitelist: [{ host: [ ${whitelist} ] }],
     userAgentDetection: ${enableUserAgentDetection},
   }`

@@ -12,7 +12,7 @@ class ConfigFormComponent extends Component {
     this.props.onUrlChange(changeEvent.target.value)
   }
 
-  handleLocationChange = (changeEvent: any) => {
+  handleLocationChange = (changeEvent) => {
     this.props.onLocationChange(changeEvent.target.value)
   }
 
@@ -24,7 +24,7 @@ class ConfigFormComponent extends Component {
     this.props.onCachingSwitch()
   }
 
-  handleSubmit = (event: any) => {
+  handleSubmit = (event) => {
     event.preventDefault()
     this.props.onSubmit()
   }
