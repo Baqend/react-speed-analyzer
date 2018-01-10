@@ -23,10 +23,10 @@ body {
   margin: 0;
   padding: 0;
   flex-grow: 1;
-  font-family: Open Sans !important;
-  font-weight: 300 !important;
-  line-height: 1.48 !important;
-  color: color(#fff a(80%)) !important;
+  font-family: Open Sans;
+  font-weight: 300;
+  line-height: 1.48;
+  color: color(#fff a(80%));
 }
 
 body, #root {

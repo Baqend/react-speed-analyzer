@@ -1,0 +1,14 @@
+.border-top {
+  border-top: 1px solid #ddd;
+}
+
+.metricValue {
+  font-weight: 500;
+  font-size: 20px;
+}
+
+.factor {
+  color: #5cb85c;
+  font-weight: 500;
+  font-size: 20px;
+}

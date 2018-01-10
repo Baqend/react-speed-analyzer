@@ -7,7 +7,6 @@ import { connect } from 'react-redux'
 import ResultScreenComponent from './ResultScreenComponent'
 import { parse } from 'query-string'
 import { monitorTest } from '../../actions/monitorTest'
-import { isDeviceIOS } from '../../helper/utils'
 
 class ResultScreen extends Component {
   constructor(props) {
