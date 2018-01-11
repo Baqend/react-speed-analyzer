@@ -35,6 +35,8 @@ body, #root {
 
 #root, body {
   background: var(--dark-blue);
+  /* background: linear-gradient(to bottom, var(--dark-blue) 0%, #1a1a1a 100%); */
+  /* background: linear-gradient(to bottom, #000 0%, #000 66%, #1a1a1a 100%); */
 }
 
 #root, #main {

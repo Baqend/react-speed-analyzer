@@ -1,39 +1,155 @@
+:root {
+  --device-border-width: 32px;
+  --device-border-width-xs: 24px;
+  --device-padding: 24px;
+}
+
 .device {
   width: 100%;
-  max-width: 1170px;
-  /* max-height: 664px; */
+  max-width: 998px;
+  margin: 24px;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  &__laptop {
-    background: url('../../assets/laptop.png');
-    background-repeat: no-repeat;
-    background-position: center;
-    padding-left: 142px;
-    padding-top: 42px;
-    padding-right: 142px;
-    padding-bottom: 70px;
+  .device__wrapper-outer, .device__wrapper, .device__screen {
     display: flex;
-    height: 666px;
-  }
-  &__phone {
-    display: flex;
-    height: 666px;
+    flex-grow: 1;
     justify-content: center;
-    .screen {
-      background: url('../../assets/phone.png');
-      background-repeat: no-repeat;
-      background-position: center;
-      background-size: contain;
-      max-width: 480px;
-      padding-left: 22px;
-      padding-right: 22px;
+  }
+}
+
+.device__laptop {
+  display: flex;
+  flex-direction: column;
+  /* For small screens */
+  @media (min-width: 767px) and (max-width: 997px) {
+    > .device__wrapper-outer {
+      /* > .device__wrapper {
+        > .device__screen { */
+      min-height: 450px;
+      position: relative;
+      border-top: calc(var(--device-border-width-xs) + 8px) solid #5a6973;
+      border-top-left-radius: var(--device-border-width-xs);
+      border-top-right-radius: var(--device-border-width-xs);
+      padding-top: var(--device-padding);
+      padding-left: calc(var(--device-border-width-xs) + var(--device-padding));
+      padding-right: calc(var(--device-border-width-xs) + var(--device-padding));
+      margin-left: calc(var(--device-border-width) * 1.5);
+      margin-right: calc(var(--device-border-width) * 1.5);
+      &:before { left: 0px; }
+      &:after { right: 0px; }
+      &:before, &:after {
+        content: "";
+        position: absolute;
+        background-image: linear-gradient(color(#5a6973 a(100%)), color(#5a6973 a(0%)));
+        top: 0px;
+        bottom: -var(--device-border-width-xs);
+        width: var(--device-border-width-xs);
+        max-height: 400px;
+      }
+    /* }
+      } */
+    }
+  }
+  /* For larger screens */
+  @media (min-width: 998px) {
+    /* creates the bottom bar */
+    &:after {
+      content: "";
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      display: block;
+      /* background: white; */
+      border-bottom-left-radius: 24px;
+      border-bottom-right-radius: 24px;
+      background-image: linear-gradient(color(#5a6973 a(20%)), color(#5a6973 a(0%)));
+    }
+    /* creates the bars on the left, right and top */
+    > .device__wrapper-outer {
+      position: relative;
+      border-top: calc(var(--device-border-width) + 8px) solid #5a6973;
+      border-top-left-radius: var(--device-border-width);
+      border-top-right-radius: var(--device-border-width);
+      padding-left: var(--device-border-width);
+      padding-right: var(--device-border-width);
+      margin-left: calc(var(--device-border-width) * 1.5);
+      margin-right: calc(var(--device-border-width) * 1.5);
+      &:before { left: 0px; }
+      &:after { right: 0px; }
+      &:before, &:after {
+        content: "";
+        position: absolute;
+        background-image: linear-gradient(#5a6973, color(#5a6973 a(20%)));
+        top: 0px;
+        bottom: -var(--device-border-width);
+        width: var(--device-border-width);
+        max-height: 100%;
+      }
+      /* enforces 16:9 aspect ratio */
+      > .device__wrapper {
+        position: relative;
+        &:before {
+          content: "";
+          display: block;
+          position: relative;
+          padding-top: 56.25%;
+        }
+        > .device__screen {
+          position: absolute;
+          z-index: 1;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          left: 0;
+          padding: var(--device-padding);
+          .device__wrapper-outer, .device__wrapper, .device__inner {
+            display: flex;
+            flex-grow: 1;
+          }
+        }
+      }
     }
   }
 }
 
-.screen {
+.device__phone {
+  display: flex;
+  /* height: 666px; */
+  justify-content: center;
+  @media (min-width: 481px) {
+    .device__wrapper-outer .device__wrapper .device__screen {
+      .device__wrapper-outer {
+        box-sizing: content-box;
+        max-width: 320px;
+        min-height: 450px;
+        position: relative;
+        border-top: calc(var(--device-border-width-xs) * 4) solid #5a6973;
+        border-top-left-radius: calc(var(--device-border-width-xs) * 3);
+        border-top-right-radius: calc(var(--device-border-width-xs) * 3);
+        padding-top: calc(var(--device-border-width-xs) + var(--device-padding));
+        padding-left: calc(var(--device-border-width-xs) + var(--device-padding));
+        padding-right: calc(var(--device-border-width-xs) + var(--device-padding));
+        &:before { left: 0px; }
+        &:after { right: 0px; }
+        &:before, &:after {
+          content: "";
+          position: absolute;
+          background-image: linear-gradient(color(#5a6973 a(100%)), color(#5a6973 a(0%)));
+          top: 0px;
+          bottom: -var(--device-border-width-xs);
+          width: var(--device-border-width-xs);
+          max-height: 100%;
+        }
+      }
+    }
+  }
+}
+
+
+.left {
   display: flex;
   flex-basis: 50%;
   flex-grow: 1;
@@ -45,45 +161,33 @@
   display: flex;
   position: relative;
   overflow: hidden;
-  /* flex-grow: 1; */
-  &__spinner {
-    flex-basis: 50%;
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  &__status {
-    width: 0%;
-    /* flex-basis: 0%; */
+  flex-wrap: wrap;
+  .right {
+    margin-top: 32px;
+    width: 100%;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    animation: show 0.5s 1 ease;
-    animation-delay: 2s;
-    animation-fill-mode: both;
-    > div {
-      /* display: block;
-      width: 100%;
-      height: 100%; */
-    }
-    .text__headline {
-      margin-top: 0;
-    }
-    .text__details {
+    text-align: center;
+    @media (min-width: 998px) {
+      margin-top: 0px;
+      width: 0%;
+      animation: show 0.5s 1 ease;
+      animation-fill-mode: forwards;
+      animation-delay: 2s;
+      text-align: left;
     }
   }
 }
 
+/* custom CSS3 animations */
 @keyframes show {
   0% {
     width: 0;
-    /* flex-basis: 0; */
   }
   100% {
     width: 50%;
-    /* flex-basis: 50%; */
   }
 }
 

@@ -1,33 +1,30 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import { shuffle } from '../../helper/utils'
-
 import ConfigForm from '../ConfigForm/ConfigForm'
-import { StatusCarousel, StatusPage } from './StatusCarousel/StatusCarousel'
 
-const funFacts = shuffle([
-  <StatusPage key="2">
-    <h2 className="text__headline">Fun Fact #1</h2>
-    <div className="text__details">Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Donec sed odio dui.</div>
-    <div className="text_details">Donec sed odio dui!</div>
-  </StatusPage>,
-  <StatusPage key="3">
-    <h2 className="text__headline">Fun Fact #2</h2>
-    <div className="text__details">Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras justo odio, dapibus ac facilisis in, egestas eget quam.</div>
-  </StatusPage>,
-  <StatusPage key="4">
-    <h2 className="text__headline">Fun Fact #3</h2>
-    <div className="text__details">Nulla vitae elit libero, a pharetra augue. Curabitur blandit tempus porttitor.</div>
-  </StatusPage>
-])
+import { Carousel } from './StatusCarousel/Carousel'
+import {
+  renderDefaultPage,
+  renderIsInQueuePage,
+  renderHasStartedPage,
+  renderFactsPages,
+} from './StatusCarousel/Pages'
 
+const Device = ({ children }) => (
+  <div className="device__wrapper-outer">
+    <div className="device__wrapper">
+      <div className="device__screen">
+        {children}
+      </div>
+    </div>
+  </div>
+)
 
 class StartingScreenComponent extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      status: 0,
       showCarousel: false,
       showFacts: false,
     }
@@ -44,65 +41,99 @@ class StartingScreenComponent extends Component {
     }
   }
 
+  renderForm() {
+    return (
+      <div className="flex-grow-1 flex flex-column justify-center">
+        <div className="text-center">
+          <h1>Page Speed Analyzer</h1>
+          <span>Test the performance of your site!</span>
+        </div>
+        <div className="mt4">
+          <ConfigForm config={this.props.config} onSubmit={this.props.onSubmit} />
+        </div>
+      </div>
+    )
+  }
+
+  renderSpinner() {
+    return (
+      <div className="flex flex-column items-center" style={{ overflow: 'hidden' }}>
+        <div className="spinner__wrapper animated slideInUp">
+          <svg className="spinner" width="100%" height="100%" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+            <circle className="path" fill="none" strokeWidth="2" strokeLinecap="round" cx="33" cy="33" r="30"></circle>
+          </svg>
+        </div>
+        {this.props.result.isStarted && this.renderStats()}
+      </div>
+    )
+  }
+
+  renderCarousel() {
+    return (
+      <Carousel>
+        {!this.props.result.statusCode && renderDefaultPage()}
+        {this.props.result.statusCode === 101 && renderIsInQueuePage(this.props.result.statusText)}
+        {this.props.result.statusCode === 100 && renderHasStartedPage()}
+        {this.state.showFacts && renderFactsPages}
+      </Carousel>
+    )
+  }
+
+  renderStats() {
+    const psiDomains = this.props.result.testOverview && this.props.result.testOverview.psiDomains
+    const psiRequests =  this.props.result.testOverview && this.props.result.testOverview.psiRequests
+    const psiResponseSize = this.props.result.testOverview && this.props.result.testOverview.psiResponseSize
+    const statsClass = psiDomains && psiRequests && psiResponseSize ? 'animated zoomIn' : 'hidden'
+    return (
+      <div className={`flex justify-between mt4 ${statsClass}`}>
+        <div className="pa2 text-center">
+          <small className="faded">Domains</small>
+          <br />
+          <strong>{psiDomains}</strong>
+        </div>
+        <div className="pa2 text-center">
+          <small className="faded">Requests</small>
+          <br />
+          <strong>{psiRequests}</strong>
+        </div>
+        <div className="pa2 text-center">
+          <small className="faded">Response Size</small>
+          <br />
+          <strong>{psiResponseSize}</strong>
+        </div>
+      </div>
+    )
+  }
+
   render() {
-    // <div className="device device__laptop">
-    // <div className={this.props.config.isMobile ? 'device' : 'device device__laptop'}>
+    // this.state.showCarousel = true
+    // this.props.result.isStarted = true
+    // this.props.result.testOverview.psiDomains = 25
+    // this.props.result.testOverview.psiRequests = 111
+    // this.props.result.testOverview.psiResponseSize = 2527141
+    // this.props.config.isMobile = true
+
+    const deviceTypeClass = this.props.config.isMobile ? 'device__phone' : 'device__laptop'
+    const statusClass = this.props.result.isStarted ? 'loading' : null
     return (
       <div className="device">
-        <div className={`${this.props.config.isMobile && 'device__phone' || 'device__laptop'} ${this.props.result.isStarted && 'loading'}`} style={{ overflow: 'hidden' }}>
-          <div className={`screen ${this.props.result.isStarted && 'loading__spinner'}`}>
-            {!this.props.result.isStarted ? (
-              <div className="flex-grow-1 flex flex-column">
-                <div className="text-center">
-                  <h1>Page Speed Analyzer</h1>
-                  <span>Test the performance of your site!</span>
-                </div>
-                <div className="pa4">
-                  <ConfigForm config={this.props.config} onSubmit={this.props.onSubmit} />
-                </div>
+        <div className={`${deviceTypeClass}`}>
+          <Device>
+            <div className={`flex-grow-1 flex justify-center ${statusClass}`}>
+              <div className="left">
+                <Device>
+                  {(this.props.result.isStarted && this.renderSpinner()) || this.renderForm()}
+                </Device>
               </div>
-            ) : (
-              <div className="spinner__wrapper animated slideInUp">
-                <svg className="spinner" width="100%" height="100%" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
-                  <circle className="path" fill="none" strokeWidth="2" strokeLinecap="round" cx="33" cy="33" r="30"></circle>
-                </svg>
-              </div>
-            )}
-          </div>
-          {(this.props.result.isStarted) &&
-            <div className="loading__status">
-              {this.state.showCarousel &&
-                <StatusCarousel>
-                  {!this.props.result.statusCode &&
-                    <StatusPage key="1">
-                      <h2 className="text__headline">We will run a series of tests against your site</h2>
-                      <div className="text__details">See how fast your current backend stack delivers your site to users. We will compare the results to a version of your site using Baqend Speed Kit</div>
-                    </StatusPage>
-                  }
-                  {this.props.result.statusCode === 101 &&
-                    <StatusPage key="101">
-                      <h2 className="text__headline">
-                        {this.props.result.statusText.replace('...', '')}
-                        <span className="loader">
-                          <span className="loader__dot">.</span>
-                          <span className="loader__dot">.</span>
-                          <span className="loader__dot">.</span>
-                        </span>
-                      </h2>
-                      <div className="text__details">Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras justo odio, dapibus ac facilisis in, egestas eget quam.</div>
-                    </StatusPage>
-                  }
-                  {this.props.result.statusCode === 100 &&
-                    <StatusPage key="100">
-                      <h2 className="text__headline">Your Test has been started</h2>
-                      <div className="text__details">Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Donec sed odio dui.</div>
-                    </StatusPage>
-                  }
-                  {this.state.showFacts && funFacts}
-                </StatusCarousel>
+              {this.props.result.isStarted &&
+                <div className="right">
+                  <div className="flex flex-grow-1 flex-column justify-center items-stretch pa2">
+                    {this.state.showCarousel && this.renderCarousel()}
+                  </div>
+                </div>
               }
             </div>
-          }
+          </Device>
         </div>
       </div>
     )

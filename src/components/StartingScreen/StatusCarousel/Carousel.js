@@ -4,7 +4,7 @@ import hash from 'object-hash'
 
 import { TransitionGroup, CSSTransition } from 'react-transition-group'
 
-import './StatusCarousel.css'
+import './Carousel.css'
 
 const flatten = arr => arr.reduce(
   (acc, val) => acc.concat(
@@ -12,7 +12,7 @@ const flatten = arr => arr.reduce(
   ), []
 )
 
-export class StatusCarousel extends Component {
+export class Carousel extends Component {
   constructor(props) {
     super(props)
     this.interval = null
@@ -119,7 +119,7 @@ export class StatusCarousel extends Component {
 
 }
 
-export class StatusPage extends Component {
+export class CarouselPage extends Component {
   render() {
     return this.props.children
   }
