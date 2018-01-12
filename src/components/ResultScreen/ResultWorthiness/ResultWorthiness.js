@@ -1,20 +1,20 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import ResultDetailsComponent from './ResultDetailsComponent'
+import ResultWorthinessComponent from './ResultWorthinessComponent'
 
-class ResultDetails extends Component {
+class ResultWorthiness extends Component {
   render() {
     return (
-      <ResultDetailsComponent { ...this.props }/>
+      <ResultWorthinessComponent { ...this.props }/>
     )
   }
 }
 
-ResultDetails.propTypes = {
+ResultWorthiness.propTypes = {
   competitorTest: PropTypes.object.isRequired,
   speedKitTest: PropTypes.object.isRequired,
   mainMetric: PropTypes.string,
 }
 
-export default ResultDetails
+export default ResultWorthiness

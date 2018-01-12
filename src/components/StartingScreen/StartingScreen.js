@@ -24,6 +24,7 @@ class StartingScreen extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    // change the location attribute if a new test was triggered
     const testOverview = nextProps.testOverview
     if(testOverview.competitorTestResult && testOverview.speedKitTestResult ) {
       const testId = getObjectKey(testOverview.id)
@@ -32,6 +33,7 @@ class StartingScreen extends Component {
       }
     }
 
+    // add the test id as new location and trigger monitoring process
     if(nextProps.location !== this.props.location) {
       const testId = parse(nextProps.location.search)['testId']
       if(testId) {
@@ -39,6 +41,7 @@ class StartingScreen extends Component {
       }
     }
 
+    // terminate the running test as soon as both test have finished and navigate to the result screen
     if(nextProps.competitorTest.hasFinished && nextProps.speedKitTest.hasFinished) {
       this.props.actions.terminateTest()
       nextProps.history.push('/result' + nextProps.location.search)

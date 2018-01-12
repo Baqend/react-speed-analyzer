@@ -2,6 +2,7 @@
 @import "tachyons/src/_flexbox";
 @import "tachyons/src/_widths";
 @import "tachyons/src/_spacing";
+@import "tachyons/src/_position";
 
 @import "./lib/animate.css";
 @import "./lib/toggle.css";
@@ -23,7 +24,8 @@ body {
   margin: 0;
   padding: 0;
   flex-grow: 1;
-  font-family: Open Sans;
+  font-family: Open Sans,sans-serif;
+  font-size: 18px;
   font-weight: 300;
   line-height: 1.48;
   color: color(#fff a(80%));
@@ -83,4 +85,10 @@ h1, h2, h3, h4, h5, h6 {
 
 .text-center {
   text-align: center;
+}
+hr {
+  height: 1px;
+  margin: 0;
+  border: 0;
+  background: -webkit-gradient(linear, 0 0, 100% 0, from(white), to(white), color-stop(50%, #e5e5e5));
 }

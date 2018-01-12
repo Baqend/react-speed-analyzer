@@ -4,3 +4,14 @@
   border: 1px solid #e8e8e8;
   box-shadow: 0 2px 4px rgba(0,0,0,.05);
 }
+
+.speedKitVideo {
+  background: #f9f9f9;
+  background: linear-gradient(to right,#f9f9f9,#fff);
+}
+
+.mainFactor {
+  position: absolute;
+  top: 16px;
+  left: 48%;
+}

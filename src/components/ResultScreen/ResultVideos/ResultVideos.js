@@ -14,6 +14,7 @@ class ResultVideos extends Component {
 ResultVideos.propTypes = {
   competitorTest: PropTypes.object.isRequired,
   speedKitTest: PropTypes.object.isRequired,
+  speedKitError: PropTypes.bool.isRequired,
 }
 
 export default ResultVideos

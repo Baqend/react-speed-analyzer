@@ -1,10 +1,11 @@
-.border-top {
-  border-top: 1px solid #ddd;
-}
-
 .metricValue {
   font-weight: 500;
   font-size: 20px;
+}
+
+.metricLabel {
+  font-size: 16px;
+  color: #7E7E7E;
 }
 
 .factor {

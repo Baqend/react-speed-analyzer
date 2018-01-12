@@ -23,6 +23,8 @@ const initialState = {
   isStarted: false,
   isRateLimited: false,
   isBaqendApp: false,
+  isSpeedKitComparison: false,
+  speedKitVersion: null,
   testOverview: {},
   statusCode: null,
   statusText: '',
@@ -41,7 +43,12 @@ export default function result(state = initialState, action = {}) {
     case RATE_LIMITER_GET:
       return { ...state, isRateLimited: action.payload }
     case NORMALIZE_URL_POST:
-      return { ...state, isBaqendApp: action.payload.isBaqendApp }
+      return {
+        ...state,
+        isBaqendApp: action.payload.isBaqendApp,
+        isSpeedKitComparison: action.payload.speedkit,
+        speedKitVersion: action.payload.speedkitVersion,
+      }
     case INIT_TEST:
       return { ...state, isInitiated: true }
     case START_TEST:
@@ -83,7 +90,11 @@ export default function result(state = initialState, action = {}) {
       return { ...state, speedKitSubscription: action.payload }
     case TERMINATE_TEST:
       return {
-        ...state, competitorSubscription: null, speedKitSubscription: null
+        ...state,
+        competitorSubscription: null,
+        speedKitSubscription: null,
+        isInitiated: false,
+        isStarted: false,
       }
     case RESET_TEST_RESULT:
       return { ...initialState }
