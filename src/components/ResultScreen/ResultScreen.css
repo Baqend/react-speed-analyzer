@@ -11,3 +11,13 @@
     background: #ffffff;
   }
 }
+
+.toggleSettings {
+  color: color(var(--white) a(50%));
+  font-size: 12px;
+  a {
+    color: color(var(--white) a(75%));
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}

@@ -12,12 +12,19 @@ import ConfigForm from '../ConfigForm/ConfigForm'
 class ResultScreenComponent extends Component {
   constructor(props) {
     super(props)
-    this.state = { showDetails: false }
+    this.state = {
+      showSettings: false,
+      showDetails: false,
+    }
     console.log(this.props.speedKitError)
   }
 
   toggle = () => {
     this.setState({ showDetails: !this.state.showDetails })
+  }
+
+  toggleSettings = () => {
+    this.setState({ showSettings: !this.state.showSettings })
   }
 
   render() {
@@ -27,7 +34,12 @@ class ResultScreenComponent extends Component {
     return (
       <div className="flex flex-column results__wrapper animated slideInUp" style={{animationDuration: '0.8s'}}>
         <div className="container pa2 pb7">
-          <ConfigForm config={this.props.config} showConfig={false} onSubmit={this.props.onSubmit} />
+          <ConfigForm config={this.props.config} showConfig={this.state.showSettings} onSubmit={this.props.onSubmit} />
+          {!this.state.showSettings &&
+            <div className="toggleSettings text-right">
+              <span><a onClick={this.toggleSettings}>Show Settings</a></span>
+            </div>
+          }
         </div>
         <div className="flex-grow-1 results">
           {(competitorData && speedKitData) &&
