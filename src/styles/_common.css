@@ -14,3 +14,16 @@
 .faded {
   opacity: 0.5;
 }
+
+input, textarea {
+  font-weight: 300;
+}
+
+.material-input {
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  background: none;
+  color: rgba(255, 255, 255, 0.35);
+  font-weight: 300;
+  text-align: right;
+}

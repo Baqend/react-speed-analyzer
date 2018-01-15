@@ -1,17 +1,18 @@
 @import "../../styles/_variables";
 
 .config__form {
+  font-size: 14px;
   &-input-wrapper {
     position: relative;
   }
   &-input {
+    font-size: 16px;
     background: color(var(--white) a(30%));
     color: var(--white);
     border: none;
     border-radius: 3px;
     &::placeholder {
       color: color(var(--white) a(75%));
-      font-weight: 300;
     }
   }
   &-submit-wrapper {
@@ -25,5 +26,30 @@
     height: 44px;
     border: none;
     background: color(var(--white) a(30%));
+  }
+  .advanced {
+    margin-left: -8px;
+    margin-right: -8px;
+    h5 {
+      font-size: 16px;
+    }
+    textarea {
+      background: color(var(--white) a(10%));
+      color: var(--white);
+      border: 1px solid color(var(--white) a(30%));
+      color: white;
+      border-radius: 3px;
+      outline: none;
+    }
+  }
+  .toggleAdvancedSettings {
+    text-align: center;
+    color: color(var(--white) a(50%));
+    font-size: 12px;
+    a {
+      color: color(var(--white) a(75%));
+      text-decoration: underline;
+      cursor: pointer;
+    }
   }
 }

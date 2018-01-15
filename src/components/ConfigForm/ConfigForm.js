@@ -29,6 +29,7 @@ class ConfigForm extends Component {
       <ConfigFormComponent
         config={this.props.config}
         showConfig={this.props.showConfig}
+        showAdvancedConfig={this.props.showAdvancedConfig}
         isInitiated={this.props.isInitiated}
         onSubmit={this.props.onSubmit}
         onUrlChange={this.onUrlChange}
@@ -42,11 +43,13 @@ class ConfigForm extends Component {
 
 ConfigForm.defaultProps = {
   showConfig: true,
+  showAdvancedConfig: false,
 }
 
 ConfigForm.propTypes = {
   config: PropTypes.object.isRequired,
   showConfig: PropTypes.bool,
+  showAdvancedConfig: PropTypes.bool,
   onSubmit: PropTypes.func.isRequired,
   actions: PropTypes.object.isRequired,
 }

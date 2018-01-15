@@ -52,6 +52,11 @@ class ResultScreenComponent extends Component {
                 />
               </Collapse>
             </div>
+
+            <div>
+              Sign Up
+            </div>
+
             <ResultWorthiness
               competitorTest={this.props.competitorTest}
               speedKitTest={this.props.speedKitTest}

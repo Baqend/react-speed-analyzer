@@ -7,6 +7,12 @@ import arrow from '../../assets/arrow_right.svg'
 import './ConfigForm.css'
 
 class ConfigFormComponent extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      showAdvancedConfig: false,
+    }
+  }
 
   handleUrlChange = (changeEvent: any) => {
     this.props.onUrlChange(changeEvent.target.value)
@@ -29,10 +35,94 @@ class ConfigFormComponent extends Component {
     this.props.onSubmit()
   }
 
+  renderConfig() {
+    return (
+      <div className="pa1">
+        <div className="pt1">
+          <div className="flex items-center">
+            <span className="flex-auto w-100 text-right">Desktop</span>
+            <Toggle
+              className="mh1"
+              defaultChecked={this.props.config.isMobile}
+              icons={false}
+              onChange={this.handleMobileSwitch}
+            />
+            <span className="flex-auto w-100">Mobile</span>
+          </div>
+        </div>
+        <div className="pt1">
+          <div className="flex items-center">
+            <span className="flex-auto w-100 text-right">EU</span>
+            <Toggle
+              className="mh1"
+              defaultChecked={this.props.config.location === 'us-east-1:Chrome.Native'}
+              icons={false}
+              value={this.props.config.location === 'us-east-1:Chrome.Native' ? 'EU' : 'US'}
+              onChange={this.handleLocationChange}
+            />
+            <span className="flex-auto w-100">USA</span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  renderAdvancedConfig() {
+    return (
+      <div className="advanced pv2">
+        <div className="flex flex-wrap">
+          <div className="flex-grow-1 flex-shrink-0" style={{ flexBasis: '50%' }}>
+            <div className="ph2">
+              <h5 className="mv1 text-center">WebPagetest Config</h5>
+              <div className="pt1 flex items-center">
+                <span className="flex-auto w-100">Mobile</span>
+                <Toggle
+                  className="ml1"
+                  defaultChecked={this.props.config.isMobile}
+                  icons={false}
+                  onChange={this.handleMobileSwitch}
+                />
+              </div>
+              <div className="pt1 flex items-center">
+                <span className="flex-auto w-100">Run from US</span>
+                <Toggle
+                  className="ml1"
+                  defaultChecked={this.props.config.location === 'us-east-1:Chrome.Native'}
+                  icons={false}
+                  value={this.props.config.location === 'us-east-1:Chrome.Native' ? 'EU' : 'US'}
+                  onChange={this.handleLocationChange}
+                />
+              </div>
+              <div className="pt1 flex flex-shrink-0 items-center" style={{ minWidth: '180px' }}>
+                <span className="flex-shrink-0 flex-grow-1">Activity Timout</span>
+                <div className="flex-shrink-0">
+                  <input className="material-input text-center mh1" style={{ width: '50px', marginBottom: '-2px' }}/>
+                  <span className="">ms</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="flex-grow-1" style={{ flexBasis: '50%' }}>
+            <div className="ph2">
+              <h5 className="mv1 text-center">Speed Kit Config</h5>
+              <div className="pt1">
+                <textarea style={{ width: '100%' }} rows="5"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  toggleAdvancedSettings = () => {
+    this.setState({ showAdvancedConfig: !this.state.showAdvancedConfig })
+  }
+
   render() {
     return (
-      <div className="config__form">
-        <form onSubmit={this.handleSubmit}>
+      <div className="config__form flex-grow-1 flex flex-column">
+        <form className="flex flex-grow-1 flex-column" onSubmit={this.handleSubmit}>
           <div className="config__form-input-wrapper">
             <input
               className="w-100 ph2 pv3 config__form-input"
@@ -58,45 +148,19 @@ class ConfigFormComponent extends Component {
             </div>
           </div>
           {this.props.showConfig &&
-            <div className="pa1">
-              <div className="pt1">
-                <div className="flex items-center">
-                  <span className="flex-auto w-100 text-right">Desktop</span>
-                  <Toggle
-                    className="mh1"
-                    defaultChecked={this.props.config.isMobile}
-                    icons={false}
-                    onChange={this.handleMobileSwitch}
-                  />
-                  <span className="flex-auto w-100">Mobile</span>
-                </div>
+            <div className="flex-grow-1 flex flex-column justify-between">
+              {this.state.showAdvancedConfig ? this.renderAdvancedConfig() : this.renderConfig()}
+              <div className="toggleAdvancedSettings">
+                {this.state.showAdvancedConfig ? (
+                  <span>
+                    <a onClick={this.toggleAdvancedSettings}>Hide Advanced Settings</a>
+                  </span>
+                ): (
+                  <span>
+                    Experienced Developer? <a onClick={this.toggleAdvancedSettings}>Show Advanced Settings</a>
+                  </span>
+                )}
               </div>
-              <div className="pt1">
-                <div className="flex items-center">
-                  <span className="flex-auto w-100 text-right">EU</span>
-                  <Toggle
-                    className="mh1"
-                    defaultChecked={this.props.config.location === 'us-east-1:Chrome.Native'}
-                    icons={false}
-                    value={this.props.config.location === 'us-east-1:Chrome.Native' ? 'EU' : 'US'}
-                    onChange={this.handleLocationChange}
-                  />
-                  <span className="flex-auto w-100">USA</span>
-                </div>
-              </div>
-              {/*<div className="pt1">
-                <div className="flex items-center">
-                  <span className="flex-auto w-100 text-right">No Cache</span>
-                  <Toggle
-                    className="mh1"
-                    defaultChecked={this.props.config.caching}
-                    icons={false}
-                    onChange={this.handleCachingSwitch}
-                  />
-                  <span className="flex-auto w-100">Cache</span>
-                </div>
-              </div>
-              */}
             </div>
           }
         </form>

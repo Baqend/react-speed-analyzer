@@ -2,6 +2,9 @@ import React, { Component } from 'react'
 import './ResultWorthiness.css'
 import { calculateFactor, calculateServedRequests } from '../../../helper/resultHelper'
 
+import doubleClickLogo from '../../../img/doubleClick.png'
+import amazonLogo from '../../../img/amazon.png'
+
 class ResultWorthinessComponent extends Component {
   render() {
     const competitorData = this.props.competitorTest.firstView
@@ -38,7 +41,7 @@ class ResultWorthinessComponent extends Component {
               "The Need for Mobile Speed" based on 4,500 real websites
             </div>
             <div className="img-container">
-              <img src="../../../img/doubleClick.png" alt="DoubleClick logo" style={{ maxWidth: '150px'}}/>
+              <img src={doubleClickLogo} alt="DoubleClick logo" style={{ maxWidth: '150px'}}/>
             </div>
           </div>
           <div className="w-50 pr6 pl6">
@@ -52,7 +55,7 @@ class ResultWorthinessComponent extends Component {
               "Make Data Useful" using A/B tests on the Amazon shop
             </div>
             <div className="img-container">
-              <img src="../../../img/amazon.png" alt="Amazon logo" style={{ maxWidth: '120px'}}/>
+              <img src={amazonLogo} alt="Amazon logo" style={{ maxWidth: '120px'}}/>
             </div>
           </div>
         </div>

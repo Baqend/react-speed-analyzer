@@ -1,13 +1,14 @@
 :root {
   --device-border-width: 32px;
   --device-border-width-xs: 24px;
-  --device-padding: 24px;
+  --device-padding: 16px;
 }
 
 .device {
   width: 100%;
   max-width: 998px;
-  margin: 24px;
+  min-height: 100vh;
+  padding: 24px;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
@@ -88,9 +89,13 @@
         width: var(--device-border-width);
         max-height: 100%;
       }
+      .device__wrapper-outer {
+        align-self: stretch;
+      }
       /* enforces 16:9 aspect ratio */
       > .device__wrapper {
         position: relative;
+        display: block;
         &:before {
           content: "";
           display: block;
@@ -123,15 +128,15 @@
     .device__wrapper-outer .device__wrapper .device__screen {
       .device__wrapper-outer {
         box-sizing: content-box;
-        max-width: 320px;
-        min-height: 450px;
+        max-width: 375px;
+        min-height: 500px;
         position: relative;
         border-top: calc(var(--device-border-width-xs) * 4) solid #5a6973;
         border-top-left-radius: calc(var(--device-border-width-xs) * 3);
         border-top-right-radius: calc(var(--device-border-width-xs) * 3);
-        padding-top: calc(var(--device-border-width-xs) + var(--device-padding));
-        padding-left: calc(var(--device-border-width-xs) + var(--device-padding));
-        padding-right: calc(var(--device-border-width-xs) + var(--device-padding));
+        /* padding-top: var(--device-padding); */
+        padding-left: var(--device-border-width-xs);
+        padding-right: var(--device-border-width-xs);
         &:before { left: 0px; }
         &:after { right: 0px; }
         &:before, &:after {
@@ -142,6 +147,9 @@
           bottom: -var(--device-border-width-xs);
           width: var(--device-border-width-xs);
           max-height: 100%;
+        }
+        .device__screen {
+          padding: var(--device-padding);
         }
       }
     }
