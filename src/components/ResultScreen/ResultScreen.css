@@ -21,3 +21,17 @@
     cursor: pointer;
   }
 }
+
+.slier-item {
+  display: -ms-flexbox;
+  display: flex;
+  padding: 16px 16px;
+  border-radius: 5px;
+  border: 1px solid #e8e8e8;
+  height: 70px;
+  margin: 0 8px;
+  -ms-flex-align: center;
+  align-items: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+}

@@ -63,7 +63,7 @@ export function generateSpeedKitConfig(originalUrl, whitelistStr, enableUserAgen
 
   return `{
     appName: "makefast",
-    whitelist: [{ host: [ ${whitelist} ] }],
+    whitelist: [{ host: [ ${whitelist}, /cdn/ ] }],
     userAgentDetection: ${enableUserAgentDetection},
   }`
 }

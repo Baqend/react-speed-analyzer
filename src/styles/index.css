@@ -3,6 +3,8 @@
 @import "tachyons/src/_widths";
 @import "tachyons/src/_spacing";
 @import "tachyons/src/_position";
+@import "slick-carousel/slick/slick.scss";
+@import "slick-carousel/slick/slick-theme.scss";
 
 @import "./lib/animate.css";
 @import "./lib/toggle.css";
@@ -91,4 +93,22 @@ hr {
   margin: 0;
   border: 0;
   background: -webkit-gradient(linear, 0 0, 100% 0, from(white), to(white), color-stop(50%, #e5e5e5));
+}
+
+input {
+  color: inherit;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+}
+
+textarea {
+  height: 120px;
+  resize: none;
+  color: inherit;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
 }

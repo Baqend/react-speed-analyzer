@@ -1,0 +1,41 @@
+.border-right {
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.border-left {
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+.white {
+  color: #ffffff;
+}
+
+.green {
+  color: #8aae6c;
+}
+
+.orange {
+  color: #f2a541;
+}
+
+.red {
+  color: #f07368;
+}
+
+.bg-dark-green {
+  background-color: #377401;
+}
+
+.bg-light-green {
+  background-color: #f0f5eb;
+}
+
+.bg-light-orange {
+  background-color: #fef1e9;
+}
+
+.bg-light-red {
+  background-color: #feecec;
+}

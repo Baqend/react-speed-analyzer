@@ -4,9 +4,13 @@ import PropTypes from 'prop-types'
 import ResultVideosComponent from './ResultVideosComponent'
 
 class ResultVideos extends Component {
+  onSubmit = () => {
+    console.log('Submit')
+  }
+
   render() {
     return (
-      <ResultVideosComponent { ...this.props }/>
+      <ResultVideosComponent { ...this.props } onSubmit={this.onSubmit}/>
     )
   }
 }

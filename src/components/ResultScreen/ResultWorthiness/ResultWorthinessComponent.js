@@ -20,7 +20,7 @@ class ResultWorthinessComponent extends Component {
       Math.round((competitorData[this.props.mainMetric]  - speedKitData[this.props.mainMetric]) * 0.01)
 
     return (
-      <div className="box-shadow results__box pa2 mt2">
+      <div className="box-shadow results__box pa2">
         <div className="flex">
           <div className="w-100 text-center">
             <h3>Speed Kit served {servedRate}% of your requests. How much is this {factor}x performance boost worth?</h3>

@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 
 import './ResultDetails.css'
+import ResultScale from '../ResultScale/ResultScale'
 import { calculateFactor } from '../../../helper/resultHelper'
 
 const metrics = [
@@ -43,29 +44,33 @@ class ResultDetailsComponent extends Component {
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
 
-    return metrics.map((metric, index) => {
-      const factor = calculateFactor(competitorData[metric.name], speedKitData[metric.name])
-
-      return (
-        <div key={index} className="flex justify-center">
-          <div className="w-60">
-            <hr/>
-            <div className="flex items-center pt1 pb1 border-top">
-              <div className="w-third text-center">
-                <div className="metricValue">{competitorData[metric.name]}ms</div>
-              </div>
-              <div className="w-third text-center">
-                <div className="factor">{factor}x {factor > 1 ? 'Faster' : ''}</div>
-                <div className="metricLabel">{metric.label}</div>
-              </div>
-              <div className="w-third text-center">
-                <div className="metricValue">{speedKitData[metric.name]}ms</div>
+    return (
+      <div>
+        {metrics.map((metric, index) => {
+          const factor = calculateFactor(competitorData[metric.name], speedKitData[metric.name])
+          return (
+            <div key={index} className="flex justify-center">
+              <div className="w-60">
+                <hr/>
+                <div className="flex items-center pt1 pb1 border-top">
+                  <div className="w-third text-center">
+                    <div className="metricValue">{competitorData[metric.name]}ms</div>
+                  </div>
+                  <div className="w-third text-center">
+                    <div className="factor">{factor}x {factor > 1 ? 'Faster' : ''}</div>
+                    <div className="metricLabel">{metric.label}</div>
+                  </div>
+                  <div className="w-third text-center">
+                    <div className="metricValue">{speedKitData[metric.name]}ms</div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      )
-    })
+          )
+        })}
+        <ResultScale/>
+      </div>
+    )
   }
 }
 

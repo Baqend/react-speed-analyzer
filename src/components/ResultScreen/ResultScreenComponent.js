@@ -8,6 +8,7 @@ import ResultDetails from './ResultDetails/ResultDetails'
 import ResultWorthiness from './ResultWorthiness/ResultWorthiness'
 
 import ConfigForm from '../ConfigForm/ConfigForm'
+import Slider from 'react-slick'
 
 class ResultScreenComponent extends Component {
   constructor(props) {
@@ -30,6 +31,15 @@ class ResultScreenComponent extends Component {
   render() {
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
+
+    const settings = {
+      className: 'center',
+      centerMode: true,
+      infinite: true,
+      centerPadding: '60px',
+      slidesToShow: 3,
+      speed: 500
+    }
 
     return (
       <div className="flex flex-column results__wrapper animated slideInUp" style={{animationDuration: '0.8s'}}>
@@ -64,11 +74,16 @@ class ResultScreenComponent extends Component {
                 />
               </Collapse>
             </div>
-
+            <Slider {...settings} className="pa3">
+              <div className="slier-item">1</div>
+              <div className="slier-item">2</div>
+              <div className="slier-item">3</div>
+              <div className="slier-item">4</div>
+              <div className="slier-item">5</div>
+            </Slider>
             <div>
               Sign Up
             </div>
-
             <ResultWorthiness
               competitorTest={this.props.competitorTest}
               speedKitTest={this.props.speedKitTest}
