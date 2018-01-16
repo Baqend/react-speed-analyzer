@@ -63,7 +63,7 @@ class StartingScreenComponent extends Component {
 
   renderSpinner() {
     return (
-      <div className="flex flex-column items-center" style={{ overflow: 'hidden' }}>
+      <div className="flex flex-column justify-center items-center" style={{ overflow: 'hidden' }}>
         <div className="spinner__wrapper animated slideInUp">
           <svg className="spinner" width="100%" height="100%" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
             <circle className="path" fill="none" strokeWidth="2" strokeLinecap="round" cx="33" cy="33" r="30"></circle>
@@ -91,7 +91,7 @@ class StartingScreenComponent extends Component {
     const psiResponseSize = this.props.result.testOverview && this.props.result.testOverview.psiResponseSize
     // const statsClass = psiDomains && psiRequests && psiResponseSize ? 'animated zoomIn' : 'hidden'
     return (
-      <div className={`flex justify-between mt4`}>
+      <div className={`flex justify-between mt2`}>
         <div className="pa2 text-center">
           <small className="faded">Domains</small>
           <br />
@@ -141,7 +141,7 @@ class StartingScreenComponent extends Component {
       <div className="device">
         <div className={`${deviceTypeClass}`}>
           <Device>
-            <div className="flex-grow-1 flex flex-column">
+            <div className="flex-grow-1 flex flex-column" style={{ overflow: 'hidden' }}>
               <div className={`flex-grow-1 flex justify-center ${statusClass}`}>
                 <div className="left">
                   <Device>
@@ -150,7 +150,7 @@ class StartingScreenComponent extends Component {
                 </div>
                 {this.props.result.isStarted &&
                   <div className="right">
-                    <div className="flex flex-grow-1 flex-column justify-center items-stretch pa2">
+                    <div className="flex flex-grow-1 flex-column justify-center items-stretch pa2" style={{ flexBasis: '100%' }}>
                       {this.state.showCarousel && this.renderCarousel()}
                     </div>
                   </div>
