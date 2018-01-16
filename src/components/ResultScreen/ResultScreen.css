@@ -1,3 +1,5 @@
+@import "../../styles/_variables";
+
 .results__wrapper {
   width: 100%;
 }
@@ -5,6 +7,7 @@
 .results {
   width: 100%;
   background: #f6f6f6;
+  color: #444;
   &__box {
     border-radius: 2px;
     color: #444444;

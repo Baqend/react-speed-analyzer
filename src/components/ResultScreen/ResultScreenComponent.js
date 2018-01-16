@@ -42,7 +42,7 @@ class ResultScreenComponent extends Component {
     }
 
     return (
-      <div className="flex flex-column results__wrapper animated slideInUp" style={{animationDuration: '0.8s'}}>
+      <div className="flex flex-column results__wrapper animated2 slideInUp2" style={{animationDuration: '0.8s'}}>
         <div className="container pa2 pb7">
           <ConfigForm config={this.props.config} showConfig={this.state.showSettings} onSubmit={this.props.onSubmit} />
           {!this.state.showSettings &&
@@ -61,7 +61,27 @@ class ResultScreenComponent extends Component {
                 mainMetric={this.props.mainMetric}
                 speedKitError={this.props.speedKitError}
               />
+
               <hr/>
+              <div className="flex">
+                <div className="pa1 w-33 flex-auto text-center">
+                  <small className="faded">Domains</small>
+                  <br />
+                  <strong>-</strong>
+                </div>
+                <div className="pa1 w-33 flex-auto text-center">
+                  <small className="faded">Requests</small>
+                  <br />
+                  <strong>-</strong>
+                </div>
+                <div className="pa1 w-33 flex-auto text-center">
+                  <small className="faded">Response Size</small>
+                  <br />
+                  <strong>-</strong>
+                </div>
+              </div>
+              <hr/>
+
               <div className="flex pa2">
                 <div className="w-100 text-center">
                   <span onClick={this.toggle}>Detailed Performance Overview</span>
@@ -74,21 +94,34 @@ class ResultScreenComponent extends Component {
                 />
               </Collapse>
             </div>
-            <Slider {...settings} className="pa3">
+
+            <div className="text-center pt4">
+              {/*<h2 className="mb1">Boost Your Website</h2>
+              <div>Supercharge your website by adding three lines of code.</div>*/}
+              <a href="" className="btn btn-orange">Boost Your Website Now</a>
+            </div>
+
+            <Slider {...settings} className="ph3 pv6">
               <div className="slier-item">1</div>
               <div className="slier-item">2</div>
               <div className="slier-item">3</div>
               <div className="slier-item">4</div>
               <div className="slier-item">5</div>
             </Slider>
-            <div>
-              Sign Up
-            </div>
+
             <ResultWorthiness
               competitorTest={this.props.competitorTest}
               speedKitTest={this.props.speedKitTest}
               mainMetric={this.props.mainMetric}
             />
+
+            <Slider {...settings} className="ph3 pv6">
+              <div className="slier-item">1</div>
+              <div className="slier-item">2</div>
+              <div className="slier-item">3</div>
+              <div className="slier-item">4</div>
+              <div className="slier-item">5</div>
+            </Slider>
           </div>}
         </div>
       </div>

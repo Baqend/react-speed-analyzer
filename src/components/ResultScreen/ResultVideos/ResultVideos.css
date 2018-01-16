@@ -1,3 +1,7 @@
+:root {
+  --mainFactorSize: 90px;
+}
+
 .embedVideo {
   width: 100%;
   border-radius: 3px 3px 3px 3px;
@@ -12,6 +16,16 @@
 
 .mainFactor {
   position: absolute;
-  top: 16px;
-  left: 48%;
+  top: 50%;
+  left: 50%;
+  width: var(--mainFactorSize);
+  height: var(--mainFactorSize);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: calc(-1 * var(--mainFactorSize) / 2);
+  margin-left: calc(-1 * var(--mainFactorSize) / 2);
+  background: #e8e8e8;
+  border: 5px solid grey;
+  border-radius: 50%;
 }
