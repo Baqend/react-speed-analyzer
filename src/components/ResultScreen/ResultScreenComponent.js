@@ -8,7 +8,7 @@ import ResultDetails from './ResultDetails/ResultDetails'
 import ResultWorthiness from './ResultWorthiness/ResultWorthiness'
 
 import ConfigForm from '../ConfigForm/ConfigForm'
-import Slider from 'react-slick'
+import Carousel from '../Carousel/Carousel'
 
 class ResultScreenComponent extends Component {
   constructor(props) {
@@ -17,10 +17,9 @@ class ResultScreenComponent extends Component {
       showSettings: false,
       showDetails: false,
     }
-    console.log(this.props.speedKitError)
   }
 
-  toggle = () => {
+  toggleDetails = () => {
     this.setState({ showDetails: !this.state.showDetails })
   }
 
@@ -31,15 +30,6 @@ class ResultScreenComponent extends Component {
   render() {
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
-
-    const settings = {
-      className: 'center',
-      centerMode: true,
-      infinite: true,
-      centerPadding: '60px',
-      slidesToShow: 3,
-      speed: 500
-    }
 
     return (
       <div className="flex flex-column results__wrapper animated2 slideInUp2" style={{animationDuration: '0.8s'}}>
@@ -84,7 +74,7 @@ class ResultScreenComponent extends Component {
 
               <div className="flex pa2">
                 <div className="w-100 text-center">
-                  <span onClick={this.toggle}>Detailed Performance Overview</span>
+                  <span onClick={this.toggleDetails}>Detailed Performance Overview</span>
                 </div>
               </div>
               <Collapse isOpen={this.state.showDetails}>
@@ -100,28 +90,25 @@ class ResultScreenComponent extends Component {
               <div>Supercharge your website by adding three lines of code.</div>*/}
               <a href="" className="btn btn-orange">Boost Your Website Now</a>
             </div>
-
-            <Slider {...settings} className="ph3 pv6">
-              <div className="slier-item">1</div>
-              <div className="slier-item">2</div>
-              <div className="slier-item">3</div>
-              <div className="slier-item">4</div>
-              <div className="slier-item">5</div>
-            </Slider>
-
+            <Carousel showFirstPool={true}/>
             <ResultWorthiness
               competitorTest={this.props.competitorTest}
               speedKitTest={this.props.speedKitTest}
               mainMetric={this.props.mainMetric}
             />
-
-            <Slider {...settings} className="ph3 pv6">
-              <div className="slier-item">1</div>
-              <div className="slier-item">2</div>
-              <div className="slier-item">3</div>
-              <div className="slier-item">4</div>
-              <div className="slier-item">5</div>
-            </Slider>
+            <Carousel showFirstPool={true}/>
+            <div className="flex items-center">
+              <div className="w-50 text-right pa2" style={{color: 'black'}}>
+                <h2 className="ma1">Try Baqend Speed Kit Today!</h2>
+                Make your websites load instantly
+              </div>
+              <div className="w-50 pa2 text-left">
+                <a href="https://www.baqend.com/speedkit.html?_ga=2.235057797.527125052.1516095583-312811701.1516095583"
+                   className="btn btn-orange btn-ghost ma1">Learn More</a>
+                <a href="https://dashboard.baqend.com/register?appType=speedkit&_ga=2.230289688.527125052.1516095583-312811701.1516095583"
+                   className="btn btn-orange ma1">Get Started for Free</a>
+              </div>
+            </div>
           </div>}
         </div>
       </div>
