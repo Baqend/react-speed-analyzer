@@ -84,6 +84,10 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 400;
 }
 
+a {
+  text-decoration: none;
+}
+
 .container {
   width: 100%;
   max-width: 1170px;
@@ -101,6 +105,51 @@ h1, h2, h3, h4, h5, h6 {
 .text-center {
   text-align: center;
 }
+
+.btn {
+  display: inline-block;
+  margin-bottom: 0;
+  font-weight: 400;
+  text-align: center;
+  vertical-align: middle;
+  touch-action: manipulation;
+  cursor: pointer;
+  background-image: none;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  padding: 10px 18px;
+  font-size: 18px;
+  line-height: 1.42857143;
+  border-radius: 2px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.btn-orange {
+  &:not(.btn-ghost) {
+     color: white;
+     background: #F27354;
+     border-bottom: 3px solid #F27354;
+  &:hover {
+     background: #f16746;
+     border-bottom: 3px solid #f7ad9b;
+     border-bottom-left-radius: 3px;
+     border-bottom-right-radius: 3px;
+   }
+  }
+  &.btn-ghost {
+     color: #F27354;
+     background: transparent;
+     border: 2px solid #F27354;
+  &:hover {
+     color: white;
+     background: #F27354;
+   }
+  }
+}
+
 hr {
   height: 1px;
   margin: 0;
