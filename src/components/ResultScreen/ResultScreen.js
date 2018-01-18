@@ -77,8 +77,7 @@ class ResultScreen extends Component {
   }
 
   verifyMainMetric = (competitorData, speedKitData) => {
-    const mainMetric =
-      shouldShowFirstMeaningfulPaint(competitorData, speedKitData) ? 'firstMeaningfulPaint' : 'speedIndex'
+    const mainMetric = shouldShowFirstMeaningfulPaint(competitorData, speedKitData) ? 'firstMeaningfulPaint' : 'speedIndex'
 
     this.setState({ mainMetric })
   }

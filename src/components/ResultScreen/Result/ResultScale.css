@@ -1,11 +1,11 @@
 .border-right {
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
 }
 
 .border-left {
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
+  border-top-left-radius: 2px;
+  border-bottom-left-radius: 2px;
 }
 
 .white {
@@ -25,7 +25,7 @@
 }
 
 .bg-dark-green {
-  background-color: #377401;
+  background-color: color(#377401 tint(15%));
 }
 
 .bg-light-green {

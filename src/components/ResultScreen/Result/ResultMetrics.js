@@ -1,7 +1,5 @@
 import React, { Component } from 'react'
 
-import './ResultDetails.css'
-import ResultScale from '../ResultScale/ResultScale'
 import { calculateFactor } from '../../../helper/resultHelper'
 
 const metrics = [
@@ -39,18 +37,18 @@ const metrics = [
   },
 ]
 
-class ResultDetailsComponent extends Component {
+class ResultMetrics extends Component {
   render() {
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
 
     return (
-      <div>
+      <div className="result__details-metrics">
         {metrics.map((metric, index) => {
           const factor = calculateFactor(competitorData[metric.name], speedKitData[metric.name])
           return (
             <div key={index} className="flex justify-center">
-              <div className="w-60">
+              <div className="w-100">
                 <hr/>
                 <div className="flex items-center pt1 pb1 border-top">
                   <div className="w-third text-center">
@@ -68,10 +66,9 @@ class ResultDetailsComponent extends Component {
             </div>
           )
         })}
-        <ResultScale/>
       </div>
     )
   }
 }
 
-export default ResultDetailsComponent
+export default ResultMetrics

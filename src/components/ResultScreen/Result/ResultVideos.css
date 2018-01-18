@@ -1,5 +1,5 @@
 :root {
-  --mainFactorSize: 90px;
+  --mainFactorSize: 96px;
 }
 
 .embedVideo {
@@ -25,7 +25,10 @@
   align-items: center;
   margin-top: calc(-1 * var(--mainFactorSize) / 2);
   margin-left: calc(-1 * var(--mainFactorSize) / 2);
-  background: #e8e8e8;
-  border: 5px solid grey;
+  background: #f0f5ec;
+  border: 6px solid #ffffff;
+  color: #558928;
   border-radius: 50%;
+  font-weight: 400;
+  line-height: 1.2;
 }

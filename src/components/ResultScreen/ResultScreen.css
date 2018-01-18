@@ -24,3 +24,8 @@
     cursor: pointer;
   }
 }
+
+.banner {
+  background: linear-gradient(to bottom,#162939,#12212e);
+  color: white;
+}

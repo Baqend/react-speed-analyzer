@@ -20,7 +20,7 @@ class ResultWorthinessComponent extends Component {
       Math.round((competitorData[this.props.mainMetric]  - speedKitData[this.props.mainMetric]) * 0.01)
 
     return (
-      <div className="box-shadow results__box pa2">
+      <div>
         <div className="flex">
           <div className="w-100 text-center">
             <h3>Speed Kit served {servedRate}% of your requests. How much is this {factor}x performance boost worth?</h3>
@@ -30,7 +30,7 @@ class ResultWorthinessComponent extends Component {
           </div>
         </div>
         <div className="flex items-center text-center">
-          <div className="w-50 pr6 pl6">
+          <div className="w-50 pr6 pl6" style={{ padding: '64px 32px', margin: '16px', background: '#f6f6f6' }}>
             <div>Publishers and Ad-driven Businesses</div>
             <div className="pa1"><span className="lightGreen">{publisherRevenue}%</span> Revenue</div>
             <div>(PLT Original - PLT Speed Kit) / (19000 - 5000)</div>
@@ -44,7 +44,7 @@ class ResultWorthinessComponent extends Component {
               <img src={doubleClickLogo} alt="DoubleClick logo" style={{ maxWidth: '150px'}}/>
             </div>
           </div>
-          <div className="w-50 pr6 pl6">
+          <div className="w-50 pr6 pl6" style={{ padding: '64px 32px', margin: '16px', background: '#f6f6f6' }}>
             <div>E-Commerce</div>
             <div className="pa1"><span className="lightGreen">{eCommerceRevenue}%</span> Revenue</div>
             <div>(PLT Original - PLT Speed Kit) * (1 / 100)</div>
