@@ -101,18 +101,21 @@ class Result extends Component {
           </div>
         </Collapse>
 
-        {/*<hr />*/}
 
-        <div className="flex pt1 pb2">
-          <div className="w-100 text-center">
-            <a onClick={this.toggleDetails}
+        <div className="pt3 pb2">
+          <hr />
+          <div className="mt2 w-100 text-center relative">
+            <a className="result__details-toggle" onClick={this.toggleDetails}
               style={{ color: '#1967BE', fontSize: '14px', cursor: 'pointer', fontWeight: '400' }}>
-              {this.state.showDetails ? (
-                'Less Details -'
-              ): (
-                'More Details +'
-              )}
+              <svg viewBox="0 0 24 24" style={{ width: '100%', height: '100%' }}>
+                {this.state.showDetails ? (
+                  <path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"></path>
+                ): (
+                  <path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"></path>
+                )}
+              </svg>
             </a>
+            <small>{this.state.showDetails ? 'Hide Details' : 'Show Details'}</small>
           </div>
         </div>
       </div>
