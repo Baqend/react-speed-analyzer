@@ -42,7 +42,7 @@ class Result extends Component {
           <b>{ competitorData[this.props.mainMetric] }ms</b>
         </div>
         {!this.props.speedKitError && (
-          <div className="w-50 flex-auto text-center pa1">
+          <div className="w-50 flex-auto text-center pa1" style={{ background: '#f6f6f6' }}>
             <small><b>With Speedkit</b></small>
             <br/>
             <b>{ speedKitData[this.props.mainMetric] }ms</b>
@@ -126,7 +126,6 @@ class Result extends Component {
     return (
       <div>
         {this.renderHeader()}
-        <hr />
         {this.renderVideos()}
         <div className="ph6">
           <hr />

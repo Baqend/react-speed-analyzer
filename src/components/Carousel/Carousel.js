@@ -13,6 +13,8 @@ class Carousel extends Component {
 
 Carousel.propTypes = {
   showFirstPool: PropTypes.bool.isRequired,
+  animationDuration: PropTypes.string,
+  animationDelay: PropTypes.string
 }
 
 export default Carousel
