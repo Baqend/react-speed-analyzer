@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import Collapse from 'react-css-collapse'
 
 import './ResultScreen.css'
 
@@ -10,6 +9,7 @@ import Result from './Result/Result'
 import ResultWorthiness from './ResultWorthiness/ResultWorthiness'
 
 import ConfigForm from '../ConfigForm/ConfigForm'
+import ContactForm from '../ContactForm/ContactForm'
 import Carousel from '../Carousel/Carousel'
 
 class ResultScreenComponent extends Component {
@@ -68,7 +68,7 @@ class ResultScreenComponent extends Component {
   renderContactFormModal() {
     return (
       <Modal show={this.state.showModal} onClose={this.closeModal} onOutsideClick={this.closeModal}>
-        Contact Form yoooooo
+        <ContactForm onCancel={this.closeModal} />
       </Modal>
     )
   }
@@ -96,7 +96,12 @@ class ResultScreenComponent extends Component {
           </div>
 
           <div className="container pa2 pb6">
+            {/*<div className="text-center pb2" style={{ maxWidth: 768, margin: '0 auto' }}>
+              <h2>Ooooops</h2>
+              <strong>It looks like some fine tuning or configuration is required to measure your site. Please contact our web performance experts for further information and assistance!</strong>
+            </div>*/}
             <div className="text-center pb3">
+              {/*<a href="" className="btn btn-orange ma1">Boost Your Website</a>*/}
               <a href="" className="btn btn-orange ma1">Boost Your Website</a>
               <a className="btn btn-orange btn-ghost ma1" onClick={this.toggleModal}>Contact Us</a>
             </div>
@@ -115,12 +120,12 @@ class ResultScreenComponent extends Component {
             </div>
 
             <div className="pv6 ph2">
-              <Carousel showFirstPool={true} animationDuration={'200s'} />
-              <Carousel showFirstPool={true} animationDuration={'250s'} animationDelay={'-30s'}/>
+              <Carousel showFirstPool={true} animationDuration={'180s'} />
+              <Carousel showFirstPool={true} animationDuration={'250s'} animationDelay={'-77.5s'}/>
               <div className="text-center" style={{ fontSize: '12px' }}>Performance tests to illustrate Speed Kit's potential. Click to learn more</div>
             </div>
 
-            <div className="container pa2 pv6 text-center">
+            <div className="container pa2 pt6 pb7 text-center">
               <h1>About the Page Speed Analyzer</h1>
               <p>The page speed analyzer gives you an impression of how Baqend Speed Kit influences the performance of your website. To this end, the analyzer runs a series of tests against your website and reports how your current backend stack delivers your website compared to a version using Speed Kit. The result on the right simply shows measurements for your site with an embedded Service Worker containing Speed Kit's caching logic.</p>
             </div>
