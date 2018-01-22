@@ -29,7 +29,7 @@
         max-height: 65%;
         margin-left: auto;
         margin-right: auto;
-        opacity: .6;
+        /* opacity: .6; */
         display: block;
       }
     }

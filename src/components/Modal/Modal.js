@@ -41,10 +41,10 @@ class Modal extends React.Component {
     const modalStyle = {
       backgroundColor: '#fff',
       borderRadius: 5,
-      maxWidth: 500,
+      maxWidth: 768,
       minHeight: 300,
       margin: '0 auto',
-      padding: 30,
+      padding: 32,
       animationDuration: '0.35s'
     }
 
@@ -52,11 +52,6 @@ class Modal extends React.Component {
       <div className="backdrop" style={backdropStyle}>
         <div className="modal animated bounceInDown fadeInDown" style={modalStyle} ref={node => this.node = node}>
           {this.props.children}
-          <div className="footer">
-            <button onClick={this.props.onClose}>
-              Close
-            </button>
-          </div>
         </div>
       </div>
     )

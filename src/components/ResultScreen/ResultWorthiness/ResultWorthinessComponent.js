@@ -23,9 +23,10 @@ class ResultWorthinessComponent extends Component {
       <div>
         <div className="flex">
           <div className="w-100 text-center mb4 animated slideInUp">
-            <h1>Speed Kit served <span style={{ color: '#F27354' }}>{servedRate}%</span> of<br /> your requests.</h1>
-            <h4 style={{ maxWidth: '580px', margin: '0 auto' }}>
-              How much is this <span style={{ color: '#F27354' }}>{factor}x</span> performance boost worth? Here is what Google and Amazon have found for publishers and e-commerce.
+            <h1 style={{ maxWidth: 768, margin: '0 auto' }}>Speed Kit made your site <span style={{ color: '#F27354' }}>{factor}x</span> faster by serving {servedRate}% of all requests.</h1>
+            <br />
+            <h4 style={{ maxWidth: 530, margin: '0 auto' }}>
+              Here is what Google and Amazon have found for publishers and e-commerce.
             </h4>
           </div>
         </div>

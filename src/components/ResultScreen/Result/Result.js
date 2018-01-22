@@ -126,6 +126,11 @@ class Result extends Component {
     return (
       <div>
         {this.renderHeader()}
+        <hr />
+        <div className="pa1 text-center">
+          <small>Because your website uses a lot of asynchrounous resources, we replaced the speed index metric by the first meaningful paint!</small>
+        </div>
+        <hr />
         {this.renderVideos()}
         <div className="ph6">
           <hr />

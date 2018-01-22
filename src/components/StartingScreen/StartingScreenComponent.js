@@ -47,7 +47,6 @@ class StartingScreenComponent extends Component {
       <div className="flex-grow-1 flex flex-column justify-center" style={{ overflow: 'hidden' }}>
         <div className="text-center flex-grow-1 flex flex-column justify-end">
           <h1 className="mv2">Page Speed Analyzer</h1>
-          <span>Test the performance of your site!</span>
         </div>
         <div className="mt4 flex-grow-1 flex flex-column">
           <ConfigForm
