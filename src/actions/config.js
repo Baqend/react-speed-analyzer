@@ -1,7 +1,8 @@
 import {
   CHANGE_URL,
   CHANGE_LOCATION,
-  CHANGE_WHITELIST,
+  CHANGE_TIMEOUT,
+  CHANGE_SPEED_KIT_CONFIG,
   SWITCH_MOBILE,
   SWITCH_CACHING,
 } from './types'
@@ -20,10 +21,17 @@ export function handleLocationChange(location) {
   }
 }
 
-export function handleWhitelistChange(whitelist) {
+export function handleTimeoutChange(timeout) {
   return {
-    type: CHANGE_WHITELIST,
-    payload: whitelist,
+    type: CHANGE_TIMEOUT,
+    payload: timeout,
+  }
+}
+
+export function handleSpeedKitConfigChange(config) {
+  return {
+    type: CHANGE_SPEED_KIT_CONFIG,
+    payload: config,
   }
 }
 

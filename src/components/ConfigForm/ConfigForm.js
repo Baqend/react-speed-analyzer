@@ -5,7 +5,14 @@ import { connect } from 'react-redux'
 
 import ConfigFormComponent from './ConfigFormComponent'
 
-import { handleUrlInput, handleLocationChange, handleMobileSwitch, handleCachingSwitch } from '../../actions/config'
+import {
+  handleUrlInput,
+  handleLocationChange,
+  handleTimeoutChange,
+  handleSpeedKitConfigChange,
+  handleMobileSwitch,
+  handleCachingSwitch
+} from '../../actions/config'
 
 class ConfigForm extends Component {
   onUrlChange = (data) => {
@@ -14,6 +21,14 @@ class ConfigForm extends Component {
 
   onLocationChange = (data) => {
     this.props.actions.handleLocationChange(data)
+  }
+
+  onTimeoutChange = (data) => {
+    this.props.actions.handleTimeoutChange(data)
+  }
+
+  onSpeedKitConfigChange = (data) => {
+    this.props.actions.handleSpeedKitConfigChange(data)
   }
 
   onMobileSwitch = () => {
@@ -34,6 +49,8 @@ class ConfigForm extends Component {
         onSubmit={this.props.onSubmit}
         onUrlChange={this.onUrlChange}
         onLocationChange={this.onLocationChange}
+        onTimeoutChange={this.onTimeoutChange}
+        onSpeedKitConfigChange={this.onSpeedKitConfigChange}
         onMobileSwitch={this.onMobileSwitch}
         onCachingSwitch={this.onCachingSwitch}
       />
@@ -65,6 +82,8 @@ function mapDispatchToProps(dispatch) {
     actions: bindActionCreators({
       handleUrlInput,
       handleLocationChange,
+      handleTimeoutChange,
+      handleSpeedKitConfigChange,
       handleMobileSwitch,
       handleCachingSwitch,
     }, dispatch),

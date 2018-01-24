@@ -1,7 +1,8 @@
 import {
   CHANGE_URL,
   CHANGE_LOCATION,
-  CHANGE_WHITELIST,
+  CHANGE_TIMEOUT,
+  CHANGE_SPEED_KIT_CONFIG,
   SWITCH_MOBILE,
   SWITCH_CACHING,
   NORMALIZE_URL_POST,
@@ -13,8 +14,8 @@ const initialState = {
   location: 'eu-central-1:Chrome.Native',
   caching: false,
   isMobile: false,
-  whitelist: '',
   isSpeedKitComparison: false,
+  speedKitConfig: null,
   activityTimeout: 75,
 }
 
@@ -24,8 +25,10 @@ export default function config(state = initialState, action = {}) {
       return { ...state, url: action.payload }
     case CHANGE_LOCATION:
       return { ...state, location: action.payload }
-    case CHANGE_WHITELIST:
-      return { ...state, whitelist: action.whitelist }
+    case CHANGE_TIMEOUT:
+      return { ...state, activityTimeout: action.payload }
+    case CHANGE_SPEED_KIT_CONFIG:
+      return { ...state, speedKitConfig: action.payload }
     case SWITCH_MOBILE:
       return { ...state, isMobile: action.payload }
     case SWITCH_CACHING:
@@ -35,7 +38,8 @@ export default function config(state = initialState, action = {}) {
     case UPDATE_CONFIG:
       return {
         ...state, url: action.payload.url, location: action.payload.location,
-        caching: action.payload.caching, isMobile: action.payload.isMobile, whitelist: action.payload.whitelist
+        caching: action.payload.caching, isMobile: action.payload.isMobile,
+        activityTimeout: action.payload.activityTimeout, speedKitConfig: action.payload.speedKitConfig
       }
     default:
       return state

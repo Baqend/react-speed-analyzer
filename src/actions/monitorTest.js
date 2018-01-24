@@ -94,7 +94,8 @@ const updateConfigByTestOverview = (testOverview) => {
       location: testOverview.location,
       caching: testOverview.caching,
       isMobile: testOverview.mobile,
-      whitelist: testOverview.whitelist
+      activityTimeout: testOverview.activityTimeout,
+      speedKitConfig: testOverview.speedKitConfig,
     }
   }
 }

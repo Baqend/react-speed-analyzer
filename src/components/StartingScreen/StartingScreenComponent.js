@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-
 import ConfigForm from '../ConfigForm/ConfigForm'
 
 import { Carousel } from './StatusCarousel/Carousel'
+import { formatFileSize } from '../../helper/utils'
 import {
   renderDefaultPage,
   renderIsInQueuePage,
@@ -113,7 +113,7 @@ class StartingScreenComponent extends Component {
           <small className="faded">Response Size</small>
           <br />
           {psiResponseSize ? (
-            <strong className="animated zoomIn">{psiResponseSize}</strong>
+            <strong className="animated zoomIn">{formatFileSize(psiResponseSize, 2)}</strong>
           ) : (
             <strong>-</strong>
           )}

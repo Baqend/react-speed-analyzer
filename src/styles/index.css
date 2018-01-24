@@ -5,6 +5,7 @@
 @import "tachyons/src/_position";
 @import "slick-carousel/slick/slick.scss";
 @import "slick-carousel/slick/slick-theme.scss";
+@import "codemirror/lib/codemirror.css";
 
 @import "./lib/animate.css";
 @import "./lib/toggle.css";
