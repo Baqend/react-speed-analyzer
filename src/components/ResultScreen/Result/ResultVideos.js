@@ -23,8 +23,8 @@ class ResultVideos extends Component {
     const speedKitVideoPath = this.props.speedKitTest.videoFileFirstView
 
     return (
-      <div className="flex">
-        <div className="w-50 flex-auto pv4 ph6">
+      <div className="flex justify-center">
+        <div className="w-50 pv4 ph6">
           <video id="competitorVideo"
             playsInline
             autoPlay
@@ -36,7 +36,7 @@ class ResultVideos extends Component {
             src={competitorVideoPath && 'https://makefast.app.baqend.com/v1' + competitorVideoPath} />
         </div>
         {!this.props.speedKitError && (
-          <div className="w-50 flex-auto speedKitVideo pv4 ph6">
+          <div className="w-50 speedKitVideo pv4 ph6">
             <video id="speedKitVideo"
               playsInline
               autoPlay

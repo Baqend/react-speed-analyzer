@@ -7,10 +7,12 @@ import Modal from '../Modal/Modal'
 
 import Result from './Result/Result'
 import ResultWorthiness from './ResultWorthiness/ResultWorthiness'
+import SpeedKitCarousel from './SpeedKitCarousel/SpeedKitCarousel'
+import SpeedKitAnalyzer from './SpeedKitAnalyzer/SpeedKitAnalyzer'
+import SpeedKitBanner from './SpeedKitBanner/SpeedKitBanner'
 
 import ConfigForm from '../ConfigForm/ConfigForm'
 import ContactForm from '../ContactForm/ContactForm'
-import Carousel from '../Carousel/Carousel'
 
 class ResultScreenComponent extends Component {
   constructor(props) {
@@ -38,29 +40,79 @@ class ResultScreenComponent extends Component {
     this.setState({ showModal: false })
   }
 
-  renderBanner() {
+  renderForm() {
     return (
-      <div className="banner">
-        <div className="container ph2 pv6">
-          <div className="flex items-center">
-            <div className="w-50 text-right pa2">
-              <h2 className="ma1">Try Baqend Speed Kit Today!</h2>
-              Make your websites load instantly
-            </div>
-            <div className="w-50 pa2 text-left">
-              <a
-                href="https://www.baqend.com/speedkit.html?_ga=2.235057797.527125052.1516095583-312811701.1516095583"
-                className="btn btn-white ma1">
-                 Learn More
-              </a>
-              <a
-                href="https://dashboard.baqend.com/register?appType=speedkit&_ga=2.230289688.527125052.1516095583-312811701.1516095583"
-                className="btn btn-orange ma1">
-                Get Started for Free
-              </a>
+      <div className="container pa2">
+        <div className="mb1">
+          <ConfigForm config={this.props.config} showConfig={this.state.showSettings} onSubmit={this.props.onSubmit} />
+        </div>
+        {!this.state.showSettings &&
+          <div className="toggleSettings text-right">
+            <span><a onClick={this.toggleSettings}>Show Settings</a></span>
+          </div>
+        }
+      </div>
+    )
+  }
+
+  renderResults() {
+    // const competitorData = this.props.competitorTest.firstView
+    // const speedKitData = this.props.speedKitTest.firstView
+    const competitorError = this.props.competitorError
+    const speedKitError = this.props.speedKitError
+
+    // const competitorData = null
+    // const speedKitData = null
+    // const competitorError = true
+    // const speedKitError = true
+
+    return (
+      <div className="flex-grow-1 results" style={{ marginTop: !competitorError ? 80 : 0 }}>
+        { !competitorError && (
+          <div className="container pa2">
+            <div className="box-shadow results__box" style={{ marginTop: '-96px' }}>
+              <Result { ...this.props } />
             </div>
           </div>
+        )}
+
+        <div className="container pa2 pt2 pb6 animated slideInUp">
+          {competitorError && (
+            <div className="text-center pb2 pt4" style={{ maxWidth: 768, margin: '0 auto' }}>
+              <h2>Ooooops All Tests Failed</h2>
+              <strong>It looks like some fine tuning or configuration is required to measure your site. Please contact our web performance experts for further information and assistance!</strong>
+            </div>
+          )}
+          {!competitorError && speedKitError && (
+            <div className="text-center pb2 pt2" style={{ maxWidth: 768, margin: '0 auto' }}>
+              <h2>Ooooops Speed Kit Failed</h2>
+              <strong>It looks like some fine tuning or configuration is required to measure your site. Please contact our web performance experts for further information and assistance!</strong>
+            </div>
+          )}
+          <div className="text-center">
+            {!speedKitError && <a href="" className="btn btn-orange ma1">Boost Your Website</a>}
+            <a className="btn btn-orange btn-ghost ma1" onClick={this.toggleModal}>Contact Us</a>
+          </div>
         </div>
+
+        <div style={{ background: 'white' }}>
+          {!speedKitError && !competitorError && (
+            <div className="container pa2 pv6">
+              <ResultWorthiness
+                competitorTest={this.props.competitorTest}
+                speedKitTest={this.props.speedKitTest}
+                mainMetric={this.props.mainMetric}
+              />
+            </div>
+          )}
+          <div className="pv1 ph2">
+            <SpeedKitCarousel />
+          </div>
+          <div className="container pa2 pt6 pb7">
+            <SpeedKitAnalyzer />
+          </div>
+        </div>
+        <SpeedKitBanner />
       </div>
     )
   }
@@ -74,65 +126,15 @@ class ResultScreenComponent extends Component {
   }
 
   render() {
-    const competitorData = this.props.competitorTest.firstView
-    const speedKitData = this.props.speedKitTest.firstView
     return (
-      <div className="flex flex-column results__wrapper animated2 slideInUp2" style={{animationDuration: '0.8s'}}>
-        <div className="container pa2 pb7">
-          <div className="mb1">
-            <ConfigForm config={this.props.config} showConfig={this.state.showSettings} onSubmit={this.props.onSubmit} />
-          </div>
-          {!this.state.showSettings &&
-            <div className="toggleSettings text-right">
-              <span><a onClick={this.toggleSettings}>Show Settings</a></span>
+      <div className="results__wrapper">
+        <div className="flex flex-column">
+          {this.renderForm()}
+          {this.props.result.isFinished && (
+            <div className="flex-grow-1 flex flex-column animated slideInUp" style={{animationDuration: '0.8s'}}>
+              {this.renderResults()}
             </div>
-          }
-        </div>
-        <div className="flex-grow-1 results">
-          <div className="container pa2">
-            <div className="box-shadow results__box" style={{ marginTop: '-96px' }}>
-              { competitorData && speedKitData && <Result { ...this.props } /> }
-            </div>
-          </div>
-
-          <div className="container pa2 pb6">
-            {/*<div className="text-center pb2" style={{ maxWidth: 768, margin: '0 auto' }}>
-              <h2>Ooooops</h2>
-              <strong>It looks like some fine tuning or configuration is required to measure your site. Please contact our web performance experts for further information and assistance!</strong>
-            </div>*/}
-            <div className="text-center pb3">
-              {/*<a href="" className="btn btn-orange ma1">Boost Your Website</a>*/}
-              <a href="" className="btn btn-orange ma1">Boost Your Website</a>
-              <a className="btn btn-orange btn-ghost ma1" onClick={this.toggleModal}>Contact Us</a>
-            </div>
-          </div>
-
-          <div style={{ background: 'white' }}>
-
-            <div className="container pa2 pv6">
-              { competitorData && speedKitData && (
-                <ResultWorthiness
-                  competitorTest={this.props.competitorTest}
-                  speedKitTest={this.props.speedKitTest}
-                  mainMetric={this.props.mainMetric}
-                />
-              )}
-            </div>
-
-            <div className="pv6 ph2">
-              <Carousel showFirstPool={true} animationDuration={'180s'} />
-              <Carousel showFirstPool={true} animationDuration={'250s'} animationDelay={'-77.5s'}/>
-              <div className="text-center" style={{ fontSize: '12px' }}>Performance tests to illustrate Speed Kit's potential. Click to learn more</div>
-            </div>
-
-            <div className="container pa2 pt6 pb7 text-center">
-              <h1>About the Page Speed Analyzer</h1>
-              <p>The page speed analyzer gives you an impression of how Baqend Speed Kit influences the performance of your website. To this end, the analyzer runs a series of tests against your website and reports how your current backend stack delivers your website compared to a version using Speed Kit. The result on the right simply shows measurements for your site with an embedded Service Worker containing Speed Kit's caching logic.</p>
-            </div>
-
-          </div>
-
-          {this.renderBanner()}
+          )}
         </div>
         {this.renderContactFormModal()}
       </div>

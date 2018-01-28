@@ -110,7 +110,7 @@ hr {
   height: 1px;
   margin: 0;
   border: 0;
-  background: linear-gradient(to right,rgba(232,232,232,.1),rgba(232,232,232,.9) 15%,rgba(232,232,232,.9) 85%,rgba(232,232,232,.1))
+  background: linear-gradient(to right,rgba(232,232,232,.1),rgba(232,232,232,.9) 10%,rgba(232,232,232,.9) 90%,rgba(232,232,232,.1))
 }
 
 input {

@@ -26,28 +26,38 @@ class Result extends Component {
   renderHeader() {
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
-
     return (
-      <div className="flex items-center relative">
-        {!this.props.speedKitError && (
-          <div className="mainFactor text-center">
-            { calculateFactor(competitorData[this.props.mainMetric], speedKitData[this.props.mainMetric]) }x
-            <br/>
-            Faster
-          </div>
-        )}
-        <div className="w-50 flex-auto text-center pa1" style={{ background: '#f6f6f6' }}>
-          <small><b>Your Website</b></small>
-          <br/>
-          <b>{ competitorData[this.props.mainMetric] }ms</b>
-        </div>
-        {!this.props.speedKitError && (
+      <div>
+        <div className="flex items-center relative">
+          {!this.props.speedKitError && (
+            <div className="mainFactor text-center">
+              { calculateFactor(competitorData[this.props.mainMetric], speedKitData[this.props.mainMetric]) }x
+              <br/>
+              Faster
+            </div>
+          )}
           <div className="w-50 flex-auto text-center pa1" style={{ background: '#f6f6f6' }}>
-            <small><b>With Speedkit</b></small>
+            <small><b>Your Website</b></small>
             <br/>
-            <b>{ speedKitData[this.props.mainMetric] }ms</b>
+            <b>{ competitorData[this.props.mainMetric] }ms</b>
           </div>
-        )}
+          {!this.props.speedKitError && (
+            <div className="w-50 flex-auto text-center pa1" style={{ background: '#f6f6f6' }}>
+              <small><b>With Speedkit</b></small>
+              <br/>
+              <b>{ speedKitData[this.props.mainMetric] }ms</b>
+            </div>
+          )}
+        </div>
+        {this.props.mainMetric !== "speedIndex" && [
+          <hr />,
+          <div className="pa1 text-center">
+            <small>
+              Because your website uses a lot of asynchrounous resources, we replaced the speed index metric by the first meaningful paint!
+            </small>
+          </div>,
+          <hr />
+        ]}
       </div>
     )
   }
@@ -64,17 +74,17 @@ class Result extends Component {
         <div className="pa1 w-33 flex-auto text-center">
           <small className="faded">Domains</small>
           <br />
-          <strong>-</strong>
+          <strong>{this.props.testOverview.psiDomains}</strong>
         </div>
         <div className="pa1 w-33 flex-auto text-center">
           <small className="faded">Requests</small>
           <br />
-          <strong>-</strong>
+          <strong>{this.props.testOverview.psiRequests}</strong>
         </div>
         <div className="pa1 w-33 flex-auto text-center">
           <small className="faded">Response Size</small>
           <br />
-          <strong>-</strong>
+          <strong>{this.props.testOverview.psiResponseSize}</strong>
         </div>
       </div>
     )
@@ -92,8 +102,8 @@ class Result extends Component {
         <Collapse isOpen={this.state.showDetails}>
           <div className="mb4">
             {/*<hr />*/}
+            <hr className="mt3"/>
             <h3 className="text-center mt5">Pagespeed Insights</h3>
-            <hr />
             {this.renderPSI()}
             <hr />
             <h3 className="text-center mt5">Performance Details</h3>
@@ -126,11 +136,6 @@ class Result extends Component {
     return (
       <div>
         {this.renderHeader()}
-        <hr />
-        <div className="pa1 text-center">
-          <small>Because your website uses a lot of asynchrounous resources, we replaced the speed index metric by the first meaningful paint!</small>
-        </div>
-        <hr />
         {this.renderVideos()}
         <div className="ph6">
           <hr />

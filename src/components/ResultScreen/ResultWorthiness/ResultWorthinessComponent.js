@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 import './ResultWorthiness.css'
 import { calculateFactor, calculateServedRequests } from '../../../helper/resultHelper'
 
-import doubleClickLogo from '../../../img/doubleClick.png'
-import amazonLogo from '../../../img/amazon.png'
+import doubleClickLogo from '../../../assets/doubleClick.png'
+import amazonLogo from '../../../assets/amazon.png'
 
 class ResultWorthinessComponent extends Component {
   render() {
@@ -30,14 +30,7 @@ class ResultWorthinessComponent extends Component {
             </h4>
           </div>
         </div>
-        {/*<div className="flex">
-          <div className="w-60" style={{ margin: '16px' }}>
-            <h1 className="mt0">Speed Kit served <span style={{ color: '#F27354' }}>{servedRate}%</span> of your requests.</h1>
-          </div>
-          <div className="w-40" style={{ margin: '16px' }}>
-            <h3 className="mt0">How much is this {factor}x performance boost worth? Here is what Google and Amazon have found for publishers and e-commerce.</h3>
-          </div>
-        </div>*/}
+
         <div className="flex items-center text-center">
           <div className="w-50 pr6 pl6" style={{ padding: '64px 32px', margin: '16px', background: '#f6f6f6' }}>
             <div>Publishers and Ad-driven Businesses</div>

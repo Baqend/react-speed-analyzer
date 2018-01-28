@@ -41,9 +41,18 @@ class ResultMetrics extends Component {
   render() {
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
-
     return (
       <div className="result__details-metrics">
+        <div className="flex items-center pt1 pb1 border-top">
+          <div className="w-third text-center faded">
+            Your Webite
+          </div>
+          <div className="w-third text-center">
+          </div>
+          <div className="w-third text-center faded">
+            With SpeedKit
+          </div>
+        </div>
         {metrics.map((metric, index) => {
           const factor = calculateFactor(competitorData[metric.name], speedKitData[metric.name])
           return (
@@ -66,6 +75,17 @@ class ResultMetrics extends Component {
             </div>
           )
         })}
+        <hr />
+        <div className="flex items-center pt1 pb1 border-top">
+          <div className="w-third text-center">
+            <small><a href={this.props.competitorTest.summaryUrl} className="">Detailed Report</a></small>
+          </div>
+          <div className="w-third text-center">
+          </div>
+          <div className="w-third text-center">
+            <small><a href={this.props.speedKitTest.summaryUrl} className="">Detailed Report</a></small>
+          </div>
+        </div>
       </div>
     )
   }

@@ -19,6 +19,7 @@ import {
 } from '../actions/types'
 
 const initialState = {
+  isFinished: false,
   isInitiated: false,
   isStarted: false,
   isRateLimited: false,
@@ -95,6 +96,7 @@ export default function result(state = initialState, action = {}) {
         speedKitSubscription: null,
         isInitiated: false,
         isStarted: false,
+        isFinished: true,
       }
     case RESET_TEST_RESULT:
       return { ...initialState }

@@ -15,7 +15,7 @@
     animation-timing-function: linear;
     animation-iteration-count: infinite;
     will-change: transform;
-    .treadmill-item {
+    .treadmill-item > * {
       width: var(--item-width);
       padding: 24px;
       /* border-radius: 5px; */
@@ -76,25 +76,3 @@
     transform: translate3d(-100%, 0, 0);
   }
 }
-
-/* .slier-item {
-  padding: 8px 8px;
-  border-radius: 5px;
-  border: 1px solid #e8e8e8;
-  height: 70px;
-  margin: 0 8px;
-  color: #000000;
-  text-align: center;
-}
-
-.slider-img {
-  max-width: 100%;
-  max-height: 65%;
-  margin-left: auto;
-  margin-right: auto;
-  opacity: .6;
-}
-
-.factorLabel {
-  color: #888888;
-} */

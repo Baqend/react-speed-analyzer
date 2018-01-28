@@ -17,18 +17,21 @@ class ResultScreen extends Component {
     super(props)
     this.state = {
       mainMetric: 'speedIndex',
+      competitorError: false,
       speedKitError: false,
     }
   }
 
   componentWillMount() {
     const testId = parse(this.props.location.search)['testId']
-    if(Object.keys(this.props.competitorTest).length < 1 || Object.keys(this.props.speedKitTest).length < 1) {
+    const competitorTest = this.props.competitorTest
+    const speedKitTest = this.props.speedKitTest
+
+    if(Object.keys(competitorTest).length < 1 || Object.keys(speedKitTest).length < 1) {
       this.props.actions.monitorTest(testId)
     } else {
-      if(!this.hasResultError(this.props.competitorTest, this.props.speedKitTest)) {
-        // verify the main metric (speed index vs. FMP)
-        this.verifyMainMetric(this.props.competitorTest.firstView, this.props.speedKitTest.firstView)
+      if(!this.hasResultError(competitorTest, speedKitTest)) {
+        this.verifyMainMetric(competitorTest.firstView, speedKitTest.firstView)
       }
     }
   }
@@ -36,6 +39,9 @@ class ResultScreen extends Component {
   componentWillReceiveProps(nextProps) {
     // change the location attribute if a new test was triggered
     const testOverview = nextProps.testOverview
+    const competitorTest = nextProps.competitorTest
+    const speedKitTest = nextProps.speedKitTest
+
     if(testOverview.competitorTestResult && testOverview.speedKitTestResult ) {
       const testId = getObjectKey(testOverview.id)
       if(nextProps.location.search.indexOf(testId) === -1) {
@@ -44,15 +50,14 @@ class ResultScreen extends Component {
     }
 
     // terminate the running test as soon as both tests have finished (when reloading the page)
-    if(nextProps.competitorTest.hasFinished && nextProps.speedKitTest.hasFinished) {
+    if(competitorTest.hasFinished && speedKitTest.hasFinished) {
       this.props.actions.terminateTest()
     }
 
-    if(Object.keys(nextProps.competitorTest).length > 0 && Object.keys(nextProps.speedKitTest).length > 0) {
-      if(!this.hasResultError(nextProps.competitorTest, nextProps.speedKitTest)) {
-        // verify the main metric (speed index vs. FMP) as soon as the results are available (when reloading the page)
-        if(nextProps.competitorTest.firstView && nextProps.speedKitTest.firstView) {
-          this.verifyMainMetric(nextProps.competitorTest.firstView, nextProps.speedKitTest.firstView)
+    if(Object.keys(competitorTest).length > 0 && Object.keys(speedKitTest).length > 0) {
+      if(!this.hasResultError(competitorTest, speedKitTest)) {
+        if(competitorTest.firstView && speedKitTest.firstView) {
+          this.verifyMainMetric(competitorTest.firstView, speedKitTest.firstView)
         }
       }
     }
@@ -63,6 +68,7 @@ class ResultScreen extends Component {
 
     if(!competitorResult || competitorResult.testDataMissing) {
       console.log('Competitor konnte nicht getestet werden => Zeige Beispieltests')
+      this.setState({ competitorError: true })
       return true
     }
 
@@ -78,7 +84,6 @@ class ResultScreen extends Component {
 
   verifyMainMetric = (competitorData, speedKitData) => {
     const mainMetric = shouldShowFirstMeaningfulPaint(competitorData, speedKitData) ? 'firstMeaningfulPaint' : 'speedIndex'
-
     this.setState({ mainMetric })
   }
 
@@ -93,6 +98,7 @@ class ResultScreen extends Component {
       <ResultScreenComponent
         { ...this.props }
         mainMetric={this.state.mainMetric}
+        competitorError={this.state.competitorError}
         speedKitError={this.state.speedKitError}
         onSubmit={this.onSubmit}
       />
@@ -102,6 +108,7 @@ class ResultScreen extends Component {
 
 ResultScreen.propTypes = {
   config: PropTypes.object.isRequired,
+  result: PropTypes.object.isRequired,
   testOverview: PropTypes.object.isRequired,
   competitorTest: PropTypes.object.isRequired,
   speedKitTest: PropTypes.object.isRequired,
@@ -110,6 +117,7 @@ ResultScreen.propTypes = {
 function mapStateToProps(state) {
   return {
     config: state.config,
+    result: state.result,
     testOverview: state.result.testOverview,
     competitorTest: state.result.competitorTest,
     speedKitTest: state.result.speedKitTest,
