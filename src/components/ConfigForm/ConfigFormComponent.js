@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
 import Toggle from 'react-toggle'
+import CodeMirror from 'react-codemirror'
 
 import arrow from '../../assets/arrow_right.svg'
 import './ConfigForm.css'
@@ -14,12 +15,20 @@ class ConfigFormComponent extends Component {
     }
   }
 
-  handleUrlChange = (changeEvent: any) => {
+  handleUrlChange = (changeEvent) => {
     this.props.onUrlChange(changeEvent.target.value)
   }
 
   handleLocationChange = (changeEvent) => {
     this.props.onLocationChange(changeEvent.target.value)
+  }
+
+  handleTimeoutChange = (changeEvent) => {
+    this.props.onTimeoutChange(changeEvent.target.value)
+  }
+
+  handleSpeedKitConfigChange = (code) => {
+    this.props.onSpeedKitConfigChange(code)
   }
 
   handleMobileSwitch = () => {
@@ -94,9 +103,11 @@ class ConfigFormComponent extends Component {
                 />
               </div>
               <div className="pt1 flex flex-shrink-0 items-center" style={{ minWidth: '180px' }}>
-                <span className="flex-shrink-0 flex-grow-1">Activity Timout</span>
+                <span className="flex-shrink-0 flex-grow-1">Activity Timeout</span>
                 <div className="flex-shrink-0">
-                  <input className="material-input text-center mh1" style={{ width: '50px', marginBottom: '-2px' }}/>
+                  <input type="number" className="material-input text-center mh1" value={this.props.config.activityTimeout}
+                    style={{ width: '50px', marginBottom: '-2px' }} onChange={this.handleTimeoutChange}
+                  />
                   <span className="">ms</span>
                 </div>
               </div>
@@ -106,7 +117,7 @@ class ConfigFormComponent extends Component {
             <div className="ph2">
               <h5 className="mv1 text-center">Speed Kit Config</h5>
               <div className="pt1">
-                <textarea style={{ width: '100%' }} rows="5"></textarea>
+                <CodeMirror value={this.props.config.speedKitConfig} onChange={this.handleSpeedKitConfigChange}/>
               </div>
             </div>
           </div>
@@ -174,6 +185,8 @@ ConfigFormComponent.propTypes = {
   onUrlChange: PropTypes.func,
   onLocationChange: PropTypes.func,
   onMobileSwitch: PropTypes.func,
+  onTimeoutChange: PropTypes.func,
+  onSpeedKitConfigChange: PropTypes.func,
   onCachingSwitch: PropTypes.func,
   onSubmit: PropTypes.func
 }

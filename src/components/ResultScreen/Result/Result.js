@@ -10,6 +10,7 @@ import { calculateFactor } from '../../../helper/resultHelper'
 import ResultVideos from './ResultVideos'
 import ResultScale from './ResultScale'
 import ResultMetrics from './ResultMetrics'
+import { formatFileSize } from '../../../helper/utils'
 
 class Result extends Component {
   constructor(props) {
@@ -69,22 +70,39 @@ class Result extends Component {
   }
 
   renderPSI() {
+    console.log(this.props)
+    const psiDomains = this.props.testOverview && this.props.testOverview.psiDomains
+    const psiRequests =  this.props.testOverview && this.props.testOverview.psiRequests
+    const psiResponseSize = this.props.testOverview && this.props.testOverview.psiResponseSize
+
     return (
       <div className="flex">
         <div className="pa1 w-33 flex-auto text-center">
           <small className="faded">Domains</small>
           <br />
-          <strong>{this.props.testOverview.psiDomains}</strong>
+          {psiDomains ? (
+            <strong>{psiDomains}</strong>
+          ) : (
+            <strong>-</strong>
+          )}
         </div>
         <div className="pa1 w-33 flex-auto text-center">
           <small className="faded">Requests</small>
           <br />
-          <strong>{this.props.testOverview.psiRequests}</strong>
+          {psiRequests ? (
+            <strong>{psiRequests}</strong>
+          ) : (
+            <strong>-</strong>
+          )}
         </div>
         <div className="pa1 w-33 flex-auto text-center">
           <small className="faded">Response Size</small>
           <br />
-          <strong>{this.props.testOverview.psiResponseSize}</strong>
+          {psiResponseSize ? (
+            <strong>{formatFileSize(psiResponseSize, 2)}</strong>
+          ) : (
+            <strong>-</strong>
+          )}
         </div>
       </div>
     )

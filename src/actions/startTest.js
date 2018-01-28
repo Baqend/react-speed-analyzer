@@ -3,6 +3,7 @@ import {
   INIT_TEST,
   START_TEST,
   TESTOVERVIEW_SAVE,
+  CHANGE_SPEED_KIT_CONFIG,
   CALL_PAGESPEED_INSIGHTS_GET,
   START_TEST_COMPETITOR_POST,
   START_TEST_SPEED_KIT_POST,
@@ -28,6 +29,7 @@ export const startTest = () => ({
 
       if(!isRateLimited && !isBaqendApp) {
         dispatch({ type: START_TEST })
+
         await createTestOverview({ dispatch, getState, db })
         await Promise.all([
           callPageSpeedInsightsAPI({ dispatch, getState, db, url, isMobile }),
@@ -85,7 +87,7 @@ export const prepareTest = async ({ dispatch, getState, db }) => {
  * @param db The baqend database instance.
  */
 const createTestOverview = async ({ dispatch, getState, db }) => {
-  const { url, location, caching, isMobile, whitelist } = getState().config
+  const { url, location, caching, isMobile, speedKitConfig, activityTimeout } = getState().config
   const testOverview = new db.TestOverview()
   const tld = getTLD(url)
   const uniqueId = await db.modules.post('generateUniqueId', { entityClass: 'TestOverview' })
@@ -95,7 +97,8 @@ const createTestOverview = async ({ dispatch, getState, db }) => {
   testOverview.location = location
   testOverview.caching = caching
   testOverview.mobile = isMobile
-  testOverview.whitelist = whitelist
+  testOverview.speedKitConfig = speedKitConfig
+  testOverview.activityTimeout = activityTimeout
 
   dispatch({
     type: TESTOVERVIEW_SAVE,
@@ -151,13 +154,21 @@ const startCompetitorTest = async ({ dispatch, getState, db }) => {
  * @param db The baqend database instance.
  */
 const startSpeedKitTest = async ({ dispatch, getState, db }) => {
-  const { url, isSpeedKitComparison, whitelist, location, caching, isMobile, activityTimeout } = getState().config
-  const speedKitConfig = generateSpeedKitConfig(url, whitelist, isMobile)
+  const {
+    url,
+    isSpeedKitComparison,
+    location,
+    caching,
+    isMobile,
+    speedKitConfig,
+    activityTimeout
+  } = getState().config
+
 
   const competitorTestId = await db.modules.post('queueTest', {
     url,
     activityTimeout,
-    isSpeedKitComparison,
+    isSpeedKitComparison: isSpeedKitComparison || generateSpeedKitConfig(url, '', isMobile),
     speedKitConfig,
     location,
     isClone: true,
