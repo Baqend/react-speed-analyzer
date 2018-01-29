@@ -5,7 +5,7 @@ import './SpeedKitAnalyzer.css'
 class SpeedKitBanner extends Component {
   render() {
     return (
-      <div>
+      <div className="ph7">
         <div className="text-center">
           <h1>About the Page Speed Analyzer</h1>
         </div>
