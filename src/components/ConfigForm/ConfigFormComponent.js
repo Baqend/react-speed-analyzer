@@ -168,7 +168,7 @@ class ConfigFormComponent extends Component {
                   </span>
                 ): (
                   <span>
-                    Experienced Developer? <a onClick={this.toggleAdvancedSettings}>Show Advanced Settings</a>
+                    <a onClick={this.toggleAdvancedSettings}>Show Advanced Settings</a>
                   </span>
                 )}
               </div>
