@@ -5,13 +5,13 @@ import './SpeedKitAnalyzer.css'
 class SpeedKitBanner extends Component {
   render() {
     return (
-      <div className="ph7">
+      <div className="ph7 pv6" style={{fontWeight: 400}}>
         <div className="text-center">
           <h1>About the Page Speed Analyzer</h1>
         </div>
         <div>
           <p>
-            The page speed analyzer gives you an impression of how Baqend Speed Kit influences the performance of your website. To this end, the analyzer runs a series of tests against your website and reports how your current backend stack delivers your website compared to a version using Speed Kit. The result on the right simply shows measurements for your site with an embedded <a href="https://developer.mozilla.org/en/docs/Web/API/Service_Worker_API" target="_blank">Service Worker</a> containing Speed Kit's caching logic.
+            The page speed analyzer gives you an impression of how Baqend Speed Kit influences the performance of your website. To this end, the analyzer runs a series of tests against your website and reports how your current backend stack delivers your website compared to a version using Speed Kit. {/*The result on the right simply shows measurements for your site with an embedded <a href="https://developer.mozilla.org/en/docs/Web/API/Service_Worker_API" target="_blank" rel="noopener noreferrer">Service Worker</a> containing Speed Kit's caching logic.*/}
           </p>
           {/*<p>
             For comparison, the analyzer collects several metrics by using Google's <a href="https://developers.google.com/speed/docs/insights/v1/getting_started" target="_blank">PageSpeed Insights API</a> and private instances of <a href="https://sites.google.com/a/webpagetest.org/docs/private-instances" target="_blank">WebPagetest</a>. Additionally, the tool collects a <strong>performance video</strong> of both versions to give a visual impression. You can customize the analyzer to your desired test situation:

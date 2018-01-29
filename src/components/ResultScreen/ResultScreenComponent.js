@@ -108,7 +108,7 @@ class ResultScreenComponent extends Component {
           <div className="pv1 ph2">
             <SpeedKitCarousel />
           </div>
-          <div className="container pa2 pt6 pb7">
+          <div className="container pa2 pv6">
             <SpeedKitAnalyzer />
           </div>
         </div>

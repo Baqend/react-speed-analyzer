@@ -25,7 +25,8 @@
 }
 
 .bg-dark-green {
-  background-color: color(#377401 tint(15%));
+  /* background-color: color(#377401 tint(15%)); */
+  background-color: #c8e4b0;
 }
 
 .bg-light-green {

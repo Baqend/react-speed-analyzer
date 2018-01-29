@@ -10,7 +10,7 @@ class SpeedKitBanner extends Component {
           <div className="flex items-center">
             <div className="w-50 text-right pa2">
               <h2 className="mv1">Try Baqend Speed Kit Today</h2>
-              Make your websites load instantly
+              {/*Make your websites load instantly*/}
             </div>
             <div className="w-50 pa2 text-left">
               <a

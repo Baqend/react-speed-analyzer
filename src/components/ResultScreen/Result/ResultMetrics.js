@@ -47,7 +47,8 @@ class ResultMetrics extends Component {
           <div className="w-third text-center faded">
             Your Webite
           </div>
-          <div className="w-third text-center">
+          <div className="w-third text-center faded">
+            Metric
           </div>
           <div className="w-third text-center faded">
             With SpeedKit
