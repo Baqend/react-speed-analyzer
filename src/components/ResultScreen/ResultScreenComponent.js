@@ -127,7 +127,7 @@ class ResultScreenComponent extends Component {
 
   render() {
     return (
-      <div className="results__wrapper">
+      <div className="results__wrapper pt7">
         <div className="flex flex-column">
           {this.renderForm()}
           {this.props.result.isFinished && (
