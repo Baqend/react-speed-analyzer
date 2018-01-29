@@ -88,6 +88,7 @@ export const prepareTest = async ({ dispatch, getState, db }) => {
  */
 const createTestOverview = async ({ dispatch, getState, db }) => {
   const { url, location, caching, isMobile, speedKitConfig, activityTimeout } = getState().config
+  const { isSpeedKitComparison }  = getState().result
   const testOverview = new db.TestOverview()
   const tld = getTLD(url)
   const uniqueId = await db.modules.post('generateUniqueId', { entityClass: 'TestOverview' })
@@ -99,6 +100,7 @@ const createTestOverview = async ({ dispatch, getState, db }) => {
   testOverview.mobile = isMobile
   testOverview.speedKitConfig = speedKitConfig
   testOverview.activityTimeout = activityTimeout
+  testOverview.isSpeedKitComparison = isSpeedKitComparison
 
   dispatch({
     type: TESTOVERVIEW_SAVE,
@@ -129,7 +131,8 @@ const callPageSpeedInsightsAPI = async ({ dispatch, db,  url, isMobile }) => {
  * @param db The baqend database instance.
  */
 const startCompetitorTest = async ({ dispatch, getState, db }) => {
-  const { url, isSpeedKitComparison, location, caching, isMobile:mobile, activityTimeout } = getState().config
+  const { isSpeedKitComparison }  = getState().result
+  const { url, location, caching, isMobile:mobile, activityTimeout } = getState().config
 
   const competitorTestId = await db.modules.post('queueTest', {
     url,
@@ -154,9 +157,9 @@ const startCompetitorTest = async ({ dispatch, getState, db }) => {
  * @param db The baqend database instance.
  */
 const startSpeedKitTest = async ({ dispatch, getState, db }) => {
+  const { isSpeedKitComparison } = getState().result
   const {
     url,
-    isSpeedKitComparison,
     location,
     caching,
     isMobile,
@@ -164,12 +167,11 @@ const startSpeedKitTest = async ({ dispatch, getState, db }) => {
     activityTimeout
   } = getState().config
 
-
   const competitorTestId = await db.modules.post('queueTest', {
     url,
     activityTimeout,
-    isSpeedKitComparison: isSpeedKitComparison || generateSpeedKitConfig(url, '', isMobile),
-    speedKitConfig,
+    isSpeedKitComparison,
+    speedKitConfig: speedKitConfig || generateSpeedKitConfig(url, '', isMobile),
     location,
     isClone: true,
     caching,
