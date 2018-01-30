@@ -36,8 +36,13 @@ class Navbar extends Component {
   renderTransparentNavbar() {
     return (
       <div className="navbar-inner flex items-center justify-between">
-        <img src={LogoWhite} alt="Logo White" style={{ height: 44 }}/>
-        <a className="btn btn-white" href="">Sign Up</a>
+        <div className="flex items-center">
+          <img className="mr1" src={LogoWhite} alt="Logo White" style={{ height: 44 }}/>
+          <a className="btn btn-small btn-white no-border no-shadow dn db-ns" href="">Speed Kit</a>
+          <a className="btn btn-small btn-white no-border no-shadow dn db-ns" href="">Pricing</a>
+          <a className="btn btn-small btn-white no-border no-shadow dn db-ns" href="">Docs</a>
+        </div>
+        <a className="btn btn-small btn-white" href="">Sign Up</a>
       </div>
     )
   }
@@ -45,8 +50,13 @@ class Navbar extends Component {
   renderWhiteNavbar() {
     return (
       <div className="navbar-inner flex items-center justify-between">
-        <img src={Logo} alt="Logo White" style={{ height: 44 }}/>
-        <a className="btn btn-orange" href="">Sign Up</a>
+        <div className="flex items-center">
+          <img className="mr1" src={Logo} alt="Logo White" style={{ height: 44 }}/>
+          <a className="btn btn-small btn-black no-border no-shadow dn db-ns" href="">Speed Kit</a>
+          <a className="btn btn-small btn-black no-border no-shadow dn db-ns" href="">Pricing</a>
+          <a className="btn btn-small btn-black no-border no-shadow dn db-ns" href="">Docs</a>
+        </div>
+        <a className="btn btn-small btn-orange no-shadow" href="">Sign Up</a>
       </div>
     )
   }

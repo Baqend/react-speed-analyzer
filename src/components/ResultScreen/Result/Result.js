@@ -4,6 +4,7 @@ import './ResultScale.css'
 
 import React, { Component } from 'react'
 import Collapse from 'react-css-collapse'
+import { Tooltip } from 'react-tippy'
 
 import { calculateFactor } from '../../../helper/resultHelper'
 
@@ -11,6 +12,11 @@ import ResultVideos from './ResultVideos'
 import ResultScale from './ResultScale'
 import ResultMetrics from './ResultMetrics'
 import { formatFileSize } from '../../../helper/utils'
+
+const tooltipText = {
+  'speedIndex': 'Represents how quickly the page rendered the user-visible content.',
+  'firstMeaningfulPaint': 'Represents the time when a page\'s primary content appears on the screen.',
+}
 
 class Result extends Component {
   constructor(props) {
@@ -31,11 +37,11 @@ class Result extends Component {
       <div>
         <div className="flex items-center relative">
           {!this.props.speedKitError && (
-            <div className="mainFactor text-center">
+            <Tooltip className="mainFactor text-center" title={tooltipText[this.props.mainMetric]} arrow style={{ display: 'flex'}}>
               { calculateFactor(competitorData[this.props.mainMetric], speedKitData[this.props.mainMetric]) }x
               <br/>
               Faster
-            </div>
+            </Tooltip>
           )}
           <div className="w-50 flex-auto text-center pa1 pr4 pr0-ns" style={{ background: '#f6f6f6' }}>
             <small><b>Your Website</b></small>

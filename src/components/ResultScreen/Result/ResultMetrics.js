@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { Tooltip } from 'react-tippy'
 
 import { calculateFactor } from '../../../helper/resultHelper'
 
@@ -65,8 +66,10 @@ class ResultMetrics extends Component {
                     <div className="metricValue">{competitorData[metric.name]}ms</div>
                   </div>
                   <div className="w-third text-center">
-                    <div className="factor">{factor}x {factor > 1 ? 'Faster' : ''}</div>
-                    <div className="metricLabel">{metric.label}</div>
+                    <Tooltip title={metric.tooltip} position="top" arrow>
+                      <div className="factor">{factor}x {factor > 1 ? 'Faster' : ''}</div>
+                      <div className="metricLabel">{metric.label}</div>
+                    </Tooltip>
                   </div>
                   <div className="w-third text-center">
                     <div className="metricValue">{speedKitData[metric.name]}ms</div>

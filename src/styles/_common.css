@@ -27,3 +27,16 @@ input, textarea {
   font-weight: 300;
   text-align: right;
 }
+
+.with-tooltip:after {
+  content: "i";
+  background: #8a8a8a85;
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+  color: white;
+  font-weight: 600;
+  border-radius: 50%;
+  font-size: 14px;
+  margin-left: 4px;
+}

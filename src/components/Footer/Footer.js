@@ -7,8 +7,8 @@ class Footer extends Component {
   render() {
     return (
       <footer>
-        <div className="info pa2">
-          <div className="container">
+        <div className="info">
+          <div className="container pa2">
             <div className="flex justify-between items-center flex-wrap flex-nowrap-l">
               <div className="flex items-center w-100 w-auto-l flex-grow-1 flex-grow-0-l justify-center justify-start-l order-1 order-0-l">
                 <img className="mr2" src={LogoWhite} height={32} alt="Logo White" style={{ marginTop: 4 }}/>
