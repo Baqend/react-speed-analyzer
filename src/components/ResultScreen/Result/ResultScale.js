@@ -35,27 +35,31 @@ const Marker = () => (
 const Bobbel = ({ description, time, style }) => (
   <div className="flex flex-column justify-center items-center absolute" style={style}>
     <div>
-      <small style={{ fontWeight: 400 }}>{description}</small>
+      <small style={{ fontWeight: 400, fontSize: 12 }}>{description}</small>
     </div>
     <div className="relative">
-      <span style={{ position: 'absolute', display: 'block', width: '100%', textAlign: 'center', top: '10px', fontWeight: 400 }}>{time}</span>
+      <span style={{ position: 'absolute', display: 'block', width: '100%', textAlign: 'center', top: '13px', fontWeight: 400, fontSize: 14 }}>{time}</span>
       <Marker />
     </div>
   </div>
 )
 
+const calculateOffset = (maxTime, time) => maxTime / 1000 * time
+
 class ResultScaleComponent extends Component {
   render() {
+    const maxTime = 10
+
+    const competitorTime = this.props.competitorTest.firstView && this.props.competitorTest.firstView[this.props.mainMetric]
+    const speedKitTime = !this.props.speedKitError && this.props.speedKitTest.firstView && this.props.speedKitTest.firstView[this.props.mainMetric]
+
+    const competitorOffset = competitorTime && calculateOffset(maxTime, competitorTime)
+    const speedKitOffset = speedKitTime && calculateOffset(maxTime, speedKitTime)
+
     return (
       <div className="relative pt6 pb1 mt1">
-        {/*<div className="flex pr6 pl6">
-          <div className="w-100">
-            <div className="absolute">Pointer A</div>
-            <div className="absolute">Pointer B</div>
-          </div>
-        </div>*/}
-        <Bobbel description="With Speedkit" time="1s" style={{ left: '60px', top: '0px' }}/>
-        <Bobbel description="Your Website" time="3s" style={{ left: '360px', top: '0px' }}/>
+        {competitorTime && <Bobbel description="Your Website" time={`${Math.round(competitorTime / 100) / 10}s`} style={{ left: `${competitorOffset}%`, top: -3, marginLeft: -45 }}/>}
+        {speedKitTime && <Bobbel description="With Speedkit" time={`${Math.round(speedKitTime / 100) / 10}s`} style={{ left: `${speedKitOffset}%`, top: -3, marginLeft: -45 }}/>}
         <div className="flex" style={{ fontWeight: 400 }}>
           <div className="w-10 pa1 dark-green bg-dark-green border-left">Excellent</div>
           <div className="w-20 pa1 green bg-light-green">Good</div>
