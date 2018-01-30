@@ -3,6 +3,9 @@
 @import "tachyons/src/_widths";
 @import "tachyons/src/_spacing";
 @import "tachyons/src/_position";
+@import "tachyons/src/_text-align";
+@import "tachyons/src/_display";
+
 @import "slick-carousel/slick/slick.scss";
 @import "slick-carousel/slick/slick-theme.scss";
 @import "codemirror/lib/codemirror.css";

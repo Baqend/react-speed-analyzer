@@ -14,7 +14,7 @@ class Footer extends Component {
                 <img className="mh2" src={LogoWhite} height={32} alt="Logo White" style={{ marginTop: 4 }}/>
                 <small>© 2018 Baqend</small>
               </div>
-              <div className="flex items-center w-100 w-auto-l flex-grow-1 flex-grow-0-l justify-center justify-start-l order-0 order-1-l">
+              <div className="flex items-center w-100 w-auto-l flex-grow-1 flex-grow-0-l justify-center justify-start-l order-0 order-1-l mb2 mb0-ns">
                 <a className="pa1" href="https://dashboard.baqend.com/privacy">
                   Privacy Policy
                 </a>

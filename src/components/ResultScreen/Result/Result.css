@@ -1,17 +1,32 @@
-.metricValue {
-  font-weight: 500;
-  font-size: 20px;
-}
+@import 'tachyons/src/_media-queries';
 
-.metricLabel {
+.result__details-metrics {
   font-size: 16px;
-  color: #7E7E7E;
-}
-
-.factor {
-  color: #5cb85c;
-  font-weight: 500;
-  font-size: 20px;
+  @media (--breakpoint-not-small) {
+    font-size: 16px;
+  }
+  .metricValue {
+    font-weight: 500;
+    font-size: 16px;
+    @media (--breakpoint-not-small) {
+      font-size: 20px;
+    }
+  }
+  .metricLabel {
+    color: #7E7E7E;
+    font-size: 12px;
+    @media (--breakpoint-not-small) {
+      font-size: 16px;
+    }
+  }
+  .factor {
+    color: #5cb85c;
+    font-weight: 500;
+    font-size: 16px;
+    @media (--breakpoint-not-small) {
+      font-size: 20px;
+    }
+  }
 }
 
 .result__details-toggle {

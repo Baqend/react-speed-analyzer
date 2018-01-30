@@ -39,15 +39,20 @@ class ResultAction extends Component {
   renderWordpressCta() {
     return (
       <div className="flex items-center pb2 pt4" style={{ maxWidth: 768, margin: '0 auto' }}>
-        <div className="ph2">
+        <div className="ph2 dn db-ns">
           <img className="pa2" height="200" src={WordPressLogo} alt="Wordpress Logo"/>
         </div>
         <div className="ph2">
-          <h2 className="mb1">WordPress Plugin</h2>
-          <strong className="faded">The WordPress-Plugin makes installing Speed Kit a one-click experience</strong>
-          <p>
-            <a target="_blank" rel="noopener noreferrer" className="btn btn-orange mr2" href="https://wordpress.org/plugins/baqend/">Download Plugin</a>
-            <a className="btn btn-orange btn-ghost" href="http://www.baqend.com/guide/topics/wordpress/">Documentation</a>
+          <h2 className="mb1 dn db-ns">WordPress Plugin</h2>
+          <h2 className="flex items-center justify-center dn-ns tc">
+            <img className="mr2" height="50" src={WordPressLogo} alt="Wordpress Logo"/>
+            WordPress Plugin
+          </h2>
+          <div className="tc tl-ns">
+            <strong className="faded">The WordPress-Plugin makes installing Speed Kit a one-click experience</strong>
+          </div>
+          <p className="tc tl-ns mt2">
+            <a target="_blank" rel="noopener noreferrer" className="btn btn-orange" href="https://wordpress.org/plugins/baqend/">Download Plugin</a>
           </p>
         </div>
       </div>

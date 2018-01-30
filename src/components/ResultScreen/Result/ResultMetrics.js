@@ -51,7 +51,7 @@ class ResultMetrics extends Component {
             Metric
           </div>
           <div className="w-third text-center faded">
-            With SpeedKit
+            With Speed Kit
           </div>
         </div>
         {competitorData && speedKitData && metrics.map((metric, index) => {

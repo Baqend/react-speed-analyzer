@@ -37,13 +37,13 @@ class Result extends Component {
               Faster
             </div>
           )}
-          <div className="w-50 flex-auto text-center pa1" style={{ background: '#f6f6f6' }}>
+          <div className="w-50 flex-auto text-center pa1 pr4 pr0-ns" style={{ background: '#f6f6f6' }}>
             <small><b>Your Website</b></small>
             <br/>
             <b>{ competitorData[this.props.mainMetric] }ms</b>
           </div>
           {!this.props.speedKitError && (
-            <div className="w-50 flex-auto text-center pa1" style={{ background: '#f6f6f6' }}>
+            <div className="w-50 flex-auto text-center pa1 pl4 pl0-ns" style={{ background: '#f6f6f6' }}>
               <small><b>With Speedkit</b></small>
               <br/>
               <b>{ speedKitData[this.props.mainMetric] }ms</b>
@@ -95,7 +95,7 @@ class Result extends Component {
             <strong>-</strong>
           )}
         </div>
-        <div className="pa1 w-33 flex-auto text-center">
+        <div className="pa1 w-33 flex-auto text-center" style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>
           <small className="faded">Response Size</small>
           <br />
           {psiResponseSize ? (
@@ -158,7 +158,7 @@ class Result extends Component {
       <div>
         {this.renderHeader()}
         {this.renderVideos()}
-        <div className="ph6">
+        <div className="ph2 ph6-ns">
           <hr />
           {/*<h3 className="text-center mt3 mb0">Industry Comparison</h3>*/}
           {this.renderScale()}

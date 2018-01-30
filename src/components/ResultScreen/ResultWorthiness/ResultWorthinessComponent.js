@@ -23,7 +23,7 @@ class ResultWorthinessComponent extends Component {
       <div>
         <div className="flex">
           <div className="w-100 text-center mb4 mt4 animated slideInUp">
-            <h1 style={{ maxWidth: 768, margin: '0 auto' }}>Speed Kit made your site <span style={{ color: '#F27354' }}>{factor}x</span> faster by serving {servedRate}% of all requests.</h1>
+            <h2 style={{ maxWidth: 768, margin: '0 auto' }}>Speed Kit made your site <span style={{ color: '#F27354' }}>{factor}x</span> faster by serving {servedRate}% of all requests.</h2>
             <br />
             <h4 className="faded" style={{ maxWidth: 530, margin: '0 auto' }}>
               Here is what Google and Amazon have found for publishers and e-commerce.
@@ -31,8 +31,8 @@ class ResultWorthinessComponent extends Component {
           </div>
         </div>
 
-        <div className="flex items-center text-center">
-          <div className="w-50 pr6 pl6 mr1" style={{ padding: '64px 32px', background: '#f6f6f6' }}>
+        <div className="flex flex-wrap flex-nowrap-ns text-center" style={{ margin: -8 }}>
+          <div className="w-100 w-50-ns pr6 pl6 ma1" style={{ padding: '64px 32px', background: '#f6f6f6' }}>
             <h4 className="mt0">Publishers and Ad-driven Businesses</h4>
             <h2 className="mb0"><span className="lightGreen">{publisherRevenue}%</span> Revenue</h2>
             <small className="faded">(PLT Original - PLT Speed Kit) / (19000 - 5000)</small>
@@ -47,7 +47,7 @@ class ResultWorthinessComponent extends Component {
               <img src={doubleClickLogo} alt="DoubleClick logo" style={{ maxWidth: '150px'}}/>
             </div>
           </div>
-          <div className="w-50 pr6 pl6 ml1" style={{ padding: '64px 32px', background: '#f6f6f6' }}>
+          <div className="w-100 w-50-ns pr6 pl6 ma1" style={{ padding: '64px 32px', background: '#f6f6f6' }}>
             <h4 className="mt0">E-Commerce</h4>
             <h2 className="mb0"><span className="lightGreen">{eCommerceRevenue}%</span> Revenue</h2>
             <small className="faded">(PLT Original - PLT Speed Kit) * (1 / 100)</small>

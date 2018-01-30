@@ -18,11 +18,11 @@ class ResultVideos extends Component {
     }
   }
 
-  componentDidMount() {
-    setTimeout(() => {
-      this.playVideos('competitorVideo')
-    }, 500)
-  }
+  // componentDidMount() {
+  //   setTimeout(() => {
+  //     this.playVideos('competitorVideo')
+  //   }, 500)
+  // }
 
   render() {
     const competitorVideoPath = this.props.competitorTest.videoFileFirstView
@@ -32,13 +32,14 @@ class ResultVideos extends Component {
     // poster={`data:${data.mime_type};base64,${data.data.replace(/_/g, '/').replace(/-/g, '+')}`}
     return (
       <div className="flex justify-center">
-        <div className="w-50 pv4 ph6">
+        <div className="w-50 pa2 pv4-ns ph6-ns">
           <div className="video__wrapper">
             <div className="video__wrapper-inner">
               <div className="relative" style={{ width: '100%', height: '100%'}}>
                 <video id="competitorVideo"
                   playsInline
                   controls={false}
+                  autoPlay
                   className="embedVideo"
                   ref={(video) => {this.competitorVideo = video}}
                   onClick={() => this.playVideos('competitorVideo')}
@@ -50,13 +51,14 @@ class ResultVideos extends Component {
           </div>
         </div>
         {!this.props.speedKitError && (
-          <div className="w-50 speedKitVideo pv4 ph6">
+          <div className="w-50 speedKitVideo pa2 pv4-ns ph6-ns">
             <div className="video__wrapper">
               <div className="video__wrapper-inner">
                 <div className="relative" style={{ width: '100%', height: '100%'}}>
                   <video id="speedKitVideo"
                     playsInline
                     controls={false}
+                    autoPlay
                     className="embedVideo"
                     ref={(video) => {this.speedKitVideo = video}}
                     onClick={() => this.playVideos('speedKitVideo')}

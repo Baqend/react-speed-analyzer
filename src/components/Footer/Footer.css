@@ -4,6 +4,10 @@ footer {
     background: color(#fff a(5%));
     a {
       color: white;
+      white-space: nowrap;
+      @media(max-width: 400px) {
+        font-size: 14px;
+      }
     }
   }
 }
