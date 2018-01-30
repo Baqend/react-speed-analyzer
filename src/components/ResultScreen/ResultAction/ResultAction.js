@@ -25,7 +25,7 @@ class ResultAction extends Component {
     return (
       <div>
         <div className="text-center pb2 pt4" style={{ maxWidth: 768, margin: '0 auto' }}>
-          <h2>Ooooops All Tests Failed</h2>
+          <h2>Ooooops Speed Kit Failed</h2>
           <strong>It looks like some fine tuning or configuration is required to measure your site. Please contact our web performance experts for further information and assistance!</strong>
         </div>
         <div className="text-center">
@@ -40,7 +40,7 @@ class ResultAction extends Component {
     return (
       <div className="flex items-center pb2 pt4" style={{ maxWidth: 768, margin: '0 auto' }}>
         <div className="ph2">
-          <img className="pa2" height="225" src={WordPressLogo} />
+          <img className="pa2" height="200" src={WordPressLogo} alt="Wordpress Logo"/>
         </div>
         <div className="ph2">
           <h2 className="mb1">WordPress Plugin</h2>
@@ -67,7 +67,7 @@ class ResultAction extends Component {
   render() {
     const competitorError = this.props.competitorError
     const speedKitError = this.props.speedKitError
-
+    console.log(this.props)
     return (
       <div>
         {competitorError && this.renderAllTestsFailed()}

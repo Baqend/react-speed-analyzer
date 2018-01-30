@@ -7,3 +7,10 @@
   padding-left: 32px;
   padding-right: 32px;
 }
+
+.border-bot {
+  border-bottom: 3px solid rgb(242, 115, 84);
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  display: inline-block;
+}

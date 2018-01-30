@@ -70,7 +70,7 @@ class Result extends Component {
   }
 
   renderPSI() {
-    console.log(this.props)
+    // console.log(this.props)
     const psiDomains = this.props.testOverview && this.props.testOverview.psiDomains
     const psiRequests =  this.props.testOverview && this.props.testOverview.psiRequests
     const psiResponseSize = this.props.testOverview && this.props.testOverview.psiResponseSize
@@ -126,6 +126,9 @@ class Result extends Component {
             <hr />
             <h3 className="text-center mt5">Performance Details</h3>
             <ResultMetrics { ...this.props } />
+            <div className="text-center mt5">
+              <a className="btn btn-ghost" href="">Send Report</a>
+            </div>
           </div>
         </Collapse>
 

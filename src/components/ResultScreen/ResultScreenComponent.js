@@ -79,7 +79,7 @@ class ResultScreenComponent extends Component {
         )}
 
         <div className="container pa2 pt2 pb6 animated slideInUp">
-          <ResultAction { ...this.props } />
+          <ResultAction { ...this.props } toggleModal={this.toggleModal}/>
         </div>
 
         <div style={{ background: 'white' }}>
