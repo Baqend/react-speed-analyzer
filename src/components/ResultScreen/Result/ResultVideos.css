@@ -32,3 +32,29 @@
   font-weight: 400;
   line-height: 1.2;
 }
+
+
+.video__wrapper {
+  position: relative;
+  &:before {
+    content: "";
+    display: block;
+    position: relative;
+    padding-top: 67.5%;
+  }
+  .video__wrapper-inner {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+    border: 1px solid #e8e8e8;
+    video {
+      margin-left: -1.75%;
+      margin-top: -7.1%;
+      width: 103.8%;
+    }
+  }
+}

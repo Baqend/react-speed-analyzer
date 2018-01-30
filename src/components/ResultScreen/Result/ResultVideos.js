@@ -18,34 +18,54 @@ class ResultVideos extends Component {
     }
   }
 
+  componentDidMount() {
+    setTimeout(() => {
+      this.playVideos('competitorVideo')
+    }, 500)
+  }
+
   render() {
     const competitorVideoPath = this.props.competitorTest.videoFileFirstView
     const speedKitVideoPath = this.props.speedKitTest.videoFileFirstView
-
+    // const data = this.props.testOverview.psiScreenshot
+    // <img src={`data:${data.mime_type};base64,${data.data.replace(/_/g, '/').replace(/-/g, '+')}`} />
+    // poster={`data:${data.mime_type};base64,${data.data.replace(/_/g, '/').replace(/-/g, '+')}`}
     return (
       <div className="flex justify-center">
         <div className="w-50 pv4 ph6">
-          <video id="competitorVideo"
-            playsInline
-            autoPlay
-            controls
-            className="embedVideo"
-            ref={(video) => {this.competitorVideo = video}}
-            onClick={() => this.playVideos('competitorVideo')}
-            onPlay={() => this.playVideos('competitorVideo')}
-            src={competitorVideoPath && 'https://makefast.app.baqend.com/v1' + competitorVideoPath} />
+          <div className="video__wrapper">
+            <div className="video__wrapper-inner">
+              <div className="relative" style={{ width: '100%', height: '100%'}}>
+                <video id="competitorVideo"
+                  playsInline
+                  controls={false}
+                  className="embedVideo"
+                  ref={(video) => {this.competitorVideo = video}}
+                  onClick={() => this.playVideos('competitorVideo')}
+                  onPlay={() => this.playVideos('competitorVideo')}
+                  src={competitorVideoPath && 'https://makefast.app.baqend.com/v1' + competitorVideoPath} />
+                {/*<div style={{ backgroundImage: `url(data:${data.mime_type};base64,${data.data.replace(/_/g, '/').replace(/-/g, '+')})`}}></div>*/}
+              </div>
+            </div>
+          </div>
         </div>
         {!this.props.speedKitError && (
           <div className="w-50 speedKitVideo pv4 ph6">
-            <video id="speedKitVideo"
-              playsInline
-              autoPlay
-              controls
-              className="embedVideo"
-              ref={(video) => {this.speedKitVideo = video}}
-              onClick={() => this.playVideos('speedKitVideo')}
-              onPlay={() => this.playVideos('speedKitVideo')}
-              src={speedKitVideoPath && 'https://makefast.app.baqend.com/v1' + speedKitVideoPath} />
+            <div className="video__wrapper">
+              <div className="video__wrapper-inner">
+                <div className="relative" style={{ width: '100%', height: '100%'}}>
+                  <video id="speedKitVideo"
+                    playsInline
+                    controls={false}
+                    className="embedVideo"
+                    ref={(video) => {this.speedKitVideo = video}}
+                    onClick={() => this.playVideos('speedKitVideo')}
+                    onPlay={() => this.playVideos('speedKitVideo')}
+                    src={speedKitVideoPath && 'https://makefast.app.baqend.com/v1' + speedKitVideoPath} />
+                  {/*<div style={{ backgroundImage: `url(data:${data.mime_type};base64,${data.data.replace(/_/g, '/').replace(/-/g, '+')})`}}></div>*/}
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>

@@ -54,7 +54,7 @@ class ResultMetrics extends Component {
             With SpeedKit
           </div>
         </div>
-        {metrics.map((metric, index) => {
+        {competitorData && speedKitData && metrics.map((metric, index) => {
           const factor = calculateFactor(competitorData[metric.name], speedKitData[metric.name])
           return (
             <div key={index} className="flex justify-center">

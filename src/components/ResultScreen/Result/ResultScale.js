@@ -56,8 +56,8 @@ class ResultScaleComponent extends Component {
         </div>*/}
         <Bobbel description="With Speedkit" time="1s" style={{ left: '60px', top: '0px' }}/>
         <Bobbel description="Your Website" time="3s" style={{ left: '360px', top: '0px' }}/>
-        <div className="flex">
-          <div className="w-10 pa1 white bg-dark-green border-left">Excellent</div>
+        <div className="flex" style={{ fontWeight: 400 }}>
+          <div className="w-10 pa1 dark-green bg-dark-green border-left">Excellent</div>
           <div className="w-20 pa1 green bg-light-green">Good</div>
           <div className="w-30 pa1 orange bg-light-orange">Fair</div>
           <div className="w-40 pa1 red bg-light-red border-right">Poor</div>

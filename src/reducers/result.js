@@ -57,12 +57,14 @@ export default function result(state = initialState, action = {}) {
     case CONTINUE_TEST:
       return { ...state, isInitiated: true, isStarted: true }
     case CALL_PAGESPEED_INSIGHTS_GET:
+      console.log(action.payload)
       return {
         ...state, testOverview: {
           ...state.testOverview,
           psiDomains: action.payload.domains,
           psiRequests: action.payload.requests,
-          psiResponseSize: action.payload.bytes
+          psiResponseSize: action.payload.bytes,
+          psiScreenshot: action.payload.screenshot,
         }
       }
     case START_TEST_COMPETITOR_POST:

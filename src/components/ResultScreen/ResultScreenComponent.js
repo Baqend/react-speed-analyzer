@@ -7,6 +7,8 @@ import Modal from '../Modal/Modal'
 
 import Result from './Result/Result'
 import ResultWorthiness from './ResultWorthiness/ResultWorthiness'
+import ResultAction from './ResultAction/ResultAction'
+
 import SpeedKitCarousel from './SpeedKitCarousel/SpeedKitCarousel'
 import SpeedKitAnalyzer from './SpeedKitAnalyzer/SpeedKitAnalyzer'
 import SpeedKitBanner from './SpeedKitBanner/SpeedKitBanner'
@@ -60,7 +62,7 @@ class ResultScreenComponent extends Component {
     // const speedKitData = this.props.speedKitTest.firstView
     const competitorError = this.props.competitorError
     const speedKitError = this.props.speedKitError
-
+    // console.log(this.props.competitorTest)
     // const competitorData = null
     // const speedKitData = null
     // const competitorError = true
@@ -77,22 +79,7 @@ class ResultScreenComponent extends Component {
         )}
 
         <div className="container pa2 pt2 pb6 animated slideInUp">
-          {competitorError && (
-            <div className="text-center pb2 pt4" style={{ maxWidth: 768, margin: '0 auto' }}>
-              <h2>Ooooops All Tests Failed</h2>
-              <strong>It looks like some fine tuning or configuration is required to measure your site. Please contact our web performance experts for further information and assistance!</strong>
-            </div>
-          )}
-          {!competitorError && speedKitError && (
-            <div className="text-center pb2 pt2" style={{ maxWidth: 768, margin: '0 auto' }}>
-              <h2>Ooooops Speed Kit Failed</h2>
-              <strong>It looks like some fine tuning or configuration is required to measure your site. Please contact our web performance experts for further information and assistance!</strong>
-            </div>
-          )}
-          <div className="text-center">
-            {!speedKitError && <a href="" className="btn btn-orange ma1">Boost Your Website</a>}
-            <a className="btn btn-orange btn-ghost ma1" onClick={this.toggleModal}>Contact Us</a>
-          </div>
+          <ResultAction { ...this.props } />
         </div>
 
         <div style={{ background: 'white' }}>
