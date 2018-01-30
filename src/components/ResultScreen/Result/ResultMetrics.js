@@ -79,12 +79,13 @@ class ResultMetrics extends Component {
         <hr />
         <div className="flex items-center pt1 pb1 border-top">
           <div className="w-third text-center">
-            <small><a href={this.props.competitorTest.summaryUrl} className="">Detailed Report</a></small>
+            <small><a href={this.props.competitorTest.summaryUrl} className="">WPT Report</a></small>
+          </div>
+          <div className="w-third text-center pa1">
+            <a className="btn btn-ghost" href="">Send Report</a>
           </div>
           <div className="w-third text-center">
-          </div>
-          <div className="w-third text-center">
-            <small><a href={this.props.speedKitTest.summaryUrl} className="">Detailed Report</a></small>
+            <small><a href={this.props.speedKitTest.summaryUrl} className="">WPT Report</a></small>
           </div>
         </div>
       </div>
