@@ -29,22 +29,25 @@ class Modal extends React.Component {
 
     const backdropStyle = {
       position: 'fixed',
+      zIndex: 1234,
       top: 0,
       bottom: 0,
       left: 0,
       right: 0,
-      backgroundColor: 'rgba(0,0,0,0.3)',
-      padding: 50
+      backgroundColor: 'rgba(50,50,50,0.8)',
+      padding: 32,
+      display: 'flex',
+      alignItems: 'center',
     }
 
     // The modal "window"
     const modalStyle = {
       backgroundColor: '#fff',
-      borderRadius: 5,
+      borderRadius: 2,
       maxWidth: 768,
       minHeight: 300,
       margin: '0 auto',
-      padding: 32,
+      padding: 16,
       animationDuration: '0.35s'
     }
 

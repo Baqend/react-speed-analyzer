@@ -56,15 +56,17 @@ class Result extends Component {
             </div>
           )}
         </div>
-        {this.props.mainMetric !== "speedIndex" && [
-          <hr />,
-          <div className="pa1 text-center">
-            <small>
-              Because your website uses a lot of asynchrounous resources, we replaced the speed index metric by the first meaningful paint!
-            </small>
-          </div>,
-          <hr />
-        ]}
+        {this.props.mainMetric !== "speedIndex" && (
+          <div>
+            <hr />
+            <div className="pa1 text-center">
+              <small>
+                Because your website uses a lot of asynchrounous resources, we replaced the speed index metric by the first meaningful paint!
+              </small>
+            </div>
+            <hr />
+          </div>
+        )}
       </div>
     )
   }

@@ -37,11 +37,11 @@ class ResultWorthinessComponent extends Component {
             <h2 className="mb0"><span className="lightGreen">{publisherRevenue}%</span> Revenue</h2>
             <small className="faded">(PLT Original - PLT Speed Kit) / (19000 - 5000)</small>
             <div className="pa1 mt2" style={{ maxWidth: 350, marginLeft: 'auto', marginRight: 'auto' }}>
-              <strong>
+              <span>
                 <a href="https://storage.googleapis.com/doubleclick-prod/documents/The_Need_for_Mobile_Speed_-_FINAL.pdf#page=3"
                   target="_blank">DoubleClick study (p. 3)
                 </a> "The Need for Mobile Speed" based on 4,500 real websites
-              </strong>
+              </span>
             </div>
             <div className="img-container pa1">
               <img src={doubleClickLogo} alt="DoubleClick logo" style={{ maxWidth: '150px'}}/>
@@ -52,11 +52,11 @@ class ResultWorthinessComponent extends Component {
             <h2 className="mb0"><span className="lightGreen">{eCommerceRevenue}%</span> Revenue</h2>
             <small className="faded">(PLT Original - PLT Speed Kit) * (1 / 100)</small>
             <div className="pa1 mt2" style={{ maxWidth: 350, marginLeft: 'auto', marginRight: 'auto' }}>
-              <strong>
+              <span>
                 <a href="http://sites.google.com/site/glinden/Home/StanfordDataMining.2006-11-28.ppt?attredirects=0"
                   target="_blank">Amazon study (p. 10)
                 </a> "Make Data Useful" using A/B tests on the Amazon shop
-              </strong>
+              </span>
             </div>
             <div className="img-container pa1">
               <img src={amazonLogo} alt="Amazon logo" style={{ maxWidth: '120px'}}/>
