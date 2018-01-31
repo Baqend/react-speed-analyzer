@@ -2,6 +2,7 @@
   --device-border-width: 32px;
   --device-border-width-xs: 24px;
   --device-padding: 16px;
+  --device-color: #fff;
 }
 
 .device {
@@ -31,7 +32,7 @@
         > .device__screen { */
       min-height: 450px;
       position: relative;
-      border-top: calc(var(--device-border-width-xs) + 8px) solid #5a6973;
+      border-top: calc(var(--device-border-width-xs) + 8px) solid color(var(--device-color) a(40%));
       border-top-left-radius: var(--device-border-width-xs);
       border-top-right-radius: var(--device-border-width-xs);
       padding-top: var(--device-padding);
@@ -44,7 +45,7 @@
       &:before, &:after {
         content: "";
         position: absolute;
-        background-image: linear-gradient(color(#5a6973 a(100%)), color(#5a6973 a(0%)));
+        background-image: linear-gradient(color(var(--device-color) a(40%)), color(var(--device-color) a(0%)));
         top: 0px;
         bottom: -var(--device-border-width-xs);
         width: var(--device-border-width-xs);
@@ -67,12 +68,12 @@
       /* background: white; */
       border-bottom-left-radius: 24px;
       border-bottom-right-radius: 24px;
-      background-image: linear-gradient(color(#5a6973 a(20%)), color(#5a6973 a(0%)));
+      background-image: linear-gradient(color(var(--device-color) a(20%)), color(var(--device-color) a(10%)));
     }
     /* creates the bars on the left, right and top */
     > .device__wrapper-outer {
       position: relative;
-      border-top: calc(var(--device-border-width) + 8px) solid #5a6973;
+      border-top: calc(var(--device-border-width) + 8px) solid color(var(--device-color) a(40%));
       border-top-left-radius: var(--device-border-width);
       border-top-right-radius: var(--device-border-width);
       padding-left: var(--device-border-width);
@@ -84,7 +85,7 @@
       &:before, &:after {
         content: "";
         position: absolute;
-        background-image: linear-gradient(#5a6973, color(#5a6973 a(20%)));
+        background-image: linear-gradient(color(var(--device-color) a(40%)), color(var(--device-color) a(20%)));
         top: 0px;
         bottom: -var(--device-border-width);
         width: var(--device-border-width);
@@ -132,7 +133,7 @@
         max-width: 375px;
         min-height: 500px;
         position: relative;
-        border-top: calc(var(--device-border-width-xs) * 4) solid #5a6973;
+        border-top: calc(var(--device-border-width-xs) * 4) solid color(var(--device-color) a(40%));
         border-top-left-radius: calc(var(--device-border-width-xs) * 3);
         border-top-right-radius: calc(var(--device-border-width-xs) * 3);
         /* padding-top: var(--device-padding); */
@@ -143,7 +144,7 @@
         &:before, &:after {
           content: "";
           position: absolute;
-          background-image: linear-gradient(color(#5a6973 a(100%)), color(#5a6973 a(0%)));
+          background-image: linear-gradient(color(var(--device-color) a(40%)), color(var(--device-color) a(0%)));
           top: 0px;
           bottom: -var(--device-border-width-xs);
           width: var(--device-border-width-xs);
