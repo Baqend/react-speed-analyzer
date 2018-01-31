@@ -37,7 +37,7 @@ class Navbar extends Component {
     return (
       <div className="navbar-inner flex items-center justify-between">
         <div className="flex items-center">
-          <img className="mr1" src={LogoWhite} alt="Logo White" style={{ height: 44 }}/>
+          <img className="mr2" src={LogoWhite} alt="Logo White" style={{ height: 44 }}/>
           <a className="btn btn-small btn-white no-border no-shadow dn db-ns" href="">Speed Kit</a>
           <a className="btn btn-small btn-white no-border no-shadow dn db-ns" href="">Pricing</a>
           <a className="btn btn-small btn-white no-border no-shadow dn db-ns" href="">Docs</a>
@@ -51,7 +51,7 @@ class Navbar extends Component {
     return (
       <div className="navbar-inner flex items-center justify-between">
         <div className="flex items-center">
-          <img className="mr1" src={Logo} alt="Logo White" style={{ height: 44 }}/>
+          <img className="mr2" src={Logo} alt="Logo White" style={{ height: 44 }}/>
           <a className="btn btn-small btn-black no-border no-shadow dn db-ns" href="">Speed Kit</a>
           <a className="btn btn-small btn-black no-border no-shadow dn db-ns" href="">Pricing</a>
           <a className="btn btn-small btn-black no-border no-shadow dn db-ns" href="">Docs</a>

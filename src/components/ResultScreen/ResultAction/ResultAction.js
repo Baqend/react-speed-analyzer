@@ -59,6 +59,21 @@ class ResultAction extends Component {
     )
   }
 
+  // Speedkit failed or we are not faster
+  renderIsSpeedKitCta() {
+    return (
+      <div>
+        <div className="text-center pb2 pt4" style={{ maxWidth: 768, margin: '0 auto' }}>
+          <h2>Thank you for using Speed Kit</h2>
+          <strong>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam porta sem malesuada magna mollis euismod.</strong>
+        </div>
+        <div className="text-center">
+          <a className="btn btn-orange btn-ghost ma1" onClick={this.props.toggleModal}>Contact Us</a>
+        </div>
+      </div>
+    )
+  }
+
   // success
   renderCta() {
     return (
@@ -72,18 +87,22 @@ class ResultAction extends Component {
   render() {
     const competitorError = this.props.competitorError
     const speedKitError = this.props.speedKitError
+    const isWordPress = this.props.competitorTest.isWordPress
+    const isSpeedKitComparison = this.props.result.isSpeedKitComparison
     console.log(this.props)
-    return (
-      <div>
-        {competitorError && this.renderAllTestsFailed()}
-        {!competitorError && speedKitError && this.renderSpeedKitFailed()}
-        {!competitorError && !speedKitError && (
-          <div>
-            {this.props.competitorTest.isWordPress ? this.renderWordpressCta() : this.renderCta()}
-          </div>
-        )}
-      </div>
-    )
+
+    if (competitorError) {
+      return this.renderAllTestsFailed()
+    } else if (!competitorError && speedKitError) {
+      return this.renderSpeedKitFailed()
+    } else {
+      if (isSpeedKitComparison) {
+        return this.renderIsSpeedKitCta()
+      } else if (isWordPress) {
+        return this.renderWordpressCta()
+      }
+    }
+    return this.renderCta()
   }
 }
 
