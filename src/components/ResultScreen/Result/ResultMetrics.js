@@ -39,23 +39,24 @@ const metrics = [
 ]
 
 class ResultMetrics extends Component {
-  render() {
+
+  renderCompetitorSpeedKitTable() {
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
     return (
       <div className="result__details-metrics">
         <div className="flex items-center pt1 pb1 border-top">
-          <div className="w-third text-center faded">
-            Your Webite
+          <div className="w-third text-center">
+            <a href={this.props.competitorTest.summaryUrl} className="">Your Website Report</a>
           </div>
           <div className="w-third text-center faded">
             Metric
           </div>
-          <div className="w-third text-center faded">
-            With Speed Kit
+          <div className="w-third text-center">
+            <a href={this.props.speedKitTest.summaryUrl} className="">Speed Kit Report</a>
           </div>
         </div>
-        {competitorData && speedKitData && metrics.map((metric, index) => {
+        {metrics.map((metric, index) => {
           const factor = calculateFactor(competitorData[metric.name], speedKitData[metric.name])
           return (
             <div key={index} className="flex justify-center">
@@ -79,20 +80,57 @@ class ResultMetrics extends Component {
             </div>
           )
         })}
-        <hr />
-        <div className="flex items-center pt1 pb1 border-top">
-          <div className="w-third text-center">
+        <div className="flex items-center pt1 pb1 border-top mt2">
+          {/*<div className="w-third text-center">
             <small><a href={this.props.competitorTest.summaryUrl} className="">WPT Report</a></small>
-          </div>
-          <div className="w-third text-center pa1">
+          </div>*/}
+          <div className="w-100 text-center pa1">
             <a className="btn btn-ghost" href="">Send Report</a>
           </div>
-          <div className="w-third text-center">
+          {/*<div className="w-third text-center">
             <small><a href={this.props.speedKitTest.summaryUrl} className="">WPT Report</a></small>
+          </div>*/}
+        </div>
+      </div>
+    )
+  }
+
+  renderCompetitorTable() {
+    const competitorData = this.props.competitorTest.firstView
+    return (
+      <div className="result__details-metrics">
+        <hr />
+        {metrics.map((metric, index) => (
+          <div key={index} className="flex justify-center">
+            <div className="w-100">
+              {index !== 0 && <hr/>}
+              <div className="flex items-center border-top">
+                <div className="w-50 tr pt2 pb2 pr2">
+                  <div className="metricLabel">{metric.label}</div>
+                </div>
+                <div className="w-50 tl pt2 pb2 pl2 speedKitVideo">
+                  <div className="metricValue">{competitorData[metric.name]}ms</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+        <hr />
+        <div className="w-100 text-center pa1">
+          <small><a href={this.props.competitorTest.summaryUrl} className="">Full Report</a></small>
+        </div>
+        <div className="flex flex-wrap items-center pt1 pb1 border-top mt2">
+          <div className="w-100 text-center pa1">
+            <a className="btn btn-ghost" href="">Send Report</a>
           </div>
         </div>
       </div>
     )
+  }
+
+  render() {
+    const speedKitError = this.props.speedKitError
+    return speedKitError ? this.renderCompetitorTable() : this.renderCompetitorSpeedKitTable()
   }
 }
 

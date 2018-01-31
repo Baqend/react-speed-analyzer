@@ -7,7 +7,7 @@ class SpeedKitBanner extends Component {
     return (
       <div className="banner">
         <div className="container ph2 pv6">
-          <div className="flex flex-wrap flex-nowrap-ns items-center" style={{ margin: -8 }}>
+          <div className="flex flex-wrap flex-nowrap-ns items-center ph0" style={{ margin: -8 }}>
             <div className="w-100 w-50-ns tc tl-ns ph1 pv2">
               <h2 className="mv1">Try Baqend Speed Kit Today</h2>
               <span className="faded">Make your websites load instantly</span>

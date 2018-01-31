@@ -23,7 +23,7 @@ class ResultWorthinessComponent extends Component {
       <div>
         <div className="flex">
           <div className="w-100 text-center mb4 mt4 animated slideInUp">
-            <h2 style={{ maxWidth: 768, margin: '0 auto' }}>Speed Kit made your site <span style={{ color: '#F27354' }}>{factor}x</span> faster by serving {servedRate}% of all requests.</h2>
+            <h1 style={{ maxWidth: 768, margin: '0 auto' }}>Speed Kit made your site <span style={{ color: '#F27354' }}>{factor}x</span> faster by serving {servedRate}% of all requests.</h1>
             <br />
             <h4 className="faded" style={{ maxWidth: 530, margin: '0 auto' }}>
               Here is what Google and Amazon have found for publishers and e-commerce.
