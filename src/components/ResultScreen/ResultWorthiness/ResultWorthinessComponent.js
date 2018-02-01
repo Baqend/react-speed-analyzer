@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import './ResultWorthiness.css'
-import { calculateFactor, calculateServedRequests } from '../../../helper/resultHelper'
+import { calculateFactor, calculateAbsolute, calculateServedRequests } from '../../../helper/resultHelper'
 
 import doubleClickLogo from '../../../assets/doubleClick.png'
 import amazonLogo from '../../../assets/amazon.png'
@@ -11,6 +11,7 @@ class ResultWorthinessComponent extends Component {
     const speedKitData = this.props.speedKitTest.firstView
 
     const factor = calculateFactor(competitorData[this.props.mainMetric], speedKitData[this.props.mainMetric])
+    const absolute = calculateAbsolute(competitorData[this.props.mainMetric], speedKitData[this.props.mainMetric])
     const servedRate = calculateServedRequests(speedKitData)
 
     const publisherRevenue =
@@ -23,7 +24,7 @@ class ResultWorthinessComponent extends Component {
       <div>
         <div className="flex">
           <div className="w-100 text-center mb4 mt4 animated slideInUp">
-            <h1 style={{ maxWidth: 768, margin: '0 auto' }}>Speed Kit made your site <span style={{ color: '#F27354' }}>{factor}x</span> faster by serving {servedRate}% of all requests.</h1>
+            <h1 style={{ maxWidth: 768, margin: '0 auto' }}>Speed Kit made your site <span style={{ color: '#F27354' }}>{absolute}</span> faster by serving {servedRate}% of all requests.</h1>
             <br />
             <h4 className="faded" style={{ maxWidth: 530, margin: '0 auto' }}>
               Here is what Google and Amazon have found for publishers and e-commerce.
@@ -31,8 +32,8 @@ class ResultWorthinessComponent extends Component {
           </div>
         </div>
 
-        <div className="flex flex-wrap flex-nowrap-ns text-center" style={{ margin: -8 }}>
-          <div className="w-100 w-50-ns pr6 pl6 ma1" style={{ padding: '64px 32px', background: '#f6f6f6' }}>
+        <div className="flex flex-wrap flex-nowrap-ns text-center" style={{ margin: -16 }}>
+          <div className="w-100 w-50-ns pr6 pl6 ma2" style={{ padding: '64px 16px', background: '#f8f8f8' }}>
             <h4 className="mt0">Publishers and Ad-driven Businesses</h4>
             <h2 className="mb0"><span className="lightGreen">+{publisherRevenue}%</span> Revenue</h2>
             <small className="faded">(PLT Original - PLT Speed Kit) / (19000 - 5000)</small>
@@ -47,7 +48,7 @@ class ResultWorthinessComponent extends Component {
               <img src={doubleClickLogo} alt="DoubleClick logo" style={{ maxWidth: '150px'}}/>
             </div>
           </div>
-          <div className="w-100 w-50-ns pr6 pl6 ma1" style={{ padding: '64px 32px', background: '#f6f6f6' }}>
+          <div className="w-100 w-50-ns pr6 pl6 ma2" style={{ padding: '64px 32px', background: '#f8f8f8' }}>
             <h4 className="mt0">E-Commerce</h4>
             <h2 className="mb0"><span className="lightGreen">+{eCommerceRevenue}%</span> Revenue</h2>
             <small className="faded">(PLT Original - PLT Speed Kit) * (1 / 100)</small>

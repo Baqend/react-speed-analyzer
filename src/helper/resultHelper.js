@@ -17,9 +17,9 @@ export function calculateFactor(competitorMetric, speedKitMetric) {
 export function calculateAbsolute(competitorMetric, speedKitMetric) {
   const improvement = competitorMetric - speedKitMetric
   if (improvement > 99) {
-    return `${Math.round(improvement / 1000 * 10) / 10}s`
+    return `${Math.round(improvement / 1000 * 10) / 10} s`
   }
-  return `${improvement}ms`
+  return `${improvement} ms`
 }
 
 /**
