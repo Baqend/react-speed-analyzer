@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Tooltip } from 'react-tippy'
 
-import { calculateFactor } from '../../../helper/resultHelper'
+import { calculateFactor, calculateAbsolute } from '../../../helper/resultHelper'
 
 const userMetrics = [
   {
@@ -51,6 +51,7 @@ class ResultMetrics extends Component {
         <h3 className="text-center mt5">User-perceived Performance</h3>
         {userMetrics.map((metric, index) => {
           const factor = calculateFactor(competitorData[metric.name], speedKitData[metric.name])
+          const absolute = calculateAbsolute(competitorData[metric.name], speedKitData[metric.name])
           return (
             <div key={index} className="flex justify-center">
               <div className="w-100">
@@ -61,7 +62,7 @@ class ResultMetrics extends Component {
                   </div>
                   <div className="w-third text-center">
                     <Tooltip title={metric.tooltip} position="top" arrow>
-                      <div className="factor">{factor}x {factor > 1 ? 'Faster' : ''}</div>
+                      <div className="factor">{absolute} {factor > 1 ? 'Faster' : ''} ({factor}x)</div>
                       <div className="metricLabel">{metric.label}</div>
                     </Tooltip>
                   </div>
@@ -76,6 +77,7 @@ class ResultMetrics extends Component {
         <h3 className="text-center mt5">Technical Performance Metrics</h3>
         {technicalMetrics.map((metric, index) => {
           const factor = calculateFactor(competitorData[metric.name], speedKitData[metric.name])
+          const absolute = calculateAbsolute(competitorData[metric.name], speedKitData[metric.name])
           return (
             <div key={index} className="flex justify-center">
               <div className="w-100">
@@ -86,7 +88,7 @@ class ResultMetrics extends Component {
                   </div>
                   <div className="w-third text-center">
                     <Tooltip title={metric.tooltip} position="top" arrow>
-                      <div className="factor">{factor}x {factor > 1 ? 'Faster' : ''}</div>
+                      <div className="factor">{absolute} {factor > 1 ? 'Faster' : ''} ({factor}x)</div>
                       <div className="metricLabel">{metric.label}</div>
                     </Tooltip>
                   </div>
@@ -104,7 +106,7 @@ class ResultMetrics extends Component {
           <div className="w-50 tc pt1 pb1">
             <a href={this.props.competitorTest.summaryUrl} className="">Your Website Report</a>
           </div>
-          <div className="w-50 tc pt1 pb1 speedKitVideo">
+          <div className="w-50 tc pt1 pb1" style={{ borderLeft: '1px solid #E8E8E8' }}>
             <a href={this.props.speedKitTest.summaryUrl} className="">Speed Kit Report</a>
           </div>
         </div>

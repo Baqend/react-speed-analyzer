@@ -17,6 +17,7 @@ class ResultScreen extends Component {
     super(props)
     this.state = {
       mainMetric: 'speedIndex',
+      secondaryMetric: 'firstMeaningfulPaint',
       competitorError: false,
       speedKitError: false,
     }
@@ -64,7 +65,6 @@ class ResultScreen extends Component {
   }
 
   hasResultError = (competitorResult, speedKitResult) => {
-    const mainMetric = this.state.mainMetric
 
     if(!competitorResult || competitorResult.testDataMissing) {
       console.log('Competitor konnte nicht getestet werden => Zeige Beispieltests')
@@ -72,8 +72,17 @@ class ResultScreen extends Component {
       return true
     }
 
-    if(!speedKitResult || speedKitResult.testDataMissing ||
-      !isMainMetricSatisfactory(competitorResult.firstView[mainMetric], speedKitResult.firstView[mainMetric])) {
+    const mainMetric = this.state.mainMetric
+    const secondaryMetric = this.state.secondaryMetric
+
+    const mainCompetitor = competitorResult.firstView[mainMetric]
+    const mainSpeedKit = speedKitResult.firstView[mainMetric]
+    const secondaryCompetitor = competitorResult.firstView[secondaryMetric]
+    const secondarySpeedKit = speedKitResult.firstView[secondaryMetric]
+
+    const resultIsSatisfying = isMainMetricSatisfactory(mainCompetitor, mainSpeedKit, secondaryCompetitor, secondarySpeedKit)
+
+    if(!speedKitResult || speedKitResult.testDataMissing || !resultIsSatisfying) {
       console.log('SpeedKit konnte nicht getestet werden => Zeige Kontaktformular')
       this.setState({ speedKitError: true })
       return true
@@ -84,7 +93,8 @@ class ResultScreen extends Component {
 
   verifyMainMetric = (competitorData, speedKitData) => {
     const mainMetric = shouldShowFirstMeaningfulPaint(competitorData, speedKitData) ? 'firstMeaningfulPaint' : 'speedIndex'
-    this.setState({ mainMetric })
+    const secondaryMetric = shouldShowFirstMeaningfulPaint(competitorData, speedKitData) ? 'speedIndex' : 'firstMeaningfulPaint'
+    this.setState({ mainMetric, secondaryMetric })
   }
 
   onSubmit = () => {

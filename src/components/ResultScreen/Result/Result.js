@@ -6,7 +6,7 @@ import React, { Component } from 'react'
 import Collapse from 'react-css-collapse'
 import { Tooltip } from 'react-tippy'
 
-import { calculateFactor } from '../../../helper/resultHelper'
+import { calculateFactor, calculateAbsolute } from '../../../helper/resultHelper'
 
 import ResultVideos from './ResultVideos'
 import ResultScale from './ResultScale'
@@ -38,7 +38,7 @@ class Result extends Component {
         <div className="flex items-center relative">
           {!this.props.speedKitError && (
             <div className="mainFactor text-center" title={tooltipText[this.props.mainMetric]} arrow style={{ display: 'flex'}}>
-              { calculateFactor(competitorData[this.props.mainMetric], speedKitData[this.props.mainMetric]) }x
+              {calculateAbsolute(competitorData[this.props.mainMetric], speedKitData[this.props.mainMetric])}
               <br/>
               Faster
             </div>

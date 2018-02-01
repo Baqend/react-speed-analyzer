@@ -10,13 +10,33 @@ export function calculateFactor(competitorMetric, speedKitMetric) {
 }
 
 /**
+ * @param competitorMetric Metric from the competitor's site.
+ * @param speedKitMetric Metric from Speed Kit.
+ * @return {number}
+ */
+export function calculateAbsolute(competitorMetric, speedKitMetric) {
+  const improvement = competitorMetric - speedKitMetric
+  if (improvement > 99) {
+    return `${Math.round(improvement / 1000 * 10) / 10}s`
+  }
+  return `${improvement}ms`
+}
+
+/**
  * @param competitorMetric Main metric from the competitor's site.
  * @param speedKitMetric Main metric from Speed Kit.
  * @return {boolean}
  */
-export function isMainMetricSatisfactory(competitorMetric, speedKitMetric) {
-  if (competitorMetric > 0 && speedKitMetric > 0) {
-    return roundToHundredths(competitorMetric / speedKitMetric) > 1.2
+export function isMainMetricSatisfactory(mainCompetitor, mainSpeedKit, secondaryCompetitor, secondarySpeedKit) {
+  if (mainCompetitor > 0 && mainSpeedKit > 0) {
+    if ((mainSpeedKit / mainCompetitor < 0.95) || (mainCompetitor - mainSpeedKit > 200)) {
+      return true
+    } else if (mainSpeedKit <= mainCompetitor) {
+      if(secondarySpeedKit / secondaryCompetitor < 0.9) {
+        return true
+      }
+    }
+    return false
   }
   return false
 }
