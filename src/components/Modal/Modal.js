@@ -34,7 +34,7 @@ class Modal extends React.Component {
       bottom: 0,
       left: 0,
       right: 0,
-      backgroundColor: 'rgba(50,50,50,0.8)',
+      backgroundColor: 'rgba(33, 33, 33, 0.95)',
       padding: 32,
       display: 'flex',
       alignItems: 'center',
@@ -48,12 +48,13 @@ class Modal extends React.Component {
       minHeight: 300,
       margin: '0 auto',
       padding: 16,
-      animationDuration: '0.35s'
+      animationDuration: '0.35s',
+      animationDelay: '0.15s',
     }
 
     return (
       <div className="backdrop" style={backdropStyle}>
-        <div className="modal animated bounceInDown fadeInDown" style={modalStyle} ref={node => this.node = node}>
+        <div className="modal animated bounceInDown zoomIn" style={modalStyle} ref={node => this.node = node}>
           {this.props.children}
         </div>
       </div>
