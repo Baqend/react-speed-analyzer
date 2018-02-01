@@ -27,7 +27,27 @@ export function calculateAbsolute(competitorMetric, speedKitMetric) {
  * @param speedKitMetric Main metric from Speed Kit.
  * @return {boolean}
  */
-export function isMainMetricSatisfactory(mainCompetitor, mainSpeedKit, secondaryCompetitor, secondarySpeedKit) {
+export function isMainMetricSatisfactory(competitorMetric, speedKitMetric) {
+  if (competitorMetric > 0 && speedKitMetric > 0) {
+    return roundToHundredths(competitorMetric / speedKitMetric) > 1.2
+  }
+  return false
+}
+
+/**
+ * @param competitorMetric Main metric from the competitor's site.
+ * @param speedKitMetric Main metric from Speed Kit.
+ * @return {boolean}
+ */
+export function resultIsValid(competitorResult, speedKitResult, mainMetric, secondaryMetric) {
+  if (!competitorResult.firstView || !speedKitResult.firstView) {
+    return false
+  }
+  const mainCompetitor = competitorResult.firstView[mainMetric]
+  const mainSpeedKit = speedKitResult.firstView[mainMetric]
+  const secondaryCompetitor = competitorResult.firstView[secondaryMetric]
+  const secondarySpeedKit = speedKitResult.firstView[secondaryMetric]
+
   if (mainCompetitor > 0 && mainSpeedKit > 0) {
     if ((mainSpeedKit / mainCompetitor < 0.95) || (mainCompetitor - mainSpeedKit > 200)) {
       return true

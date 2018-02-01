@@ -9,7 +9,7 @@ import { parse } from 'query-string'
 import { startTest } from '../../actions/startTest'
 import { monitorTest } from '../../actions/monitorTest'
 import { terminateTest } from '../../actions/terminateTest'
-import { isMainMetricSatisfactory, shouldShowFirstMeaningfulPaint } from '../../helper/resultHelper'
+import { isMainMetricSatisfactory, resultIsValid, shouldShowFirstMeaningfulPaint } from '../../helper/resultHelper'
 import { getObjectKey, isURL } from '../../helper/utils'
 
 class ResultScreen extends Component {
@@ -74,15 +74,10 @@ class ResultScreen extends Component {
 
     const mainMetric = this.state.mainMetric
     const secondaryMetric = this.state.secondaryMetric
+    // const resultIsSatisfying = isMainMetricSatisfactory(mainCompetitor, mainSpeedKit, secondaryCompetitor, secondarySpeedKit)
+    const isValidResult = resultIsValid(competitorResult, speedKitResult, mainMetric, secondaryMetric)
 
-    const mainCompetitor = competitorResult.firstView[mainMetric]
-    const mainSpeedKit = speedKitResult.firstView[mainMetric]
-    const secondaryCompetitor = competitorResult.firstView[secondaryMetric]
-    const secondarySpeedKit = speedKitResult.firstView[secondaryMetric]
-
-    const resultIsSatisfying = isMainMetricSatisfactory(mainCompetitor, mainSpeedKit, secondaryCompetitor, secondarySpeedKit)
-
-    if(!speedKitResult || speedKitResult.testDataMissing || !resultIsSatisfying) {
+    if(!speedKitResult || speedKitResult.testDataMissing || !isValidResult) {
       console.log('SpeedKit konnte nicht getestet werden => Zeige Kontaktformular')
       this.setState({ speedKitError: true })
       return true
