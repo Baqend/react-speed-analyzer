@@ -14,8 +14,8 @@ import ResultMetrics from './ResultMetrics'
 import { formatFileSize } from '../../../helper/utils'
 
 const tooltipText = {
-  'speedIndex': 'Represents how quickly the page rendered the user-visible content.',
-  'firstMeaningfulPaint': 'Represents the time when a page\'s primary content appears on the screen.',
+  'speedIndex': 'Speed Index',
+  'firstMeaningfulPaint': 'First Meaningful Paint',
 }
 
 class Result extends Component {
@@ -37,22 +37,26 @@ class Result extends Component {
       <div>
         <div className="flex items-center relative">
           {!this.props.speedKitError && (
-            <Tooltip className="mainFactor text-center" title={tooltipText[this.props.mainMetric]} arrow style={{ display: 'flex'}}>
+            <div className="mainFactor text-center" title={tooltipText[this.props.mainMetric]} arrow style={{ display: 'flex'}}>
               { calculateFactor(competitorData[this.props.mainMetric], speedKitData[this.props.mainMetric]) }x
               <br/>
               Faster
-            </Tooltip>
+            </div>
           )}
           <div className="w-50 flex-auto text-center pa1 pr4 pr0-ns" style={{ background: '#f6f6f6' }}>
             <small><b>Your Website</b></small>
             <br/>
-            <b>{ competitorData[this.props.mainMetric] }ms</b>
+            <Tooltip title={tooltipText[this.props.mainMetric]} arrow>
+              <b>{ competitorData[this.props.mainMetric] }ms</b>
+            </Tooltip>
           </div>
           {!this.props.speedKitError && (
             <div className="w-50 flex-auto text-center pa1 pl4 pl0-ns" style={{ background: '#f6f6f6' }}>
               <small><b>With Speedkit</b></small>
               <br/>
-              <b>{ speedKitData[this.props.mainMetric] }ms</b>
+              <Tooltip title={tooltipText[this.props.mainMetric]} arrow>
+                <b>{ speedKitData[this.props.mainMetric] }ms</b>
+              </Tooltip>
             </div>
           )}
         </div>
