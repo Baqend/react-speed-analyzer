@@ -118,7 +118,7 @@ class ResultScreenComponent extends Component {
       <div className="flex results__wrapper pt7">
         <div className="flex-grow-1 flex flex-column">
           {this.renderForm()}
-          <div className="flex-grow-1 flex flex-column results" style={{marginTop: !competitorError ? 80 : 0}}>
+          <div className="flex-grow-1 flex flex-column results" style={{marginTop: this.props.result.isFinished && !competitorError ? 80 : 0, animationDelay: '0.6s', transition: 'margin 0.5s ease' }}>
             {this.props.result.isFinished && this.renderResults()}
           </div>
         </div>
