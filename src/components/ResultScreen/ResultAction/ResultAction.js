@@ -77,7 +77,7 @@ class ResultAction extends Component {
   // success
   renderCta() {
     return (
-      <div className="text-center">
+      <div className="text-center pt4">
         <a href="" className="btn btn-orange ma1">Boost Your Website</a>
         <a className="btn btn-orange btn-ghost ma1" onClick={this.props.toggleModal}>Contact Us</a>
       </div>

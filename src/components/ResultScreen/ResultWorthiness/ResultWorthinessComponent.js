@@ -34,7 +34,7 @@ class ResultWorthinessComponent extends Component {
         <div className="flex flex-wrap flex-nowrap-ns text-center" style={{ margin: -8 }}>
           <div className="w-100 w-50-ns pr6 pl6 ma1" style={{ padding: '64px 32px', background: '#f6f6f6' }}>
             <h4 className="mt0">Publishers and Ad-driven Businesses</h4>
-            <h2 className="mb0"><span className="lightGreen">{publisherRevenue}%</span> Revenue</h2>
+            <h2 className="mb0"><span className="lightGreen">+{publisherRevenue}%</span> Revenue</h2>
             <small className="faded">(PLT Original - PLT Speed Kit) / (19000 - 5000)</small>
             <div className="pa1 mt2" style={{ maxWidth: 350, marginLeft: 'auto', marginRight: 'auto' }}>
               <span>
@@ -49,7 +49,7 @@ class ResultWorthinessComponent extends Component {
           </div>
           <div className="w-100 w-50-ns pr6 pl6 ma1" style={{ padding: '64px 32px', background: '#f6f6f6' }}>
             <h4 className="mt0">E-Commerce</h4>
-            <h2 className="mb0"><span className="lightGreen">{eCommerceRevenue}%</span> Revenue</h2>
+            <h2 className="mb0"><span className="lightGreen">+{eCommerceRevenue}%</span> Revenue</h2>
             <small className="faded">(PLT Original - PLT Speed Kit) * (1 / 100)</small>
             <div className="pa1 mt2" style={{ maxWidth: 350, marginLeft: 'auto', marginRight: 'auto' }}>
               <span>

@@ -3,7 +3,7 @@ import { Tooltip } from 'react-tippy'
 
 import { calculateFactor } from '../../../helper/resultHelper'
 
-const metrics = [
+const userMetrics = [
   {
     name: 'speedIndex',
     label: 'Speed Index',
@@ -14,6 +14,9 @@ const metrics = [
     label: '1st Meaningful Paint',
     tooltip: 'Represents the time when a page\'s primary content appears on the screen.'
   },
+]
+
+const technicalMetrics = [
   {
     name: 'ttfb',
     label: 'Time To First Byte',
@@ -45,23 +48,13 @@ class ResultMetrics extends Component {
     const speedKitData = this.props.speedKitTest.firstView
     return (
       <div className="result__details-metrics">
-        <div className="flex items-center pt1 pb1 border-top">
-          <div className="w-third text-center">
-            <a href={this.props.competitorTest.summaryUrl} className="">Your Website Report</a>
-          </div>
-          <div className="w-third text-center faded">
-            Metric
-          </div>
-          <div className="w-third text-center">
-            <a href={this.props.speedKitTest.summaryUrl} className="">Speed Kit Report</a>
-          </div>
-        </div>
-        {metrics.map((metric, index) => {
+        <h3 className="text-center mt5">User-perceived Performance</h3>
+        {userMetrics.map((metric, index) => {
           const factor = calculateFactor(competitorData[metric.name], speedKitData[metric.name])
           return (
             <div key={index} className="flex justify-center">
               <div className="w-100">
-                <hr/>
+                {index !== 0 && <hr/>}
                 <div className="flex items-center pt1 pb1 border-top">
                   <div className="w-third text-center">
                     <div className="metricValue">{competitorData[metric.name]}ms</div>
@@ -80,16 +73,46 @@ class ResultMetrics extends Component {
             </div>
           )
         })}
-        <div className="flex items-center pt1 pb1 border-top mt2">
-          {/*<div className="w-third text-center">
-            <small><a href={this.props.competitorTest.summaryUrl} className="">WPT Report</a></small>
-          </div>*/}
-          <div className="w-100 text-center pa1">
-            <a className="btn btn-ghost" href="">Send Report</a>
+        <h3 className="text-center mt5">Technical Performance Metrics</h3>
+        {technicalMetrics.map((metric, index) => {
+          const factor = calculateFactor(competitorData[metric.name], speedKitData[metric.name])
+          return (
+            <div key={index} className="flex justify-center">
+              <div className="w-100">
+                {index !== 0 && <hr/>}
+                <div className="flex items-center pt1 pb1 border-top">
+                  <div className="w-third text-center">
+                    <div className="metricValue">{competitorData[metric.name]}ms</div>
+                  </div>
+                  <div className="w-third text-center">
+                    <Tooltip title={metric.tooltip} position="top" arrow>
+                      <div className="factor">{factor}x {factor > 1 ? 'Faster' : ''}</div>
+                      <div className="metricLabel">{metric.label}</div>
+                    </Tooltip>
+                  </div>
+                  <div className="w-third text-center">
+                    <div className="metricValue">{speedKitData[metric.name]}ms</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )
+        })}
+        <h3 className="text-center mt5">WebPagetest Waterfalls</h3>
+        <hr />
+        <div className="flex items-center border-top">
+          <div className="w-50 tc pt1 pb1">
+            <a href={this.props.competitorTest.summaryUrl} className="">Your Website Report</a>
           </div>
-          {/*<div className="w-third text-center">
-            <small><a href={this.props.speedKitTest.summaryUrl} className="">WPT Report</a></small>
-          </div>*/}
+          <div className="w-50 tc pt1 pb1 speedKitVideo">
+            <a href={this.props.speedKitTest.summaryUrl} className="">Speed Kit Report</a>
+          </div>
+        </div>
+        <hr />
+        <div className="flex items-center pt1 pb0 border-top mt3">
+          <div className="w-100 text-center pa1">
+            <a className="btn btn-ghost" href="">Send Full Report</a>
+          </div>
         </div>
       </div>
     )
@@ -99,8 +122,9 @@ class ResultMetrics extends Component {
     const competitorData = this.props.competitorTest.firstView
     return (
       <div className="result__details-metrics">
+        <h3 className="text-center mt5">User-perceived Performance</h3>
         <hr />
-        {metrics.map((metric, index) => (
+        {userMetrics.map((metric, index) => (
           <div key={index} className="flex justify-center">
             <div className="w-100">
               {index !== 0 && <hr/>}
@@ -116,12 +140,35 @@ class ResultMetrics extends Component {
           </div>
         ))}
         <hr />
-        <div className="w-100 text-center pa1">
-          <small><a href={this.props.competitorTest.summaryUrl} className="">Full Report</a></small>
+        <h3 className="text-center mt5">Technical Performance</h3>
+        <hr />
+        {technicalMetrics.map((metric, index) => (
+          <div key={index} className="flex justify-center">
+            <div className="w-100">
+              {index !== 0 && <hr/>}
+              <div className="flex items-center border-top">
+                <div className="w-50 tr pt2 pb2 pr2">
+                  <div className="metricLabel">{metric.label}</div>
+                </div>
+                <div className="w-50 tl pt2 pb2 pl2 speedKitVideo">
+                  <div className="metricValue">{competitorData[metric.name]}ms</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+        <hr />
+        <h3 className="text-center mt5">WebPagetest Waterfalls</h3>
+        <hr />
+        <div className="flex items-center border-top">
+          <div className="w-100 tc pt1 pb1">
+            <a href={this.props.competitorTest.summaryUrl} className="">Your Website Report</a>
+          </div>
         </div>
-        <div className="flex flex-wrap items-center pt1 pb1 border-top mt2">
+        <hr />
+        <div className="flex items-center pt1 pb0 border-top mt3">
           <div className="w-100 text-center pa1">
-            <a className="btn btn-ghost" href="">Send Report</a>
+            <a className="btn btn-ghost" href="">Send Full Report</a>
           </div>
         </div>
       </div>

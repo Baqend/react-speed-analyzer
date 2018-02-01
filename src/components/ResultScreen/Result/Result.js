@@ -132,7 +132,6 @@ class Result extends Component {
             <h3 className="text-center mt5">Pagespeed Insights</h3>
             {this.renderPSI()}
             <hr />
-            <h3 className="text-center mt5">Performance Details</h3>
             <ResultMetrics { ...this.props } />
           </div>
         </Collapse>
