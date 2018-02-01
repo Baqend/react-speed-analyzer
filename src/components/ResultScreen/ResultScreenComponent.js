@@ -69,7 +69,7 @@ class ResultScreenComponent extends Component {
     // const speedKitError = true
 
     return (
-      <div className="flex-grow-1 results" style={{ marginTop: !competitorError ? 80 : 0 }}>
+      <div className="flex-grow-1 results animated slideInUp" style={{ animationDuration: '0.8s' }}>
         { !competitorError && (
           <div className="container pa2">
             <div className="box-shadow results__box" style={{ marginTop: '-96px' }}>
@@ -113,15 +113,14 @@ class ResultScreenComponent extends Component {
   }
 
   render() {
+    const competitorError = this.props.competitorError
     return (
-      <div className="results__wrapper pt7">
-        <div className="flex flex-column">
+      <div className="flex results__wrapper pt7">
+        <div className="flex-grow-1 flex flex-column">
           {this.renderForm()}
-          {this.props.result.isFinished && (
-            <div className="flex-grow-1 flex flex-column animated slideInUp" style={{animationDuration: '0.8s'}}>
-              {this.renderResults()}
-            </div>
-          )}
+          <div className="flex-grow-1 flex flex-column results" style={{marginTop: !competitorError ? 80 : 0}}>
+            {this.props.result.isFinished && this.renderResults()}
+          </div>
         </div>
         {this.renderContactFormModal()}
       </div>
