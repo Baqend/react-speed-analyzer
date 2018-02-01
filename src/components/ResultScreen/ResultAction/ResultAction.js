@@ -1,9 +1,20 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { startTest } from '../../../actions/startTest'
+import { isURL } from '../../../helper/utils'
+
 import WordPressLogo from '../../../assets/wordpress.png'
 
 class ResultAction extends Component {
+
+  restartAnalyzer = () => {
+    if (isURL(this.props.config.url)) {
+      this.props.actions.startTest()
+    }
+  }
 
   // all Tests failed
   renderAllTestsFailed() {
@@ -14,7 +25,7 @@ class ResultAction extends Component {
           <strong>It looks like some fine tuning or configuration is required to measure your site. Please contact our web performance experts for further information and assistance!</strong>
         </div>
         <div className="text-center">
-          <a className="btn btn-orange btn-ghost ma1" onClick={this.props.toggleModal}>Contact Us</a>
+          <a className="btn btn-orange btn-ghost ma1" onClick={this.restartAnalyzer}>Rerun Test</a>
         </div>
       </div>
     )
@@ -89,7 +100,6 @@ class ResultAction extends Component {
     const speedKitError = this.props.speedKitError
     const isWordPress = this.props.competitorTest.isWordPress
     const isSpeedKitComparison = this.props.result.isSpeedKitComparison
-    console.log(this.props)
 
     if (competitorError) {
       return this.renderAllTestsFailed()
@@ -108,6 +118,19 @@ class ResultAction extends Component {
 
 ResultAction.propTypes = {
   toggleModal: PropTypes.func,
+  config: PropTypes.object,
 }
 
-export default ResultAction
+function mapStateToProps(state) {
+  return {
+    config: state.config,
+  }
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    actions: bindActionCreators({ startTest }, dispatch),
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ResultAction)

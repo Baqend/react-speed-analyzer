@@ -36,7 +36,7 @@ class ResultWorthinessComponent extends Component {
             <h4 className="mt0">Publishers and Ad-driven Businesses</h4>
             <h2 className="mb0"><span className="lightGreen">+{publisherRevenue}%</span> Revenue</h2>
             <small className="faded">(PLT Original - PLT Speed Kit) / (19000 - 5000)</small>
-            <div className="pa1 mt2" style={{ maxWidth: 350, marginLeft: 'auto', marginRight: 'auto' }}>
+            <div className="pa1 mt2" style={{ maxWidth: 340, marginLeft: 'auto', marginRight: 'auto' }}>
               <span>
                 <a href="https://storage.googleapis.com/doubleclick-prod/documents/The_Need_for_Mobile_Speed_-_FINAL.pdf#page=3"
                   target="_blank">DoubleClick study (p. 3)
@@ -51,7 +51,7 @@ class ResultWorthinessComponent extends Component {
             <h4 className="mt0">E-Commerce</h4>
             <h2 className="mb0"><span className="lightGreen">+{eCommerceRevenue}%</span> Revenue</h2>
             <small className="faded">(PLT Original - PLT Speed Kit) * (1 / 100)</small>
-            <div className="pa1 mt2" style={{ maxWidth: 350, marginLeft: 'auto', marginRight: 'auto' }}>
+            <div className="pa1 mt2" style={{ maxWidth: 340, marginLeft: 'auto', marginRight: 'auto' }}>
               <span>
                 <a href="http://sites.google.com/site/glinden/Home/StanfordDataMining.2006-11-28.ppt?attredirects=0"
                   target="_blank">Amazon study (p. 10)
