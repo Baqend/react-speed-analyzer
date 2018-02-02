@@ -1,9 +1,16 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 
 import './Footer.css'
 import LogoWhite from '../../assets/logo_white.png'
 
 class Footer extends Component {
+  getRandomExample = (e) => {
+    e.preventDefault()
+    const ids = this.props.examples.map(example => example.id)
+    alert(ids[Math.floor(Math.random() * ids.length)])
+  }
+
   render() {
     return (
       <footer>
@@ -24,7 +31,7 @@ class Footer extends Component {
                 <a className="pa1" href="https://dashboard.baqend.com/imprint">
                   Imprint
                 </a>
-                <a className="pa1" href="/?examples=true">
+                <a className="pa1" href="" onClick={this.getRandomExample}>
                   Examples
                 </a>
               </div>
@@ -37,4 +44,10 @@ class Footer extends Component {
   }
 }
 
-export default Footer
+function mapStateToProps(state) {
+  return {
+    examples: state.examples,
+  }
+}
+
+export default connect(mapStateToProps, null)(Footer)
