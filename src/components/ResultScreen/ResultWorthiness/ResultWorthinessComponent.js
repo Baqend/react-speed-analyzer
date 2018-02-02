@@ -27,7 +27,7 @@ class ResultWorthinessComponent extends Component {
             <h1 style={{ maxWidth: 768, margin: '0 auto' }}>Speed Kit made your site <span style={{ color: '#F27354' }}>{absolute}</span> faster by serving {servedRate}% of all requests.</h1>
             <br />
             <h4 className="faded" style={{ maxWidth: 530, margin: '0 auto' }}>
-              Here is what Google and Amazon have found for publishers and e-commerce.
+              Here is the impact Google and Amazon research predicts for this uplift.
             </h4>
           </div>
         </div>

@@ -27,8 +27,8 @@ class SpeedKitCarousel extends Component {
           ))}
         </Carousel>
 
-        <div className="text-center" style={{ fontSize: '12px' }}>
-          Performance tests to illustrate Speed Kit's potential. Click to learn more
+        <div className="text-center" style={{ fontSize: '13px' }}>
+          Example performance tests of popular websites. Click to learn more.
         </div>
       </div>
     )

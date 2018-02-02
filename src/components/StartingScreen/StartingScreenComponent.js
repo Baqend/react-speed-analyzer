@@ -129,6 +129,7 @@ class StartingScreenComponent extends Component {
   render() {
     // this.state.showCarousel = true
     // this.props.result.isStarted = true
+    // this.state.showFacts = true
     // this.props.result.testOverview.psiDomains = 25
     // this.props.result.testOverview.psiRequests = 111
     // this.props.result.testOverview.psiResponseSize = 2527141

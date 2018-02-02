@@ -104,16 +104,16 @@ class ResultMetrics extends Component {
         <hr />
         <div className="flex items-center border-top">
           <div className="w-50 tc pt1 pb1">
-            <a href={this.props.competitorTest.summaryUrl} className="">Your Website Report</a>
+            <a href={this.props.competitorTest.summaryUrl} className="">{this.props.competitorTest.url}</a>
           </div>
           <div className="w-50 tc pt1 pb1" style={{ borderLeft: '1px solid #E8E8E8' }}>
-            <a href={this.props.speedKitTest.summaryUrl} className="">Speed Kit Report</a>
+            <a href={this.props.speedKitTest.summaryUrl} className="">{this.props.speedKitTest.url} with Speed Kit</a>
           </div>
         </div>
         <hr />
         <div className="flex items-center pt1 pb0 border-top mt3">
           <div className="w-100 text-center pa1">
-            <a className="btn btn-ghost" href="">Send Full Report</a>
+            <a className="btn btn-ghost" href="">Get Full Report by Email</a>
           </div>
         </div>
       </div>
@@ -142,7 +142,7 @@ class ResultMetrics extends Component {
           </div>
         ))}
         <hr />
-        <h3 className="text-center mt5">Technical Performance</h3>
+        <h3 className="text-center mt5">Technical Performance Metrics</h3>
         <hr />
         {technicalMetrics.map((metric, index) => (
           <div key={index} className="flex justify-center">
@@ -164,15 +164,10 @@ class ResultMetrics extends Component {
         <hr />
         <div className="flex items-center border-top">
           <div className="w-100 tc pt1 pb1">
-            <a href={this.props.competitorTest.summaryUrl} className="">Your Website Report</a>
+            <a href={this.props.competitorTest.summaryUrl} className="">{this.props.competitorTest.url}</a>
           </div>
         </div>
         <hr />
-        <div className="flex items-center pt1 pb0 border-top mt3">
-          <div className="w-100 text-center pa1">
-            <a className="btn btn-ghost" href="">Send Full Report</a>
-          </div>
-        </div>
       </div>
     )
   }
