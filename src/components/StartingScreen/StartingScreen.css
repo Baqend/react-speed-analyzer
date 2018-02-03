@@ -5,7 +5,7 @@
   --device-color: #fff;
 }
 
-.device {
+.device, .expert {
   width: 100%;
   max-width: 998px;
   /* min-height: 100vh; */
@@ -22,7 +22,7 @@
   }
 }
 
-.device__laptop {
+.device .device__laptop {
   display: flex;
   flex-direction: column;
   /* For small screens */
@@ -122,7 +122,7 @@
   }
 }
 
-.device__phone {
+.device .device__phone {
   display: flex;
   /* height: 666px; */
   justify-content: center;

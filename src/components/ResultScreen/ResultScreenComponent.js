@@ -20,7 +20,7 @@ class ResultScreenComponent extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      showSettings: false,
+      showSettings: true,
       showDetails: false,
       showModal: false,
     }

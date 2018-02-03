@@ -43,6 +43,7 @@ class ConfigForm extends Component {
     return (
       <ConfigFormComponent
         config={this.props.config}
+        whiteListCandidates={this.props.whiteListCandidates}
         showConfig={this.props.showConfig}
         showAdvancedConfig={this.props.showAdvancedConfig}
         isInitiated={this.props.isInitiated}
@@ -65,6 +66,7 @@ ConfigForm.defaultProps = {
 
 ConfigForm.propTypes = {
   config: PropTypes.object.isRequired,
+  whiteListCandidates: PropTypes.object,
   showConfig: PropTypes.bool,
   showAdvancedConfig: PropTypes.bool,
   onSubmit: PropTypes.func.isRequired,
@@ -74,6 +76,7 @@ ConfigForm.propTypes = {
 function mapStateToProps(state) {
   return {
     isInitiated: state.result.isInitiated,
+    whiteListCandidates: state.result.whiteListCandidates
   }
 }
 

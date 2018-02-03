@@ -34,7 +34,7 @@
       font-size: 16px;
     }
     .CodeMirror {
-      height: 120px;
+      height: auto;
       background: color(var(--white) a(10%));
       color: var(--white);
       border: 1px solid color(var(--white) a(30%));
@@ -53,4 +53,56 @@
       cursor: pointer;
     }
   }
+}
+
+
+.checkbox-custom {
+  background-color: transparent;
+  display: inline-block;
+}
+
+/* hide default input */
+.checkbox-custom input {
+  display: none;
+}
+
+.checkbox-custom label:empty {
+  padding-left: 10px;
+}
+
+/* checkbox container */
+.checkbox-custom label {
+  cursor: pointer;
+  position: relative;
+  padding-left: 32px;
+  margin-right: 0px;
+  margin-bottom: 5px;
+  padding-top: 2px;
+}
+/* checkbox border */
+.checkbox-custom label:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 1px solid #6a747b;
+  border-radius: 2px;
+}
+
+/* checked state icon */
+.checkbox-custom input[type=checkbox]:checked + label:after {
+  position: absolute;
+  content: " ";
+  font-size: 18px;
+  top: 2px;
+  left: 6px;
+  width: 6px;
+  height: 12px;
+  transform: rotate(35deg);
+  color: black;
+  border-right: 4px solid #fafafa;
+  border-bottom: 4px solid #fafafa;
 }

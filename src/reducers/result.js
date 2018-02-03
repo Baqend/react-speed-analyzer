@@ -18,6 +18,8 @@ import {
   RESET_TEST_RESULT,
 } from '../actions/types'
 
+import { generateRules } from '../helper/utils'
+
 const initialState = {
   isFinished: false,
   isInitiated: false,
@@ -33,6 +35,28 @@ const initialState = {
   speedKitSubscription: null,
   competitorTest: {},
   speedKitTest: {},
+  whiteListCandidates: [],
+}
+
+const getWhiteListCandidates = (state, speedKitTest) => {
+  const url = state.testOverview.url
+  const whitelist = state.testOverview.whitelist || {}
+  const domains = speedKitTest.firstView && speedKitTest.firstView.domains
+
+  if (domains) {
+    const rules = generateRules(url, whitelist)
+    const regexp = new RegExp(rules)
+    return domains
+      .sort((a, b) => parseFloat(b.requests) - parseFloat(a.requests))
+      .filter(domain => (
+        !regexp.test(domain.url)
+          && domain.url.indexOf('makefast') === -1
+          && domain.url.indexOf('app.baqend') === -1
+          && !domain.isAdDomain
+      ))
+      .splice(0, 6)
+  }
+  return []
 }
 
 export default function result(state = initialState, action = {}) {
@@ -85,8 +109,12 @@ export default function result(state = initialState, action = {}) {
       const competitorTest = action.payload[0] ? action.payload[0] : {}
       return { ...state, competitorTest }
     case SPEED_KIT_RESULT_NEXT:
-      const speedKitTest = action.payload[0] ? action.payload[0] : {}
-      return { ...state, speedKitTest }
+      if (action.payload[0]) {
+        const speedKitTest = action.payload[0]
+        const whiteListCandidates = getWhiteListCandidates(state, speedKitTest)
+        return { ...state, speedKitTest, whiteListCandidates }
+      }
+      return state
     case COMPETITOR_SUBSCRIPTION:
       return { ...state, competitorSubscription: action.payload }
     case SPEED_KIT_SUBSCRIPTION:

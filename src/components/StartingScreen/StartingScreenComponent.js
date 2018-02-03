@@ -27,7 +27,7 @@ class StartingScreenComponent extends Component {
     this.state = {
       showCarousel: false,
       showFacts: false,
-      showAdvancedConfig: true,
+      showAdvancedConfig: false,
     }
   }
 
@@ -138,7 +138,7 @@ class StartingScreenComponent extends Component {
     const deviceTypeClass = this.props.config.isMobile ? 'device__phone' : 'device__laptop'
     const statusClass = this.props.result.isStarted ? 'loading' : null
     return (
-      <div className="device">
+      <div className={'device'}>
         <div className={`${deviceTypeClass}`}>
           <Device>
             <div className="flex-grow-1 flex flex-column" style={{ overflow: 'hidden' }}>

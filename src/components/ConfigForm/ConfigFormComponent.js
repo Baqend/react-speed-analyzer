@@ -2,16 +2,26 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
 import Toggle from 'react-toggle'
-import CodeMirror from 'react-codemirror'
+// import CodeMirror from 'react-codemirror'
+import {Controlled as CodeMirror} from 'react-codemirror2'
 
 import arrow from '../../assets/arrow_right.svg'
 import './ConfigForm.css'
+
+const defaultSpeedKitConfig = `{
+  "appName": "makefast",
+  "whitelist": [
+    { "host": [] }
+  ]
+}`
 
 class ConfigFormComponent extends Component {
   constructor(props) {
     super(props)
     this.state = {
       showAdvancedConfig: false,
+      speedKitConfig: defaultSpeedKitConfig,
+      whiteListCandidates: [],
     }
   }
 
@@ -39,9 +49,52 @@ class ConfigFormComponent extends Component {
     this.props.onCachingSwitch()
   }
 
+  toggleAdvancedSettings = () => {
+    const showAdvancedConfig = !this.state.showAdvancedConfig
+    if (showAdvancedConfig) {
+      this.props.onSpeedKitConfigChange(this.state.speedKitConfig)
+    } else {
+      this.props.onSpeedKitConfigChange(null)
+    }
+    this.setState({ showAdvancedConfig })
+  }
+
+  handleWhiteListDomainClick = (e, domain) => {
+    const checked = e.target.checked
+    try {
+      const config = JSON.parse(this.state.speedKitConfig)
+
+      if (!config.whitelist) config.whitelist = []
+      if (!config.whitelist[0]) config.whitelist[0] = { host: [] }
+      if (!config.whitelist[0].host) config.whitelist[0].host = []
+
+      if (checked) {
+        config.whitelist[0].host.push(domain.url)
+      } else {
+        config.whitelist[0].host.splice(config.whitelist[0].host.indexOf(domain.url), 1)
+      }
+
+      const value = JSON.stringify(config, null, 2)
+      this.setState({ speedKitConfig: value }, () => {
+        this.props.onSpeedKitConfigChange(value)
+      })
+    } catch (e) {
+      alert("Your config JSON seems not to be valid")
+    }
+  }
+
   handleSubmit = (event) => {
     event.preventDefault()
     this.props.onSubmit()
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.whiteListCandidates !== this.props.whiteListCandidates) {
+      this.setState({ whiteListCandidates: nextProps.whiteListCandidates })
+    }
+    if (nextProps.config.speedKitConfig && this.state.speedKitConfig === defaultSpeedKitConfig) {
+      this.setState({ speedKitConfig: nextProps.config.speedKitConfig })
+    }
   }
 
   renderConfig() {
@@ -80,7 +133,7 @@ class ConfigFormComponent extends Component {
     return (
       <div className="advanced pv2">
         <div className="flex flex-wrap">
-          <div className="flex-grow-1 flex-shrink-0" style={{ flexBasis: '50%' }}>
+          <div className="flex-grow-1 flex-shrink-0" style={{ flexBasis: '100%' }}>
             <div className="ph2">
               <h5 className="mv1 text-center">WebPagetest Config</h5>
               <div className="pt1 flex items-center">
@@ -113,21 +166,36 @@ class ConfigFormComponent extends Component {
               </div>
             </div>
           </div>
-          <div className="flex-grow-1" style={{ flexBasis: '50%' }}>
+          <div className="flex-grow-1" style={{ flexBasis: '100%' }}>
             <div className="ph2">
               <h5 className="mv1 text-center">Speed Kit Config</h5>
+              {this.state.whiteListCandidates.length && (
+                <div className="mt2" style={{ marginLeft: -8, marginRight: -8 }}>
+                  {this.state.whiteListCandidates.map(domain => (
+                    <div className="checkbox-custom ma1">
+                      <input id={domain.url} type="checkbox" onChange={(e) => this.handleWhiteListDomainClick(e, domain)} />
+                      <label for={domain.url}>
+                        {domain.url}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              )}
               <div className="pt1">
-                <CodeMirror value={this.props.config.speedKitConfig} onChange={this.handleSpeedKitConfigChange}/>
+                <CodeMirror
+                  value={this.state.speedKitConfig}
+                  onBeforeChange={(editor, data, value) => {
+                    this.setState({ speedKitConfig: value }, () => {
+                      this.props.onSpeedKitConfigChange(value)
+                    })
+                  }}
+                />
               </div>
             </div>
           </div>
         </div>
       </div>
     )
-  }
-
-  toggleAdvancedSettings = () => {
-    this.setState({ showAdvancedConfig: !this.state.showAdvancedConfig })
   }
 
   render() {
