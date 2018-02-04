@@ -24,7 +24,7 @@ class ResultScreen extends Component {
   }
 
   componentWillMount() {
-    const testId = parse(this.props.location.search)['testId']
+    const testId = this.props.match.params.testId
     const competitorTest = this.props.competitorTest
     const speedKitTest = this.props.speedKitTest
 
@@ -43,12 +43,12 @@ class ResultScreen extends Component {
     const competitorTest = nextProps.competitorTest
     const speedKitTest = nextProps.speedKitTest
 
-    if(testOverview.competitorTestResult && testOverview.speedKitTestResult ) {
-      const testId = getObjectKey(testOverview.id)
-      if(nextProps.location.search.indexOf(testId) === -1) {
-        nextProps.history.push(`/?testId=${testId}`)
-      }
-    }
+    // if(testOverview.competitorTestResult && testOverview.speedKitTestResult ) {
+    //   const testId = getObjectKey(testOverview.id)
+    //   if(nextProps.location.search.indexOf(testId) === -1) {
+    //     nextProps.history.push(`/?testId=${testId}`)
+    //   }
+    // }
 
     // terminate the running test as soon as both tests have finished (when reloading the page)
     if(competitorTest.hasFinished && speedKitTest.hasFinished) {

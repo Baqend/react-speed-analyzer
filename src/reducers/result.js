@@ -1,6 +1,7 @@
 import {
   INIT_TEST,
   START_TEST,
+  MONITOR_TEST,
   CONTINUE_TEST,
   TESTOVERVIEW_LOAD,
   TESTOVERVIEW_SAVE,
@@ -21,6 +22,7 @@ import {
 import { generateRules } from '../helper/utils'
 
 const initialState = {
+  isMonitored: false,
   isFinished: false,
   isInitiated: false,
   isStarted: false,
@@ -74,6 +76,8 @@ export default function result(state = initialState, action = {}) {
         isSpeedKitComparison: action.payload.speedkit,
         speedKitVersion: action.payload.speedkitVersion,
       }
+    case MONITOR_TEST:
+      return { ...state, isMonitored: true }
     case INIT_TEST:
       return { ...state, isInitiated: true }
     case START_TEST:
@@ -127,6 +131,7 @@ export default function result(state = initialState, action = {}) {
         isInitiated: false,
         isStarted: false,
         isFinished: true,
+        isMonitored: false,
       }
     case RESET_TEST_RESULT:
       return { ...initialState }

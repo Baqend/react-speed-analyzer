@@ -11,46 +11,78 @@ import { getObjectKey } from '../../helper/utils'
 import { isURL } from '../../helper/utils'
 
 import { terminateTest } from '../../actions/terminateTest'
-import { monitorTest } from '../../actions/monitorTest'
+import { resetTest, monitorTest } from '../../actions/monitorTest'
 import { startTest } from '../../actions/startTest'
 
 
 class StartingScreen extends Component {
   componentWillMount() {
-    const testId = parse(this.props.location.search)['testId']
-    if(testId) {
-      this.props.actions.monitorTest(testId)
-    }
+    // const testId = this.props.match.params.testId
+    // if(testId) {
+    //   this.props.actions.monitorTest(testId)
+    // }
+    this.checkTest(this.props)
   }
 
   componentWillReceiveProps(nextProps) {
+    this.checkTest(nextProps)
+    // debugger
+    // const { history } = this.props
     // change the location attribute if a new test was triggered
-    const testOverview = nextProps.testOverview
-    if(testOverview.competitorTestResult && testOverview.speedKitTestResult ) {
-      const testId = getObjectKey(testOverview.id)
-      if(nextProps.location.search.indexOf(testId) === -1) {
-        nextProps.history.push(`?testId=${testId}`)
-      }
+    // debugger
+    // const testOverview = nextProps.testOverview
+    // if(testOverview.competitorTestResult && testOverview.speedKitTestResult ) {
+    //   const testId = getObjectKey(testOverview.id)
+    //   if(nextProps.location.search.indexOf(testId) === -1) {
+    //     nextProps.history.push(`?testId=${testId}`)
+    //   }
+    // }
+    //
+    // // add the test id as new location and trigger monitoring process
+    // if(nextProps.location !== this.props.location) {
+    //   const testId = parse(nextProps.location.search)['testId']
+    //   if(testId) {
+    //     this.props.actions.monitorTest(testId)
+    //   }
+    // }
+    //
+    // // terminate the running test as soon as both test have finished and navigate to the result screen
+    // if(nextProps.competitorTest.hasFinished && nextProps.speedKitTest.hasFinished) {
+    //   this.props.actions.terminateTest()
+    //   debugger
+    //   nextProps.history.push('/result' + nextProps.location.search)
+    //   // history.push(`/test/${nextProps.testOverview.id}`)
+    //   const testId = this.props.match.params.testId
+    // }
+  }
+
+  checkTest = (props) => {
+    const { history } = props
+    const { testId } = props.match.params
+    const { testOverview, isMonitored, isFinished } = props.result
+    // debugger
+    // if (!testId && testOverview.id && testOverview.competitorTestResult) {
+    //   history.push(`/test/${getObjectKey(testOverview.id)}`)
+    // }
+
+    if (testId && !isMonitored && !isFinished ) {
+      this.props.actions.monitorTest(testId).catch((e) => {
+        this.props.actions.resetTest()
+        history.replace('/')
+      })
     }
 
-    // add the test id as new location and trigger monitoring process
-    if(nextProps.location !== this.props.location) {
-      const testId = parse(nextProps.location.search)['testId']
-      if(testId) {
-        this.props.actions.monitorTest(testId)
-      }
-    }
-
-    // terminate the running test as soon as both test have finished and navigate to the result screen
-    if(nextProps.competitorTest.hasFinished && nextProps.speedKitTest.hasFinished) {
-      this.props.actions.terminateTest()
-      nextProps.history.push('/result' + nextProps.location.search)
+    if (testId && isFinished) {
+      history.replace(`/test/${testId}/result`)
     }
   }
 
   onSubmit = () => {
+    const { history } = this.props
     if (isURL(this.props.config.url)) {
-      this.props.actions.startTest()
+      this.props.actions.startTest().then((testOverview) => {
+        history.push(`/test/${getObjectKey(testOverview.id)}`)
+      })
     }
   }
 
@@ -87,6 +119,7 @@ function mapDispatchToProps(dispatch) {
   return {
     actions: bindActionCreators({
       startTest,
+      resetTest,
       monitorTest,
       terminateTest,
     }, dispatch),

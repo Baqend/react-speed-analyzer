@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import { Route, Switch } from 'react-router'
+import { Route, Switch, Redirect } from 'react-router'
 import { BrowserRouter } from 'react-router-dom'
 
 import { Provider } from 'react-redux'
@@ -29,7 +29,15 @@ class App extends Component {
                   </div>
                 </div>
               )}/>
-              <Route exact path="/result" render={props => (
+              <Redirect from='/test/' to='/' exact />
+              <Route exact path="/test/:testId" render={props => (
+                <div id="main">
+                  <div className="content">
+                    <StartingScreen { ...props } />
+                  </div>
+                </div>
+              )}/>
+              <Route exact path="/test/:testId/result" render={props => (
                 <div id="main">
                   <Navbar />
                   <div className="content">

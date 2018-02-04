@@ -16,7 +16,8 @@ import {
  * Triggers the start of a new test.
  */
 export const startTest = () => ({
-  'BAQEND': async ({ dispatch, getState, db }) => {
+  'BAQEND': async (store) => {
+    const { dispatch, getState, db } = store
     //reset the result store
     dispatch({ type: RESET_TEST_RESULT })
     dispatch({ type: INIT_TEST })
@@ -29,16 +30,9 @@ export const startTest = () => ({
 
       if(!isRateLimited && !isBaqendApp) {
         dispatch({ type: START_TEST })
-
-        await createTestOverview({ dispatch, getState, db })
-        await Promise.all([
-          callPageSpeedInsightsAPI({ dispatch, getState, db, url, isMobile }),
-          startCompetitorTest({ dispatch, getState, db }),
-          startSpeedKitTest({ dispatch, getState, db })
-        ])
-
-        const { testOverview } = getState().result
-        dispatch(await saveTestOverview(testOverview))
+        const testOverview = await createTestOverview({ ...store })
+        const psi = callPageSpeedInsightsAPI({ dispatch, getState, db, url, isMobile })
+        return testOverview
       }
     } catch(e) {console.log(e)}
   }
@@ -48,12 +42,14 @@ export const startTest = () => ({
  * Saves a given testOverview object to the baqend database
  * @param testOverview The testOverview object to be saved.
  */
-export const saveTestOverview = (testOverview) => ({
-  'BAQEND': [testOverview, ({ dispatch, getState, db }, ref) => ref.save().then(() => dispatch({
+export const saveTestOverview = async ({ dispatch, getState }, testOverview) => {
+  const res = await testOverview.save().then((r) => r.toJSON())
+  dispatch({
     type: TESTOVERVIEW_SAVE,
-    payload: ref
-  }))]
-})
+    payload: res
+  })
+  return res
+}
 
 /**
  * Prepares the test before its execution (check rate limiting and normalize url).
@@ -86,14 +82,20 @@ export const prepareTest = async ({ dispatch, getState, db }) => {
  * @param getState Method to get the state of the redux store.
  * @param db The baqend database instance.
  */
-const createTestOverview = async ({ dispatch, getState, db }) => {
+const createTestOverview = async (store) => {
+  const { dispatch, getState, db } = store
   const { url, location, caching, isMobile, speedKitConfig, activityTimeout } = getState().config
   const { isSpeedKitComparison }  = getState().result
   const testOverview = new db.TestOverview()
   const tld = getTLD(url)
-  const uniqueId = await db.modules.post('generateUniqueId', { entityClass: 'TestOverview' })
 
-  testOverview.id = uniqueId + tld.substring(0, tld.length - 1)
+  const ids = await Promise.all([
+    db.modules.post('generateUniqueId', { entityClass: 'TestOverview' }),
+    startCompetitorTest({ ...store }),
+    startSpeedKitTest({ ...store }),
+  ])
+
+  testOverview.id = ids[0] + tld.substring(0, tld.length - 1)
   testOverview.url = url
   testOverview.location = location
   testOverview.caching = caching
@@ -101,11 +103,14 @@ const createTestOverview = async ({ dispatch, getState, db }) => {
   testOverview.speedKitConfig = speedKitConfig
   testOverview.activityTimeout = activityTimeout
   testOverview.isSpeedKitComparison = isSpeedKitComparison
+  testOverview.competitorTestResult = new db.TestResult({ id: ids[1] })
+  testOverview.speedKitTestResult = new db.TestResult({ id: ids[2] })
 
   dispatch({
     type: TESTOVERVIEW_SAVE,
     payload: await testOverview.save()
   })
+  return testOverview
 }
 
 /**
@@ -115,14 +120,25 @@ const createTestOverview = async ({ dispatch, getState, db }) => {
  * @param url The URL to be tested.
  * @param isMobile Boolean to verify whether the mobile version should be tested or not.
  */
-const callPageSpeedInsightsAPI = async ({ dispatch, db,  url, isMobile }) => {
+const callPageSpeedInsightsAPI = async ({ dispatch, getState, db,  url, isMobile }) => {
   const pageSpeedInsightsResult = await db.modules.get('callPageSpeed', { url, mobile: isMobile })
-
   dispatch({
     type: CALL_PAGESPEED_INSIGHTS_GET,
     payload: pageSpeedInsightsResult,
   })
+  db.TestOverview.fromJSON(getState().result.testOverview).save()
+  return pageSpeedInsightsResult
 }
+
+// const { testOverview } = getState().result
+// dispatch(await saveTestOverview(testOverview))
+//
+// export const saveTestOverview = (testOverview) => ({
+//   'BAQEND': [testOverview, ({ dispatch, getState, db }, ref) => ref.save().then(() => dispatch({
+//     type: TESTOVERVIEW_SAVE,
+//     payload: ref
+//   }))]
+// })
 
 /**
  * Starts the test for the competitor version.
@@ -144,10 +160,11 @@ const startCompetitorTest = async ({ dispatch, getState, db }) => {
     mobile,
   })
 
-  dispatch({
-    type: START_TEST_COMPETITOR_POST,
-    payload: competitorTestId,
-  })
+  // dispatch({
+  //   type: START_TEST_COMPETITOR_POST,
+  //   payload: competitorTestId,
+  // })
+  return competitorTestId.baqendId
 }
 
 /**
@@ -178,8 +195,9 @@ const startSpeedKitTest = async ({ dispatch, getState, db }) => {
     mobile: isMobile,
   })
 
-  dispatch({
-    type: START_TEST_SPEED_KIT_POST,
-    payload: competitorTestId,
-  })
+  // dispatch({
+  //   type: START_TEST_SPEED_KIT_POST,
+  //   payload: competitorTestId,
+  // })
+  return competitorTestId.baqendId
 }

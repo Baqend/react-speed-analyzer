@@ -1,35 +1,54 @@
 import {
+  RESET_TEST_RESULT,
   CONTINUE_TEST,
+  MONITOR_TEST,
   TESTOVERVIEW_LOAD,
+  TESTOVERVIEW_LOAD_FAIL,
   UPDATE_CONFIG,
   TEST_STATUS_GET,
   COMPETITOR_RESULT_NEXT,
   COMPETITOR_SUBSCRIPTION,
   SPEED_KIT_RESULT_NEXT,
-  SPEED_KIT_SUBSCRIPTION
+  SPEED_KIT_SUBSCRIPTION,
+  TERMINATE_TEST
 } from './types'
 
+
+export const resetTest = () => ({
+  'BAQEND': async ({ dispatch }) => {
+    dispatch({ type: RESET_TEST_RESULT })
+  }
+})
 /**
  * Checks the status of a given test and subscribes to the result.
  * @param testId The id of the test to be monitored.
  */
 export const monitorTest = (testId) => ({
-  'BAQEND': async ({ dispatch, getState, db }) => {
+  'BAQEND': async (store) => {
+    const { dispatch, getState, db } = store
+
+    dispatch({ type: MONITOR_TEST })
     dispatch({ type: CONTINUE_TEST })
+
     let { testOverview } = getState().result
     if(Object.keys(testOverview).length === 0) {
-      await loadTestOverviewByTestId({ dispatch, getState, db , testId})
-      testOverview = getState().result.testOverview
+      try {
+        await loadTestOverviewByTestId({ ...store, testId})
+        testOverview = getState().result.testOverview
+      } catch (e) {
+        throw e
+      }
     }
 
     dispatch(updateConfigByTestOverview(testOverview))
+
     const competitorBaqendId = testOverview.competitorTestResult
     const speedKitBaqendId = testOverview.speedKitTestResult
+    // debugger
+    checkTestStatus({ ...store, competitorBaqendId })
 
-    checkTestStatus({ dispatch, getState, db, competitorBaqendId })
-
-    subscribeOnCompetitorTest({ dispatch, getState, db , competitorBaqendId})
-    subscribeOnSpeedKitTest({ dispatch, getState, db , speedKitBaqendId})
+    subscribeOnCompetitorTest({ ...store, competitorBaqendId})
+    subscribeOnSpeedKitTest({ ...store, speedKitBaqendId})
   }
 })
 
@@ -40,10 +59,20 @@ export const monitorTest = (testId) => ({
  * @param testId The id of the test to be loaded.
  */
 const loadTestOverviewByTestId = async ({ dispatch, db, testId }) => {
-  dispatch({
-    type: TESTOVERVIEW_LOAD,
-    payload: await db.TestOverview.load(testId)
-  })
+  try {
+    const testOverview = await db.TestOverview.load(testId)
+    dispatch({
+      type: TESTOVERVIEW_LOAD,
+      payload: testOverview
+    })
+    return testOverview
+  } catch (e) {
+    dispatch({
+      type: TESTOVERVIEW_LOAD_FAIL,
+      payload: e
+    })
+    throw e
+  }
 }
 
 /**
@@ -54,6 +83,7 @@ const loadTestOverviewByTestId = async ({ dispatch, db, testId }) => {
  * @param competitorBaqendId The competitor test id to get the status for.
  */
 const checkTestStatus = ({ dispatch, getState, db, competitorBaqendId }) => {
+  console.log("checkTestStatus")
   const interval = setInterval(() => {
     getTestStatus({ dispatch, getState, db, competitorBaqendId })
       .then(() => {
@@ -73,9 +103,9 @@ const checkTestStatus = ({ dispatch, getState, db, competitorBaqendId }) => {
  * @param competitorBaqendId The competitor test id to get the status for.
  */
 const getTestStatus = async ({ dispatch, db, competitorBaqendId }) => {
+  console.log("getTestStatus")
   const res = await db.modules.get('getTestStatus', { baqendId: competitorBaqendId })
   const status = { statusCode: res.status.statusCode, statusText: res.status.statusText }
-
   dispatch({
     type: TEST_STATUS_GET,
     payload: status
@@ -106,12 +136,13 @@ const updateConfigByTestOverview = (testOverview) => {
  * @param db The baqend database instance.
  * @param competitorBaqendId The competitor baqend id to subscribe on.
  */
-const subscribeOnCompetitorTest = ({ dispatch, db, competitorBaqendId }) => {
+const subscribeOnCompetitorTest = ({ dispatch, getState, db, competitorBaqendId }) => {
   const callback = (r) => {
     dispatch({
       type: COMPETITOR_RESULT_NEXT,
       payload: r
     })
+    checkTestFinishState({ dispatch, getState })
   }
 
   const subscription = db.TestResult.find().equal('id', competitorBaqendId).resultStream().subscribe(callback)
@@ -127,12 +158,13 @@ const subscribeOnCompetitorTest = ({ dispatch, db, competitorBaqendId }) => {
  * @param db The baqend database instance.
  * @param competitorBaqendId The speed kit baqend id to subscribe on.
  */
-const subscribeOnSpeedKitTest = ({ dispatch, db, speedKitBaqendId }) => {
+const subscribeOnSpeedKitTest = ({ dispatch, getState, db, speedKitBaqendId }) => {
   const callback = (r) => {
     dispatch({
       type: SPEED_KIT_RESULT_NEXT,
       payload: r
     })
+    checkTestFinishState({ dispatch, getState })
   }
 
   const subscription = db.TestResult.find().equal('id', speedKitBaqendId).resultStream().subscribe(callback)
@@ -140,4 +172,16 @@ const subscribeOnSpeedKitTest = ({ dispatch, db, speedKitBaqendId }) => {
     type: SPEED_KIT_SUBSCRIPTION,
     payload: subscription
   })
+}
+
+const checkTestFinishState = ({ dispatch, getState }) => {
+  const { competitorTest, speedKitTest, competitorSubscription, speedKitSubscription } = getState().result
+  if (competitorTest.hasFinished && speedKitTest.hasFinished) {
+    competitorSubscription && competitorSubscription.unsubscribe()
+    speedKitSubscription && speedKitSubscription.unsubscribe()
+    dispatch({
+      type: TERMINATE_TEST,
+      payload: {}
+    })
+  }
 }
