@@ -57,7 +57,7 @@ class ConfigFormComponent extends Component {
       this.props.onSpeedKitConfigChange(null)
     }
     this.setState({ showAdvancedConfig }, () => {
-      this.props.onToggleAdvancedConfig(showAdvancedConfig)
+      this.props.onToggleAdvancedConfig && this.props.onToggleAdvancedConfig(showAdvancedConfig)
     })
   }
 

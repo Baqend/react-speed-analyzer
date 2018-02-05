@@ -28,8 +28,9 @@
     background: color(var(--white) a(30%));
   }
   .advanced {
-    margin-left: -8px;
-    margin-right: -8px;
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
     h5 {
       font-size: 16px;
     }
