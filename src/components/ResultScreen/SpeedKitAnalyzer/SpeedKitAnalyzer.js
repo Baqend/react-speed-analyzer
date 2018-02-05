@@ -11,8 +11,8 @@ class SpeedKitBanner extends Component {
   }
   render() {
     return (
-      <div className="pt4-ns">
-        <div className="pv2 mt2 pv4-ns flex flex-wrap flex-nowrap-ns items-center">
+      <div className="pt0-ns">
+        <div className="pv2 pv4-ns flex flex-wrap flex-nowrap-ns items-center">
           <div className="w-100 w-60-ns tc tl-ns mb4 mb0-ns">
             <h1 className="mt0">Speed Kit Explained.</h1>
             <p className="faded">

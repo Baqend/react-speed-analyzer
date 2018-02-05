@@ -88,9 +88,9 @@ class ResultScreenComponent extends Component {
           <ResultAction { ...this.props } toggleModal={this.toggleModal}/>
         </div>
 
-        <div style={{ background: 'white' }}>
+        <div className="pv7" style={{ background: 'white' }}>
           {!speedKitError && !competitorError && (
-            <div className="container pa2 pv6">
+            <div className="container ph2 pb7">
               <ResultWorthiness
                 competitorTest={this.props.competitorTest}
                 speedKitTest={this.props.speedKitTest}
@@ -101,10 +101,14 @@ class ResultScreenComponent extends Component {
           <div className="pv1 ph2">
             <SpeedKitCarousel />
           </div>
-          <div className="container pa2 pv6">
+        </div>
+
+        <div className="pv7"style={{}}>
+          <div className="container ph2">
             <SpeedKitAnalyzer />
           </div>
         </div>
+
         <SpeedKitBanner />
       </div>
     )
