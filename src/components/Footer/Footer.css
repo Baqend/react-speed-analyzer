@@ -1,4 +1,5 @@
 footer {
+  align-self: stretch;
   font-size: 16px;
   .info {
     background: color(#fff a(5%));

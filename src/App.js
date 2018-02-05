@@ -27,6 +27,7 @@ class App extends Component {
                   <div className="content">
                     <StartingScreen { ...props } />
                   </div>
+                  <Footer />
                 </div>
               )}/>
               <Redirect from='/test/' to='/' exact />
@@ -35,6 +36,7 @@ class App extends Component {
                   <div className="content">
                     <StartingScreen { ...props } />
                   </div>
+                  <Footer />
                 </div>
               )}/>
               <Route exact path="/test/:testId/result" render={props => (
@@ -43,11 +45,11 @@ class App extends Component {
                   <div className="content">
                     <ResultScreen { ...props } />
                   </div>
+                  <Footer { ...props }/>
                 </div>
               )}/>
             </Switch>
           </BrowserRouter>
-          <Footer />
         </div>
       </Provider>
     )

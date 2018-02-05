@@ -7,7 +7,7 @@ import { connect } from 'react-redux'
 import ResultScreenComponent from './ResultScreenComponent'
 import { parse } from 'query-string'
 import { startTest } from '../../actions/startTest'
-import { monitorTest } from '../../actions/monitorTest'
+import { resetTest, monitorTest } from '../../actions/monitorTest'
 import { terminateTest } from '../../actions/terminateTest'
 import { isMainMetricSatisfactory, resultIsValid, shouldShowFirstMeaningfulPaint } from '../../helper/resultHelper'
 import { getObjectKey, isURL } from '../../helper/utils'
@@ -26,21 +26,8 @@ class ResultScreen extends Component {
     }
   }
 
-  componentWillMount() {
-    const { match, location } = this.props
-    const testId = match.params.testId
-    const competitorTest = this.props.competitorTest
-    const speedKitTest = this.props.speedKitTest
-
-    if(Object.keys(competitorTest).length < 1 || Object.keys(speedKitTest).length < 1) {
-      this.props.actions.monitorTest(testId)
-    } else {
-      if(!this.hasResultError(competitorTest, speedKitTest)) {
-        this.verifyMainMetric(competitorTest.firstView, speedKitTest.firstView)
-      }
-    }
-
-    const params = location.search.replace('?', '').split('&')
+  checkUrlParams = (props) => {
+    const params = this.props.location.search.replace('?', '').split('&')
     this.setState({
       showDetails: params.indexOf('details') > -1,
       showConfig: params.indexOf('config') > -1 || params.indexOf('advanced') > -1,
@@ -48,31 +35,57 @@ class ResultScreen extends Component {
     })
   }
 
-  componentWillReceiveProps(nextProps) {
-    // change the location attribute if a new test was triggered
-    const testOverview = nextProps.testOverview
-    const competitorTest = nextProps.competitorTest
-    const speedKitTest = nextProps.speedKitTest
+  loadTestResult = (props) => {
+    const { match } = props
+    const { testId } = match.params
+    const { competitorTest, speedKitTest } = props
+    const { testOverview, isMonitored, isFinished } = props.result
 
-    // if(testOverview.competitorTestResult && testOverview.speedKitTestResult ) {
-    //   const testId = getObjectKey(testOverview.id)
-    //   if(nextProps.location.search.indexOf(testId) === -1) {
-    //     nextProps.history.push(`/?testId=${testId}`)
-    //   }
-    // }
+    // debugger
+    if (Object.keys(testOverview).length && getObjectKey(testOverview.id) !== testId) {
+      // debugger
+      window.scrollTo(0, 0)
+      this.props.actions.resetTest()
+    }
 
-    // terminate the running test as soon as both tests have finished (when reloading the page)
-    // if(competitorTest.hasFinished && speedKitTest.hasFinished) {
-    //   this.props.actions.terminateTest()
-    // }
+    if (testId && !isMonitored && !isFinished) {
+      // debugger
+      this.props.actions.monitorTest(testId).catch((e) => {
+        this.props.actions.resetTest()
+        // history.replace('/')
+        alert("redirect to /")
+      })
+    }
 
     if(Object.keys(competitorTest).length > 0 && Object.keys(speedKitTest).length > 0) {
+      // debugger
       if(!this.hasResultError(competitorTest, speedKitTest)) {
         if(competitorTest.firstView && speedKitTest.firstView) {
           this.verifyMainMetric(competitorTest.firstView, speedKitTest.firstView)
         }
       }
     }
+
+    // if (Object.keys(competitorTest).length < 1 || Object.keys(speedKitTest).length < 1) {
+    //   debugger
+    //   // this.props.actions.monitorTest(testId)
+    // } else {
+    //   debugger
+    //   if(!this.hasResultError(competitorTest, speedKitTest)) {
+    //     this.verifyMainMetric(competitorTest.firstView, speedKitTest.firstView)
+    //   }
+    // }
+  }
+
+  componentWillMount() {
+    this.checkUrlParams(this.props)
+    // debugger
+    this.loadTestResult(this.props)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    // debugger
+    this.loadTestResult(nextProps)
   }
 
   hasResultError = (competitorResult, speedKitResult) => {
@@ -137,6 +150,7 @@ function mapDispatchToProps(dispatch) {
   return {
     actions: bindActionCreators({
       startTest,
+      resetTest,
       monitorTest,
       terminateTest,
     }, dispatch),

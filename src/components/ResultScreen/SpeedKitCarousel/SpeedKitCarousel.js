@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
+
 import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
 
 import './SpeedKitCarousel.css'
 
@@ -11,19 +13,19 @@ class SpeedKitCarousel extends Component {
       <div className="carousel">
         <Carousel showFirstPool={true} animationDuration={'180s'}>
           {this.props.examples.slice(0,6).map(example => (
-            <a key={example.id} href={`/result?testId=${example.id}`} className="db">
+            <Link key={example.id} to={`/test/${example.id}/result`} className="db">
               <img src={example.logo} className="treadmill-img" alt={`${example.name} Logo`}/>
               <span className="factorLabel">{example.speedup}</span>
-            </a>
+            </Link>
           ))}
         </Carousel>
 
         <Carousel showFirstPool={true} animationDuration={'250s'} animationDelay={'-77.5s'}>
           {this.props.examples.slice(6,12).map(example => (
-            <a key={example.id} href={`/result?testId=${example.id}`} className="db">
+            <Link key={example.id} to={`/test/${example.id}/result`} className="db">
               <img src={example.logo} className="treadmill-img" alt={`${example.name} Logo`}/>
               <span className="factorLabel">{example.speedup}</span>
-            </a>
+            </Link>
           ))}
         </Carousel>
 

@@ -1,5 +1,9 @@
 import React, { Component } from 'react'
+
 import { connect } from 'react-redux'
+
+import { withRouter } from 'react-router'
+import { Link } from 'react-router-dom'
 
 import './Footer.css'
 import LogoWhite from '../../assets/logo_white.png'
@@ -7,8 +11,10 @@ import LogoWhite from '../../assets/logo_white.png'
 class Footer extends Component {
   getRandomExample = (e) => {
     e.preventDefault()
+    const { history } = this.props
     const ids = this.props.examples.map(example => example.id)
-    alert(ids[Math.floor(Math.random() * ids.length)])
+    const randomId = ids[Math.floor(Math.random() * ids.length)]
+    history.push(`/test/${randomId}/result`)
   }
 
   render() {
