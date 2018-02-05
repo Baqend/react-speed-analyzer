@@ -16,12 +16,21 @@ import { startTest } from '../../actions/startTest'
 
 
 class StartingScreen extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      showAdvancedConfig: false
+    }
+  }
   componentWillMount() {
+    const { location } = this.props
+    // const params = location.search.replace('?', '').split('&')
     // const testId = this.props.match.params.testId
     // if(testId) {
     //   this.props.actions.monitorTest(testId)
     // }
     this.checkTest(this.props)
+    this.setState({ showAdvancedConfig: location.search.replace('?', '').split('&').indexOf('advanced') > -1 })
   }
 
   componentWillReceiveProps(nextProps) {
@@ -88,7 +97,7 @@ class StartingScreen extends Component {
 
   render() {
     return (
-      <StartingScreenComponent { ...this.props } onSubmit={this.onSubmit} />
+      <StartingScreenComponent { ...this.props } { ...this.state} onSubmit={this.onSubmit} />
     )
   }
 }

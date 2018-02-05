@@ -27,8 +27,12 @@ class StartingScreenComponent extends Component {
     this.state = {
       showCarousel: false,
       showFacts: false,
-      showAdvancedConfig: false,
+      showAdvancedConfig: props.showAdvancedConfig,
     }
+  }
+
+  onToggleAdvancedConfig = (showAdvancedConfig) => {
+    this.setState({ showAdvancedConfig })
   }
 
   componentWillReceiveProps(nextProps) {
@@ -53,6 +57,7 @@ class StartingScreenComponent extends Component {
             config={this.props.config}
             showConfig={true}
             showAdvancedConfig={this.state.showAdvancedConfig}
+            onToggleAdvancedConfig={this.onToggleAdvancedConfig}
             onSubmit={this.props.onSubmit}
           />
         </div>
@@ -122,10 +127,6 @@ class StartingScreenComponent extends Component {
     )
   }
 
-  toggleAdvancedSettings = () => {
-    this.setState({ showAdvancedConfig: !this.state.showAdvancedConfig })
-  }
-
   render() {
     // this.state.showCarousel = true
     // this.props.result.isStarted = true
@@ -134,11 +135,11 @@ class StartingScreenComponent extends Component {
     // this.props.result.testOverview.psiRequests = 111
     // this.props.result.testOverview.psiResponseSize = 2527141
     // this.props.config.isMobile = true
-
+    // console.log(this.state.showAdvancedConfig)
     const deviceTypeClass = this.props.config.isMobile ? 'device__phone' : 'device__laptop'
     const statusClass = this.props.result.isStarted ? 'loading' : null
     return (
-      <div className={'device'}>
+      <div className={`${this.state.showAdvancedConfig ? 'expert' : 'device'}`}>
         <div className={`${deviceTypeClass}`}>
           <Device>
             <div className="flex-grow-1 flex flex-column" style={{ overflow: 'hidden' }}>

@@ -19,7 +19,7 @@ class ConfigFormComponent extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      showAdvancedConfig: false,
+      showAdvancedConfig: props.showAdvancedConfig,
       speedKitConfig: defaultSpeedKitConfig,
       whiteListCandidates: [],
     }
@@ -49,14 +49,16 @@ class ConfigFormComponent extends Component {
     this.props.onCachingSwitch()
   }
 
-  toggleAdvancedSettings = () => {
+  toggleAdvancedConfig = () => {
     const showAdvancedConfig = !this.state.showAdvancedConfig
     if (showAdvancedConfig) {
       this.props.onSpeedKitConfigChange(this.state.speedKitConfig)
     } else {
       this.props.onSpeedKitConfigChange(null)
     }
-    this.setState({ showAdvancedConfig })
+    this.setState({ showAdvancedConfig }, () => {
+      this.props.onToggleAdvancedConfig(showAdvancedConfig)
+    })
   }
 
   handleWhiteListDomainClick = (e, domain) => {
@@ -169,7 +171,7 @@ class ConfigFormComponent extends Component {
           <div className="flex-grow-1" style={{ flexBasis: '100%' }}>
             <div className="ph2">
               <h5 className="mv1 text-center">Speed Kit Config</h5>
-              {this.state.whiteListCandidates.length && (
+              {this.state.whiteListCandidates.length > 0 && (
                 <div className="mt2" style={{ marginLeft: -8, marginRight: -8 }}>
                   {this.state.whiteListCandidates.map(domain => (
                     <div className="checkbox-custom ma1">
@@ -232,11 +234,11 @@ class ConfigFormComponent extends Component {
               <div className="toggleAdvancedSettings">
                 {this.state.showAdvancedConfig ? (
                   <span>
-                    <a onClick={this.toggleAdvancedSettings}>Hide Advanced Settings</a>
+                    <a onClick={this.toggleAdvancedConfig}>Hide Advanced Settings</a>
                   </span>
                 ): (
                   <span>
-                    <a onClick={this.toggleAdvancedSettings}>Show Advanced Settings</a>
+                    <a onClick={this.toggleAdvancedConfig}>Show Advanced Settings</a>
                   </span>
                 )}
               </div>

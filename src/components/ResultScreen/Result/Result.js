@@ -22,7 +22,7 @@ class Result extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      showDetails: false
+      showDetails: props.showDetails
     }
   }
 

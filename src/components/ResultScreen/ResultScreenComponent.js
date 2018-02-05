@@ -20,8 +20,9 @@ class ResultScreenComponent extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      showSettings: true,
-      showDetails: false,
+      showDetails: props.showDetails,
+      showConfig: props.showConfig,
+      showAdvancedConfig: props.showAdvancedConfig,
       showModal: false,
     }
   }
@@ -30,9 +31,9 @@ class ResultScreenComponent extends Component {
     this.setState({ showDetails: !this.state.showDetails })
   }
 
-  toggleSettings = () => {
-    this.setState({ showSettings: !this.state.showSettings })
-  }
+  // toggleSettings = () => {
+  //   this.setState({ showSettings: !this.state.showSettings })
+  // }
 
   toggleModal = () => {
     this.setState({ showModal: !this.state.showModal })
@@ -46,9 +47,14 @@ class ResultScreenComponent extends Component {
     return (
       <div className="container pa2">
         <div className="mb1">
-          <ConfigForm config={this.props.config} showConfig={this.state.showSettings} onSubmit={this.props.onSubmit} />
+          <ConfigForm
+            config={this.props.config}
+            showConfig={this.state.showConfig}
+            showAdvancedConfig={this.state.showAdvancedConfig}
+            onSubmit={this.props.onSubmit}
+          />
         </div>
-        {!this.state.showSettings &&
+        {!this.state.showConfig &&
           <div className="toggleSettings text-right">
             <span><a onClick={this.toggleSettings}>Show Settings</a></span>
           </div>

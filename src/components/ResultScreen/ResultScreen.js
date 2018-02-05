@@ -20,11 +20,15 @@ class ResultScreen extends Component {
       secondaryMetric: 'firstMeaningfulPaint',
       competitorError: false,
       speedKitError: false,
+      showDetails: false,
+      showConfig: false,
+      showAdvancedConfig: false,
     }
   }
 
   componentWillMount() {
-    const testId = this.props.match.params.testId
+    const { match, location } = this.props
+    const testId = match.params.testId
     const competitorTest = this.props.competitorTest
     const speedKitTest = this.props.speedKitTest
 
@@ -35,6 +39,13 @@ class ResultScreen extends Component {
         this.verifyMainMetric(competitorTest.firstView, speedKitTest.firstView)
       }
     }
+
+    const params = location.search.replace('?', '').split('&')
+    this.setState({
+      showDetails: params.indexOf('details') > -1,
+      showConfig: params.indexOf('config') > -1 || params.indexOf('advanced') > -1,
+      showAdvancedConfig: params.indexOf('advanced') > -1,
+    })
   }
 
   componentWillReceiveProps(nextProps) {
@@ -51,9 +62,9 @@ class ResultScreen extends Component {
     // }
 
     // terminate the running test as soon as both tests have finished (when reloading the page)
-    if(competitorTest.hasFinished && speedKitTest.hasFinished) {
-      this.props.actions.terminateTest()
-    }
+    // if(competitorTest.hasFinished && speedKitTest.hasFinished) {
+    //   this.props.actions.terminateTest()
+    // }
 
     if(Object.keys(competitorTest).length > 0 && Object.keys(speedKitTest).length > 0) {
       if(!this.hasResultError(competitorTest, speedKitTest)) {
@@ -65,7 +76,6 @@ class ResultScreen extends Component {
   }
 
   hasResultError = (competitorResult, speedKitResult) => {
-
     if(!competitorResult || competitorResult.testDataMissing) {
       console.log('Competitor konnte nicht getestet werden => Zeige Beispieltests')
       this.setState({ competitorError: true })
@@ -100,13 +110,7 @@ class ResultScreen extends Component {
 
   render() {
     return (
-      <ResultScreenComponent
-        { ...this.props }
-        mainMetric={this.state.mainMetric}
-        competitorError={this.state.competitorError}
-        speedKitError={this.state.speedKitError}
-        onSubmit={this.onSubmit}
-      />
+      <ResultScreenComponent { ...this.props } { ...this.state } onSubmit={this.onSubmit} />
     )
   }
 }

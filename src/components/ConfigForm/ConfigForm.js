@@ -54,6 +54,7 @@ class ConfigForm extends Component {
         onSpeedKitConfigChange={this.onSpeedKitConfigChange}
         onMobileSwitch={this.onMobileSwitch}
         onCachingSwitch={this.onCachingSwitch}
+        onToggleAdvancedConfig={this.props.onToggleAdvancedConfig}
       />
     )
   }
@@ -65,12 +66,13 @@ ConfigForm.defaultProps = {
 }
 
 ConfigForm.propTypes = {
-  config: PropTypes.object.isRequired,
-  whiteListCandidates: PropTypes.object,
   showConfig: PropTypes.bool,
   showAdvancedConfig: PropTypes.bool,
+  onToggleAdvancedConfig: PropTypes.func,
   onSubmit: PropTypes.func.isRequired,
+  config: PropTypes.object.isRequired,
   actions: PropTypes.object.isRequired,
+  whiteListCandidates: PropTypes.array,
 }
 
 function mapStateToProps(state) {
