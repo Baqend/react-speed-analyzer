@@ -19,7 +19,7 @@ import {
   RESET_TEST_RESULT,
 } from '../actions/types'
 
-import { generateRules } from '../helper/utils'
+import { generateRules } from '../helper/configHelper'
 
 const initialState = {
   isMonitored: false,
