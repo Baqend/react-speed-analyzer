@@ -3,6 +3,13 @@ import './Result.css'
 import { isDeviceIOS } from '../../../helper/utils'
 
 class ResultVideos extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      progressCompetitor: 0,
+      progressSpeedKit: 0,
+    }
+  }
 
   playVideos = (videoLabel) => {
     this[videoLabel].currentTime = 0
@@ -18,13 +25,25 @@ class ResultVideos extends Component {
     }
   }
 
-  // componentDidMount() {
-  //   setTimeout(() => {
-  //     this.playVideos('competitorVideo')
-  //   }, 500)
-  // }
+  handleProgress = (video, progressVideo) => {
+    const percent = (video.currentTime / video.duration) * 100
+    this.setState({
+      [progressVideo]: percent
+    })
+  }
+
+  componentDidMount() {
+    // setTimeout(() => {
+    //   this.playVideos('competitorVideo')
+    // }, 500)
+
+    // this.state.video.addEventListener('timeupdate', this.handleProgress)
+    this.competitorVideo.addEventListener('timeupdate', () => this.handleProgress(this.competitorVideo, 'progressCompetitor'))
+    this.speedKitVideo.addEventListener('timeupdate', () => this.handleProgress(this.speedKitVideo, 'progressSpeedKit'))
+  }
 
   render() {
+    console.log(this.state)
     const competitorVideoPath = this.props.competitorTest.videoFileFirstView
     const speedKitVideoPath = this.props.speedKitTest.videoFileFirstView
     // const data = this.props.testOverview.psiScreenshot
@@ -46,6 +65,13 @@ class ResultVideos extends Component {
                   onPlay={() => this.playVideos('competitorVideo')}
                   src={competitorVideoPath && 'https://makefast.app.baqend.com/v1' + competitorVideoPath} />
                 {/*<div style={{ backgroundImage: `url(data:${data.mime_type};base64,${data.data.replace(/_/g, '/').replace(/-/g, '+')})`}}></div>*/}
+
+                {this.competitorVideo && this.competitorVideo.paused && (
+                  <div className="video__wrapper-play" onClick={() => this.playVideos('competitorVideo')}>►</div>
+                )}
+                <div className="video__wrapper-progress">
+                  <div className="video__wrapper-progress-bar" style={{ flexBasis: `${this.state.progressCompetitor}%` }}></div>
+                </div>
               </div>
             </div>
           </div>
@@ -65,6 +91,12 @@ class ResultVideos extends Component {
                     onPlay={() => this.playVideos('speedKitVideo')}
                     src={speedKitVideoPath && 'https://makefast.app.baqend.com/v1' + speedKitVideoPath} />
                   {/*<div style={{ backgroundImage: `url(data:${data.mime_type};base64,${data.data.replace(/_/g, '/').replace(/-/g, '+')})`}}></div>*/}
+                  {this.speedKitVideo && this.speedKitVideo.paused && (
+                    <div className="video__wrapper-play" onClick={() => this.playVideos('speedKitVideo')}>►</div>
+                  )}
+                  <div className="video__wrapper-progress">
+                    <div className="video__wrapper-progress-bar" style={{ flexBasis: `${this.state.progressSpeedKit}%` }}></div>
+                  </div>
                 </div>
               </div>
             </div>
