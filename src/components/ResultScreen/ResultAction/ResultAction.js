@@ -101,7 +101,7 @@ class ResultAction extends Component {
     const competitorError = this.props.competitorError
     const speedKitError = this.props.speedKitError
     const isWordPress = this.props.competitorTest.isWordPress
-    const isSpeedKitComparison = this.props.result.isSpeedKitComparison
+    const isSpeedKitComparison = this.props.result.testOverview.isSpeedKitComparison
 
     if (competitorError) {
       return this.renderAllTestsFailed()

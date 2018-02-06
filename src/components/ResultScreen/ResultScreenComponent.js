@@ -143,7 +143,7 @@ class ResultScreenComponent extends Component {
     const competitorError = this.props.competitorError
     return (
       <div className="flex results__wrapper pt7">
-        <div className="flex-grow-1 flex flex-column">
+        <div className="flex-grow-1 flex flex-column" style={{ overflow: 'hidden' }}>
           {this.renderForm()}
           <div className="flex-grow-1 flex flex-column results" style={{marginTop: competitorError ? 0 : 80, animationDelay: '0.6s', transition: 'margin 0.5s ease' }}>
             {this.props.result.isFinished && this.renderResults()}

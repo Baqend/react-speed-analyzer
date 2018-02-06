@@ -1,3 +1,23 @@
+export function getHost(url) {
+  try {
+    if(url.indexOf('http') === -1 && url.indexOf('https') === -1) {
+      url = `http://${url}`
+    }
+
+    const dummyElement = document.createElement('a')
+    dummyElement.href = url
+
+    let { hostname } = dummyElement
+    // Remove "www" in the beginning
+    if (hostname.indexOf('www.') !== -1) {
+      hostname = hostname.substr(hostname.indexOf('www.') + 4)
+    }
+    return hostname
+  } catch(e) {
+    return ''
+  }
+}
+
 /**
  * Extracts the top level domain of a URL.
  *

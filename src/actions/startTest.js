@@ -22,7 +22,6 @@ import {
 export const prepareTest = (url = null) => ({
   'BAQEND': async ({ dispatch, getState, db }) => {
     dispatch({ type: INIT_TEST })
-
     if (url) {
       dispatch({ type: CHANGE_URL, payload: url })
     }
@@ -36,13 +35,13 @@ export const prepareTest = (url = null) => ({
 
     if(!rateLimitResult.isRateLimited) {
       const { url, isMobile } = getState().config
-      const normalizedUrlResult = await db.modules.post('normalizeUrl', { urls: url, mobile: isMobile })
-      dispatch({
-        type: NORMALIZE_URL_POST,
-        payload: normalizedUrlResult[0]
-      })
+      const urlInfo = await db.modules.post('normalizeUrl', { urls: url, mobile: isMobile })
+      // dispatch({
+      //   type: NORMALIZE_URL_POST,
+      //   payload: urlInfo[0]
+      // })
 
-      return normalizedUrlResult
+      return urlInfo[0]
     }
   }
 })
@@ -50,7 +49,7 @@ export const prepareTest = (url = null) => ({
 /**
  * Triggers the start of a new test.
  */
-export const startTest = () => ({
+export const startTest = (urlInfo = {}) => ({
   'BAQEND': async (store) => {
     const { dispatch, getState, db } = store
     //reset the result store
@@ -58,17 +57,25 @@ export const startTest = () => ({
 
     try {
       // await prepareTest({ dispatch, getState, db })
-
-      const { isRateLimited, isBaqendApp } = getState().result
+      // debugger
+      // const { isBaqendApp } = getState().result
+      const { isBaqendApp } = urlInfo
       const { url, isMobile } = getState().config
 
-      if(!isRateLimited && !isBaqendApp) {
+      if(!isBaqendApp) {
         dispatch({ type: START_TEST })
-        const testOverview = await createTestOverview({ ...store })
-        const psi = callPageSpeedInsightsAPI({ dispatch, getState, db, url, isMobile })
+        const testOverview = await createTestOverview({ ...store, ...urlInfo })
+
+        callPageSpeedInsightsAPI({ dispatch, getState, db, url, isMobile })
+
         return testOverview
+      } else {
+        throw new Error("url is already a Baqend app")
       }
-    } catch(e) {console.log(e)}
+    } catch(e) {
+      console.log(e)
+      throw e
+    }
   }
 })
 
@@ -91,10 +98,12 @@ export const saveTestOverview = async ({ dispatch, getState }, testOverview) => 
  * @param getState Method to get the state of the redux store.
  * @param db The baqend database instance.
  */
-const createTestOverview = async (store) => {
+const createTestOverview = async (params) => {
+  const { speedkit, speedkitVersion, ...store } = params
   const { dispatch, getState, db } = store
+  // debugger
   const { url, location, caching, isMobile, speedKitConfig, activityTimeout } = getState().config
-  const { isSpeedKitComparison, speedKitVersion }  = getState().result
+  // const { isSpeedKitComparison, speedKitVersion }  = getState().result
   const testOverview = new db.TestOverview()
   const tld = getTLD(url)
 
@@ -111,8 +120,8 @@ const createTestOverview = async (store) => {
   testOverview.mobile = isMobile
   testOverview.speedKitConfig = speedKitConfig
   testOverview.activityTimeout = activityTimeout
-  testOverview.isSpeedKitComparison = isSpeedKitComparison
-  testOverview.speedKitVersion = speedKitVersion
+  testOverview.isSpeedKitComparison = speedkit
+  testOverview.speedKitVersion = speedkitVersion
   testOverview.competitorTestResult = new db.TestResult({ id: ids[1] })
   testOverview.speedKitTestResult = new db.TestResult({ id: ids[2] })
 

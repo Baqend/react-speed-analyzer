@@ -6,6 +6,7 @@ import React, { Component } from 'react'
 import Collapse from 'react-css-collapse'
 import { Tooltip } from 'react-tippy'
 
+import { getHost } from '../../../helper/configHelper'
 import { calculateFactor, calculateAbsolute } from '../../../helper/resultHelper'
 
 import ResultVideos from './ResultVideos'
@@ -45,7 +46,8 @@ class Result extends Component {
             </div>
           )}
           <div className="w-50 flex-auto text-center pa1 pr4 pr0-ns" style={{ background: '#f6f6f6' }}>
-            <small><b>Your Website</b></small>
+            <small className="di dn-ns"><b>Your Website</b></small>
+            <small className="dn di-ns"><b>{getHost(this.props.testOverview.url)}</b></small>
             <br/>
             <Tooltip title={tooltipText[this.props.mainMetric]} arrow>
               <b>{ competitorData[this.props.mainMetric] }ms</b>
@@ -53,7 +55,12 @@ class Result extends Component {
           </div>
           {!this.props.speedKitError && (
             <div className="w-50 flex-auto text-center pa1 pl4 pl0-ns" style={{ background: '#f6f6f6' }}>
-              <small><b>With Speedkit {this.props.result.speedKitVersion}</b></small>
+              <small className="di dn-ns">
+                <b>{!this.props.result.testOverview.speedKitVersion && 'With '}SpeedKit {this.props.result.testOverview.speedKitVersion}</b>
+              </small>
+              <small className="dn di-ns"><b>
+                {getHost(this.props.testOverview.url)} {this.props.result.testOverview.speedKitVersion ? `(Speed Kit ${this.props.result.testOverview.speedKitVersion})` : '(Speed Kit)'}</b>
+              </small>
               <br/>
               <Tooltip title={tooltipText[this.props.mainMetric]} arrow>
                 <b>{ speedKitData[this.props.mainMetric] }ms</b>

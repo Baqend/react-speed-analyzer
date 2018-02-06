@@ -134,7 +134,12 @@ export default function result(state = initialState, action = {}) {
         isMonitored: false,
       }
     case RESET_TEST_RESULT:
-      return { ...initialState }
+      return {
+        ...initialState,
+        isBaqendApp: state.isBaqendApp,
+        isSpeedKitComparison: state.isSpeedKitComparison,
+        speedKitVersion: state.speedKitVersion,
+      }
     default:
       return state
   }

@@ -34,9 +34,11 @@ class StartingScreen extends Component {
 
   startTest = (url = null) => {
     const { history } = this.props
-    this.props.actions.prepareTest(url).then(() => {
-      this.props.actions.startTest().then((testOverview) => {
+    this.props.actions.prepareTest(url).then((urlInfo) => {
+      this.props.actions.startTest(urlInfo).then((testOverview) => {
         history.push(`/test/${getObjectKey(testOverview.id)}`)
+      }, (e) => {
+        console.log(e)
       })
     })
   }
