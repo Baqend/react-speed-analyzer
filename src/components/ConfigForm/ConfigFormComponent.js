@@ -3,30 +3,38 @@ import PropTypes from 'prop-types'
 
 import Toggle from 'react-toggle'
 // import CodeMirror from 'react-codemirror'
-import {Controlled as CodeMirror} from 'react-codemirror2'
+import { Controlled as CodeMirror } from 'react-codemirror2'
+import { getTLD } from '../../helper/configHelper'
 
 import arrow from '../../assets/arrow_right.svg'
 import './ConfigForm.css'
 
-const defaultSpeedKitConfig = `{
-  "appName": "makefast",
-  "whitelist": [
-    { "host": [] }
-  ]
-}`
+export const getDefaultSpeedKitConfig = (url = '') => (
+  `{
+    "appName": "makefast",
+    "whitelist": [
+      { "host": [ "${getTLD(url)}" ] }
+    ]
+  }`
+)
 
 class ConfigFormComponent extends Component {
   constructor(props) {
     super(props)
     this.state = {
       showAdvancedConfig: props.showAdvancedConfig,
-      speedKitConfig: defaultSpeedKitConfig,
+      speedKitConfig: getDefaultSpeedKitConfig(),
       whiteListCandidates: [],
     }
   }
 
   handleUrlChange = (changeEvent) => {
     this.props.onUrlChange(changeEvent.target.value)
+
+    const speedKitConfig = getDefaultSpeedKitConfig(changeEvent.target.value)
+    this.setState({ speedKitConfig }, () => {
+      this.props.onSpeedKitConfigChange(speedKitConfig)
+    })
   }
 
   handleLocationChange = (changeEvent) => {
@@ -35,10 +43,6 @@ class ConfigFormComponent extends Component {
 
   handleTimeoutChange = (changeEvent) => {
     this.props.onTimeoutChange(changeEvent.target.value)
-  }
-
-  handleSpeedKitConfigChange = (code) => {
-    this.props.onSpeedKitConfigChange(code)
   }
 
   handleMobileSwitch = () => {
@@ -94,7 +98,7 @@ class ConfigFormComponent extends Component {
     if (nextProps.whiteListCandidates !== this.props.whiteListCandidates) {
       this.setState({ whiteListCandidates: nextProps.whiteListCandidates })
     }
-    if (nextProps.config.speedKitConfig && this.state.speedKitConfig === defaultSpeedKitConfig) {
+    if (nextProps.config.speedKitConfig) {
       this.setState({ speedKitConfig: nextProps.config.speedKitConfig })
     }
   }

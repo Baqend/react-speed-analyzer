@@ -94,7 +94,7 @@ export const saveTestOverview = async ({ dispatch, getState }, testOverview) => 
 const createTestOverview = async (store) => {
   const { dispatch, getState, db } = store
   const { url, location, caching, isMobile, speedKitConfig, activityTimeout } = getState().config
-  const { isSpeedKitComparison }  = getState().result
+  const { isSpeedKitComparison, speedKitVersion }  = getState().result
   const testOverview = new db.TestOverview()
   const tld = getTLD(url)
 
@@ -112,6 +112,7 @@ const createTestOverview = async (store) => {
   testOverview.speedKitConfig = speedKitConfig
   testOverview.activityTimeout = activityTimeout
   testOverview.isSpeedKitComparison = isSpeedKitComparison
+  testOverview.speedKitVersion = speedKitVersion
   testOverview.competitorTestResult = new db.TestResult({ id: ids[1] })
   testOverview.speedKitTestResult = new db.TestResult({ id: ids[2] })
 

@@ -33,7 +33,7 @@ class Result extends Component {
   renderHeader() {
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
-    console.log(this.props)
+
     return (
       <div>
         <div className="flex items-center relative">

@@ -5,20 +5,28 @@
  * @return {string} The extracted hostname.
  */
 export function getTLD(url) {
-  const dummyElement = document.createElement('a')
-  dummyElement.href = url
+  try {
+    if(url.indexOf('http') === -1 && url.indexOf('https') === -1) {
+      url = `http://${url}`
+    }
 
-  let { hostname } = dummyElement
-  // Remove "www" in the beginning
-  if (hostname.indexOf('www.') !== -1) {
-    hostname = hostname.substr(hostname.indexOf('www.') + 4)
+    const dummyElement = document.createElement('a')
+    dummyElement.href = url
+
+    let { hostname } = dummyElement
+    // Remove "www" in the beginning
+    if (hostname.indexOf('www.') !== -1) {
+      hostname = hostname.substr(hostname.indexOf('www.') + 4)
+    }
+
+    const domainFilter = /^(?:[\w-]*\.){0,3}([\w-]*\.)[\w]*$/
+    const [, domain] = domainFilter.exec(hostname)
+
+    // remove the dot at the end of the string
+    return domain
+  } catch(e) {
+    return ''
   }
-
-  const domainFilter = /^(?:[\w-]*\.){0,3}([\w-]*\.)[\w]*$/
-  const [, domain] = domainFilter.exec(hostname)
-
-  // remove the dot at the end of the string
-  return domain
 }
 
 /**
