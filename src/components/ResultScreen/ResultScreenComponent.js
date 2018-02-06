@@ -31,9 +31,9 @@ class ResultScreenComponent extends Component {
     this.setState({ showDetails: !this.state.showDetails })
   }
 
-  // toggleSettings = () => {
-  //   this.setState({ showSettings: !this.state.showSettings })
-  // }
+  toggleConfig = () => {
+    this.setState({ showConfig: !this.state.showConfig })
+  }
 
   toggleModal = () => {
     this.setState({ showModal: !this.state.showModal })
@@ -56,7 +56,7 @@ class ResultScreenComponent extends Component {
         </div>
         {!this.state.showConfig &&
           <div className="toggleSettings text-right">
-            <span><a onClick={this.toggleSettings}>Show Settings</a></span>
+            <span><a onClick={this.toggleConfig}>Show Settings</a></span>
           </div>
         }
       </div>
