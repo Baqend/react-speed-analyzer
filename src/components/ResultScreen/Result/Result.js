@@ -33,6 +33,7 @@ class Result extends Component {
   renderHeader() {
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
+    console.log(this.props)
     return (
       <div>
         <div className="flex items-center relative">
@@ -52,7 +53,7 @@ class Result extends Component {
           </div>
           {!this.props.speedKitError && (
             <div className="w-50 flex-auto text-center pa1 pl4 pl0-ns" style={{ background: '#f6f6f6' }}>
-              <small><b>With Speedkit</b></small>
+              <small><b>With Speedkit {this.props.result.speedKitVersion}</b></small>
               <br/>
               <Tooltip title={tooltipText[this.props.mainMetric]} arrow>
                 <b>{ speedKitData[this.props.mainMetric] }ms</b>

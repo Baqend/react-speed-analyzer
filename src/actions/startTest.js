@@ -13,6 +13,36 @@ import {
 } from './types'
 
 /**
+ * Prepares the test before its execution (check rate limiting and normalize url).
+ * @param dispatch Method to dispatch an action input.
+ * @param getState Method to get the state of the redux store.
+ * @param db The baqend database instance.
+ */
+export const prepareTest = () => ({
+  'BAQEND': async ({ dispatch, getState, db }) => {
+    dispatch({ type: INIT_TEST })
+
+    const rateLimitResult = await db.modules.get('rateLimiter')
+
+    dispatch({
+      type: RATE_LIMITER_GET,
+      payload: rateLimitResult.isRateLimited
+    })
+
+    if(!rateLimitResult.isRateLimited) {
+      const { url, isMobile } = getState().config
+      const normalizedUrlResult = await db.modules.post('normalizeUrl', { urls: url, mobile: isMobile })
+      dispatch({
+        type: NORMALIZE_URL_POST,
+        payload: normalizedUrlResult[0]
+      })
+
+      return normalizedUrlResult
+    }
+  }
+})
+
+/**
  * Triggers the start of a new test.
  */
 export const startTest = () => ({
@@ -20,10 +50,9 @@ export const startTest = () => ({
     const { dispatch, getState, db } = store
     //reset the result store
     dispatch({ type: RESET_TEST_RESULT })
-    dispatch({ type: INIT_TEST })
 
     try {
-      await prepareTest({ dispatch, getState, db })
+      // await prepareTest({ dispatch, getState, db })
 
       const { isRateLimited, isBaqendApp } = getState().result
       const { url, isMobile } = getState().config
@@ -49,31 +78,6 @@ export const saveTestOverview = async ({ dispatch, getState }, testOverview) => 
     payload: res
   })
   return res
-}
-
-/**
- * Prepares the test before its execution (check rate limiting and normalize url).
- * @param dispatch Method to dispatch an action input.
- * @param getState Method to get the state of the redux store.
- * @param db The baqend database instance.
- */
-export const prepareTest = async ({ dispatch, getState, db }) => {
-  const rateLimitResult = await db.modules.get('rateLimiter')
-
-  dispatch({
-    type: RATE_LIMITER_GET,
-    payload: rateLimitResult.isRateLimited
-  })
-
-  if(!rateLimitResult.isRateLimited) {
-    const { url, isMobile } = getState().config
-    const normalizedUrlResult = await db.modules.post('normalizeUrl', { urls: url, mobile: isMobile })
-
-    dispatch({
-      type: NORMALIZE_URL_POST,
-      payload: normalizedUrlResult[0]
-    })
-  }
 }
 
 /**

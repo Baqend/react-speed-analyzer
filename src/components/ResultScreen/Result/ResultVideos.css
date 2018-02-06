@@ -60,7 +60,7 @@
   }
   .video__wrapper-play {
     position: absolute;
-    font-size: 54px;
+    font-size: 90px;
     top: 50%;
     left: 50%;
     margin-left: -37.5px;
@@ -73,9 +73,8 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    border-radius: 50%;
     padding-left: 10px;
-    text-shadow: 0 0px 16px rgba(0,0,0,0.5);
+    text-shadow: 0 0px 16px rgba(0,0,0,0.35);
     &:hover {
       color: white;
     }

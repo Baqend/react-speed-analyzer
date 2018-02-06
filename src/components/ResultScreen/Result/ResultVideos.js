@@ -25,10 +25,17 @@ class ResultVideos extends Component {
     }
   }
 
-  handleProgress = (video, progressVideo) => {
-    const percent = (video.currentTime / video.duration) * 100
+  handleCompetitorProgress = () => {
+    const percent = (this.competitorVideo.currentTime / this.competitorVideo.duration) * 100
     this.setState({
-      [progressVideo]: percent
+      progressCompetitor: percent
+    })
+  }
+
+  handleSpeedKitProgress = () => {
+    const percent = (this.speedKitVideo.currentTime / this.speedKitVideo.duration) * 100
+    this.setState({
+      progressSpeedKit: percent
     })
   }
 
@@ -38,12 +45,17 @@ class ResultVideos extends Component {
     // }, 500)
 
     // this.state.video.addEventListener('timeupdate', this.handleProgress)
-    this.competitorVideo.addEventListener('timeupdate', () => this.handleProgress(this.competitorVideo, 'progressCompetitor'))
-    this.speedKitVideo.addEventListener('timeupdate', () => this.handleProgress(this.speedKitVideo, 'progressSpeedKit'))
+
+    this.competitorVideo && this.competitorVideo.addEventListener('timeupdate', this.handleCompetitorProgress)
+    this.speedKitVideo && this.speedKitVideo.addEventListener('timeupdate', this.handleSpeedKitProgress)
+  }
+
+  componentWillUnmount() {
+    this.competitorVideo && this.competitorVideo.removeEventListener('timeupdate', this.handleCompetitorProgress)
+    this.speedKitVideo && this.speedKitVideo.removeEventListener('timeupdate', this.handleSpeedKitProgress)
   }
 
   render() {
-    console.log(this.state)
     const competitorVideoPath = this.props.competitorTest.videoFileFirstView
     const speedKitVideoPath = this.props.speedKitTest.videoFileFirstView
     // const data = this.props.testOverview.psiScreenshot

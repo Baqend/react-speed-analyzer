@@ -12,7 +12,7 @@ import { isURL } from '../../helper/utils'
 
 import { terminateTest } from '../../actions/terminateTest'
 import { resetTest, monitorTest } from '../../actions/monitorTest'
-import { startTest } from '../../actions/startTest'
+import { prepareTest, startTest } from '../../actions/startTest'
 
 
 class StartingScreen extends Component {
@@ -89,8 +89,10 @@ class StartingScreen extends Component {
   onSubmit = () => {
     const { history } = this.props
     if (isURL(this.props.config.url)) {
-      this.props.actions.startTest().then((testOverview) => {
-        history.push(`/test/${getObjectKey(testOverview.id)}`)
+      this.props.actions.prepareTest().then(() => {
+        this.props.actions.startTest().then((testOverview) => {
+          history.push(`/test/${getObjectKey(testOverview.id)}`)
+        })
       })
     }
   }
@@ -127,6 +129,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     actions: bindActionCreators({
+      prepareTest,
       startTest,
       resetTest,
       monitorTest,

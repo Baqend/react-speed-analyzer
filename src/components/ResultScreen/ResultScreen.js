@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 
 import ResultScreenComponent from './ResultScreenComponent'
 import { parse } from 'query-string'
-import { startTest } from '../../actions/startTest'
+import { prepareTest, startTest } from '../../actions/startTest'
 import { resetTest, monitorTest } from '../../actions/monitorTest'
 import { terminateTest } from '../../actions/terminateTest'
 import { isMainMetricSatisfactory, resultIsValid, shouldShowFirstMeaningfulPaint } from '../../helper/resultHelper'
@@ -116,8 +116,25 @@ class ResultScreen extends Component {
   }
 
   onSubmit = () => {
+    const { history } = this.props
     if (isURL(this.props.config.url)) {
-      this.props.actions.startTest()
+      this.props.actions.prepareTest().then(() => {
+        history.push('/')
+        setTimeout(() => {
+          this.props.actions.startTest().then((testOverview) => {
+            history.push(`/test/${getObjectKey(testOverview.id)}`)
+          })
+        })
+      })
+      // history.push('/')
+      // setTimeout(() => {
+      //   this.props.actions.startTest().then((testOverview) => {
+      //     history.push(`/test/${getObjectKey(testOverview.id)}`)
+      //   })
+      // }, 100)
+      // this.props.actions.startTest().then((testOverview) => {
+      //   history.push(`/test/${getObjectKey(testOverview.id)}`)
+      // })
     }
   }
 
@@ -149,6 +166,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     actions: bindActionCreators({
+      prepareTest,
       startTest,
       resetTest,
       monitorTest,
