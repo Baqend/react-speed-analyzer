@@ -8,6 +8,7 @@
 @import "slick-carousel/slick/slick-theme.scss";
 @import "codemirror/lib/codemirror.css";
 @import "react-tippy/dist/tippy.css";
+@import 'tachyons/src/_media-queries';
 
 @import "./lib/animate.css";
 @import "./lib/toggle.css";
@@ -21,6 +22,7 @@
 
 @import "tachyons/src/_text-align";
 @import "tachyons/src/_display";
+
 
 :root {
   --dark-blue: #162939;
@@ -85,6 +87,10 @@ html {
   flex-grow: 1;
   justify-content: center;
   overflow: hidden;
+  /* min-height: 100vh;
+  @media (--breakpoint-not-small) {
+    min-height: initial;
+  } */
 }
 
 h1, h2, h3, h4, h5, h6 {

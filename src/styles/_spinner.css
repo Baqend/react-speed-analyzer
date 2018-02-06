@@ -1,11 +1,17 @@
+@import 'tachyons/src/_media-queries';
+
 :root {
   --offset: 200;
   --duration: 2.5s;
 }
 
 .spinner__wrapper {
-  width: 300px;
-  height: 300px;
+  width: 200px;
+  height: 200px;
+  @media (--breakpoint-not-small) {
+    width: 300px;
+    height: 300px;
+  }
 }
 
 .spinner {

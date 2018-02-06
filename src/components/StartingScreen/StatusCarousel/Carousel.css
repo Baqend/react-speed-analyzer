@@ -23,6 +23,10 @@
   animation: textFadeOut 3s 1 ease forwards;
 }
 
+.text__headline {
+  margin-top: 0;
+}
+
 @keyframes addElement {
   0% {
     max-height: 999px;
