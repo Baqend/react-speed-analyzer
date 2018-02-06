@@ -17,6 +17,7 @@
 @import "./_reset.css";
 @import "./_spinner.css";
 @import "./_buttons.css";
+@import "./_modal.css";
 
 @import "tachyons/src/_text-align";
 @import "tachyons/src/_display";
