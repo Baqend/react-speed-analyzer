@@ -36,11 +36,10 @@ export const prepareTest = (url = null) => ({
     if(!rateLimitResult.isRateLimited) {
       const { url, isMobile } = getState().config
       const urlInfo = await db.modules.post('normalizeUrl', { urls: url, mobile: isMobile })
-      // dispatch({
-      //   type: NORMALIZE_URL_POST,
-      //   payload: urlInfo[0]
-      // })
-
+      dispatch({
+        type: NORMALIZE_URL_POST,
+        payload: urlInfo[0]
+      })
       return urlInfo[0]
     }
   }

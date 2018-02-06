@@ -46,8 +46,13 @@ class Result extends Component {
             </div>
           )}
           <div className="w-50 flex-auto text-center pa1 pr4 pr0-ns" style={{ background: '#f6f6f6' }}>
-            <small className="di dn-ns"><b>Your Website</b></small>
-            <small className="dn di-ns"><b>{getHost(this.props.testOverview.url)}</b></small>
+            <small>
+              {this.props.result.testOverview.speedKitVersion ? (
+                <b>Without Speed Kit</b>
+              ) : (
+                <b>Your Website</b>
+              )}
+            </small>
             <br/>
             <Tooltip title={tooltipText[this.props.mainMetric]} arrow>
               <b>{ competitorData[this.props.mainMetric] }ms</b>
@@ -55,11 +60,12 @@ class Result extends Component {
           </div>
           {!this.props.speedKitError && (
             <div className="w-50 flex-auto text-center pa1 pl4 pl0-ns" style={{ background: '#f6f6f6' }}>
-              <small className="di dn-ns">
-                <b>{!this.props.result.testOverview.speedKitVersion && 'With '}SpeedKit {this.props.result.testOverview.speedKitVersion}</b>
-              </small>
-              <small className="dn di-ns"><b>
-                {getHost(this.props.testOverview.url)} {this.props.result.testOverview.speedKitVersion ? `(Speed Kit ${this.props.result.testOverview.speedKitVersion})` : '(Speed Kit)'}</b>
+              <small>
+                {this.props.result.testOverview.speedKitVersion ? (
+                  <b>With Speed Kit {this.props.result.testOverview.speedKitVersion}</b>
+                ) : (
+                  <b>With Speed Kit</b>
+                )}
               </small>
               <br/>
               <Tooltip title={tooltipText[this.props.mainMetric]} arrow>
@@ -98,31 +104,37 @@ class Result extends Component {
     return (
       <div className="flex">
         <div className="pa1 w-33 flex-auto text-center">
-          <small className="faded">Domains</small>
-          <br />
-          {psiDomains ? (
-            <strong>{psiDomains}</strong>
-          ) : (
-            <strong>-</strong>
-          )}
+          <Tooltip title="Number of unique hosts referenced by the page." position="top" arrow>
+            <small className="faded">Domains</small>
+            <br />
+            {psiDomains ? (
+              <strong>{psiDomains}</strong>
+            ) : (
+              <strong>-</strong>
+            )}
+          </Tooltip>
         </div>
         <div className="pa1 w-33 flex-auto text-center">
-          <small className="faded">Requests</small>
-          <br />
-          {psiRequests ? (
-            <strong>{psiRequests}</strong>
-          ) : (
-            <strong>-</strong>
-          )}
+          <Tooltip title="Number of HTTP resources loaded by the page." position="top" arrow>
+            <small className="faded">Requests</small>
+            <br />
+            {psiRequests ? (
+              <strong>{psiRequests}</strong>
+            ) : (
+              <strong>-</strong>
+            )}
+          </Tooltip>
         </div>
         <div className="pa1 w-33 flex-auto text-center" style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>
-          <small className="faded">Response Size</small>
-          <br />
-          {psiResponseSize ? (
-            <strong>{formatFileSize(psiResponseSize, 2)}</strong>
-          ) : (
-            <strong>-</strong>
-          )}
+          <Tooltip title="Number of uncompressed response bytes for resources on the page." position="top" arrow>
+            <small className="faded">Response Size</small>
+            <br />
+            {psiResponseSize ? (
+              <strong>{formatFileSize(psiResponseSize, 2)}</strong>
+            ) : (
+              <strong>-</strong>
+            )}
+          </Tooltip>
         </div>
       </div>
     )

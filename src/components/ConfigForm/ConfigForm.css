@@ -11,6 +11,11 @@
     color: var(--white);
     border: none;
     border-radius: 3px;
+    font-weight: 400;
+    font-family: "Open Sans";
+    line-height: 30px;
+    /* color: transparent;
+    caret-color: white; */
     &::placeholder {
       color: color(var(--white) a(75%));
     }

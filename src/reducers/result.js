@@ -69,13 +69,13 @@ export default function result(state = initialState, action = {}) {
       return { ...state, testOverview: action.payload }
     case RATE_LIMITER_GET:
       return { ...state, isRateLimited: action.payload }
-    case NORMALIZE_URL_POST:
-      return {
-        ...state,
-        isBaqendApp: action.payload.isBaqendApp,
-        isSpeedKitComparison: action.payload.speedkit,
-        speedKitVersion: action.payload.speedkitVersion,
-      }
+    // case NORMALIZE_URL_POST:
+    //   return {
+    //     ...state,
+    //     isBaqendApp: action.payload.isBaqendApp,
+    //     isSpeedKitComparison: action.payload.speedkit,
+    //     speedKitVersion: action.payload.speedkitVersion,
+    //   }
     case MONITOR_TEST:
       return { ...state, isMonitored: true }
     case INIT_TEST:

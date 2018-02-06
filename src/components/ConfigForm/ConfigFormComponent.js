@@ -218,6 +218,9 @@ class ConfigFormComponent extends Component {
               onChange={this.handleUrlChange}
               placeholder="Enter URL here..."
             />
+            <div className="domain">
+              <span className="faded">https://www.</span>fussballdaten.de<span className="faded">/bundesliga/ewige-tabelle/</span>
+            </div>
             <div className="config__form-submit-wrapper">
               <button className="config__form-submit flex justify-center items-center" type="submit">
                 {this.props.isInitiated ? (

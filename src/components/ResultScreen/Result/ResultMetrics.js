@@ -104,10 +104,12 @@ class ResultMetrics extends Component {
         <hr />
         <div className="flex items-center border-top">
           <div className="w-50 tc pt1 pb1">
-            <a href={this.props.competitorTest.summaryUrl} className="">{this.props.competitorTest.url}</a>
+            {/*<a href={this.props.competitorTest.summaryUrl} className="">{this.props.competitorTest.url}</a>*/}
+            <a href={this.props.competitorTest.summaryUrl} className="">Without Speed Kit</a>
           </div>
           <div className="w-50 tc pt1 pb1" style={{ borderLeft: '1px solid #E8E8E8' }}>
-            <a href={this.props.speedKitTest.summaryUrl} className="">{this.props.speedKitTest.url} with Speed Kit</a>
+            {/*<a href={this.props.speedKitTest.summaryUrl} className="">{this.props.speedKitTest.url} with Speed Kit</a>*/}
+            <a href={this.props.speedKitTest.summaryUrl} className="">With Speed Kit</a>
           </div>
         </div>
         <hr />
@@ -130,14 +132,16 @@ class ResultMetrics extends Component {
           <div key={index} className="flex justify-center">
             <div className="w-100">
               {index !== 0 && <hr/>}
-              <div className="flex items-center border-top">
-                <div className="w-50 tr pt2 pb2 pr2">
-                  <div className="metricLabel">{metric.label}</div>
+              <Tooltip title={metric.tooltip} position="top" arrow>
+                <div className="flex items-center border-top">
+                  <div className="w-50 tr pt2 pb2 pr2">
+                    <div className="metricValue faded">{metric.label}</div>
+                  </div>
+                  <div className="w-50 tl pt2 pb2 pl2 speedKitVideo">
+                    <div className="metricValue">{competitorData[metric.name]}ms</div>
+                  </div>
                 </div>
-                <div className="w-50 tl pt2 pb2 pl2 speedKitVideo">
-                  <div className="metricValue">{competitorData[metric.name]}ms</div>
-                </div>
-              </div>
+              </Tooltip>
             </div>
           </div>
         ))}
@@ -148,14 +152,16 @@ class ResultMetrics extends Component {
           <div key={index} className="flex justify-center">
             <div className="w-100">
               {index !== 0 && <hr/>}
-              <div className="flex items-center border-top">
-                <div className="w-50 tr pt2 pb2 pr2">
-                  <div className="metricLabel">{metric.label}</div>
+              <Tooltip title={metric.tooltip} position="top" arrow>
+                <div className="flex items-center border-top">
+                  <div className="w-50 tr pt2 pb2 pr2">
+                    <div className="metricValue faded">{metric.label}</div>
+                  </div>
+                  <div className="w-50 tl pt2 pb2 pl2 speedKitVideo">
+                    <div className="metricValue">{competitorData[metric.name]}ms</div>
+                  </div>
                 </div>
-                <div className="w-50 tl pt2 pb2 pl2 speedKitVideo">
-                  <div className="metricValue">{competitorData[metric.name]}ms</div>
-                </div>
-              </div>
+              </Tooltip>
             </div>
           </div>
         ))}
@@ -164,7 +170,8 @@ class ResultMetrics extends Component {
         <hr />
         <div className="flex items-center border-top">
           <div className="w-100 tc pt1 pb1">
-            <a href={this.props.competitorTest.summaryUrl} className="">{this.props.competitorTest.url}</a>
+            {/*<a href={this.props.competitorTest.summaryUrl} className="">{this.props.competitorTest.url}</a>*/}
+            <a href={this.props.competitorTest.summaryUrl} className="">Your Website</a>
           </div>
         </div>
         <hr />

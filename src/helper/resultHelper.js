@@ -1,4 +1,4 @@
-import { roundToHundredths, zeroSafeDiv, formatPercentage } from './maths'
+import { roundToTenths, roundToHundredths, zeroSafeDiv, formatPercentage } from './maths'
 
 /**
  * @param competitorMetric Metric from the competitor's site.
@@ -6,7 +6,7 @@ import { roundToHundredths, zeroSafeDiv, formatPercentage } from './maths'
  * @return {number}
  */
 export function calculateFactor(competitorMetric, speedKitMetric) {
-  return roundToHundredths(zeroSafeDiv(competitorMetric, speedKitMetric))
+  return roundToTenths(zeroSafeDiv(competitorMetric, speedKitMetric))
 }
 
 /**
