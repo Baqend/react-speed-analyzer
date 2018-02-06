@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import { withRouter } from 'react-router'
-import { Link } from 'react-router-dom'
+// import { Link } from 'react-router-dom'
 
 import './Footer.css'
 import LogoWhite from '../../assets/logo_white.png'
@@ -56,4 +56,4 @@ function mapStateToProps(state) {
   }
 }
 
-export default connect(mapStateToProps, null)(Footer)
+export default withRouter(connect(mapStateToProps, null)(Footer))
