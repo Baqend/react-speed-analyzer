@@ -10,7 +10,7 @@ import { startTest } from '../../actions/startTest'
 import { resetTest, monitorTest } from '../../actions/monitorTest'
 import { terminateTest } from '../../actions/terminateTest'
 import { isMainMetricSatisfactory, resultIsValid, shouldShowFirstMeaningfulPaint } from '../../helper/resultHelper'
-import { getObjectKey, isURL } from '../../helper/utils'
+import { getObjectKey, isURL, isIFrame } from '../../helper/utils'
 
 class ResultScreen extends Component {
   constructor(props) {
@@ -23,6 +23,7 @@ class ResultScreen extends Component {
       showDetails: false,
       showConfig: false,
       showAdvancedConfig: false,
+      isIFrame: isIFrame(),
     }
   }
 

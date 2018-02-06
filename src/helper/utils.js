@@ -98,6 +98,14 @@ export function isEmpty(obj) {
   return true
 }
 
+export const isIFrame = () => {
+  try {
+    return window.self !== window.top
+  } catch (e) {
+    return true
+  }
+}
+
 export const shuffle = (a) => {
   let counter = a.length
   while (counter > 0) {

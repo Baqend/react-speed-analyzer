@@ -24,6 +24,7 @@ class ResultScreenComponent extends Component {
       showConfig: props.showConfig,
       showAdvancedConfig: props.showAdvancedConfig,
       showModal: false,
+      isIFrame: props.isIFrame,
     }
   }
 
@@ -103,13 +104,14 @@ class ResultScreenComponent extends Component {
           </div>
         </div>
 
-        <div className="pv7"style={{}}>
-          <div className="container ph2">
-            <SpeedKitAnalyzer />
-          </div>
-        </div>
-
-        <SpeedKitBanner />
+        { !this.state.isIFrame && [
+          <div className="pv7">
+            <div className="container ph2">
+              <SpeedKitAnalyzer />
+            </div>
+          </div>,
+          <SpeedKitBanner />
+        ]}
       </div>
     )
   }
