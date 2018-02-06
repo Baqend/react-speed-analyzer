@@ -3,7 +3,8 @@ import PropTypes from 'prop-types'
 
 import './ResultScreen.css'
 
-import Modal from '../Modal/Modal'
+// import Modal from '../Modal/Modal'
+import Modal from 'react-modal'
 
 import Result from './Result/Result'
 import ResultWorthiness from './ResultWorthiness/ResultWorthiness'
@@ -15,6 +16,8 @@ import SpeedKitBanner from './SpeedKitBanner/SpeedKitBanner'
 
 import ConfigForm from '../ConfigForm/ConfigForm'
 import ContactForm from '../ContactForm/ContactForm'
+
+Modal.setAppElement('#root')
 
 class ResultScreenComponent extends Component {
   constructor(props) {
@@ -118,8 +121,20 @@ class ResultScreenComponent extends Component {
 
   renderContactFormModal() {
     return (
-      <Modal show={this.state.showModal} onClose={this.closeModal} onOutsideClick={this.closeModal}>
-        <ContactForm onCancel={this.closeModal} />
+      // <Modal show={this.state.showModal} onClose={this.closeModal} onOutsideClick={this.closeModal}>
+      //   <ContactForm onCancel={this.closeModal} />
+      // </Modal>
+      <Modal
+        isOpen={this.state.showModal}
+        onRequestClose={this.closeModal}
+        closeTimeoutMS={150}
+        className="modal"
+        overlayClassName="overlay"
+      >
+        <a className="close" onClick={this.closeModal}>x</a>
+        <div className="dialog">
+          <ContactForm onCancel={this.closeModal} />
+        </div>
       </Modal>
     )
   }

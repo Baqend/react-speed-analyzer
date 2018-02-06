@@ -36,7 +36,7 @@
 
 .video__wrapper {
   position: relative;
-  &:before {
+  &:not(.auto):before {
     content: "";
     display: block;
     position: relative;
