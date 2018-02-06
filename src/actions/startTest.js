@@ -1,5 +1,6 @@
 import { generateSpeedKitConfig, getTLD } from '../helper/configHelper'
 import {
+  CHANGE_URL,
   INIT_TEST,
   START_TEST,
   TESTOVERVIEW_SAVE,
@@ -18,9 +19,13 @@ import {
  * @param getState Method to get the state of the redux store.
  * @param db The baqend database instance.
  */
-export const prepareTest = () => ({
+export const prepareTest = (url = null) => ({
   'BAQEND': async ({ dispatch, getState, db }) => {
     dispatch({ type: INIT_TEST })
+
+    if (url) {
+      dispatch({ type: CHANGE_URL, payload: url })
+    }
 
     const rateLimitResult = await db.modules.get('rateLimiter')
 

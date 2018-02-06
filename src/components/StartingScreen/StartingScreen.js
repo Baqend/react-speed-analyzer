@@ -22,15 +22,69 @@ class StartingScreen extends Component {
       showAdvancedConfig: false
     }
   }
+
+  parseQueryString = (queryString) => {
+    const params = {}
+    queryString.replace('?','').split('&').forEach(p => {
+      const param = p.split('=')
+      params[param[0]] = param[1] ? param[1] : true
+    })
+    return params
+  }
+
+  startTest = (url = null) => {
+    const { history } = this.props
+    this.props.actions.prepareTest(url).then(() => {
+      this.props.actions.startTest().then((testOverview) => {
+        history.push(`/test/${getObjectKey(testOverview.id)}`)
+      })
+    })
+  }
+
+  checkTest = (props) => {
+    const { history } = props
+    const { testId } = props.match.params
+    const { testOverview, isMonitored, isFinished } = props.result
+    // debugger
+    // if (!testId && testOverview.id && testOverview.competitorTestResult) {
+    //   history.push(`/test/${getObjectKey(testOverview.id)}`)
+    // }
+
+    if (testId && !isMonitored && !isFinished ) {
+      this.props.actions.monitorTest(testId).catch((e) => {
+        this.props.actions.resetTest()
+        history.replace('/')
+      })
+    }
+
+    if (testId && isFinished) {
+      history.replace(`/test/${testId}/result`)
+    }
+  }
+
+  onSubmit = () => {
+    if (isURL(this.props.config.url)) {
+      this.startTest()
+    }
+  }
+
   componentWillMount() {
-    const { location } = this.props
+    // const { location } = this.props
     // const params = location.search.replace('?', '').split('&')
     // const testId = this.props.match.params.testId
     // if(testId) {
     //   this.props.actions.monitorTest(testId)
     // }
-    this.checkTest(this.props)
-    this.setState({ showAdvancedConfig: location.search.replace('?', '').split('&').indexOf('advanced') > -1 })
+    const params = this.parseQueryString(this.props.location.search)
+    // debugger
+    if (params.url) {
+      this.startTest(params.url)
+    }
+    if (params.advanced) {
+      this.setState({ showAdvancedConfig: true })
+    }
+    // this.checkTest(this.props)
+    // this.setState({ showAdvancedConfig: params.advanced || false })
   }
 
   componentWillReceiveProps(nextProps) {
@@ -63,38 +117,6 @@ class StartingScreen extends Component {
     //   // history.push(`/test/${nextProps.testOverview.id}`)
     //   const testId = this.props.match.params.testId
     // }
-  }
-
-  checkTest = (props) => {
-    const { history } = props
-    const { testId } = props.match.params
-    const { testOverview, isMonitored, isFinished } = props.result
-    // debugger
-    // if (!testId && testOverview.id && testOverview.competitorTestResult) {
-    //   history.push(`/test/${getObjectKey(testOverview.id)}`)
-    // }
-
-    if (testId && !isMonitored && !isFinished ) {
-      this.props.actions.monitorTest(testId).catch((e) => {
-        this.props.actions.resetTest()
-        history.replace('/')
-      })
-    }
-
-    if (testId && isFinished) {
-      history.replace(`/test/${testId}/result`)
-    }
-  }
-
-  onSubmit = () => {
-    const { history } = this.props
-    if (isURL(this.props.config.url)) {
-      this.props.actions.prepareTest().then(() => {
-        this.props.actions.startTest().then((testOverview) => {
-          history.push(`/test/${getObjectKey(testOverview.id)}`)
-        })
-      })
-    }
   }
 
   render() {
