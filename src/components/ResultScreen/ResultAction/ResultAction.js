@@ -89,7 +89,9 @@ class ResultAction extends Component {
   renderCta() {
     return (
       <div className="text-center pt4">
-        <a href="" className="btn btn-orange ma1">Boost Your Website</a>
+        <a className="btn btn-orange ma1"
+          target="_blank" rel="noopener noreferrer"
+          href="https://dashboard.baqend.com/register?appType=speedkit">Sign Up</a>
         <a className="btn btn-orange btn-ghost ma1" onClick={this.props.toggleModal}>Contact Us</a>
       </div>
     )

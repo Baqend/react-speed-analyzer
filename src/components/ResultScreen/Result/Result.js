@@ -38,7 +38,7 @@ class Result extends Component {
       <div>
         <div className="flex items-center relative">
           {!this.props.speedKitError && (
-            <div className="mainFactor text-center" title={tooltipText[this.props.mainMetric]} arrow style={{ display: 'flex'}}>
+            <div className="mainFactor text-center" title={tooltipText[this.props.mainMetric]} style={{ display: 'flex'}}>
               {calculateAbsolute(competitorData[this.props.mainMetric], speedKitData[this.props.mainMetric])}
               <br/>
               Faster

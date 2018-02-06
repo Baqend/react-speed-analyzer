@@ -28,13 +28,22 @@ class Footer extends Component {
                 <small style={{ whiteSpace: 'nowrap' }}>© 2018 Baqend</small>
               </div>
               <div className="flex items-center w-100 w-auto-l flex-grow-1 flex-grow-0-l justify-center justify-start-l order-0 order-1-l mb2 mb0-ns">
-                <a className="pa1" href="https://dashboard.baqend.com/privacy">
+                <a
+                  className="pa1"
+                  target="_blank" rel="noopener noreferrer"
+                  href="https://dashboard.baqend.com/privacy">
                   Privacy Policy
                 </a>
-                <a className="pa1" href="https://dashboard.baqend.com/terms">
+                <a
+                  className="pa1"
+                  target="_blank" rel="noopener noreferrer"
+                  href="https://dashboard.baqend.com/terms">
                   Terms of Service
                 </a>
-                <a className="pa1" href="https://dashboard.baqend.com/imprint">
+                <a
+                  className="pa1"
+                  target="_blank" rel="noopener noreferrer"
+                  href="https://dashboard.baqend.com/imprint">
                   Imprint
                 </a>
                 <a className="pa1" href="" onClick={this.getRandomExample}>

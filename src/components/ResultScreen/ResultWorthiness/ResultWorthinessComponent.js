@@ -40,7 +40,7 @@ class ResultWorthinessComponent extends Component {
             <div className="pa1 mt2" style={{ maxWidth: 340, marginLeft: 'auto', marginRight: 'auto' }}>
               <span>
                 <a href="https://storage.googleapis.com/doubleclick-prod/documents/The_Need_for_Mobile_Speed_-_FINAL.pdf#page=3"
-                  target="_blank">DoubleClick study (p. 3)
+                  target="_blank" rel="noopener noreferrer">DoubleClick study (p. 3)
                 </a> "The Need for Mobile Speed" based on 4,500 real websites
               </span>
             </div>
@@ -55,7 +55,7 @@ class ResultWorthinessComponent extends Component {
             <div className="pa1 mt2" style={{ maxWidth: 340, marginLeft: 'auto', marginRight: 'auto' }}>
               <span>
                 <a href="http://sites.google.com/site/glinden/Home/StanfordDataMining.2006-11-28.ppt?attredirects=0"
-                  target="_blank">Amazon study (p. 10)
+                  target="_blank" rel="noopener noreferrer">Amazon study (p. 10)
                 </a> "Make Data Useful" using A/B tests on the Amazon shop
               </span>
             </div>
