@@ -4,18 +4,31 @@
   font-size: 14px;
   &-input-wrapper {
     position: relative;
+    .parsed-domain {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      font-size: 18px;
+      color: #fff;
+      font-weight: 400;
+      font-family: "Open Sans";
+      line-height: 34px;
+      pointer-events: none;
+    }
   }
   &-input {
-    font-size: 16px;
-    background: color(var(--white) a(30%));
+    font-size: 18px;
+    background: color(var(--white) a(20%));
     color: var(--white);
     border: none;
     border-radius: 3px;
     font-weight: 400;
     font-family: "Open Sans";
-    line-height: 30px;
-    /* color: transparent;
-    caret-color: white; */
+    line-height: 34px;
+    color: transparent;
+    caret-color: white;
     &::placeholder {
       color: color(var(--white) a(75%));
     }

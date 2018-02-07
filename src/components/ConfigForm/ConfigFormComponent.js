@@ -9,6 +9,30 @@ import { getTLD } from '../../helper/configHelper'
 import arrow from '../../assets/arrow_right.svg'
 import './ConfigForm.css'
 
+export function splitUrl(url) {
+  try {
+    // if(url.indexOf('http') === -1 && url.indexOf('https') === -1) {
+    //   // url = `http://${url}`
+    //   return url
+    // }
+    const dummyElement = document.createElement('a')
+    dummyElement.href = url.indexOf('http') === -1 && url.indexOf('https') === -1 ? `http://${url}` : url
+    let { hostname } = dummyElement
+    // Remove "www" in the beginning
+    if (hostname.indexOf('www') !== -1) {
+      hostname = hostname.substr(hostname.indexOf('www.') + 4)
+    }
+    if (hostname && url.indexOf(hostname) !== -1 ) {
+      console.log(hostname, url)
+      const parts = url.split(hostname)
+      return [parts[0], hostname, parts[1]]
+    }
+    return url
+  } catch(e) {
+    return url
+  }
+}
+
 export const getDefaultSpeedKitConfig = (url = '') => (
   `{
     "appName": "makefast",
@@ -205,12 +229,15 @@ class ConfigFormComponent extends Component {
   }
 
   render() {
+    const url = splitUrl(this.props.config.url)
+    // debugger
+
     return (
       <div className="config__form flex-grow-1 flex flex-column">
         <form className="flex flex-grow-1 flex-column" onSubmit={this.handleSubmit}>
           <div className="config__form-input-wrapper">
             <input
-              className="w-100 ph2 pv3 config__form-input"
+              className="w-100 ph2 pv2 config__form-input"
               type="text"
               inputMode="url"
               spellCheck="false"
@@ -218,8 +245,14 @@ class ConfigFormComponent extends Component {
               onChange={this.handleUrlChange}
               placeholder="Enter URL here..."
             />
-            <div className="domain">
-              <span className="faded">https://www.</span>fussballdaten.de<span className="faded">/bundesliga/ewige-tabelle/</span>
+            <div className="parsed-domain ph2 pv2">
+              {Array.isArray(url) && url.length === 3 ? [
+                <span key="pre" className="faded">{url[0]}</span>,
+                <span key="hostname">{url[1]}</span>,
+                <span key="rest" className="faded">{url[2]}</span>
+              ] : (
+                <span>{url}</span>
+              )}
             </div>
             <div className="config__form-submit-wrapper">
               <button className="config__form-submit flex justify-center items-center" type="submit">
