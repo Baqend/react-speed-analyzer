@@ -1,4 +1,5 @@
 import {
+  RESET_CONFIG,
   CHANGE_URL,
   CHANGE_LOCATION,
   CHANGE_TIMEOUT,
@@ -21,6 +22,8 @@ const initialState = {
 
 export default function config(state = initialState, action = {}) {
   switch (action.type) {
+    case RESET_CONFIG:
+      return { ...initialState }
     case CHANGE_URL:
       return { ...state, url: action.payload }
     case CHANGE_LOCATION:

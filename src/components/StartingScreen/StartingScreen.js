@@ -10,6 +10,7 @@ import { parse } from 'query-string'
 import { getObjectKey } from '../../helper/utils'
 import { isURL } from '../../helper/utils'
 
+import { resetConfig } from '../../actions/config'
 import { terminateTest } from '../../actions/terminateTest'
 import { resetTest, monitorTest } from '../../actions/monitorTest'
 import { prepareTest, startTest } from '../../actions/startTest'
@@ -21,6 +22,11 @@ class StartingScreen extends Component {
     this.state = {
       showAdvancedConfig: false
     }
+  }
+
+  reset = () => {
+    this.props.actions.resetConfig()
+    this.props.actions.resetTest()
   }
 
   parseQueryString = (queryString) => {
@@ -71,6 +77,7 @@ class StartingScreen extends Component {
   }
 
   componentWillMount() {
+    this.reset()
     // const { location } = this.props
     // const params = location.search.replace('?', '').split('&')
     // const testId = this.props.match.params.testId
@@ -153,6 +160,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     actions: bindActionCreators({
+      resetConfig,
       prepareTest,
       startTest,
       resetTest,

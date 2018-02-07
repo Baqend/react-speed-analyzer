@@ -152,7 +152,7 @@ class StartingScreenComponent extends Component {
         <div className={`${deviceTypeClass}`}>
           <Device>
             <div className="flex-grow-1 flex flex-column" style={{ overflow: 'hidden' }}>
-              <div className={`flex-grow-1 flex justify-center ${statusClass}`}>
+              <div className={`flex-grow-1 flex justify-center items-center ${statusClass}`}>
                 <div className="left">
                   <Device>
                     {(this.props.result.isStarted && this.renderSpinner()) || this.renderForm()}

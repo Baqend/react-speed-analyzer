@@ -1,4 +1,5 @@
 import {
+  RESET_CONFIG,
   CHANGE_URL,
   CHANGE_LOCATION,
   CHANGE_TIMEOUT,
@@ -6,6 +7,12 @@ import {
   SWITCH_MOBILE,
   SWITCH_CACHING,
 } from './types'
+
+export function resetConfig() {
+  return {
+    type: RESET_CONFIG
+  }
+}
 
 export function handleUrlInput(url) {
   return {

@@ -1,3 +1,4 @@
+export const RESET_CONFIG = 'RESET_CONFIG'
 export const CHANGE_URL = 'CHANGE_URL'
 export const CHANGE_LOCATION = 'CHANGE_LOCATION'
 export const CHANGE_TIMEOUT = 'CHANGE_TIMEOUT'
