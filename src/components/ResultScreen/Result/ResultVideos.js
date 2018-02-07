@@ -45,7 +45,6 @@ class ResultVideos extends Component {
 
   handleCompetitorProgress = () => {
     const percent = (this.competitorVideo.currentTime / this.competitorVideo.duration) + 0.05
-    console.log(percent)
     this.setState({
       progressCompetitor: percent
     })

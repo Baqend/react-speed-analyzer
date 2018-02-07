@@ -109,7 +109,7 @@ class ResultScreenComponent extends Component {
 
         { !this.state.isIFrame && [
           <div key="speedKitAnalyzerInfo" className="pv7">
-            <div className="container ph2">
+            <div className="container ph4">
               <SpeedKitAnalyzer />
             </div>
           </div>,
