@@ -15,9 +15,6 @@ import {
 
 /**
  * Prepares the test before its execution (check rate limiting and normalize url).
- * @param dispatch Method to dispatch an action input.
- * @param getState Method to get the state of the redux store.
- * @param db The baqend database instance.
  */
 export const prepareTest = (url = null) => ({
   'BAQEND': async ({ dispatch, getState, db }) => {
@@ -51,9 +48,7 @@ export const prepareTest = (url = null) => ({
 export const startTest = (urlInfo = {}) => ({
   'BAQEND': async (store) => {
     const { dispatch, getState, db } = store
-    //reset the result store
     dispatch({ type: RESET_TEST_RESULT })
-
     try {
       // await prepareTest({ dispatch, getState, db })
       // debugger
@@ -80,6 +75,8 @@ export const startTest = (urlInfo = {}) => ({
 
 /**
  * Saves a given testOverview object to the baqend database
+ * @param dispatch Method to dispatch an action input.
+ * @param getState Method to get the state of the redux store.
  * @param testOverview The testOverview object to be saved.
  */
 export const saveTestOverview = async ({ dispatch, getState }, testOverview) => {
@@ -93,9 +90,7 @@ export const saveTestOverview = async ({ dispatch, getState }, testOverview) => 
 
 /**
  * Creates a new testOverview object and generates a unique id for it.
- * @param dispatch Method to dispatch an action input.
- * @param getState Method to get the state of the redux store.
- * @param db The baqend database instance.
+ * @param store
  */
 const createTestOverview = async (params) => {
   const { speedkit, speedkitVersion, ...store } = params
@@ -134,6 +129,7 @@ const createTestOverview = async (params) => {
 /**
  * Call the Pagespeed Insights API of Google.
  * @param dispatch Method to dispatch an action input.
+ * @param getState Method to get the state of the redux store.
  * @param db The baqend database instance.
  * @param url The URL to be tested.
  * @param isMobile Boolean to verify whether the mobile version should be tested or not.
