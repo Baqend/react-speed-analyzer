@@ -79,7 +79,7 @@ class ResultScreenComponent extends Component {
     // const speedKitError = true
 
     return (
-      <div className="flex-grow-1 results animated slideInUp" style={{ animationDuration: '0.8s' }}>
+      <div className="flex-grow-1 results animated slideInUp" style={{ animationDuration: '0.5s' }}>
         { !competitorError && (
           <div className="container pa2">
             <div className="box-shadow results__box" style={{ marginTop: '-96px' }}>

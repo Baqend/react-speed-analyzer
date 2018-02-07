@@ -1,11 +1,13 @@
 import React, { Component } from 'react'
 import './Result.css'
-import { isDeviceIOS, isIE, isEdge } from '../../../helper/utils'
+import { isDeviceIOS } from '../../../helper/utils'
 
 class ResultVideos extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      isRunningCompetitor: false,
+      isRunningSpeedKit: false,
       progressCompetitor: 0,
       progressSpeedKit: 0,
     }
@@ -14,14 +16,9 @@ class ResultVideos extends Component {
   playVideos = (videoLabel) => {
     this[videoLabel].currentTime = 0
     const playPromise = this[videoLabel].play()
-    const secondVideo = videoLabel === 'speedKitVideo' ? 'competitorVideo' : 'speedKitVideo'
-    if(isIE() || isEdge()) {
-      if(this[secondVideo]) {
-        this[secondVideo].currentTime = 0
-        this[secondVideo].play()
-      }
-    } else if (!isDeviceIOS()) {
+    if (!isDeviceIOS()) {
       playPromise.then(() => {
+        const secondVideo = videoLabel === 'speedKitVideo' ? 'competitorVideo' : 'speedKitVideo'
         if(this[secondVideo]) {
           this[secondVideo].currentTime = 0
           this[secondVideo].play()
@@ -30,18 +27,43 @@ class ResultVideos extends Component {
     }
   }
 
+  handleCompetitorStarted = () => {
+    this.setState({ isRunningCompetitor: false }, () => {
+      setTimeout(() => {
+        this.setState({ isRunningCompetitor: true })
+      }, 100)
+    })
+  }
+
+  handleSpeedKitStarted = () => {
+    this.setState({ isRunningSpeedKit: false }, () => {
+      setTimeout(() => {
+        this.setState({ isRunningSpeedKit: true })
+      }, 100)
+    })
+  }
+
   handleCompetitorProgress = () => {
-    const percent = (this.competitorVideo.currentTime / this.competitorVideo.duration) * 100
+    const percent = (this.competitorVideo.currentTime / this.competitorVideo.duration) + 0.05
+    console.log(percent)
     this.setState({
       progressCompetitor: percent
     })
   }
 
   handleSpeedKitProgress = () => {
-    const percent = (this.speedKitVideo.currentTime / this.speedKitVideo.duration) * 100
+    const percent = (this.speedKitVideo.currentTime / this.speedKitVideo.duration) + 0.05
     this.setState({
       progressSpeedKit: percent
     })
+  }
+
+  handleCompetitorEnded = () => {
+    this.setState({ isRunningCompetitor: false })
+  }
+
+  handleSpeedKitEnded = () => {
+    this.setState({ isRunningSpeedKit: false })
   }
 
   componentDidMount() {
@@ -50,14 +72,31 @@ class ResultVideos extends Component {
     // }, 500)
 
     // this.state.video.addEventListener('timeupdate', this.handleProgress)
+    if (this.competitorVideo) {
+      this.competitorVideo.addEventListener('playing', this.handleCompetitorStarted)
+      this.competitorVideo.addEventListener('timeupdate', this.handleCompetitorProgress)
+      this.competitorVideo.addEventListener('ended', this.handleCompetitorEnded)
+    }
 
-    this.competitorVideo && this.competitorVideo.addEventListener('timeupdate', this.handleCompetitorProgress)
-    this.speedKitVideo && this.speedKitVideo.addEventListener('timeupdate', this.handleSpeedKitProgress)
+    if (this.speedKitVideo) {
+      this.speedKitVideo.addEventListener('playing', this.handleSpeedKitStarted)
+      this.speedKitVideo.addEventListener('timeupdate', this.handleSpeedKitProgress)
+      this.speedKitVideo.addEventListener('ended', this.handleSpeedKitEnded)
+    }
   }
 
   componentWillUnmount() {
-    this.competitorVideo && this.competitorVideo.removeEventListener('timeupdate', this.handleCompetitorProgress)
-    this.speedKitVideo && this.speedKitVideo.removeEventListener('timeupdate', this.handleSpeedKitProgress)
+    if (this.competitorVideo) {
+      this.competitorVideo.removeEventListener('playing', this.handleCompetitorStarted)
+      this.competitorVideo.removeEventListener('timeupdate', this.handleCompetitorProgress)
+      this.competitorVideo.removeEventListener('ended', this.handleCompetitorEnded)
+    }
+
+    if (this.speedKitVideo) {
+      this.speedKitVideo.removeEventListener('playing', this.handleSpeedKitStarted)
+      this.speedKitVideo.removeEventListener('timeupdate', this.handleSpeedKitProgress)
+      this.speedKitVideo.removeEventListener('ended', this.handleSpeedKitEnded)
+    }
   }
 
   render() {
@@ -88,7 +127,15 @@ class ResultVideos extends Component {
                   <div className="video__wrapper-play" onClick={() => this.playVideos('competitorVideo')}>►</div>
                 )}
                 <div className="video__wrapper-progress">
-                  <div className="video__wrapper-progress-bar" style={{ flexBasis: `${this.state.progressCompetitor}%` }}></div>
+                  <div className="video__wrapper-progress-inner">
+                    <div
+                      className="video__wrapper-progress-bar"
+                      style={{
+                        transform: `scaleX(${this.state.progressCompetitor})`,
+                        transition: this.state.isRunningCompetitor ? 'all 0.5s linear' : 'all 0.01ms linear'
+                      }}>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -113,7 +160,15 @@ class ResultVideos extends Component {
                     <div className="video__wrapper-play" onClick={() => this.playVideos('speedKitVideo')}>►</div>
                   )}
                   <div className="video__wrapper-progress">
-                    <div className="video__wrapper-progress-bar" style={{ flexBasis: `${this.state.progressSpeedKit}%` }}></div>
+                    <div className="video__wrapper-progress-inner">
+                      <div
+                        className="video__wrapper-progress-bar"
+                        style={{
+                          transform: `scaleX(${this.state.progressSpeedKit})`,
+                          transition: this.state.isRunningSpeedKit ? 'all 0.5s linear' : 'all 0.01ms linear'
+                        }}>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
