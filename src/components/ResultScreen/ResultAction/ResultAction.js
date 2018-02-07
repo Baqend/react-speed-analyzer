@@ -98,10 +98,10 @@ class ResultAction extends Component {
   }
 
   render() {
-    const competitorError = this.props.competitorError
-    const speedKitError = this.props.speedKitError
-    const isWordPress = this.props.competitorTest.isWordPress
-    const isSpeedKitComparison = this.props.result.testOverview.isSpeedKitComparison
+    const { competitorError, speedKitError, competitorTest, testOverview } = this.props.result
+    // const speedKitError = this.props.speedKitError
+    const isWordPress = competitorTest.isWordPress
+    const isSpeedKitComparison = testOverview.isSpeedKitComparison
 
     if (competitorError) {
       return this.renderAllTestsFailed()
