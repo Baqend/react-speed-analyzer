@@ -88,8 +88,8 @@
   background: transparent;
   border: 2px solid rgba(0,0,0,0.7);
   &:hover {
-    color: white;
-    background: rgba(0,0,0,0.1);
+    color: rgba(0,0,0,0.8);
+    background: rgba(0, 0, 0, 0.04);
   }
 }
 

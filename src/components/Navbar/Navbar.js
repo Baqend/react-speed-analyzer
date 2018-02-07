@@ -40,7 +40,7 @@ class Navbar extends Component {
       <div className="navbar-inner flex items-center justify-between">
         <div className="flex items-center">
           <Link className="mr2" to="/">
-            <img src={LogoWhite} alt="Logo White" style={{ height: 44 }}/>
+            <img src={LogoWhite} alt="Logo White" style={{ height: 44, marginTop: 8 }}/>
           </Link>
           <a
             className="btn btn-small btn-white no-border no-shadow dn db-ns"
@@ -53,7 +53,7 @@ class Navbar extends Component {
           <a
             className="btn btn-small btn-white no-border no-shadow dn db-ns"
             target="_blank" rel="noopener noreferrer"
-            href="https://www.baqend.com/guide">Docs</a>
+            href="https://www.baqend.com/guide/topics/speed-kit/#page-speed-analyzer">About the Analyzer</a>
         </div>
         <a
           className="btn btn-small btn-white"
@@ -68,7 +68,7 @@ class Navbar extends Component {
       <div className="navbar-inner flex items-center justify-between">
         <div className="flex items-center">
           <Link className="mr2" to="/">
-            <img src={Logo} alt="Logo White" style={{ height: 44 }}/>
+            <img src={Logo} alt="Logo White" style={{ height: 44, marginTop: 8 }}/>
           </Link>
           <a
             className="btn btn-small btn-black no-border no-shadow dn db-ns"
@@ -81,7 +81,7 @@ class Navbar extends Component {
           <a
             className="btn btn-small btn-black no-border no-shadow dn db-ns"
             target="_blank" rel="noopener noreferrer"
-            href="https://www.baqend.com/guide">Docs</a>
+            href="https://www.baqend.com/guide/topics/speed-kit/#page-speed-analyzer">About the Analyzer</a>
         </div>
         <a
           className="btn btn-small btn-orange no-shadow"
