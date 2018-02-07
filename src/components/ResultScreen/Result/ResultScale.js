@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-const Marker = () => (
+const Marker = ({ style }) => (
   <svg
     version="1.1"
     id="Layer_1"
@@ -9,19 +9,20 @@ const Marker = () => (
     y="0px"
     viewBox="-5 -5 56 64"
     width="47"
-    aria-labelledby="Label__score-marker">
+    aria-labelledby="Label__score-marker"
+    style={style}>
     <title id="Label__score-marker">
       Graph label for speed score
     </title>
     <defs>
       <filter id="marker-dropshadow" x="-10%" y="-10%">
         <feGaussianBlur in="SourceAlpha" result="blur-out" stdDeviation="2"></feGaussianBlur>
-        <feOffset in="blur-out" result="the-shadow" dx="0" dy="1"></feOffset>
+        <feOffset in="blur-out" result="the-shadow" dx="0" dy="0"></feOffset>
         <feColorMatrix
           in="the-shadow"
           result="color-out"
           type="matrix"
-          values="0 0 0 0   0 0 0 0 0   0 0 0 0 0   0 0 0 0 .5 0">
+          values="0 0 0 0   0 0 0 0 0   0 0 0 0 0   0 0 0 0 .25 0">
         </feColorMatrix>
         <feBlend in="SourceGraphic" in2="color-out" mode="normal"></feBlend>
       </filter>
@@ -32,14 +33,14 @@ const Marker = () => (
   </svg>
 )
 
-const Bobbel = ({ description, time, style }) => (
-  <div className="flex flex-column justify-center items-center absolute" style={style}>
-    <div>
-      <small style={{ fontWeight: 400, fontSize: 12 }}>{description}</small>
-    </div>
+const Bobbel = ({ description, time, style, upsideDown }) => (
+  <div className="flex justify-center items-center absolute" style={style}>
     <div className="relative">
-      <span style={{ position: 'absolute', display: 'block', width: '100%', textAlign: 'center', top: '13px', fontWeight: 400, fontSize: 14 }}>{time}</span>
-      <Marker />
+      <div style={{ position: 'absolute', left: 54, top: upsideDown ? 14 : 8, whiteSpace: 'nowrap' }}>
+        <small style={{ fontWeight: 600, fontSize: 12 }}>{description}</small>
+      </div>
+      <span style={{ position: 'absolute', display: 'block', width: '100%', textAlign: 'center', top: upsideDown ? 19 : 13, fontWeight: 400, fontSize: 14, zIndex: 1 }}>{time}</span>
+      <Marker style={{ transform: upsideDown ? 'rotate(180deg)' : null }} />
     </div>
   </div>
 )
@@ -58,9 +59,22 @@ class ResultScaleComponent extends Component {
     const speedKitOffset = speedKitTime && calculateOffset(maxTime, speedKitTime)
 
     return (
-      <div className="relative pt6 pb1 mt1">
-        {competitorTime && <Bobbel description="Your Website" time={`${Math.round(competitorTime / 100) / 10}s`} style={{ left: `${competitorOffset}%`, top: -3, marginLeft: -45 }}/>}
-        {speedKitTime && <Bobbel description="With Speedkit" time={`${Math.round(speedKitTime / 100) / 10}s`} style={{ left: `${speedKitOffset}%`, top: -3, marginLeft: -45 }}/>}
+      <div className={`relative pt4 mt1 ${(speedKitTime && 'pb3') || 'pb1'}`}>
+        {competitorTime && (
+          <Bobbel
+            description="Your Website"
+            time={`${Math.round(competitorTime / 100) / 10}s`}
+            style={{ left: `${competitorOffset}%`, top: -8, marginLeft: -22.5 }}
+          />
+        )}
+        {speedKitTime && (
+          <Bobbel
+            description="With Speedkit"
+            time={`${Math.round(speedKitTime / 100) / 10}s`}
+            style={{ left: `${speedKitOffset}%`, top: 64, marginLeft: -22.5 }}
+            upsideDown
+          />
+        )}
         <div className="flex" style={{ fontWeight: 400 }}>
           <div className="w-10 pa1 dark-green bg-dark-green border-left">Excellent</div>
           <div className="w-20 pa1 green bg-light-green">Good</div>

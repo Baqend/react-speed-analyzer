@@ -65,7 +65,7 @@
     left: 50%;
     margin-left: -37.5px;
     margin-top: -37.5px;
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(255, 255, 255, 0.95);
     cursor: pointer;
     width: 75px;
     height: 75px;
@@ -74,7 +74,7 @@
     justify-content: center;
     overflow: hidden;
     padding-left: 10px;
-    text-shadow: 0 0px 16px rgba(0,0,0,0.35);
+    text-shadow: 0 0px 16px rgba(0,0,0,0.1);
     &:hover {
       color: white;
     }

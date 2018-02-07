@@ -45,10 +45,13 @@ export const monitorTest = (testId) => ({
     const competitorBaqendId = testOverview.competitorTestResult
     const speedKitBaqendId = testOverview.speedKitTestResult
     // debugger
-    checkTestStatus({ ...store, competitorBaqendId })
-
-    subscribeOnCompetitorTest({ ...store, competitorBaqendId})
-    subscribeOnSpeedKitTest({ ...store, speedKitBaqendId})
+    if (testOverview.hasFinished) {
+      loadTestResults({ ...store, competitorBaqendId, speedKitBaqendId })
+    } else {
+      checkTestStatus({ ...store, competitorBaqendId })
+      subscribeOnCompetitorTest({ ...store, competitorBaqendId})
+      subscribeOnSpeedKitTest({ ...store, speedKitBaqendId})
+    }
   }
 })
 
@@ -184,4 +187,23 @@ const checkTestFinishState = ({ dispatch, getState }) => {
       payload: {}
     })
   }
+}
+
+const loadTestResults = async ({ dispatch, getState, db, competitorBaqendId, speedKitBaqendId }) => {
+  const testResults = await Promise.all([
+    db.TestResult.load(competitorBaqendId),
+    db.TestResult.load(speedKitBaqendId)
+  ])
+  dispatch({
+    type: COMPETITOR_RESULT_NEXT,
+    payload: [testResults[0]]
+  })
+  dispatch({
+    type: SPEED_KIT_RESULT_NEXT,
+    payload: [testResults[1]]
+  })
+  dispatch({
+    type: TERMINATE_TEST,
+    payload: {}
+  })
 }
