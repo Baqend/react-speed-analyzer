@@ -16,10 +16,10 @@ class ResultScreen extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      mainMetric: 'speedIndex',
-      secondaryMetric: 'firstMeaningfulPaint',
-      competitorError: false,
-      speedKitError: false,
+      // mainMetric: 'speedIndex',
+      // secondaryMetric: 'firstMeaningfulPaint',
+      // competitorError: false,
+      // speedKitError: false,
       showDetails: false,
       showConfig: false,
       showAdvancedConfig: false,
@@ -50,22 +50,21 @@ class ResultScreen extends Component {
     }
 
     if (testId && !isMonitored && !isFinished) {
-      // debugger
+      const { history } = this.props
       this.props.actions.monitorTest(testId).catch((e) => {
         this.props.actions.resetTest()
-        // history.replace('/')
-        alert("redirect to /")
+        history.replace('/')
       })
     }
 
-    if(Object.keys(competitorTest).length > 0 && Object.keys(speedKitTest).length > 0) {
-      // debugger
-      if(!this.hasResultError(competitorTest, speedKitTest)) {
-        if(competitorTest.firstView && speedKitTest.firstView) {
-          this.verifyMainMetric(competitorTest.firstView, speedKitTest.firstView)
-        }
-      }
-    }
+    // if(Object.keys(competitorTest).length > 0 && Object.keys(speedKitTest).length > 0) {
+    //   // debugger
+    //   if(!this.hasResultError(competitorTest, speedKitTest)) {
+    //     if(competitorTest.firstView && speedKitTest.firstView) {
+    //       this.verifyMainMetric(competitorTest.firstView, speedKitTest.firstView)
+    //     }
+    //   }
+    // }
 
     // if (Object.keys(competitorTest).length < 1 || Object.keys(speedKitTest).length < 1) {
     //   debugger
@@ -89,32 +88,32 @@ class ResultScreen extends Component {
     this.loadTestResult(nextProps)
   }
 
-  hasResultError = (competitorResult, speedKitResult) => {
-    if(!competitorResult || competitorResult.testDataMissing) {
-      console.log('Competitor konnte nicht getestet werden => Zeige Beispieltests')
-      this.setState({ competitorError: true })
-      return true
-    }
-
-    const mainMetric = this.state.mainMetric
-    const secondaryMetric = this.state.secondaryMetric
-    // const resultIsSatisfying = isMainMetricSatisfactory(mainCompetitor, mainSpeedKit, secondaryCompetitor, secondarySpeedKit)
-    const isValidResult = resultIsValid(competitorResult, speedKitResult, mainMetric, secondaryMetric)
-
-    if(!speedKitResult || speedKitResult.testDataMissing || !isValidResult) {
-      console.log('SpeedKit konnte nicht getestet werden => Zeige Kontaktformular')
-      this.setState({ speedKitError: true })
-      return true
-    }
-
-    return false
-  }
-
-  verifyMainMetric = (competitorData, speedKitData) => {
-    const mainMetric = shouldShowFirstMeaningfulPaint(competitorData, speedKitData) ? 'firstMeaningfulPaint' : 'speedIndex'
-    const secondaryMetric = shouldShowFirstMeaningfulPaint(competitorData, speedKitData) ? 'speedIndex' : 'firstMeaningfulPaint'
-    this.setState({ mainMetric, secondaryMetric })
-  }
+  // hasResultError = (competitorResult, speedKitResult) => {
+  //   if(!competitorResult || competitorResult.testDataMissing) {
+  //     console.log('Competitor konnte nicht getestet werden => Zeige Beispieltests')
+  //     this.setState({ competitorError: true })
+  //     return true
+  //   }
+  //
+  //   const mainMetric = this.state.mainMetric
+  //   const secondaryMetric = this.state.secondaryMetric
+  //   // const resultIsSatisfying = isMainMetricSatisfactory(mainCompetitor, mainSpeedKit, secondaryCompetitor, secondarySpeedKit)
+  //   const isValidResult = resultIsValid(competitorResult, speedKitResult, mainMetric, secondaryMetric)
+  //
+  //   if(!speedKitResult || speedKitResult.testDataMissing || !isValidResult) {
+  //     console.log('SpeedKit konnte nicht getestet werden => Zeige Kontaktformular')
+  //     this.setState({ speedKitError: true })
+  //     return true
+  //   }
+  //
+  //   return false
+  // }
+  //
+  // verifyMainMetric = (competitorData, speedKitData) => {
+  //   const mainMetric = shouldShowFirstMeaningfulPaint(competitorData, speedKitData) ? 'firstMeaningfulPaint' : 'speedIndex'
+  //   const secondaryMetric = shouldShowFirstMeaningfulPaint(competitorData, speedKitData) ? 'speedIndex' : 'firstMeaningfulPaint'
+  //   this.setState({ mainMetric, secondaryMetric })
+  // }
 
   onSubmit = () => {
     const { history } = this.props

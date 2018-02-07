@@ -48,10 +48,11 @@ const calculateOffset = (maxTime, time) => maxTime / 1000 * time
 
 class ResultScaleComponent extends Component {
   render() {
+    const { speedKitError, competitorTest, speedKitTest, mainMetric } = this.props.result
     const maxTime = 10
 
-    const competitorTime = this.props.competitorTest.firstView && this.props.competitorTest.firstView[this.props.mainMetric]
-    const speedKitTime = !this.props.speedKitError && this.props.speedKitTest.firstView && this.props.speedKitTest.firstView[this.props.mainMetric]
+    const competitorTime = competitorTest.firstView && competitorTest.firstView[mainMetric]
+    const speedKitTime = !speedKitError && speedKitTest.firstView && speedKitTest.firstView[mainMetric]
 
     const competitorOffset = competitorTime && calculateOffset(maxTime, competitorTime)
     const speedKitOffset = speedKitTime && calculateOffset(maxTime, speedKitTime)

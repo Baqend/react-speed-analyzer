@@ -32,49 +32,50 @@ class Result extends Component {
   }
 
   renderHeader() {
+    const { mainMetric, speedKitError, testOverview } = this.props.result
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
 
     return (
       <div>
         <div className="flex items-center relative">
-          {!this.props.speedKitError && (
-            <div className="mainFactor text-center" title={tooltipText[this.props.mainMetric]} style={{ display: 'flex'}}>
-              {calculateAbsolute(competitorData[this.props.mainMetric], speedKitData[this.props.mainMetric])}
+          {!speedKitError && (
+            <div className="mainFactor text-center" title={tooltipText[mainMetric]} style={{ display: 'flex'}}>
+              {calculateAbsolute(competitorData[mainMetric], speedKitData[mainMetric])}
               <br/>
               Faster
             </div>
           )}
           <div className="w-50 flex-auto text-center pa1 pr4 pr0-ns" style={{ background: '#f6f6f6' }}>
             <small>
-              {this.props.result.testOverview.speedKitVersion ? (
+              {testOverview.speedKitVersion ? (
                 <b>Without Speed Kit</b>
               ) : (
                 <b>Your Website</b>
               )}
             </small>
             <br/>
-            <Tooltip title={tooltipText[this.props.mainMetric]} arrow>
-              <b>{ competitorData[this.props.mainMetric] }ms</b>
+            <Tooltip title={tooltipText[mainMetric]} arrow>
+              <b>{ competitorData[mainMetric] }ms</b>
             </Tooltip>
           </div>
-          {!this.props.speedKitError && (
+          {!speedKitError && (
             <div className="w-50 flex-auto text-center pa1 pl4 pl0-ns" style={{ background: '#f6f6f6' }}>
               <small>
-                {this.props.result.testOverview.speedKitVersion ? (
-                  <b>With Speed Kit {this.props.result.testOverview.speedKitVersion}</b>
+                {testOverview.speedKitVersion ? (
+                  <b>With Speed Kit {testOverview.speedKitVersion}</b>
                 ) : (
                   <b>With Speed Kit</b>
                 )}
               </small>
               <br/>
-              <Tooltip title={tooltipText[this.props.mainMetric]} arrow>
-                <b>{ speedKitData[this.props.mainMetric] }ms</b>
+              <Tooltip title={tooltipText[mainMetric]} arrow>
+                <b>{ speedKitData[mainMetric] }ms</b>
               </Tooltip>
             </div>
           )}
         </div>
-        {this.props.mainMetric !== "speedIndex" && (
+        {mainMetric !== "speedIndex" && (
           <div>
             <hr />
             <div className="pa1 text-center">

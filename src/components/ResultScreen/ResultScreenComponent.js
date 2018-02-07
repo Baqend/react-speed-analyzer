@@ -70,8 +70,8 @@ class ResultScreenComponent extends Component {
   renderResults() {
     // const competitorData = this.props.competitorTest.firstView
     // const speedKitData = this.props.speedKitTest.firstView
-    const competitorError = this.props.competitorError
-    const speedKitError = this.props.speedKitError
+    const { competitorError, speedKitError} = this.props.result
+    // const speedKitError = this.props.speedKitError
     // console.log(this.props.competitorTest)
     // const competitorData = null
     // const speedKitData = null
@@ -98,7 +98,7 @@ class ResultScreenComponent extends Component {
               <ResultWorthiness
                 competitorTest={this.props.competitorTest}
                 speedKitTest={this.props.speedKitTest}
-                mainMetric={this.props.mainMetric}
+                mainMetric={this.props.result.mainMetric}
               />
             </div>
           )}
@@ -140,7 +140,7 @@ class ResultScreenComponent extends Component {
   }
 
   render() {
-    const competitorError = this.props.competitorError
+    const { competitorError } = this.props.result
     return (
       <div className="flex results__wrapper pt7">
         <div className="flex-grow-1 flex flex-column" style={{ overflow: 'hidden' }}>
@@ -156,8 +156,8 @@ class ResultScreenComponent extends Component {
 }
 
 ResultScreenComponent.propTypes = {
-  mainMetric: PropTypes.string,
-  speedKitError: PropTypes.bool.isRequired,
+  // mainMetric: PropTypes.string,
+  // speedKitError: PropTypes.bool.isRequired,
   onSubmit: PropTypes.func.isRequired,
 }
 

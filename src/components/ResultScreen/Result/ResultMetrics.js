@@ -180,7 +180,7 @@ class ResultMetrics extends Component {
   }
 
   render() {
-    const speedKitError = this.props.speedKitError
+    const { speedKitError } = this.props.result
     return speedKitError ? this.renderCompetitorTable() : this.renderCompetitorSpeedKitTable()
   }
 }

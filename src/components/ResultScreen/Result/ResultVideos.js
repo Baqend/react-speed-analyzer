@@ -56,6 +56,7 @@ class ResultVideos extends Component {
   }
 
   render() {
+    const { speedKitError } = this.props.result
     const competitorVideoPath = this.props.competitorTest.videoFileFirstView
     const speedKitVideoPath = this.props.speedKitTest.videoFileFirstView
     // const data = this.props.testOverview.psiScreenshot
@@ -88,7 +89,7 @@ class ResultVideos extends Component {
             </div>
           </div>
         </div>
-        {!this.props.speedKitError && (
+        {!speedKitError && (
           <div className="w-50 speedKitVideo pa2 pv4-ns ph6-ns">
             <div className="video__wrapper">
               <div className="video__wrapper-inner">

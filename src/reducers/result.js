@@ -20,6 +20,11 @@ import {
 } from '../actions/types'
 
 import { generateRules } from '../helper/configHelper'
+import {
+  isMainMetricSatisfactory,
+  resultIsValid,
+  shouldShowFirstMeaningfulPaint
+} from '../helper/resultHelper'
 
 const initialState = {
   isMonitored: false,
@@ -37,7 +42,47 @@ const initialState = {
   speedKitSubscription: null,
   competitorTest: {},
   speedKitTest: {},
+  competitorError: false,
+  speedKitError: false,
+  mainMetric: 'speedIndex',
+  secondaryMetric: 'firstMeaningfulPaint',
   whiteListCandidates: [],
+}
+
+const getResultErrors = ({ competitorTest, speedKitTest, mainMetric, secondaryMetric }) => {
+  const result = {
+    competitorError: false,
+    speedKitError: false,
+  }
+  if(!competitorTest || competitorTest.testDataMissing) {
+    result['competitorError'] = true
+    result['speedKitError'] = true
+  }
+  const isValidResult = resultIsValid(competitorTest, speedKitTest, mainMetric, secondaryMetric)
+  if(!speedKitTest || speedKitTest.testDataMissing || !isValidResult) {
+    // console.log('SpeedKit konnte nicht getestet werden => Zeige Kontaktformular')
+    // this.setState({ speedKitError: true })
+    // result['competitorError'] = true
+    result['speedKitError'] = true
+  }
+  return result
+}
+
+const verifyMainMetric = ({ competitorTest, speedKitTest, mainMetric, secondaryMetric }) => {
+  const competitorData = competitorTest.firstView
+  const speedKitData = speedKitTest.firstView
+  if (competitorData && speedKitData) {
+    const mainMetric = shouldShowFirstMeaningfulPaint(competitorData, speedKitData) ? 'firstMeaningfulPaint' : 'speedIndex'
+    const secondaryMetric = shouldShowFirstMeaningfulPaint(competitorData, speedKitData) ? 'speedIndex' : 'firstMeaningfulPaint'
+    return {
+      mainMetric,
+      secondaryMetric
+    }
+  }
+  return {
+    mainMetric,
+    secondaryMetric
+  }
 }
 
 const getWhiteListCandidates = (state, speedKitTest) => {
@@ -95,18 +140,18 @@ export default function result(state = initialState, action = {}) {
           psiScreenshot: action.payload.screenshot,
         }
       }
-    case START_TEST_COMPETITOR_POST:
-      return {
-        ...state, testOverview: {
-          ...state.testOverview, competitorTestResult: `/db/TestResult/${action.payload.baqendId }`
-        }
-      }
-    case START_TEST_SPEED_KIT_POST:
-      return {
-        ...state, testOverview: {
-          ...state.testOverview, speedKitTestResult: `/db/TestResult/${action.payload.baqendId }`
-        }
-      }
+    // case START_TEST_COMPETITOR_POST:
+    //   return {
+    //     ...state, testOverview: {
+    //       ...state.testOverview, competitorTestResult: `/db/TestResult/${action.payload.baqendId }`
+    //     }
+    //   }
+    // case START_TEST_SPEED_KIT_POST:
+    //   return {
+    //     ...state, testOverview: {
+    //       ...state.testOverview, speedKitTestResult: `/db/TestResult/${action.payload.baqendId }`
+    //     }
+    //   }
     case TEST_STATUS_GET:
       return { ...state, statusCode: action.payload.statusCode, statusText: action.payload.statusText  }
     case COMPETITOR_RESULT_NEXT:
@@ -124,8 +169,12 @@ export default function result(state = initialState, action = {}) {
     case SPEED_KIT_SUBSCRIPTION:
       return { ...state, speedKitSubscription: action.payload }
     case TERMINATE_TEST:
+      const errors = getResultErrors(state)
+      const metrics = verifyMainMetric(state)
       return {
         ...state,
+        ...errors,
+        ...metrics,
         competitorSubscription: null,
         speedKitSubscription: null,
         isInitiated: false,
