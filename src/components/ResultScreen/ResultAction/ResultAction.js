@@ -22,7 +22,7 @@ class ResultAction extends Component {
       <div>
         <div className="text-center pb2 pt4" style={{ maxWidth: 768, margin: '0 auto' }}>
           <h2>Test Runs Failed</h2>
-          <strong>An error occurred while running your tests. Please re-run the test and if the problem persists, <a href="">contact us!</a></strong>
+          <span className="faded">An error occurred while running your tests. Please re-run the test and if the problem persists, <a href="">contact us!</a></span>
         </div>
         <div className="text-center">
           <a className="btn btn-orange btn-ghost ma1" onClick={this.restartAnalyzer}>Rerun Test</a>
@@ -37,7 +37,7 @@ class ResultAction extends Component {
       <div>
         <div className="text-center pb2 pt4" style={{ maxWidth: 768, margin: '0 auto' }}>
           <h2>Speed Kit Test Run Failed</h2>
-          <strong>It looks like some fine-tuning or configuration is required to measure your site. Please contact our web performance experts to adjust and re-run the test!</strong>
+          <span className="faded">It looks like some fine-tuning or configuration is required to measure your site. Please contact our web performance experts to adjust and re-run the test!</span>
         </div>
         <div className="text-center">
           <a className="btn btn-orange btn-ghost ma1" onClick={this.props.toggleModal}>Contact Us</a>
@@ -60,7 +60,7 @@ class ResultAction extends Component {
             WordPress too slow?
           </h2>
           <div className="tc tl-ns">
-            <strong className="faded">One plugin that does it all: Instant response times for WordPress blogs, shops, and landing pages.</strong>
+            <span className="faded">One plugin that does it all: Instant response times for WordPress blogs, shops, and landing pages.</span>
           </div>
           <p className="tc tl-ns mt2">
             <a target="_blank" rel="noopener noreferrer" className="btn btn-orange" href="https://wordpress.org/plugins/baqend/">Download Plugin</a>
@@ -76,7 +76,7 @@ class ResultAction extends Component {
       <div>
         <div className="text-center pb2 pt4" style={{ maxWidth: 768, margin: '0 auto' }}>
           <h2>Thank you for using Speed Kit</h2>
-          <strong>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam porta sem malesuada magna mollis euismod.</strong>
+          <span className="faded">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam porta sem malesuada magna mollis euismod.</span>
         </div>
         <div className="text-center">
           <a className="btn btn-orange btn-ghost ma1" onClick={this.props.toggleModal}>Contact Us</a>
