@@ -38,15 +38,14 @@ class StartingScreen extends Component {
     return params
   }
 
-  startTest = (url = null) => {
+  startTest = async (url = null) => {
     const { history } = this.props
-    this.props.actions.prepareTest(url).then((urlInfo) => {
-      this.props.actions.startTest(urlInfo).then((testOverview) => {
-        history.push(`/test/${getObjectKey(testOverview.id)}`)
-      }, (e) => {
-        console.log(e)
-      })
-    })
+    try {
+      const urlInfo = await this.props.actions.prepareTest()
+      history.push('/')
+      const testOverview = await this.props.actions.startTest(urlInfo)
+      history.push(`/test/${getObjectKey(testOverview.id)}`)
+    } catch (e) {}
   }
 
   checkTest = (props) => {

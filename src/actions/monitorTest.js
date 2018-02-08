@@ -12,7 +12,8 @@ import {
   COMPETITOR_SUBSCRIPTION,
   SPEED_KIT_RESULT_NEXT,
   SPEED_KIT_SUBSCRIPTION,
-  TERMINATE_TEST
+  TERMINATE_TEST,
+  ADD_ERROR
 } from './types'
 
 
@@ -29,6 +30,24 @@ export const monitorTest = (testId) => ({
   'BAQEND': async ({ dispatch }) => {
     dispatch({ type: MONITOR_TEST })
     // dispatch({ type: CONTINUE_TEST })
+    // try {
+    //   throw new Error("Lol, so geht das doch nicht")
+    // } catch (e) {
+    //   dispatch({
+    //     type: ADD_ERROR,
+    //     payload: e
+    //   })
+    //   setTimeout(() => {
+    //     try {
+    //       throw new Error("Lol, immer noch nicht")
+    //     } catch (e) {
+    //       dispatch({
+    //         type: ADD_ERROR,
+    //         payload: e
+    //       })
+    //     }
+    //   }, 3000)
+    // }
 
     const testOverview = await dispatch(getTestOverview({ testId }))
     const { competitorTestResult, speedKitTestResult } = testOverview

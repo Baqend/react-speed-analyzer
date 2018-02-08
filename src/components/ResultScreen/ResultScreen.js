@@ -115,26 +115,15 @@ class ResultScreen extends Component {
   //   this.setState({ mainMetric, secondaryMetric })
   // }
 
-  onSubmit = () => {
+  onSubmit = async () => {
     const { history } = this.props
     if (isURL(this.props.config.url)) {
-      this.props.actions.prepareTest().then(() => {
+      try {
+        const urlInfo = await this.props.actions.prepareTest()
         history.push('/')
-        setTimeout(() => {
-          this.props.actions.startTest().then((testOverview) => {
-            history.push(`/test/${getObjectKey(testOverview.id)}`)
-          })
-        })
-      })
-      // history.push('/')
-      // setTimeout(() => {
-      //   this.props.actions.startTest().then((testOverview) => {
-      //     history.push(`/test/${getObjectKey(testOverview.id)}`)
-      //   })
-      // }, 100)
-      // this.props.actions.startTest().then((testOverview) => {
-      //   history.push(`/test/${getObjectKey(testOverview.id)}`)
-      // })
+        const testOverview = await this.props.actions.startTest(urlInfo)
+        history.push(`/test/${getObjectKey(testOverview.id)}`)
+      } catch (e) {}
     }
   }
 

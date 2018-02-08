@@ -11,8 +11,11 @@ import Navbar from './components/Navbar/Navbar'
 import Footer from './components/Footer/Footer'
 
 import './styles/index.css'
+
 import StartingScreen from './components/StartingScreen/StartingScreen'
 import ResultScreen from './components/ResultScreen/ResultScreen'
+import ToastContainer from './components/Toasts/ToastContainer'
+
 const store = createStore()
 
 class App extends Component {
@@ -50,6 +53,7 @@ class App extends Component {
               )}/>
             </Switch>
           </BrowserRouter>
+          <ToastContainer />
         </div>
       </Provider>
     )

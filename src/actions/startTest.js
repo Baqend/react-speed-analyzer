@@ -1,5 +1,6 @@
 import { generateSpeedKitConfig, getTLD } from '../helper/configHelper'
 import {
+  ADD_ERROR,
   CHANGE_URL,
   INIT_TEST,
   START_TEST,
@@ -22,22 +23,31 @@ export const prepareTest = (url = null) => ({
     if (url) {
       dispatch({ type: CHANGE_URL, payload: url })
     }
-
-    const rateLimitResult = await db.modules.get('rateLimiter')
-
-    dispatch({
-      type: RATE_LIMITER_GET,
-      payload: rateLimitResult.isRateLimited
-    })
-
-    if(!rateLimitResult.isRateLimited) {
-      const { url, isMobile } = getState().config
-      const urlInfo = await db.modules.post('normalizeUrl', { urls: url, mobile: isMobile })
+    try {
+      const rateLimitResult = await db.modules.get('rateLimiter')
       dispatch({
-        type: NORMALIZE_URL_POST,
-        payload: urlInfo[0]
+        type: RATE_LIMITER_GET,
+        payload: rateLimitResult.isRateLimited
       })
-      return urlInfo[0]
+
+      if(!rateLimitResult.isRateLimited) {
+        const { url, isMobile } = getState().config
+        const urlInfo = await db.modules.post('normalizeUrl', { urls: url, mobile: isMobile })
+
+        if (urlInfo[0].isBaqendApp) {
+          throw new Error("Url is already a Baqend app")
+        }
+
+        dispatch({
+          type: NORMALIZE_URL_POST,
+          payload: urlInfo[0]
+        })
+        return urlInfo[0]
+      }
+    } catch(e) {
+      dispatch({ type: RESET_TEST_RESULT })
+      dispatch({ type: ADD_ERROR, payload: e })
+      throw e
     }
   }
 })
@@ -49,18 +59,20 @@ export const startTest = (urlInfo = {}) => ({
   'BAQEND': async ({ dispatch, getState, db }) => {
     dispatch({ type: RESET_TEST_RESULT })
     try {
-      const { isBaqendApp } = urlInfo
+      // const { isBaqendApp } = urlInfo
       const { url, isMobile } = getState().config
 
-      if(!isBaqendApp) {
-        dispatch({ type: START_TEST })
-        const testOverview = await dispatch(createTestOverview({ ...urlInfo }))
-        dispatch(callPageSpeedInsightsAPI({ testOverview, url, isMobile }))
-        return testOverview
-      } else {
-        throw new Error("url is already a Baqend app")
-      }
+      // if(!isBaqendApp) {
+      dispatch({ type: START_TEST })
+      const testOverview = await dispatch(createTestOverview({ ...urlInfo }))
+      dispatch(callPageSpeedInsightsAPI({ testOverview, url, isMobile }))
+      return testOverview
+      // } else {
+      // throw new Error("url is already a Baqend app")
+      // }
     } catch(e) {
+      dispatch({ type: RESET_TEST_RESULT })
+      dispatch({ type: ADD_ERROR, payload: e })
       throw e
     }
   }
@@ -111,7 +123,7 @@ export const createTestOverview = ({ speedkit, speedkitVersion }) => ({
 const callPageSpeedInsightsAPI = ({ testOverview: testOverviewObject, url, isMobile }) => ({
   'BAQEND': [ testOverviewObject, async ({ dispatch, getState, db }, testOverview) => {
     const pageSpeedInsightsResult = await db.modules.get('callPageSpeed', { url, mobile: isMobile })
-    
+
     dispatch({
       type: CALL_PAGESPEED_INSIGHTS_GET,
       payload: pageSpeedInsightsResult,
