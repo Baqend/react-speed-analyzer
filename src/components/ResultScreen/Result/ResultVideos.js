@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import './Result.css'
-import { isDeviceIOS } from '../../../helper/utils'
+import { isDeviceIOS,isIE, isEdge } from '../../../helper/utils'
 
 class ResultVideos extends Component {
   constructor(props) {
@@ -16,9 +16,14 @@ class ResultVideos extends Component {
   playVideos = (videoLabel) => {
     this[videoLabel].currentTime = 0
     const playPromise = this[videoLabel].play()
-    if (!isDeviceIOS()) {
+    const secondVideo = videoLabel === 'speedKitVideo' ? 'competitorVideo' : 'speedKitVideo'
+    if(isIE() || isEdge()) {
+      if(this[secondVideo]) {
+        this[secondVideo].currentTime = 0
+        this[secondVideo].play()
+      }
+    } else if (!isDeviceIOS()) {
       playPromise.then(() => {
-        const secondVideo = videoLabel === 'speedKitVideo' ? 'competitorVideo' : 'speedKitVideo'
         if(this[secondVideo]) {
           this[secondVideo].currentTime = 0
           this[secondVideo].play()
