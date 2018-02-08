@@ -88,12 +88,13 @@ class StartingScreenComponent extends Component {
   }
 
   renderCarousel() {
+    const pageSpeedInsights = this.props.result.testOverview && this.props.result.testOverview.psiDomains
     return (
       <Carousel>
-        {!this.props.result.statusCode && renderDefaultPage()}
-        {this.props.result.statusCode === 101 && renderIsInQueuePage(this.props.result.statusText)}
-        {this.props.result.statusCode === 100 && renderHasStartedPage()}
-        {this.state.showFacts && renderFactsPages}
+        {((!this.props.result.statusCode && !pageSpeedInsights) || !this.props.result.statusCode) && renderDefaultPage()}
+        {pageSpeedInsights && this.props.result.statusCode === 101 && renderIsInQueuePage(this.props.result.statusText)}
+        {pageSpeedInsights && this.props.result.statusCode === 100 && renderHasStartedPage()}
+        {pageSpeedInsights && this.state.showFacts && renderFactsPages}
       </Carousel>
     )
   }

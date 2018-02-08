@@ -3,17 +3,25 @@ import PropTypes from 'prop-types'
 
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { startTest } from '../../../actions/startTest'
-import { isURL } from '../../../helper/utils'
+import { prepareTest, startTest } from '../../../actions/startTest'
+import { isURL, getObjectKey } from '../../../helper/utils'
 
 import WordPressLogo from '../../../assets/wordpress.png'
 
 class ResultAction extends Component {
 
-  restartAnalyzer = () => {
-    if (isURL(this.props.config.url)) {
-      this.props.actions.startTest()
-    }
+  restartAnalyzer = async () => {
+    const { history } = this.props
+    try {
+      const urlInfo = await this.props.actions.prepareTest(this.props.config.url)
+      history.push('/')
+      const testOverview = await this.props.actions.startTest(urlInfo)
+      history.push(`/test/${getObjectKey(testOverview.id)}`)
+    } catch (e) {}
+
+    // if (isURL(this.props.config.url)) {
+    //   this.props.actions.startTest()
+    // }
   }
 
   // all Tests failed
@@ -22,7 +30,7 @@ class ResultAction extends Component {
       <div>
         <div className="text-center pb2 pt4" style={{ maxWidth: 768, margin: '0 auto' }}>
           <h2>Test Runs Failed</h2>
-          <span className="faded">An error occurred while running your tests. Please re-run the test and if the problem persists, <a href="">contact us!</a></span>
+          <span className="faded">An error occurred while running your tests. Please re-run the test and if the problem persists, <a style={{ cursor: 'pointer' }} onClick={this.props.toggleModal}>contact us!</a></span>
         </div>
         <div className="text-center">
           <a className="btn btn-orange btn-ghost ma1" onClick={this.restartAnalyzer}>Rerun Test</a>
@@ -71,12 +79,12 @@ class ResultAction extends Component {
   }
 
   // Speedkit failed or we are not faster
-  renderIsSpeedKitCta() {
+  renderIsSpeedKitCta(speedKitVersion) {
     return (
       <div>
         <div className="text-center pb2 pt4" style={{ maxWidth: 768, margin: '0 auto' }}>
           <h2>Thank you for using Speed Kit</h2>
-          <span className="faded">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam porta sem malesuada magna mollis euismod.</span>
+          <span className="faded">You are running on Speed Kit {speedKitVersion}. The test therefore compared your website with Speed Kit to a version where Speed Kit is deactivated.</span>
         </div>
         <div className="text-center">
           <a className="btn btn-orange btn-ghost ma1" onClick={this.props.toggleModal}>Contact Us</a>
@@ -101,7 +109,7 @@ class ResultAction extends Component {
     const { competitorError, speedKitError, competitorTest, testOverview } = this.props.result
     // const speedKitError = this.props.speedKitError
     const isWordPress = competitorTest.isWordPress
-    const isSpeedKitComparison = testOverview.isSpeedKitComparison
+    const { isSpeedKitComparison, speedKitVersion } = testOverview
 
     if (competitorError) {
       return this.renderAllTestsFailed()
@@ -109,7 +117,7 @@ class ResultAction extends Component {
       return this.renderSpeedKitFailed()
     } else {
       if (isSpeedKitComparison) {
-        return this.renderIsSpeedKitCta()
+        return this.renderIsSpeedKitCta(speedKitVersion)
       } else if (isWordPress) {
         return this.renderWordpressCta()
       }
@@ -131,7 +139,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators({ startTest }, dispatch),
+    actions: bindActionCreators({ prepareTest, startTest }, dispatch),
   }
 }
 

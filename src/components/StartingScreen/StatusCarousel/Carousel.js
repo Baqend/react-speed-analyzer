@@ -41,7 +41,7 @@ export class Carousel extends Component {
     this.interval = setInterval(() => {
       const page = this.getNextPage(this.state.page, this.state.pages)
       this.setState({ page })
-    }, 6000)
+    }, 10000)
   }
 
   updatePages = (props) => {

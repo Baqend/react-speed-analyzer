@@ -7,7 +7,14 @@ import { Carousel, CarouselPage } from './Carousel'
 
 export const renderDefaultPage = () => (
   <CarouselPage key="default">
-    <h2 className="text__headline">We will run a series of tests against your site</h2>
+    <h2 className="text__headline">
+      We will run a series of tests against your site
+      <span className="loader">
+        <span className="loader__dot">.</span>
+        <span className="loader__dot">.</span>
+        <span className="loader__dot">.</span>
+      </span>
+    </h2>
     <div className="text__details">See how fast your current backend stack delivers your site to users. We will compare the results to a version of your site using Baqend Speed Kit</div>
   </CarouselPage>
 )

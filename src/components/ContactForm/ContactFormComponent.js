@@ -20,7 +20,7 @@ class ContactFormComponent extends Component {
   handleSubmit = (event) => {
     event.preventDefault()
     this.props.onSubmit(this.state).then(() => {
-      alert("submitted")
+      console.log("contact form sent")
     })
   }
 
