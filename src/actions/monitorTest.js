@@ -1,7 +1,9 @@
 import {
   RESET_TEST_RESULT,
+  START_TEST,
   CONTINUE_TEST,
   MONITOR_TEST,
+  TESTOVERVIEW_SAVE,
   TESTOVERVIEW_LOAD,
   TESTOVERVIEW_LOAD_FAIL,
   UPDATE_CONFIG,
@@ -24,33 +26,20 @@ export const resetTest = () => ({
  * @param testId The id of the test to be monitored.
  */
 export const monitorTest = (testId) => ({
-  'BAQEND': async (store) => {
-    const { dispatch, getState, db } = store
-
+  'BAQEND': async ({ dispatch }) => {
     dispatch({ type: MONITOR_TEST })
-    dispatch({ type: CONTINUE_TEST })
+    // dispatch({ type: CONTINUE_TEST })
 
-    let { testOverview } = getState().result
-    if(Object.keys(testOverview).length === 0) {
-      try {
-        await loadTestOverviewByTestId({ ...store, testId})
-        testOverview = getState().result.testOverview
-      } catch (e) {
-        throw e
-      }
-    }
+    const testOverview = await dispatch(getTestOverview({ testId }))
+    const { competitorTestResult, speedKitTestResult } = testOverview
 
     dispatch(updateConfigByTestOverview(testOverview))
 
-    const competitorBaqendId = testOverview.competitorTestResult
-    const speedKitBaqendId = testOverview.speedKitTestResult
-    // debugger
     if (testOverview.hasFinished) {
-      loadTestResults({ ...store, competitorBaqendId, speedKitBaqendId })
+      dispatch(loadTestResults({ competitorTestResult, speedKitTestResult }))
     } else {
-      checkTestStatus({ ...store, competitorBaqendId })
-      subscribeOnCompetitorTest({ ...store, competitorBaqendId})
-      subscribeOnSpeedKitTest({ ...store, speedKitBaqendId})
+      dispatch(checkTestStatus({ competitorTestResult }))
+      dispatch(subscribeToTestResults({ testOverview, competitorTestResult, speedKitTestResult }))
     }
   }
 })
@@ -61,149 +50,140 @@ export const monitorTest = (testId) => ({
  * @param db The baqend database instance.
  * @param testId The id of the test to be loaded.
  */
-const loadTestOverviewByTestId = async ({ dispatch, db, testId }) => {
-  try {
-    const testOverview = await db.TestOverview.load(testId)
-    dispatch({
-      type: TESTOVERVIEW_LOAD,
-      payload: testOverview
-    })
+const getTestOverview = ({ testId }) => ({
+  'BAQEND': async ({ dispatch, getState, db }) => {
+    let { testOverview } = getState().result
+    if(Object.keys(testOverview).length === 0 || testOverview.id !== testId) {
+      try {
+        testOverview = await db.TestOverview.load(testId)
+        dispatch({
+          type: TESTOVERVIEW_LOAD,
+          payload: testOverview
+        })
+        return testOverview.toJSON()
+      } catch (e) {
+        dispatch({
+          type: TESTOVERVIEW_LOAD_FAIL,
+          payload: e
+        })
+        throw e
+      }
+    }
     return testOverview
-  } catch (e) {
-    dispatch({
-      type: TESTOVERVIEW_LOAD_FAIL,
-      payload: e
-    })
-    throw e
   }
-}
+})
 
-/**
- * Checks the status of a given test in an interval of 2 seconds.
- * @param dispatch Method to dispatch an action input.
- * @param getState Method to get the state of the redux store.
- * @param db The baqend database instance.
- * @param competitorBaqendId The competitor test id to get the status for.
- */
-const checkTestStatus = ({ dispatch, getState, db, competitorBaqendId }) => {
-  console.log("checkTestStatus")
-  const interval = setInterval(() => {
-    getTestStatus({ dispatch, getState, db, competitorBaqendId })
-      .then(() => {
-        const { statusCode } = getState().result
+const updateConfigByTestOverview = (testOverview) => ({
+  type: UPDATE_CONFIG,
+  payload: {
+    url: testOverview.url,
+    location: testOverview.location,
+    caching: testOverview.caching,
+    isMobile: testOverview.mobile,
+    activityTimeout: testOverview.activityTimeout,
+    speedKitConfig: testOverview.speedKitConfig,
+  }
+})
+
+const checkTestStatus = ({ competitorTestResult }) => ({
+  'BAQEND': ({ dispatch, getState, db }) => {
+
+    const pullTestStatus = (id) => ({
+      'BAQEND': async ({ dispatch, db }) => {
+        const res = await db.modules.get('getTestStatus', { baqendId: id })
+        const status = {
+          statusCode: res.status.statusCode,
+          statusText: res.status.statusText
+        }
+        dispatch({
+          type: TEST_STATUS_GET,
+          payload: status
+        })
+        return status
+      }
+    })
+
+    const interval = setInterval(async () => {
+      try {
+        const { statusCode } = await dispatch(pullTestStatus(competitorTestResult))
         if (statusCode === 100 || statusCode === 200) {
           clearInterval(interval)
         }
-      }).catch(e => clearInterval(interval))
-  }, 2000,
-  )
-}
-
-/**
- * Gets the status of the given test id.
- * @param dispatch Method to dispatch an action input.
- * @param db The baqend database instance.
- * @param competitorBaqendId The competitor test id to get the status for.
- */
-const getTestStatus = async ({ dispatch, db, competitorBaqendId }) => {
-  console.log("getTestStatus")
-  const res = await db.modules.get('getTestStatus', { baqendId: competitorBaqendId })
-  const status = { statusCode: res.status.statusCode, statusText: res.status.statusText }
-  dispatch({
-    type: TEST_STATUS_GET,
-    payload: status
-  })
-}
-
-/**
- * Updates the config parameters based on the given testOverview.
- * @param testOverview The testOverview object with the up-to-date config.
- */
-const updateConfigByTestOverview = (testOverview) => {
-  return {
-    type: UPDATE_CONFIG,
-    payload: {
-      url: testOverview.url,
-      location: testOverview.location,
-      caching: testOverview.caching,
-      isMobile: testOverview.mobile,
-      activityTimeout: testOverview.activityTimeout,
-      speedKitConfig: testOverview.speedKitConfig,
-    }
+      } catch (e) {
+        clearInterval(interval)
+      }
+    }, 2000)
   }
-}
+})
 
-/**
- * Subscribes on the result of the given competitor baqend id
- * @param dispatch Method to dispatch an action input.
- * @param db The baqend database instance.
- * @param competitorBaqendId The competitor baqend id to subscribe on.
- */
-const subscribeOnCompetitorTest = ({ dispatch, getState, db, competitorBaqendId }) => {
-  const callback = (r) => {
+const loadTestResults = ({ competitorTestResult, speedKitTestResult }) => ({
+  'BAQEND': async ({ dispatch, getState, db }) => {
+    const testResults = await Promise.all([
+      db.TestResult.load(competitorTestResult),
+      db.TestResult.load(speedKitTestResult)
+    ])
     dispatch({
       type: COMPETITOR_RESULT_NEXT,
-      payload: r
+      payload: [testResults[0]]
     })
-    checkTestFinishState({ dispatch, getState })
-  }
-
-  const subscription = db.TestResult.find().equal('id', competitorBaqendId).resultStream().subscribe(callback)
-  dispatch({
-    type: COMPETITOR_SUBSCRIPTION,
-    payload: subscription
-  })
-}
-
-/**
- * Subscribes on the result of the given speed kit baqend id
- * @param dispatch Method to dispatch an action input.
- * @param db The baqend database instance.
- * @param competitorBaqendId The speed kit baqend id to subscribe on.
- */
-const subscribeOnSpeedKitTest = ({ dispatch, getState, db, speedKitBaqendId }) => {
-  const callback = (r) => {
     dispatch({
       type: SPEED_KIT_RESULT_NEXT,
-      payload: r
+      payload: [testResults[1]]
     })
-    checkTestFinishState({ dispatch, getState })
-  }
-
-  const subscription = db.TestResult.find().equal('id', speedKitBaqendId).resultStream().subscribe(callback)
-  dispatch({
-    type: SPEED_KIT_SUBSCRIPTION,
-    payload: subscription
-  })
-}
-
-const checkTestFinishState = ({ dispatch, getState }) => {
-  const { competitorTest, speedKitTest, competitorSubscription, speedKitSubscription } = getState().result
-  if (competitorTest.hasFinished && speedKitTest.hasFinished) {
-    competitorSubscription && competitorSubscription.unsubscribe()
-    speedKitSubscription && speedKitSubscription.unsubscribe()
     dispatch({
-      type: TERMINATE_TEST,
-      payload: {}
+      type: TERMINATE_TEST
     })
   }
-}
+})
 
-const loadTestResults = async ({ dispatch, getState, db, competitorBaqendId, speedKitBaqendId }) => {
-  const testResults = await Promise.all([
-    db.TestResult.load(competitorBaqendId),
-    db.TestResult.load(speedKitBaqendId)
-  ])
-  dispatch({
-    type: COMPETITOR_RESULT_NEXT,
-    payload: [testResults[0]]
-  })
-  dispatch({
-    type: SPEED_KIT_RESULT_NEXT,
-    payload: [testResults[1]]
-  })
-  dispatch({
-    type: TERMINATE_TEST,
-    payload: {}
-  })
-}
+const subscribeToTestResults = ({ testOverview, competitorTestResult, speedKitTestResult }) => ({
+  'BAQEND': async ({ dispatch, getState, db }) => {
+    const competitorStream = db.TestResult.find().equal('id', competitorTestResult).resultStream()
+    const speedKitStream = db.TestResult.find().equal('id', speedKitTestResult).resultStream()
+
+
+    const competitorSubscription = competitorStream.subscribe((res) => {
+      dispatch({
+        type: COMPETITOR_RESULT_NEXT,
+        payload: res
+      })
+      const competitorTest = res[0]
+      if (competitorTest.hasFinished) {
+        competitorSubscription && competitorSubscription.unsubscribe()
+        dispatch(finalizeTestingProcess(testOverview))
+      }
+    })
+
+    const speedKitSubscription = speedKitStream.subscribe((res) => {
+      dispatch({
+        type: SPEED_KIT_RESULT_NEXT,
+        payload: res
+      })
+      const speedKitTest = res[0]
+      if (speedKitTest.hasFinished) {
+        speedKitSubscription && speedKitSubscription.unsubscribe()
+        dispatch(finalizeTestingProcess(testOverview))
+      }
+    })
+  }
+})
+
+const finalizeTestingProcess = (testOverviewObject) => ({
+  'BAQEND': [testOverviewObject, async ({ dispatch, getState, db }, testOverview) => {
+    const { competitorTest, speedKitTest } = getState().result
+    if (competitorTest.hasFinished && speedKitTest.hasFinished) {
+      try {
+        const update = testOverview.partialUpdate().set('hasFinished', true)
+        dispatch({
+          type: TESTOVERVIEW_SAVE,
+          payload: await update.execute()
+        })
+      } catch (e) {
+        console.log(e)
+      }
+      dispatch({
+        type: TERMINATE_TEST
+      })
+    }
+  }]
+})

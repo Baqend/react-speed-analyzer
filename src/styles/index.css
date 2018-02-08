@@ -38,7 +38,6 @@ body {
   flex-grow: 1;
   font-family: 'Open Sans', sans-serif;
   font-size: 18px;
-  font-weight: 300;
   line-height: 1.48;
   color: color(#fff a(80%));
 }

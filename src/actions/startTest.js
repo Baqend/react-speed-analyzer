@@ -46,172 +46,128 @@ export const prepareTest = (url = null) => ({
  * Triggers the start of a new test.
  */
 export const startTest = (urlInfo = {}) => ({
-  'BAQEND': async (store) => {
-    const { dispatch, getState, db } = store
+  'BAQEND': async ({ dispatch, getState, db }) => {
     dispatch({ type: RESET_TEST_RESULT })
     try {
-      // await prepareTest({ dispatch, getState, db })
-      // debugger
-      // const { isBaqendApp } = getState().result
       const { isBaqendApp } = urlInfo
       const { url, isMobile } = getState().config
 
       if(!isBaqendApp) {
         dispatch({ type: START_TEST })
-        const testOverview = await createTestOverview({ ...store, ...urlInfo })
-
-        callPageSpeedInsightsAPI({ dispatch, getState, db, url, isMobile })
-
+        const testOverview = await dispatch(createTestOverview({ ...urlInfo }))
+        dispatch(callPageSpeedInsightsAPI({ testOverview, url, isMobile }))
         return testOverview
       } else {
         throw new Error("url is already a Baqend app")
       }
     } catch(e) {
-      console.log(e)
       throw e
     }
   }
 })
 
 /**
- * Saves a given testOverview object to the baqend database
- * @param dispatch Method to dispatch an action input.
- * @param getState Method to get the state of the redux store.
- * @param testOverview The testOverview object to be saved.
- */
-export const saveTestOverview = async ({ dispatch, getState }, testOverview) => {
-  const res = await testOverview.save().then((r) => r.toJSON())
-  dispatch({
-    type: TESTOVERVIEW_SAVE,
-    payload: res
-  })
-  return res
-}
-
-/**
  * Creates a new testOverview object and generates a unique id for it.
  * @param store
  */
-const createTestOverview = async (params) => {
-  const { speedkit, speedkitVersion, ...store } = params
-  const { dispatch, getState, db } = store
-  // debugger
-  const { url, location, caching, isMobile, speedKitConfig, activityTimeout } = getState().config
-  // const { isSpeedKitComparison, speedKitVersion }  = getState().result
-  const testOverview = new db.TestOverview()
-  const tld = getTLD(url)
+export const createTestOverview = ({ speedkit, speedkitVersion }) => ({
+  'BAQEND': async ({ dispatch, getState, db }) => {
+    const { url, location, caching, isMobile, speedKitConfig, activityTimeout } = getState().config
+    const testOverview = new db.TestOverview()
+    const tld = getTLD(url)
 
-  const ids = await Promise.all([
-    db.modules.post('generateUniqueId', { entityClass: 'TestOverview' }),
-    startCompetitorTest({ ...store }),
-    startSpeedKitTest({ ...store }),
-  ])
+    const ids = await Promise.all([
+      db.modules.post('generateUniqueId', { entityClass: 'TestOverview' }),
+      dispatch(startCompetitorTest()),
+      dispatch(startSpeedKitTest()),
+    ])
 
-  testOverview.id = ids[0] + tld.substring(0, tld.length - 1)
-  testOverview.url = url
-  testOverview.location = location
-  testOverview.caching = caching
-  testOverview.mobile = isMobile
-  testOverview.speedKitConfig = speedKitConfig
-  testOverview.activityTimeout = activityTimeout
-  testOverview.isSpeedKitComparison = speedkit
-  testOverview.speedKitVersion = speedkitVersion
-  testOverview.competitorTestResult = new db.TestResult({ id: ids[1] })
-  testOverview.speedKitTestResult = new db.TestResult({ id: ids[2] })
+    testOverview.id = ids[0] + tld.substring(0, tld.length - 1)
+    testOverview.url = url
+    testOverview.location = location
+    testOverview.caching = caching
+    testOverview.mobile = isMobile
+    testOverview.speedKitConfig = speedKitConfig
+    testOverview.activityTimeout = activityTimeout
+    testOverview.isSpeedKitComparison = speedkit
+    testOverview.speedKitVersion = speedkitVersion
+    testOverview.competitorTestResult = new db.TestResult({ id: ids[1] })
+    testOverview.speedKitTestResult = new db.TestResult({ id: ids[2] })
 
-  dispatch({
-    type: TESTOVERVIEW_SAVE,
-    payload: await testOverview.save()
-  })
-  return testOverview
-}
+    dispatch({
+      type: TESTOVERVIEW_SAVE,
+      payload: await testOverview.save()
+    })
+
+    return testOverview
+  }
+})
 
 /**
  * Call the Pagespeed Insights API of Google.
- * @param dispatch Method to dispatch an action input.
- * @param getState Method to get the state of the redux store.
- * @param db The baqend database instance.
  * @param url The URL to be tested.
  * @param isMobile Boolean to verify whether the mobile version should be tested or not.
  */
-const callPageSpeedInsightsAPI = async ({ dispatch, getState, db,  url, isMobile }) => {
-  const pageSpeedInsightsResult = await db.modules.get('callPageSpeed', { url, mobile: isMobile })
-  dispatch({
-    type: CALL_PAGESPEED_INSIGHTS_GET,
-    payload: pageSpeedInsightsResult,
-  })
-  db.TestOverview.fromJSON(getState().result.testOverview).save()
-  return pageSpeedInsightsResult
-}
+const callPageSpeedInsightsAPI = ({ testOverview: testOverviewObject, url, isMobile }) => ({
+  'BAQEND': [ testOverviewObject, async ({ dispatch, getState, db }, testOverview) => {
+    const pageSpeedInsightsResult = await db.modules.get('callPageSpeed', { url, mobile: isMobile })
+    
+    dispatch({
+      type: CALL_PAGESPEED_INSIGHTS_GET,
+      payload: pageSpeedInsightsResult,
+    })
 
-// const { testOverview } = getState().result
-// dispatch(await saveTestOverview(testOverview))
-//
-// export const saveTestOverview = (testOverview) => ({
-//   'BAQEND': [testOverview, ({ dispatch, getState, db }, ref) => ref.save().then(() => dispatch({
-//     type: TESTOVERVIEW_SAVE,
-//     payload: ref
-//   }))]
-// })
+    testOverview.partialUpdate()
+      .set('psiDomains', pageSpeedInsightsResult.domains)
+      .set('psiRequests', pageSpeedInsightsResult.requests)
+      .set('psiResponseSize', pageSpeedInsightsResult.bytes)
+      .set('psiScreenshot', pageSpeedInsightsResult.screenshot)
+
+    return pageSpeedInsightsResult
+  }]
+})
 
 /**
  * Starts the test for the competitor version.
- * @param dispatch Method to dispatch an action input.
- * @param getState Method to get the state of the redux store.
- * @param db The baqend database instance.
  */
-const startCompetitorTest = async ({ dispatch, getState, db }) => {
-  const { isSpeedKitComparison }  = getState().result
-  const { url, location, caching, isMobile:mobile, activityTimeout } = getState().config
+const startCompetitorTest = () => ({
+  'BAQEND': async ({ dispatch, getState, db }) => {
+    const { isSpeedKitComparison }  = getState().result
+    const { url, location, caching, isMobile: mobile, activityTimeout } = getState().config
 
-  const competitorTestId = await db.modules.post('queueTest', {
-    url,
-    activityTimeout,
-    isSpeedKitComparison,
-    location,
-    isClone: false,
-    caching,
-    mobile,
-  })
+    const competitorTestId = await db.modules.post('queueTest', {
+      url,
+      activityTimeout,
+      isSpeedKitComparison,
+      location,
+      isClone: false,
+      caching,
+      mobile,
+    })
 
-  // dispatch({
-  //   type: START_TEST_COMPETITOR_POST,
-  //   payload: competitorTestId,
-  // })
-  return competitorTestId.baqendId
-}
+    return competitorTestId.baqendId
+  }
+})
 
 /**
  * Starts the test for the speed kit version.
- * @param dispatch Method to dispatch an action input.
- * @param getState Method to get the state of the redux store.
- * @param db The baqend database instance.
  */
-const startSpeedKitTest = async ({ dispatch, getState, db }) => {
-  const { isSpeedKitComparison } = getState().result
-  const {
-    url,
-    location,
-    caching,
-    isMobile,
-    speedKitConfig,
-    activityTimeout
-  } = getState().config
+const startSpeedKitTest = () => ({
+  'BAQEND': async ({ dispatch, getState, db }) => {
+    const { isSpeedKitComparison } = getState().result
+    const { url, location, caching, isMobile, speedKitConfig, activityTimeout } = getState().config
 
-  const competitorTestId = await db.modules.post('queueTest', {
-    url,
-    activityTimeout,
-    isSpeedKitComparison,
-    speedKitConfig: speedKitConfig || generateSpeedKitConfig(url, '', isMobile),
-    location,
-    isClone: true,
-    caching,
-    mobile: isMobile,
-  })
+    const competitorTestId = await db.modules.post('queueTest', {
+      url,
+      activityTimeout,
+      isSpeedKitComparison,
+      speedKitConfig: speedKitConfig || generateSpeedKitConfig(url, '', isMobile),
+      location,
+      isClone: true,
+      caching,
+      mobile: isMobile,
+    })
 
-  // dispatch({
-  //   type: START_TEST_SPEED_KIT_POST,
-  //   payload: competitorTestId,
-  // })
-  return competitorTestId.baqendId
-}
+    return competitorTestId.baqendId
+  }
+})

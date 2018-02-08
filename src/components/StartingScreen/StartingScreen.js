@@ -52,13 +52,13 @@ class StartingScreen extends Component {
   checkTest = (props) => {
     const { history } = props
     const { testId } = props.match.params
-    const { testOverview, isMonitored, isFinished } = props.result
+    const { testOverview, isStarted, isMonitored, isFinished } = props.result
     // debugger
     // if (!testId && testOverview.id && testOverview.competitorTestResult) {
     //   history.push(`/test/${getObjectKey(testOverview.id)}`)
     // }
 
-    if (testId && !isMonitored && !isFinished ) {
+    if (testId && !isMonitored) {
       this.props.actions.monitorTest(testId).catch((e) => {
         this.props.actions.resetTest()
         history.replace('/')
@@ -77,13 +77,18 @@ class StartingScreen extends Component {
   }
 
   componentWillMount() {
-    this.reset()
+    // debugger
+    // this.reset()
     // const { location } = this.props
     // const params = location.search.replace('?', '').split('&')
     // const testId = this.props.match.params.testId
     // if(testId) {
     //   this.props.actions.monitorTest(testId)
     // }
+    if (!this.props.result.isInitiated) {
+      this.reset()
+    }
+
     const params = this.parseQueryString(this.props.location.search)
     // debugger
     if (params.url) {

@@ -122,7 +122,7 @@ export default function result(state = initialState, action = {}) {
     //     speedKitVersion: action.payload.speedkitVersion,
     //   }
     case MONITOR_TEST:
-      return { ...state, isMonitored: true }
+      return { ...state, isStarted: true, isMonitored: true }
     case INIT_TEST:
       return { ...state, isInitiated: true }
     case START_TEST:

@@ -40,7 +40,7 @@ class ResultScreen extends Component {
     const { match } = props
     const { testId } = match.params
     const { competitorTest, speedKitTest } = props
-    const { testOverview, isMonitored, isFinished } = props.result
+    const { testOverview, isStarted, isMonitored, isFinished } = props.result
 
     // debugger
     if (Object.keys(testOverview).length && getObjectKey(testOverview.id) !== testId) {
@@ -49,7 +49,7 @@ class ResultScreen extends Component {
       this.props.actions.resetTest()
     }
 
-    if (testId && !isMonitored && !isFinished) {
+    if (testId && !isStarted && !isFinished) {
       const { history } = this.props
       this.props.actions.monitorTest(testId).catch((e) => {
         this.props.actions.resetTest()

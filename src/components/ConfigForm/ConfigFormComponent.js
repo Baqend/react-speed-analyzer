@@ -56,9 +56,9 @@ class ConfigFormComponent extends Component {
     this.props.onUrlChange(changeEvent.target.value)
 
     const speedKitConfig = getDefaultSpeedKitConfig(changeEvent.target.value)
-    this.setState({ speedKitConfig }, () => {
-      this.props.onSpeedKitConfigChange(speedKitConfig)
-    })
+    // this.setState({ speedKitConfig }, () => {
+    //   this.props.onSpeedKitConfigChange(speedKitConfig)
+    // })
   }
 
   handleLocationChange = (changeEvent) => {
@@ -229,7 +229,7 @@ class ConfigFormComponent extends Component {
   }
 
   render() {
-    const url = splitUrl(this.props.config.url)
+    // const url = splitUrl(this.props.config.url)
     // debugger
 
     return (
@@ -245,7 +245,7 @@ class ConfigFormComponent extends Component {
               onChange={this.handleUrlChange}
               placeholder="Enter URL here..."
             />
-            <div className="parsed-domain ph2 pv2">
+            {/*<div className="parsed-domain ph2 pv2">
               {Array.isArray(url) && url.length === 3 ? [
                 <span key="pre" className="faded">{url[0]}</span>,
                 <span key="hostname">{url[1]}</span>,
@@ -253,7 +253,7 @@ class ConfigFormComponent extends Component {
               ] : (
                 <span>{url}</span>
               )}
-            </div>
+            </div>*/}
             <div className="config__form-submit-wrapper">
               <button className="config__form-submit flex justify-center items-center" type="submit">
                 {this.props.isInitiated ? (

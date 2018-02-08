@@ -27,8 +27,10 @@
     font-weight: 400;
     font-family: "Open Sans";
     line-height: 34px;
-    color: transparent;
-    caret-color: white;
+    &.no-text {
+      color: transparent;
+      caret-color: white;
+    }
     &::placeholder {
       color: color(var(--white) a(75%));
     }

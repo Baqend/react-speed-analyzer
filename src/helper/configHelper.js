@@ -87,8 +87,9 @@ export function generateSpeedKitConfig(originalUrl, whitelistStr, enableUserAgen
     .map(item => item.trim())
     .filter(item => !!item)
 
+  // whitelist: [{ host: [ /^(?:[\w-]*\.){0,3}(?:kicker\.)/ ] }],
   const whitelist = generateRules(originalUrl, whitelistDomains)
-
+  // debugger
   return `{
     appName: "makefast",
     whitelist: [{ host: [ ${whitelist}, /cdn/ ] }],

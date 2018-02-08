@@ -90,7 +90,7 @@
         background-image: linear-gradient(color(var(--device-color) a(40%)), color(var(--device-color) a(20%)));
         top: 0px;
         bottom: -var(--device-border-width);
-        width: var(--device-border-width);
+        width: var(--device-border-width-xs);
         max-height: 100%;
       }
       .device__wrapper-outer {

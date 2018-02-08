@@ -43,3 +43,7 @@ button, input, optgroup, select, textarea {
   font-size: 14px;
   margin-left: 4px;
 }
+
+b, strong {
+  font-weight: 600;
+}

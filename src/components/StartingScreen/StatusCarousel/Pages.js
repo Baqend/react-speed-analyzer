@@ -29,7 +29,7 @@ export const renderIsInQueuePage = (statusText) => (
 export const renderHasStartedPage = () => (
   <CarouselPage key="started">
     <h2 className="text__headline">Your Test has been started</h2>
-    <div className="text__details">Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Donec sed odio dui.</div>
+    <div className="text__details">See how fast your current backend stack delivers your site to users. We will compare the results to a version of your site using Baqend Speed Kit</div>
   </CarouselPage>
 )
 
