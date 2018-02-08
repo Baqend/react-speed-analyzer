@@ -129,11 +129,16 @@ const callPageSpeedInsightsAPI = ({ testOverview: testOverviewObject, url, isMob
       payload: pageSpeedInsightsResult,
     })
 
-    testOverview.partialUpdate()
+    const update = testOverview.partialUpdate()
       .set('psiDomains', pageSpeedInsightsResult.domains)
       .set('psiRequests', pageSpeedInsightsResult.requests)
       .set('psiResponseSize', pageSpeedInsightsResult.bytes)
       .set('psiScreenshot', pageSpeedInsightsResult.screenshot)
+
+    dispatch({
+      type: TESTOVERVIEW_SAVE,
+      payload: await update.execute()
+    })
 
     return pageSpeedInsightsResult
   }]

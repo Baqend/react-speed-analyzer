@@ -24,6 +24,19 @@
   }
 }
 
+.device {
+  .device__background-image {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+    background-size: cover;
+    background-position: center;
+    filter: opacity(12.5%) blur(1px);
+  }
+}
+
 .device .device__laptop {
   display: flex;
   flex-direction: column;
@@ -53,6 +66,16 @@
         width: var(--device-border-width-xs);
         max-height: 400px;
       }
+      .device__background-image {
+        position: absolute;
+        top: 0px;
+        right: var(--device-border-width-xs);
+        bottom: 0px;
+        left: var(--device-border-width-xs);
+        background-size: cover;
+        background-position: center;
+        filter: opacity(12.5%) blur(1px);
+      }
     /* }
       } */
     }
@@ -78,8 +101,8 @@
       border-top: calc(var(--device-border-width) + 8px) solid color(var(--device-color) a(40%));
       border-top-left-radius: var(--device-border-width);
       border-top-right-radius: var(--device-border-width);
-      padding-left: var(--device-border-width);
-      padding-right: var(--device-border-width);
+      padding-left: var(--device-border-width-xs);
+      padding-right: var(--device-border-width-xs);
       margin-left: calc(var(--device-border-width) * 1.5);
       margin-right: calc(var(--device-border-width) * 1.5);
       &:before { left: 0px; }
@@ -128,6 +151,9 @@
   display: flex;
   /* height: 666px; */
   justify-content: center;
+  .device__background-image {
+    position: fixed;
+  }
   @media (min-width: 481px) {
     .device__wrapper-outer .device__wrapper .device__screen {
       .device__wrapper-outer {
@@ -151,6 +177,12 @@
           bottom: -var(--device-border-width-xs);
           width: var(--device-border-width-xs);
           max-height: 100%;
+        }
+        .device__wrapper {
+          position: relative;
+          .device__background-image {
+            position: absolute;
+          }
         }
         .device__screen {
           padding: var(--device-padding);

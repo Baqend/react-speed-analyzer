@@ -14,9 +14,15 @@ import {
   renderFactsPages,
 } from './StatusCarousel/Pages'
 
-const Device = ({ children }) => (
+const Device = ({ children, img }) => (
   <div className="device__wrapper-outer">
     <div className="device__wrapper">
+      {img && (
+        <div
+          className="device__background-image"
+          style={{ backgroundImage: `linear-gradient(rgba(17, 33, 47,0), rgba(17, 33, 47, 1) 75%), url(${img})` }}>
+        </div>
+      )}
       <div className="device__screen">
         {children}
       </div>
@@ -147,14 +153,18 @@ class StartingScreenComponent extends Component {
     // console.log(this.state.showAdvancedConfig)
     const deviceTypeClass = this.props.config.isMobile ? 'device__phone' : 'device__laptop'
     const statusClass = this.props.result.isStarted ? 'loading' : null
+
+    const { psiScreenshot } = this.props.result.testOverview
+    const img = psiScreenshot && `data:${psiScreenshot.mime_type};base64,${psiScreenshot.data.replace(/_/g, '/').replace(/-/g, '+')}`
+
     return (
       <div className={`${this.state.showAdvancedConfig ? 'expert' : 'device'}`}>
         <div className={`${deviceTypeClass}`}>
-          <Device>
+          <Device img={img && this.props.config.isMobile ? null : img }>
             <div className="flex-grow-1 flex flex-column" style={{ overflow: 'hidden' }}>
               <div className={`flex-grow-1 flex justify-center items-center ${statusClass}`}>
                 <div className="left">
-                  <Device>
+                  <Device img={img && this.props.config.isMobile ? img : null }>
                     {(this.props.result.isStarted && this.renderSpinner()) || this.renderForm()}
                   </Device>
                 </div>
