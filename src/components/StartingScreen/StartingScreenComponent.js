@@ -19,7 +19,7 @@ const Device = ({ children, img }) => (
     <div className="device__wrapper">
       {img && (
         <div
-          className="device__background-image"
+          className="device__background-image animated fadeIn"
           style={{ backgroundImage: `linear-gradient(rgba(17, 33, 47,0), rgba(17, 33, 47, 1) 75%), url(${img})` }}>
         </div>
       )}

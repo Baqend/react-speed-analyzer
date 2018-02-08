@@ -9,7 +9,7 @@
 
 .device, .expert {
   width: 100%;
-  max-width: 998px;
+  max-width: 1170px;
   /* min-height: 100vh; */
   padding: 24px;
   flex-grow: 1;
@@ -24,18 +24,18 @@
   }
 }
 
-.device {
-  .device__background-image {
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    bottom: 0px;
-    left: 0px;
-    background-size: cover;
-    background-position: center;
-    filter: opacity(12.5%) blur(1px);
-  }
+/* .device { */
+.device__background-image {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  background-size: cover;
+  background-position: center;
+  filter: opacity(12.5%) blur(1px);
 }
+/* } */
 
 .device .device__laptop {
   display: flex;

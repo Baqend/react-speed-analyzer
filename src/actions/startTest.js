@@ -14,16 +14,24 @@ import {
   RESET_TEST_RESULT,
 } from './types'
 
+import { isURL } from '../helper/utils'
+
 /**
  * Prepares the test before its execution (check rate limiting and normalize url).
  */
 export const prepareTest = (url = null) => ({
   'BAQEND': async ({ dispatch, getState, db }) => {
+
     dispatch({ type: INIT_TEST })
-    if (url) {
-      dispatch({ type: CHANGE_URL, payload: url })
-    }
+    // if (url) {
+    //   dispatch({ type: CHANGE_URL, payload: url })
+    // }
     try {
+      // const bla = isURL(url)
+      // debugger
+      if (!isURL(url)) {
+        throw new Error("Input is not a valid url")
+      }
       const rateLimitResult = await db.modules.get('rateLimiter')
       dispatch({
         type: RATE_LIMITER_GET,
@@ -31,9 +39,12 @@ export const prepareTest = (url = null) => ({
       })
 
       if(!rateLimitResult.isRateLimited) {
-        const { url, isMobile } = getState().config
+        const { isMobile } = getState().config
         const urlInfo = await db.modules.post('normalizeUrl', { urls: url, mobile: isMobile })
 
+        if (!urlInfo[0]) {
+          throw new Error("Input is not a valid url")
+        }
         if (urlInfo[0].isBaqendApp) {
           throw new Error("Url is already a Baqend app")
         }

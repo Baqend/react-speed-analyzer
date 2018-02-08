@@ -117,14 +117,12 @@ class ResultScreen extends Component {
 
   onSubmit = async () => {
     const { history } = this.props
-    if (isURL(this.props.config.url)) {
-      try {
-        const urlInfo = await this.props.actions.prepareTest()
-        history.push('/')
-        const testOverview = await this.props.actions.startTest(urlInfo)
-        history.push(`/test/${getObjectKey(testOverview.id)}`)
-      } catch (e) {}
-    }
+    try {
+      const urlInfo = await this.props.actions.prepareTest(this.props.config.url)
+      history.push('/')
+      const testOverview = await this.props.actions.startTest(urlInfo)
+      history.push(`/test/${getObjectKey(testOverview.id)}`)
+    } catch (e) {}
   }
 
   render() {

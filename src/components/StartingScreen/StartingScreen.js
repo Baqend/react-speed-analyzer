@@ -41,7 +41,7 @@ class StartingScreen extends Component {
   startTest = async (url = null) => {
     const { history } = this.props
     try {
-      const urlInfo = await this.props.actions.prepareTest()
+      const urlInfo = await this.props.actions.prepareTest(url)
       history.push('/')
       const testOverview = await this.props.actions.startTest(urlInfo)
       history.push(`/test/${getObjectKey(testOverview.id)}`)
@@ -70,9 +70,10 @@ class StartingScreen extends Component {
   }
 
   onSubmit = () => {
-    if (isURL(this.props.config.url)) {
-      this.startTest()
-    }
+    // if (isURL(this.props.config.url)) {
+    //   this.startTest()
+    // }
+    this.startTest(this.props.config.url)
   }
 
   componentWillMount() {
