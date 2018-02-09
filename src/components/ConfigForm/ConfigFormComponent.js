@@ -198,7 +198,7 @@ class ConfigFormComponent extends Component {
               </div>
             </div>
           </div>
-          <div className="flex-grow-1" style={{ flexBasis: '100%' }}>
+          <div className="flex-grow-1 flex-shrink-0" style={{ maxWidth: '100%' }}>
             <div className="ph2">
               <h5 className="mv1 text-center">Speed Kit Config</h5>
               {this.state.whiteListCandidates.length > 0 && (

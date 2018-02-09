@@ -100,19 +100,17 @@ class ResultMetrics extends Component {
             </div>
           )
         })}
-        <h3 className="text-center mt5">WebPagetest Waterfalls</h3>
+        {/*<h3 className="text-center mt5">WebPagetest Waterfalls</h3>
         <hr />
         <div className="flex items-center border-top">
           <div className="w-50 tc pt1 pb1">
-            {/*<a href={this.props.competitorTest.summaryUrl} className="">{this.props.competitorTest.url}</a>*/}
             <a href={this.props.competitorTest.summaryUrl} className="">Without Speed Kit</a>
           </div>
           <div className="w-50 tc pt1 pb1" style={{ borderLeft: '1px solid #E8E8E8' }}>
-            {/*<a href={this.props.speedKitTest.summaryUrl} className="">{this.props.speedKitTest.url} with Speed Kit</a>*/}
             <a href={this.props.speedKitTest.summaryUrl} className="">With Speed Kit</a>
           </div>
         </div>
-        <hr />
+        <hr />*/}
         {/*<div className="flex items-center pt1 pb0 border-top mt3">
           <div className="w-100 text-center pa1">
             <a className="btn btn-ghost" href="">Get Full Report by Email</a>
