@@ -18,6 +18,15 @@ import ToastContainer from './components/Toasts/ToastContainer'
 
 const store = createStore()
 
+const parseQueryString = (queryString) => {
+  const params = {}
+  queryString.length && queryString.slice(1).split('&').forEach(p => {
+    const param = p.split('=')
+    params[param[0]] = param[1] ? param[1] : true
+  })
+  return params
+}
+
 class App extends Component {
   render() {
     return (
@@ -25,14 +34,20 @@ class App extends Component {
         <div id="wrapper">
           <BrowserRouter>
             <Switch>
-              <Route exact path="/" render={props => (
-                <div id="main">
-                  <div className="content">
-                    <StartingScreen { ...props } />
+              <Route exact path="/" render={props => {
+                const params = parseQueryString(props.location.search)
+                if (params.testId) {
+                  return <Redirect from="/" to={`/test/${params.testId}/result`} exact />
+                }
+                return (
+                  <div id="main">
+                    <div className="content">
+                      <StartingScreen { ...props } />
+                    </div>
+                    <Footer />
                   </div>
-                  <Footer />
-                </div>
-              )}/>
+                )
+              }}/>
               <Redirect from='/test/' to='/' exact />
               <Route exact path="/test/:testId" render={props => (
                 <div id="main">
