@@ -56,9 +56,11 @@ class ConfigFormComponent extends Component {
     this.props.onUrlChange(changeEvent.target.value)
 
     const speedKitConfig = getDefaultSpeedKitConfig(changeEvent.target.value)
-    // this.setState({ speedKitConfig }, () => {
-    //   this.props.onSpeedKitConfigChange(speedKitConfig)
-    // })
+    if(this.state.showAdvancedConfig) {
+      this.setState({ speedKitConfig }, () => {
+        this.props.onSpeedKitConfigChange(speedKitConfig)
+      })
+    }
   }
 
   handleLocationChange = (changeEvent) => {
