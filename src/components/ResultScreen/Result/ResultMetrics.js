@@ -113,11 +113,11 @@ class ResultMetrics extends Component {
           </div>
         </div>
         <hr />
-        <div className="flex items-center pt1 pb0 border-top mt3">
+        {/*<div className="flex items-center pt1 pb0 border-top mt3">
           <div className="w-100 text-center pa1">
             <a className="btn btn-ghost" href="">Get Full Report by Email</a>
           </div>
-        </div>
+        </div>*/}
       </div>
     )
   }
