@@ -1,14 +1,10 @@
 import { generateSpeedKitConfig, getTLD } from '../helper/configHelper'
 import {
   ADD_ERROR,
-  CHANGE_URL,
   INIT_TEST,
   START_TEST,
   TESTOVERVIEW_SAVE,
-  CHANGE_SPEED_KIT_CONFIG,
   CALL_PAGESPEED_INSIGHTS_GET,
-  START_TEST_COMPETITOR_POST,
-  START_TEST_SPEED_KIT_POST,
   RATE_LIMITER_GET,
   NORMALIZE_URL_POST,
   RESET_TEST_RESULT,
@@ -21,21 +17,18 @@ import { isURL } from '../helper/utils'
  */
 export const prepareTest = (url = null) => ({
   'BAQEND': async ({ dispatch, getState, db }) => {
+    dispatch({
+      type: INIT_TEST,
+    })
 
-    dispatch({ type: INIT_TEST })
-    // if (url) {
-    //   dispatch({ type: CHANGE_URL, payload: url })
-    // }
     try {
-      // const bla = isURL(url)
-      // debugger
       if (!isURL(url)) {
         throw new Error("Input is not a valid url")
       }
       const rateLimitResult = await db.modules.get('rateLimiter')
       dispatch({
         type: RATE_LIMITER_GET,
-        payload: rateLimitResult.isRateLimited
+        payload: rateLimitResult.isRateLimited,
       })
 
       if(!rateLimitResult.isRateLimited) {
@@ -56,8 +49,13 @@ export const prepareTest = (url = null) => ({
         return urlInfo[0]
       }
     } catch(e) {
-      dispatch({ type: RESET_TEST_RESULT })
-      dispatch({ type: ADD_ERROR, payload: e })
+      dispatch({
+        type: RESET_TEST_RESULT,
+      })
+      dispatch({
+        type: ADD_ERROR,
+        payload: e,
+      })
       throw e
     }
   }
@@ -70,20 +68,21 @@ export const startTest = (urlInfo = {}) => ({
   'BAQEND': async ({ dispatch, getState, db }) => {
     dispatch({ type: RESET_TEST_RESULT })
     try {
-      // const { isBaqendApp } = urlInfo
       const { url, isMobile } = getState().config
-
-      // if(!isBaqendApp) {
-      dispatch({ type: START_TEST })
+      dispatch({
+        type: START_TEST,
+      })
       const testOverview = await dispatch(createTestOverview({ ...urlInfo }))
       dispatch(callPageSpeedInsightsAPI({ testOverview, url, isMobile }))
       return testOverview
-      // } else {
-      // throw new Error("url is already a Baqend app")
-      // }
     } catch(e) {
-      dispatch({ type: RESET_TEST_RESULT })
-      dispatch({ type: ADD_ERROR, payload: e })
+      dispatch({
+        type: RESET_TEST_RESULT,
+      })
+      dispatch({
+        type: ADD_ERROR,
+        payload: e,
+      })
       throw e
     }
   }

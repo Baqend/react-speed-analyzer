@@ -37,7 +37,7 @@ class SpeedKitBanner extends Component {
           </div>
           <div className="w-100 pa1 w-40-ns">
             <div className="video__wrapper auto">
-              <img src={speedKitVideo} width="100%" style={{ borderRadius: 2 }}/>
+              <img src={speedKitVideo} alt="Speed Kit Video" width="100%" style={{ borderRadius: 2 }}/>
               <div className="video__wrapper-play" onClick={this.openModal}>►</div>
             </div>
           </div>

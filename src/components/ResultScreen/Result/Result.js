@@ -6,13 +6,11 @@ import React, { Component } from 'react'
 import Collapse from 'react-css-collapse'
 import { Tooltip } from 'react-tippy'
 
-import { getHost } from '../../../helper/configHelper'
-import { calculateFactor, calculateAbsolute } from '../../../helper/resultHelper'
-
 import ResultVideos from './ResultVideos'
 import ResultScale from './ResultScale'
 import ResultMetrics from './ResultMetrics'
 import { formatFileSize } from '../../../helper/utils'
+import { calculateAbsolute } from '../../../helper/resultHelper'
 
 const tooltipText = {
   'speedIndex': 'Speed Index',

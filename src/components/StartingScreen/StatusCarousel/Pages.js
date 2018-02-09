@@ -1,9 +1,8 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
+import React from 'react'
 
 import { shuffle } from '../../../helper/utils'
 
-import { Carousel, CarouselPage } from './Carousel'
+import { CarouselPage } from './Carousel'
 
 export const renderDefaultPage = () => (
   <CarouselPage key="default">

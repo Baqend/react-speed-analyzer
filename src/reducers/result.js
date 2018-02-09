@@ -6,10 +6,7 @@ import {
   TESTOVERVIEW_LOAD,
   TESTOVERVIEW_SAVE,
   RATE_LIMITER_GET,
-  NORMALIZE_URL_POST,
   CALL_PAGESPEED_INSIGHTS_GET,
-  START_TEST_COMPETITOR_POST,
-  START_TEST_SPEED_KIT_POST,
   TEST_STATUS_GET,
   COMPETITOR_RESULT_NEXT,
   SPEED_KIT_RESULT_NEXT,
@@ -20,11 +17,7 @@ import {
 } from '../actions/types'
 
 import { generateRules } from '../helper/configHelper'
-import {
-  isMainMetricSatisfactory,
-  resultIsValid,
-  shouldShowFirstMeaningfulPaint
-} from '../helper/resultHelper'
+import { resultIsValid, shouldShowFirstMeaningfulPaint } from '../helper/resultHelper'
 
 const initialState = {
   isMonitored: false,
@@ -60,9 +53,6 @@ const getResultErrors = ({ competitorTest, speedKitTest, mainMetric, secondaryMe
   }
   const isValidResult = resultIsValid(competitorTest, speedKitTest, mainMetric, secondaryMetric)
   if(!speedKitTest || speedKitTest.testDataMissing || !isValidResult) {
-    // console.log('SpeedKit konnte nicht getestet werden => Zeige Kontaktformular')
-    // this.setState({ speedKitError: true })
-    // result['competitorError'] = true
     result['speedKitError'] = true
   }
   return result
@@ -130,7 +120,6 @@ export default function result(state = initialState, action = {}) {
     case CONTINUE_TEST:
       return { ...state, isInitiated: true, isStarted: true }
     case CALL_PAGESPEED_INSIGHTS_GET:
-      console.log(action.payload)
       return {
         ...state, testOverview: {
           ...state.testOverview,

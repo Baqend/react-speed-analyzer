@@ -96,12 +96,13 @@ export function shouldShowFirstMeaningfulPaint(competitorResult, speedKitResult)
 export function calculateServedRequests(data) {
   const totalRequests = data.requests || 0
 
+  /* eslint-disable */
   const cacheHits = data.hits.hit || 0
   const cacheMisses = data.hits.miss || 0
   const otherRequests = data.hits.other || 0
 
   // eslint-disable-next-line no-console
-  console.log(`hit: ${cacheHits} miss: ${cacheMisses} other: ${otherRequests} total: ${totalRequests}`)
+  // console.log(`hit: ${cacheHits} miss: ${cacheMisses} other: ${otherRequests} total: ${totalRequests}`)
 
   const servedFactor = (totalRequests - otherRequests) / totalRequests
   return formatPercentage(servedFactor)

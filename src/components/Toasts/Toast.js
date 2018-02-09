@@ -1,5 +1,5 @@
-import PropTypes from "prop-types";
-import React, { Component } from "react";
+import PropTypes from "prop-types"
+import React, { Component } from "react"
 
 class Toast extends Component {
   componentDidMount() {
@@ -26,10 +26,9 @@ class Toast extends Component {
   }
 }
 
-// Toast.propTypes = {
-//   color: PropTypes.string.isRequired,
-//   onDismissClick: PropTypes.func.isRequired,
-//   text: PropTypes.string.isRequired
-// }
+Toast.propTypes = {
+  message: PropTypes.string.isRequired,
+  dismiss: PropTypes.func.isRequired,
+}
 
-export default Toast;
+export default Toast

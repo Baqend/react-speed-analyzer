@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import './ResultWorthiness.css'
-import { calculateFactor, calculateAbsolute, calculateServedRequests } from '../../../helper/resultHelper'
+import { calculateAbsolute, calculateServedRequests } from '../../../helper/resultHelper'
 
 import doubleClickLogo from '../../../assets/doubleClick.png'
 import amazonLogo from '../../../assets/amazon.png'
@@ -10,7 +10,6 @@ class ResultWorthinessComponent extends Component {
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
 
-    const factor = calculateFactor(competitorData[this.props.mainMetric], speedKitData[this.props.mainMetric])
     const absolute = calculateAbsolute(competitorData[this.props.mainMetric], speedKitData[this.props.mainMetric])
     const servedRate = calculateServedRequests(speedKitData)
 

@@ -1,7 +1,5 @@
 import {
   RESET_TEST_RESULT,
-  START_TEST,
-  CONTINUE_TEST,
   MONITOR_TEST,
   TESTOVERVIEW_SAVE,
   TESTOVERVIEW_LOAD,
@@ -9,11 +7,8 @@ import {
   UPDATE_CONFIG,
   TEST_STATUS_GET,
   COMPETITOR_RESULT_NEXT,
-  COMPETITOR_SUBSCRIPTION,
   SPEED_KIT_RESULT_NEXT,
-  SPEED_KIT_SUBSCRIPTION,
   TERMINATE_TEST,
-  ADD_ERROR
 } from './types'
 
 
@@ -22,6 +17,7 @@ export const resetTest = () => ({
     dispatch({ type: RESET_TEST_RESULT })
   }
 })
+
 /**
  * Checks the status of a given test and subscribes to the result.
  * @param testId The id of the test to be monitored.
@@ -29,25 +25,6 @@ export const resetTest = () => ({
 export const monitorTest = (testId) => ({
   'BAQEND': async ({ dispatch }) => {
     dispatch({ type: MONITOR_TEST })
-    // dispatch({ type: CONTINUE_TEST })
-    // try {
-    //   throw new Error("Lol, so geht das doch nicht")
-    // } catch (e) {
-    //   dispatch({
-    //     type: ADD_ERROR,
-    //     payload: e
-    //   })
-    //   setTimeout(() => {
-    //     try {
-    //       throw new Error("Lol, immer noch nicht")
-    //     } catch (e) {
-    //       dispatch({
-    //         type: ADD_ERROR,
-    //         payload: e
-    //       })
-    //     }
-    //   }, 3000)
-    // }
 
     const testOverview = await dispatch(getTestOverview({ testId }))
     const { competitorTestResult, speedKitTestResult } = testOverview

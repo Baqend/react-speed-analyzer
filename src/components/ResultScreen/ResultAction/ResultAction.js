@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { prepareTest, startTest } from '../../../actions/startTest'
-import { isURL, getObjectKey } from '../../../helper/utils'
+import { getObjectKey } from '../../../helper/utils'
 
 import WordPressLogo from '../../../assets/wordpress.png'
 
@@ -18,10 +18,6 @@ class ResultAction extends Component {
       const testOverview = await this.props.actions.startTest(urlInfo)
       history.push(`/test/${getObjectKey(testOverview.id)}`)
     } catch (e) {}
-
-    // if (isURL(this.props.config.url)) {
-    //   this.props.actions.startTest()
-    // }
   }
 
   // all Tests failed

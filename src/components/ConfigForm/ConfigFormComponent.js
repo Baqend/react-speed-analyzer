@@ -204,9 +204,9 @@ class ConfigFormComponent extends Component {
               {this.state.whiteListCandidates.length > 0 && (
                 <div className="mt2" style={{ marginLeft: -8, marginRight: -8 }}>
                   {this.state.whiteListCandidates.map(domain => (
-                    <div className="checkbox-custom ma1">
+                    <div key={domain.url} className="checkbox-custom ma1">
                       <input id={domain.url} type="checkbox" onChange={(e) => this.handleWhiteListDomainClick(e, domain)} />
-                      <label for={domain.url}>
+                      <label htmlFor={domain.url}>
                         {domain.url}
                       </label>
                     </div>
@@ -236,16 +236,17 @@ class ConfigFormComponent extends Component {
 
     return (
       <div className="config__form flex-grow-1 flex flex-column">
-        <form className="flex flex-grow-1 flex-column" onSubmit={this.handleSubmit}>
+        <form className="flex flex-grow-1 flex-column" onSubmit={this.handleSubmit} noValidate>
           <div className="config__form-input-wrapper">
             <input
               className="w-100 ph2 pv2 config__form-input"
-              type="text"
+              type="url"
               inputMode="url"
               spellCheck="false"
               value={this.props.config.url}
               onChange={this.handleUrlChange}
               placeholder="Enter URL here..."
+              noValidate
             />
             {/*<div className="parsed-domain ph2 pv2">
               {Array.isArray(url) && url.length === 3 ? [

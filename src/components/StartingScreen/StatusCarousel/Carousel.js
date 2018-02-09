@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import PropTypes from 'prop-types'
 import hash from 'object-hash'
 
 import { TransitionGroup, CSSTransition } from 'react-transition-group'
@@ -84,6 +83,7 @@ export class Carousel extends Component {
   }
 
   render() {
+    /* eslint-disable */
     // const { message } = this.props
     return (
       <TransitionGroup>
