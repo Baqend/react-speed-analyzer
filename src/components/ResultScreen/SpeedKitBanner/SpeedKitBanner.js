@@ -6,7 +6,7 @@ class SpeedKitBanner extends Component {
   render() {
     return (
       <div className="banner">
-        <div className="container ph2 pv7">
+        <div className="container ph2 pv4 pv7-ns">
           <div className="flex flex-wrap flex-nowrap-ns items-center ph0" style={{ margin: -8 }}>
             <div className="w-100 w-50-ns tc tr-ns ph2 pv2">
               <h2 className="mv1">Try Speed Kit Today</h2>

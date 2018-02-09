@@ -24,7 +24,12 @@ class ResultWorthinessComponent extends Component {
       <div>
         <div className="flex">
           <div className="w-100 text-center mb4 mt4 animated slideInUp">
-            <h1 style={{ maxWidth: 768, margin: '0 auto' }}>Speed Kit made your site <span style={{ color: '#F27354' }}>{absolute}</span> faster by serving {servedRate}% of all requests.</h1>
+            <h1 className="dn db-ns" style={{ maxWidth: 768, margin: '0 auto' }}>
+              Speed Kit made your site <span style={{ color: '#F27354' }}>{absolute}</span> faster by serving {servedRate}% of all requests.
+            </h1>
+            <h3 className="dn-ns" style={{ maxWidth: 768, margin: '0 auto' }}>
+              Speed Kit made your site <span style={{ color: '#F27354' }}>{absolute}</span> faster by serving {servedRate}% of all requests.
+            </h3>
             <br />
             <h4 className="faded" style={{ maxWidth: 530, margin: '0 auto' }}>
               Here is the impact Google and Amazon research predicts for this uplift.

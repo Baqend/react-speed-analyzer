@@ -1,30 +1,45 @@
-.text-enter {
-  max-height: 0;
-  overflow: hidden;
-  visibility: hidden;
-  > * {
-    transform: translate3d(0, 100%, 0);
+@import 'tachyons/src/_media-queries';
+
+.carousel {
+  .text-enter {
+    max-height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    > * {
+      transform: translate3d(0, 100%, 0);
+    }
   }
-}
 
-.text-enter.text-enter-active {
-  opacity: 1;
-  animation: addElement 0ms 1 linear 0s forwards;
-  > * {
-    animation: textSlideUp 3s 1 ease 0s forwards
+  .text-enter.text-enter-active {
+    opacity: 1;
+    animation: addElement 0ms 1 linear 0s forwards;
+    > * {
+      animation: textSlideUp 3s 1 ease 0s forwards
+    }
   }
-}
 
-.text-exit {
-  opacity: 1
-}
+  .text-exit {
+    opacity: 1
+  }
 
-.text-exit.text-exit-active {
-  animation: textFadeOut 3s 1 ease forwards;
-}
+  .text-exit.text-exit-active {
+    animation: textFadeOut 3s 1 ease forwards;
+  }
 
-.text__headline {
-  margin-top: 0;
+  .text__headline {
+    margin-top: 0;
+    font-size: 20px;
+    @media (--breakpoint-not-small) {
+      font-size: 28px;
+    }
+  }
+
+  .text__details {
+    font-size: 14px;
+    @media (--breakpoint-not-small) {
+      font-size: 18px;
+    }
+  }
 }
 
 @keyframes addElement {

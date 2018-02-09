@@ -14,6 +14,14 @@ import {
   renderFactsPages,
 } from './StatusCarousel/Pages'
 
+const dots = (
+  <span className="loader">
+    <span className="loader__dot">.</span>
+    <span className="loader__dot">.</span>
+    <span className="loader__dot">.</span>
+  </span>
+)
+
 const Device = ({ children, img }) => (
   <div className="device__wrapper-outer">
     <div className="device__wrapper">
@@ -46,12 +54,16 @@ class StartingScreenComponent extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (this.props.result.statusCode !== nextProps.result.statusCode) {
-      this.setState({ showFacts: false }, () => setTimeout(() => {
-        this.setState({ showFacts: true })
-      }, 6000))
+      clearTimeout(this.showFactsTimeout)
+      this.setState({ showFacts: false }, () => {
+        this.showFactsTimeout = setTimeout(() => {
+          this.setState({ showFacts: true })
+        }, 10000)
+      })
     }
     if (!this.state.showCarousel && nextProps.result.isStarted) {
-      setTimeout(() => this.setState({ showCarousel: true }), 2500)
+      const timeout = window.innerWidth <= 997 ? 500 : 2500
+      setTimeout(() => this.setState({ showCarousel: true }), timeout)
     }
   }
 
@@ -74,7 +86,7 @@ class StartingScreenComponent extends Component {
     )
   }
 
-  renderSpinner() {
+  renderSpinner(statusMessage) {
     return (
       <div className="flex flex-column justify-center items-center" style={{ overflow: 'hidden' }}>
         <div className="spinner__wrapper animated slideInUp">
@@ -87,11 +99,15 @@ class StartingScreenComponent extends Component {
     )
   }
 
-  renderCarousel() {
+  renderCarousel(statusMessage) {
     const pageSpeedInsights = this.props.result.testOverview && this.props.result.testOverview.psiDomains
+    // pageSpeedInsights = true
+    const message = (
+      <div className="dn db-ns" style={{ marginTop: 16 }}>{statusMessage}</div>
+    )
     return (
-      <Carousel>
-        {((!this.props.result.statusCode && !pageSpeedInsights) || !this.props.result.statusCode) && renderDefaultPage()}
+      <Carousel message={message}>
+        {(!this.props.result.statusCode || !pageSpeedInsights) && renderDefaultPage()}
         {pageSpeedInsights && this.props.result.statusCode === 101 && renderIsInQueuePage(this.props.result.statusText)}
         {pageSpeedInsights && this.props.result.statusCode === 100 && renderHasStartedPage()}
         {pageSpeedInsights && this.state.showFacts && renderFactsPages}
@@ -113,7 +129,7 @@ class StartingScreenComponent extends Component {
             {psiDomains ? (
               <strong className="animated zoomIn">{psiDomains}</strong>
             ) : (
-              <strong>-</strong>
+              <strong>{dots}</strong>
             )}
           </Tooltip>
         </div>
@@ -124,7 +140,7 @@ class StartingScreenComponent extends Component {
             {psiRequests ? (
               <strong className="animated zoomIn">{psiRequests}</strong>
             ) : (
-              <strong>-</strong>
+              <strong>{dots}</strong>
             )}
           </Tooltip>
         </div>
@@ -135,7 +151,7 @@ class StartingScreenComponent extends Component {
             {psiResponseSize ? (
               <strong className="animated zoomIn">{formatFileSize(psiResponseSize, 2)}</strong>
             ) : (
-              <strong>-</strong>
+              <strong>{dots}</strong>
             )}
           </Tooltip>
         </div>
@@ -158,6 +174,14 @@ class StartingScreenComponent extends Component {
     const { psiScreenshot } = this.props.result.testOverview
     const img = psiScreenshot && `data:${psiScreenshot.mime_type};base64,${psiScreenshot.data.replace(/_/g, '/').replace(/-/g, '+')}`
 
+    const statusMessage = (
+      <small className="faded">
+        {this.props.result.statusCode === 100 && 'Your Test has been started'}
+        {this.props.result.statusCode === 101 && this.props.result.statusText.replace('...', '')}
+        {dots}
+      </small>
+    )
+
     return (
       <div className={`${this.state.showAdvancedConfig ? 'expert' : 'device'}`}>
         <div className={`${deviceTypeClass}`}>
@@ -166,13 +190,13 @@ class StartingScreenComponent extends Component {
               <div className={`flex-grow-1 flex justify-center items-center ${statusClass}`}>
                 <div className="left">
                   <Device img={img && this.props.config.isMobile ? img : null }>
-                    {(this.props.result.isStarted && this.renderSpinner()) || this.renderForm()}
+                    {(this.props.result.isStarted && this.renderSpinner(statusMessage)) || this.renderForm()}
                   </Device>
                 </div>
                 {this.props.result.isStarted &&
                   <div className="right">
-                    <div className="flex flex-grow-1 flex-column justify-center items-stretch pa2" style={{ flexBasis: '100%' }}>
-                      {this.state.showCarousel && this.renderCarousel()}
+                    <div className="carousel flex flex-grow-1 flex-column justify-center items-stretch pa2" style={{ flexBasis: '100%' }}>
+                      {this.state.showCarousel && this.renderCarousel(statusMessage)}
                     </div>
                   </div>
                 }
@@ -180,6 +204,17 @@ class StartingScreenComponent extends Component {
             </div>
           </Device>
         </div>
+        {(this.props.result.statusCode === 100 || this.props.result.statusCode === 101) && <div className="dn-ns animated fadeInDown tc" style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          padding: 8,
+          background: 'rgba(255,255,255,0.15)',
+          lineHeight: 1
+        }}>
+          {statusMessage}
+        </div>}
       </div>
     )
   }

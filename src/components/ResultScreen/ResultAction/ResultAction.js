@@ -28,7 +28,7 @@ class ResultAction extends Component {
   renderAllTestsFailed() {
     return (
       <div>
-        <div className="text-center pb2 pt4" style={{ maxWidth: 768, margin: '0 auto' }}>
+        <div className="text-center pb2 pt2 pt4-ns" style={{ maxWidth: 768, margin: '0 auto' }}>
           <h2>Test Runs Failed</h2>
           <span className="faded">An error occurred while running your tests. Please re-run the test and if the problem persists, <a style={{ cursor: 'pointer' }} onClick={this.props.toggleModal}>contact us!</a></span>
         </div>
@@ -43,7 +43,7 @@ class ResultAction extends Component {
   renderSpeedKitFailed() {
     return (
       <div>
-        <div className="text-center pb2 pt4" style={{ maxWidth: 768, margin: '0 auto' }}>
+        <div className="text-center pb2 pt2 pt4-ns" style={{ maxWidth: 768, margin: '0 auto' }}>
           <h2>Speed Kit Test Run Failed</h2>
           <span className="faded">It looks like some fine-tuning or configuration is required to measure your site. Please contact our web performance experts to adjust and re-run the test!</span>
         </div>
@@ -57,7 +57,7 @@ class ResultAction extends Component {
   // success for wordpress page
   renderWordpressCta() {
     return (
-      <div className="flex items-center pb2 pt4" style={{ maxWidth: 768, margin: '0 auto' }}>
+      <div className="flex items-center pb2 pt2 pt4-ns" style={{ maxWidth: 768, margin: '0 auto' }}>
         <div className="ph2 dn db-ns">
           <img className="pa2" height="200" src={WordPressLogo} alt="Wordpress Logo"/>
         </div>
@@ -82,7 +82,7 @@ class ResultAction extends Component {
   renderIsSpeedKitCta(speedKitVersion) {
     return (
       <div>
-        <div className="text-center pb2 pt4" style={{ maxWidth: 768, margin: '0 auto' }}>
+        <div className="text-center pb2 pt2 pt4-ns" style={{ maxWidth: 768, margin: '0 auto' }}>
           <h2>Thank you for using Speed Kit</h2>
           <span className="faded">You are running on Speed Kit {speedKitVersion}. The test therefore compared your website with Speed Kit to a version where Speed Kit is deactivated.</span>
         </div>
@@ -96,7 +96,7 @@ class ResultAction extends Component {
   // success
   renderCta() {
     return (
-      <div className="text-center pt4">
+      <div className="text-center pt2 pt4-ns">
         <a className="btn btn-orange ma1"
           target="_blank" rel="noopener noreferrer"
           href="https://dashboard.baqend.com/register?appType=speedkit">Sign Up</a>

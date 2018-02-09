@@ -9,13 +9,19 @@
 
 .device, .expert {
   width: 100%;
-  max-width: 1170px;
   /* min-height: 100vh; */
-  padding: 24px;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  padding: 48px 16px 32px;
+  @media (--breakpoint-not-small) {
+    padding: 24px;
+  }
+  max-width: 998px;
+  @media (min-width: 1441px) {
+    max-width: 1170px;
+  }
   .device__wrapper-outer, .device__wrapper, .device__screen {
     display: flex;
     flex-grow: 1;
@@ -215,6 +221,7 @@
     justify-content: center;
     text-align: center;
     @media (--breakpoint-not-small) {
+      height: 300px;
       margin-top: 32px;
       align-items: center;
     }

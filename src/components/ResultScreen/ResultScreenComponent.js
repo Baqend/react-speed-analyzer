@@ -81,20 +81,20 @@ class ResultScreenComponent extends Component {
     return (
       <div className="flex-grow-1 results animated slideInUp" style={{ animationDuration: '0.5s' }}>
         { !competitorError && (
-          <div className="container pa2">
+          <div className="container pv2 pa2-ns">
             <div className="box-shadow results__box" style={{ marginTop: '-96px' }}>
               <Result { ...this.props } />
             </div>
           </div>
         )}
 
-        <div className="container pa2 pt2 pb6 animated slideInUp">
+        <div className="container pa2 pt0 pt2-ns pb4 pb6-ns animated slideInUp">
           <ResultAction { ...this.props } toggleModal={this.toggleModal}/>
         </div>
 
-        <div className="pv7" style={{ background: 'white' }}>
+        <div className="pv4 pv7-ns" style={{ background: 'white' }}>
           {!speedKitError && !competitorError && (
-            <div className="container ph2 pb7">
+            <div className="container ph2 pb2 pb7-ns">
               <ResultWorthiness
                 competitorTest={this.props.competitorTest}
                 speedKitTest={this.props.speedKitTest}
@@ -108,7 +108,7 @@ class ResultScreenComponent extends Component {
         </div>
 
         { !this.state.isIFrame && [
-          <div key="speedKitAnalyzerInfo" className="pv7">
+          <div key="speedKitAnalyzerInfo" className="pv4 pv7-ns">
             <div className="container ph4">
               <SpeedKitAnalyzer />
             </div>
