@@ -13,7 +13,6 @@
       font-size: 18px;
       color: #fff;
       font-weight: 400;
-      font-family: "Open Sans";
       line-height: 34px;
       pointer-events: none;
     }
@@ -25,7 +24,6 @@
     border: none;
     border-radius: 3px;
     font-weight: 400;
-    font-family: "Open Sans";
     line-height: 34px;
     &.no-text {
       color: transparent;

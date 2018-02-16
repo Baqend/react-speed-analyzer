@@ -3,6 +3,7 @@
 // Do this as the first thing so that any code reading it knows the right env.
 process.env.BABEL_ENV = 'production';
 process.env.NODE_ENV = 'production';
+process.env.REACT_APP_TYPE = 'modules';
 
 // Makes the script crash on unhandled rejections instead of silently
 // ignoring them. In the future, promise rejections that are not handled will
@@ -18,7 +19,7 @@ const path = require('path');
 const chalk = require('chalk');
 const fs = require('fs-extra');
 const webpack = require('webpack');
-const config = require('../config/webpack.config.prod');
+const config = require('../config/webpack.config.prod.embedded');
 const paths = require('../config/paths');
 const checkRequiredFiles = require('react-dev-utils/checkRequiredFiles');
 const formatWebpackMessages = require('react-dev-utils/formatWebpackMessages');
@@ -48,7 +49,7 @@ measureFileSizesBeforeBuild(paths.appBuild)
     // if you're in it, you don't end up in Trash
     fs.emptyDirSync(paths.appBuild);
     // Merge with the public folder
-    copyPublicFolder();
+    // copyPublicFolder();
     // Start the webpack build
     return build(previousFileSizes);
   })
@@ -85,7 +86,6 @@ measureFileSizesBeforeBuild(paths.appBuild)
       const publicUrl = paths.publicUrl;
       const publicPath = config.output.publicPath;
       const buildFolder = path.relative(process.cwd(), paths.appBuild);
-      copyAppHtml()
       printHostingInstructions(
         appPackage,
         publicUrl,
@@ -146,10 +146,6 @@ function build(previousFileSizes) {
 function copyPublicFolder() {
   fs.copySync(paths.appPublic, paths.appBuild, {
     dereference: true,
-    filter: file => file !== paths.appHtml && file.indexOf('index_modules.html') === -1
+    filter: file => file !== paths.appHtml,
   });
-}
-
-function copyAppHtml() {
-  fs.copySync(paths.appBuild + '/index.html', paths.appBuild + '/404.html');
 }

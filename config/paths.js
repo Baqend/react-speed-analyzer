@@ -41,10 +41,10 @@ function getServedPath(appPackageJson) {
 // config after eject: we're in ./config/
 module.exports = {
   dotenv: resolveApp('.env'),
-  appBuild: resolveApp('build'),
+  appBuild: process.env.REACT_APP_TYPE === 'modules' ? resolveApp('build-modules') : resolveApp('build'),
   appPublic: resolveApp('public'),
-  appHtml: resolveApp('public/index.html'),
-  appIndexJs: resolveApp('src/index.js'),
+  appHtml: process.env.REACT_APP_TYPE === 'modules' ? resolveApp('public/index_modules.html') : resolveApp('public/index.html'),
+  appIndexJs: process.env.REACT_APP_TYPE === 'modules' ? resolveApp('src/index_modules.js') : resolveApp('src/index.js'),
   appPackageJson: resolveApp('package.json'),
   appSrc: resolveApp('src'),
   yarnLockFile: resolveApp('yarn.lock'),

@@ -1,0 +1,31 @@
+@import "styles/_variables";
+
+#speed-kit-analyzer {
+
+  .results__wrapper {
+    width: 100%;
+    min-height: 100vh;
+  }
+
+  .results {
+    width: 100%;
+    background: #f8f8f8;
+    color: #444;
+    &__box {
+      border-radius: 2px;
+      color: #444444;
+      background: #ffffff;
+    }
+  }
+
+  .toggleSettings {
+    color: color(var(--white) a(50%));
+    font-size: 12px;
+    a {
+      color: color(var(--white) a(75%));
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  }
+
+}
