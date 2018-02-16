@@ -1,7 +1,7 @@
 module.exports = {
   plugins: {
     'postcss-import': {
-      path: ['./src', '../src']
+      path: ['./src']
     },
     'postcss-nested': {},
     'postcss-calc': {},
