@@ -39,8 +39,13 @@ export const monitorTest = (testId, bulkTest) => ({
     if (testOverview.hasFinished) {
       dispatch(loadTestResults({ competitorTestResult, speedKitTestResult }))
     } else {
-      dispatch(checkTestStatus({ competitorTestResult }))
-      dispatch(subscribeToTestResults({ testOverview, competitorTestResult, speedKitTestResult }))
+      const checkTestRunnterInterval = dispatch(checkTestStatus({ competitorTestResult }))
+      dispatch(subscribeToTestResults({
+        testOverview,
+        competitorTestResult,
+        speedKitTestResult,
+        checkTestRunnterInterval
+      }))
     }
   }
 })
@@ -135,6 +140,8 @@ const checkTestStatus = ({ competitorTestResult }) => ({
         clearInterval(interval)
       }
     }, 2000)
+
+    return interval
   }
 })
 
@@ -158,7 +165,7 @@ const loadTestResults = ({ competitorTestResult, speedKitTestResult }) => ({
   }
 })
 
-const subscribeToTestResults = ({ testOverview, competitorTestResult, speedKitTestResult }) => ({
+const subscribeToTestResults = ({ testOverview, competitorTestResult, speedKitTestResult, checkTestRunnterInterval }) => ({
   'BAQEND': async ({ dispatch, getState, db }) => {
     const competitorStream = db.TestResult.find().equal('id', competitorTestResult).resultStream()
     const speedKitStream = db.TestResult.find().equal('id', speedKitTestResult).resultStream()
@@ -171,6 +178,7 @@ const subscribeToTestResults = ({ testOverview, competitorTestResult, speedKitTe
       })
       const competitorTest = res[0]
       if (competitorTest.hasFinished) {
+        clearInterval(checkTestRunnterInterval)
         competitorSubscription && competitorSubscription.unsubscribe()
         dispatch(finalizeTestingProcess(testOverview))
       }
@@ -184,7 +192,7 @@ const subscribeToTestResults = ({ testOverview, competitorTestResult, speedKitTe
       const speedKitTest = res[0]
       if (speedKitTest.hasFinished) {
         speedKitSubscription && speedKitSubscription.unsubscribe()
-        dispatch(finalizeTestingProcess(testOverview))
+        dispatch(finalizeTestingProcess(testOverview, checkTestRunnterInterval))
       }
     })
   }
@@ -193,7 +201,7 @@ const subscribeToTestResults = ({ testOverview, competitorTestResult, speedKitTe
 const finalizeTestingProcess = (testOverviewObject) => ({
   'BAQEND': [testOverviewObject, async ({ dispatch, getState, db }, testOverview) => {
     const { competitorTest, speedKitTest } = getState().result
-    if (competitorTest.hasFinished && speedKitTest.hasFinished && testOverview.hasFinished === false) {
+    if (competitorTest.hasFinished && speedKitTest.hasFinished && !testOverview.hasFinished) {
       try {
         const update = testOverview.partialUpdate().set('hasFinished', true)
         dispatch({
