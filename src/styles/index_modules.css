@@ -32,6 +32,10 @@
   font-size: 18px;
   line-height: 1.48;
   background: linear-gradient(to bottom,#162939,#12212e);
+  color: color(#fff a(80%));
+  h1, h2, h3, h4, h5, h6 {
+    color: color(#fff a(80%));
+  }
 }
 
 #wrapper {

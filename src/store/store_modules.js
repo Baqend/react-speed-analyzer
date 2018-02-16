@@ -7,7 +7,7 @@ import middlewares from '../middleware'
 
 import reducers from '../reducers/index_modules'
 
-export default (initialState = {}) => {
+const createStore = (initialState = {}) => {
   const reducer = combineReducers({
     baqend: baqendReducer,
     ...reducers,
@@ -20,3 +20,5 @@ export default (initialState = {}) => {
     middleware,
   )
 }
+
+export default createStore()

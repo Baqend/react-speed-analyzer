@@ -1,6 +1,8 @@
 module.exports = {
   plugins: {
-    'postcss-import': {},
+    'postcss-import': {
+      path: ['./src', '../src']
+    },
     'postcss-nested': {},
     'postcss-calc': {},
     'postcss-cssnext': {
@@ -9,7 +11,7 @@ module.exports = {
     'postcss-flexbugs-fixes': {},
     'postcss-wrap': {
       selector: '#speed-kit-analyzer',
-      skip: [ 'speed-kit-analyzer' ]
+      skip: ['speed-kit-analyzer']
     },
   },
 }

@@ -22,11 +22,16 @@ export const resetTest = () => ({
  * Checks the status of a given test and subscribes to the result.
  * @param testId The id of the test to be monitored.
  */
-export const monitorTest = (testId) => ({
+export const monitorTest = (testId, bulkTest) => ({
   'BAQEND': async ({ dispatch }) => {
     dispatch({ type: MONITOR_TEST })
 
-    const testOverview = await dispatch(getTestOverview({ testId }))
+    let testOverview
+    if (bulkTest) {
+      testOverview = await dispatch(subscribeToTestOverview({ testId }))
+    } else {
+      testOverview = await dispatch(getTestOverview({ testId }))
+    }
     const { competitorTestResult, speedKitTestResult } = testOverview
 
     dispatch(updateConfigByTestOverview(testOverview))
@@ -66,6 +71,27 @@ const getTestOverview = ({ testId }) => ({
       }
     }
     return testOverview
+  }
+})
+
+const subscribeToTestOverview = ({ testId }) => ({
+  'BAQEND': async ({ dispatch, getState, db }) => {
+    const testOverviewStream = db.TestOverview.find().equal('id', `/db/TestOverview/${testId}`).resultStream()
+    return new Promise((resolve, reject) => {
+      const testOverviewSubscription = testOverviewStream.subscribe((res) => {
+        const testOverview = res[0] ? res[0].toJSON() : null
+        if (testOverview) {
+          dispatch({
+            type: TESTOVERVIEW_LOAD,
+            payload: testOverview
+          })
+          if (testOverview.hasFinished) {
+            testOverviewSubscription && testOverviewSubscription.unsubscribe()
+          }
+          resolve(testOverview)
+        }
+      })
+    })
   }
 })
 
@@ -167,7 +193,7 @@ const subscribeToTestResults = ({ testOverview, competitorTestResult, speedKitTe
 const finalizeTestingProcess = (testOverviewObject) => ({
   'BAQEND': [testOverviewObject, async ({ dispatch, getState, db }, testOverview) => {
     const { competitorTest, speedKitTest } = getState().result
-    if (competitorTest.hasFinished && speedKitTest.hasFinished) {
+    if (competitorTest.hasFinished && speedKitTest.hasFinished && testOverview.hasFinished === false) {
       try {
         const update = testOverview.partialUpdate().set('hasFinished', true)
         dispatch({

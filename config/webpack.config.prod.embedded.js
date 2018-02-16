@@ -186,15 +186,15 @@ module.exports = {
                       loader: require.resolve('css-loader'),
                       options: {
                         importLoaders: 0,
-                        minimize: true,
-                        sourceMap: shouldUseSourceMap,
+                        minimize: false,
+                        sourceMap: false,
                       },
                     },
                     {
                       loader: require.resolve('postcss-loader'),
                       options: {
                         config: {
-                          path: path.resolve(__dirname, 'postcss/postcss.config.embedded.js'),
+                          path: path.resolve(__dirname, './postcss-scoped/postcss.config.js'),
                         },
                       },
                     },

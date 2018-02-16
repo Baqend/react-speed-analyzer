@@ -29,6 +29,7 @@
   .text__headline {
     margin-top: 0;
     font-size: 20px;
+    margin-bottom: 24px;
     @media (--breakpoint-not-small) {
       font-size: 28px;
     }

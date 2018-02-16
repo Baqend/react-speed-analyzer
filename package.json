@@ -4,39 +4,33 @@
   "private": true,
   "scripts": {
     "start": "REACT_APP_BAQEND=makefast node scripts/start.js",
-
+    "start:modules": "REACT_APP_BAQEND=makefast node scripts/start-modules.js",
+    "start:modules:result": "REACT_APP_BAQEND=makefast REACT_APP_SCREEN_TYPE=result node scripts/start-modules.js",
+    "start:modules:test": "REACT_APP_BAQEND=makefast REACT_APP_SCREEN_TYPE=test node scripts/start-modules.js",
     "start:app:dev": "REACT_APP_BAQEND=makefast-dev node scripts/start.js",
     "start:app:staging": "REACT_APP_BAQEND=makefast-staging node scripts/start.js",
     "start:app:prod": "REACT_APP_BAQEND=makefast node scripts/start.js",
-
     "start:modules:dev": "REACT_APP_BAQEND=makefast-dev node scripts/start-modules.js",
     "start:modules:staging": "REACT_APP_BAQEND=makefast-staging node scripts/start-modules.js",
     "start:modules:prod": "REACT_APP_BAQEND=makefast node scripts/start-modules.js",
-
     "build:dev": "npm run build:app:dev && npm run build:modules:dev",
     "build:app:dev": "REACT_APP_BAQEND=makefast-dev node scripts/build.js",
     "build:modules:dev": "REACT_APP_BAQEND=makefast-dev node scripts/build-modules.js",
-
     "build:staging": "npm run build:app:staging && npm run build:modules:staging",
     "build:app:staging": "REACT_APP_BAQEND=makefast-staging node scripts/build.js",
     "build:modules:staging": "REACT_APP_BAQEND=makefast-staging node scripts/build-modules.js",
-
     "build:prod": "npm run build:app:prod && npm run build:modules:prod",
     "build:app:prod": "REACT_APP_BAQEND=makefast node scripts/build.js",
     "build:modules:prod": "REACT_APP_BAQEND=makefast node scripts/build-modules.js",
-
     "deploy:dev": "npm run deploy:app:dev && npm run deploy:modules:dev",
     "deploy:app:dev": "npm run build:app:dev && baqend deploy --file-dir build --bucket-path www makefast-dev",
     "deploy:modules:dev": "npm run build:modules:dev && baqend deploy -F --file-dir build-modules --bucket-path embedded makefast-dev",
-
     "deploy:staging": "npm run deploy:app:staging && npm run deploy:modules:staging",
     "deploy:app:staging": "npm run build:app:staging && baqend deploy --file-dir build --bucket-path www makefast-staging",
     "deploy:modules:staging": "npm run build:modules:staging && baqend deploy -F --file-dir build-modules --bucket-path embedded makefast-staging",
-
     "deploy:prod": "npm run deploy:app:prod && npm run deploy:modules:prod",
     "deploy:app:prod": "npm run build:app:prod && baqend deploy --file-dir build --bucket-path www makefast",
     "deploy:modules:prod": "npm run build:modules:prod && baqend deploy -F --file-dir build-modules --bucket-path embedded makefast",
-
     "test": "node scripts/test.js --env=jsdom",
     "flow": "flow"
   },
@@ -63,10 +57,10 @@
     "object-hash": "^1.2.0",
     "postcss-calc": "^6.0.1",
     "postcss-cssnext": "^3.0.2",
-    "postcss-flexbugs-fixes": "3.2.0",
+    "postcss-flexbugs-fixes": "3.3.0",
     "postcss-import": "^11.0.0",
-    "postcss-loader": "2.0.9",
-    "postcss-nested": "^2.1.2",
+    "postcss-loader": "2.1.0",
+    "postcss-nested": "3.0.0",
     "postcss-wrap": "^0.0.4",
     "promise": "8.0.1",
     "promise-polyfill": "^7.0.0",
@@ -91,13 +85,13 @@
     "redux-baqend": "^1.0.6",
     "redux-logger": "^3.0.6",
     "slick-carousel": "^1.8.1",
-    "style-loader": "0.19.1",
+    "style-loader": "0.20.2",
     "sw-precache-webpack-plugin": "0.11.4",
     "tachyons": "^4.9.0",
     "typeface-open-sans": "^0.0.54",
     "url-loader": "0.6.2",
-    "webpack": "3.10.0",
-    "webpack-dev-server": "2.9.7",
+    "webpack": "3.11.0",
+    "webpack-dev-server": "2.11.1",
     "webpack-manifest-plugin": "1.3.2",
     "whatwg-fetch": "^2.0.3"
   },

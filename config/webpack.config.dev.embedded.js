@@ -172,7 +172,7 @@ module.exports = {
                 loader: require.resolve('postcss-loader'),
                 options: {
                   config: {
-                    path: path.resolve(__dirname, 'postcss/postcss.config.embedded.js'),
+                    path: path.resolve(__dirname, './postcss-scoped/postcss.config.js'),
                   },
                 },
               },
