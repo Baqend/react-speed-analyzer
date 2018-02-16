@@ -6448,9 +6448,9 @@ reduce-function-call@^1.0.1, reduce-function-call@^1.0.2:
   dependencies:
     balanced-match "^0.4.2"
 
-redux-baqend@^1.0.6:
+"redux-baqend@git://github.com/Baqend/redux-baqend.git#thunk":
   version "1.0.6"
-  resolved "https://registry.yarnpkg.com/redux-baqend/-/redux-baqend-1.0.6.tgz#f27080921cc36b66ae605a7d7c3378749406ec94"
+  resolved "git://github.com/Baqend/redux-baqend.git#536d595bf8f6f57776ad44d5bfb504f12c616971"
 
 redux-logger@^3.0.6:
   version "3.0.6"

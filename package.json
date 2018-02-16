@@ -82,7 +82,7 @@
     "react-toggle": "^4.0.2",
     "react-transition-group": "^2.2.1",
     "redux": "^3.7.2",
-    "redux-baqend": "^1.0.6",
+    "redux-baqend": "git://github.com/Baqend/redux-baqend.git#thunk",
     "redux-logger": "^3.0.6",
     "slick-carousel": "^1.8.1",
     "style-loader": "0.20.2",

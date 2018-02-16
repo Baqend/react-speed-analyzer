@@ -1,7 +1,7 @@
 import { createLogger } from 'redux-logger'
 
 const middlewares = [
-  // createLogger()
+  createLogger()
 ]
 
 export default middlewares
