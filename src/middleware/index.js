@@ -1,7 +1,13 @@
 import { createLogger } from 'redux-logger'
 
-const middlewares = [
-  createLogger()
-]
+let middlewares
+
+if (process.env.NODE_ENV === 'development') {
+  middlewares = [
+    createLogger()
+  ]
+} else {
+  middlewares = []
+}
 
 export default middlewares
