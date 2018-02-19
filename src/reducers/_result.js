@@ -19,27 +19,11 @@ import {
 import { generateRules } from '../helper/configHelper'
 import { resultIsValid, shouldShowFirstMeaningfulPaint } from '../helper/resultHelper'
 
-const initialState = {
-  isMonitored: false,
-  isFinished: false,
-  isInitiated: false,
-  isStarted: false,
-  isRateLimited: false,
-  isBaqendApp: false,
-  isSpeedKitComparison: false,
-  speedKitVersion: null,
-  testOverview: {},
-  statusCode: null,
-  statusText: '',
-  competitorSubscription: null,
-  speedKitSubscription: null,
-  competitorTest: {},
-  speedKitTest: {},
-  competitorError: false,
-  speedKitError: false,
-  mainMetric: 'speedIndex',
-  secondaryMetric: 'firstMeaningfulPaint',
-  whiteListCandidates: [],
+const createScreenshot = (psiScreenshot) => {
+  if (psiScreenshot) {
+    return `data:${psiScreenshot.mime_type};base64,${psiScreenshot.data.replace(/_/g, '/').replace(/-/g, '+')}`
+  }
+  return null
 }
 
 const getResultErrors = ({ competitorTest, speedKitTest, mainMetric, secondaryMetric }) => {
@@ -96,6 +80,29 @@ const getWhiteListCandidates = (state, speedKitTest) => {
   return []
 }
 
+const initialState = {
+  isMonitored: false,
+  isFinished: false,
+  isInitiated: false,
+  isStarted: false,
+  isRateLimited: false,
+  isBaqendApp: false,
+  isSpeedKitComparison: false,
+  speedKitVersion: null,
+  testOverview: {},
+  statusCode: null,
+  statusText: '',
+  competitorSubscription: null,
+  speedKitSubscription: null,
+  competitorTest: {},
+  speedKitTest: {},
+  competitorError: false,
+  speedKitError: false,
+  mainMetric: 'speedIndex',
+  secondaryMetric: 'firstMeaningfulPaint',
+  whiteListCandidates: [],
+}
+
 export default function result(state = initialState, action = {}) {
   switch (action.type) {
     case TESTOVERVIEW_LOAD:
@@ -126,7 +133,7 @@ export default function result(state = initialState, action = {}) {
           psiDomains: action.payload.domains,
           psiRequests: action.payload.requests,
           psiResponseSize: action.payload.bytes,
-          psiScreenshot: action.payload.screenshot,
+          psiScreenshot: createScreenshot(action.payload.screenshot),
         }
       }
     // case START_TEST_COMPETITOR_POST:
@@ -158,8 +165,8 @@ export default function result(state = initialState, action = {}) {
     case SPEED_KIT_SUBSCRIPTION:
       return { ...state, speedKitSubscription: action.payload }
     case TERMINATE_TEST:
-      const errors = getResultErrors(state)
       const metrics = verifyMainMetric(state)
+      const errors = getResultErrors(state)
       return {
         ...state,
         ...errors,

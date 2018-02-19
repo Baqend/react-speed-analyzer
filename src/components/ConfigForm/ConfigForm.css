@@ -44,6 +44,16 @@
     height: 44px;
     border: none;
     background: color(var(--white) a(30%));
+    cursor: pointer;
+    .spinner__wrapper {
+      width: 25px;
+      height: 25px;
+      position: relative;
+      svg circle {
+        stroke-width: 4;
+        stroke-color: white;
+      }
+    }
   }
   .advanced {
     width: 100%;

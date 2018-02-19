@@ -3,8 +3,6 @@ import PropTypes from 'prop-types'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
-import './StartingScreen.css'
-
 import SpinnerComponent from './SpinnerComponent'
 import ResultScreen from 'containers/ResultScreen/scenes/embedded'
 

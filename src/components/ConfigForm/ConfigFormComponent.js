@@ -4,7 +4,9 @@ import PropTypes from 'prop-types'
 import Toggle from 'react-toggle'
 // import CodeMirror from 'react-codemirror'
 import { Controlled as CodeMirror } from 'react-codemirror2'
+
 import { getTLD } from '../../helper/configHelper'
+import Spinner from 'components/Spinner'
 
 import arrow from '../../assets/arrow_right.svg'
 import './ConfigForm.css'
@@ -260,10 +262,8 @@ class ConfigFormComponent extends Component {
             <div className="config__form-submit-wrapper">
               <button className="config__form-submit flex justify-center items-center" type="submit">
                 {this.props.isInitiated ? (
-                  <div className="spinner__wrapper" style={{ width: '25px', height: '25px' }}>
-                    <svg className="spinner" width="100%" height="100%" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
-                      <circle className="path" fill="none" strokeWidth="6" strokeLinecap="round" cx="33" cy="33" r="30"></circle>
-                    </svg>
+                  <div className="spinner__wrapper">
+                    <Spinner />
                   </div>
                 ) : (
                   <img src={arrow} alt="arrow"/>

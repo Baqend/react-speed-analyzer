@@ -7,9 +7,8 @@
   --device-color: #fff;
 }
 
-.device, .expert {
+.device, .no-device {
   width: 100%;
-  /* min-height: 100vh; */
   flex-grow: 1;
   display: flex;
   flex-direction: column;
@@ -28,20 +27,57 @@
     justify-content: center;
     align-self: stretch;
   }
+  .device__background-image {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+    background-size: cover;
+    background-position: center;
+    filter: blur(1px);
+  }
+  .device-left {
+    display: flex;
+    flex-basis: 50%;
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+  }
+  .loading {
+    display: flex;
+    position: relative;
+    overflow: hidden;
+    flex-wrap: wrap;
+    .device-right {
+      margin-top: 0;
+      width: 100%;
+      height: 200px;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      text-align: center;
+      @media (--breakpoint-not-small) {
+        height: 300px;
+        margin-top: 32px;
+        align-items: center;
+      }
+      @media (min-width: 998px) {
+        margin-top: 0px;
+        width: 0%;
+        /* max-height: 0px; */
+        animation: show 0.5s 1 ease;
+        animation-fill-mode: forwards;
+        animation-delay: 2s;
+        text-align: left;
+        > * {
+          max-height: 0;
+          animation: showInner 0.1ms 1 linear 2.5s forwards;
+        }
+      }
+    }
+  }
 }
-
-/* .device { */
-.device__background-image {
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  bottom: 0px;
-  left: 0px;
-  background-size: cover;
-  background-position: center;
-  filter: opacity(12.5%) blur(1px);
-}
-/* } */
 
 .device .device__laptop {
   display: flex;
@@ -49,10 +85,9 @@
   /* For small screens */
   @media (min-width: 767px) and (max-width: 997px) {
     > .device__wrapper-outer {
-      /* > .device__wrapper {
-        > .device__screen { */
       min-height: 450px;
       position: relative;
+      overflow: hidden;
       border-top: calc(var(--device-border-width-xs) + 8px) solid color(var(--device-color) a(40%));
       border-top-left-radius: var(--device-border-width-xs);
       border-top-right-radius: var(--device-border-width-xs);
@@ -80,10 +115,8 @@
         left: var(--device-border-width-xs);
         background-size: cover;
         background-position: center;
-        filter: opacity(12.5%) blur(1px);
+        filter: blur(1px);
       }
-    /* }
-      } */
     }
   }
   /* For larger screens */
@@ -129,6 +162,7 @@
       > .device__wrapper {
         position: relative;
         display: block;
+        overflow: hidden;
         &:before {
           content: "";
           display: block;
@@ -155,7 +189,6 @@
 
 .device .device__phone {
   display: flex;
-  /* height: 666px; */
   justify-content: center;
   .device__background-image {
     position: fixed;
@@ -170,7 +203,6 @@
         border-top: calc(var(--device-border-width-xs) * 4) solid color(var(--device-color) a(40%));
         border-top-left-radius: calc(var(--device-border-width-xs) * 3);
         border-top-right-radius: calc(var(--device-border-width-xs) * 3);
-        /* padding-top: var(--device-padding); */
         padding-left: var(--device-border-width-xs);
         padding-right: var(--device-border-width-xs);
         &:before { left: 0px; }
@@ -198,49 +230,6 @@
   }
 }
 
-
-.left {
-  display: flex;
-  flex-basis: 50%;
-  flex-grow: 1;
-  align-items: center;
-  justify-content: center;
-}
-
-.loading {
-  display: flex;
-  position: relative;
-  overflow: hidden;
-  flex-wrap: wrap;
-  .right {
-    margin-top: 0;
-    width: 100%;
-    height: 200px;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    text-align: center;
-    @media (--breakpoint-not-small) {
-      height: 300px;
-      margin-top: 32px;
-      align-items: center;
-    }
-    @media (min-width: 998px) {
-      margin-top: 0px;
-      width: 0%;
-      /* max-height: 0px; */
-      animation: show 0.5s 1 ease;
-      animation-fill-mode: forwards;
-      animation-delay: 2s;
-      text-align: left;
-      > * {
-        max-height: 0;
-        animation: showInner 0.1ms 1 linear 2.5s forwards;
-      }
-    }
-  }
-}
-
 /* custom CSS3 animations */
 @keyframes show {
   0% {
@@ -256,35 +245,3 @@
     max-height: 100%;
   }
 }
-
-@keyframes slideInLeft {
-  from {
-    transform: translate3d(-100%, 0, 0);
-    visibility: visible;
-  }
-
-  to {
-    transform: translate3d(0, 0, 0);
-    visibility: visible;
-  }
-}
-
-@keyframes textSlideUp {
-  from {
-    transform: translate3d(0, 100%, 0);
-    visibility: visible;
-  }
-  to {
-    transform: translate3d(0, 0, 0);
-    visibility: visible;
-  }
-}
-
-@keyframes blink {
-  50% {
-    color: transparent
-  }
-}
-.loader__dot { animation: 1s blink infinite }
-.loader__dot:nth-child(2) { animation-delay: 250ms }
-.loader__dot:nth-child(3) { animation-delay: 500ms }

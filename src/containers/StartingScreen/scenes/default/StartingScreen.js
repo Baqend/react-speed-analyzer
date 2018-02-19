@@ -3,8 +3,8 @@ import PropTypes from 'prop-types'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
-import StartingScreenComponent from './StartingScreenComponent'
 import './StartingScreen.css'
+import StartingScreenComponent from './StartingScreenComponent'
 
 import { getObjectKey } from 'helper/utils'
 

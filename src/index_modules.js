@@ -35,7 +35,7 @@ if (process.env.NODE_ENV === 'development') {
     window.speedKitAnalyzer.renderResult('gaNDEbalibaba')
   }
   else if (process.env.REACT_APP_SCREEN_TYPE === 'test') {
-    window.startTest('www.alibaba.com').then(res => {
+    window.startTest('www.test.com').then(res => {
       window.speedKitAnalyzer.renderTest(res)
     })
   }

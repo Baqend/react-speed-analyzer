@@ -16,7 +16,6 @@
 @import "./_common";
 @import "./_variables";
 @import "./_reset.css";
-@import "./_spinner.css";
 @import "./_buttons.css";
 @import "./_modal.css";
 
@@ -41,7 +40,7 @@ body {
   color: color(#fff a(80%));
 }
 
-html, body, #speed-kit-analyzer {
+html, body, #speed-kit-analyzer, #wrapper {
   min-height: 100vh;
 }
 
