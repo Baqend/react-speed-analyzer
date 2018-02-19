@@ -262,7 +262,7 @@ class ConfigFormComponent extends Component {
             <div className="config__form-submit-wrapper">
               <button className="config__form-submit flex justify-center items-center" type="submit">
                 {this.props.isInitiated ? (
-                  <div className="spinner__wrapper">
+                  <div className="spinner__wrapper" style={{ width: 25, height: 25 }}>
                     <Spinner />
                   </div>
                 ) : (
