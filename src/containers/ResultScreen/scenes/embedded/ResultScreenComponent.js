@@ -45,13 +45,18 @@ class ResultScreenComponent extends Component {
 
     return (
       <div className={`flex-grow-1 ${styles.results}`}>
-        { !competitorError && (
-          <div className="container pv2 pa2-ns">
-            <div className="box-shadow results__box" style={{ marginTop: '-96px' }}>
+        <div className="container pv2 pa2-ns">
+          <div className="box-shadow results__box" style={{ marginTop: '-96px' }}>
+            {!competitorError ? (
               <Result { ...this.props } />
-            </div>
+            ) : (
+              <div className="text-center pb4 pt2 pt4-ns" style={{ maxWidth: 768, margin: '0 auto' }}>
+                <h2 style={{ color: '#444' }}>Test Runs Failed</h2>
+                <span className="faded">An error occurred while running your tests. Please re-run the test and if the problem persists, contact us!</span>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
     )
   }

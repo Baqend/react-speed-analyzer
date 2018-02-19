@@ -32,7 +32,7 @@ window.startTest = (url) => fetch(`https://${process.env.REACT_APP_BAQEND}.app.b
 
 if (process.env.NODE_ENV === 'development') {
   if (process.env.REACT_APP_SCREEN_TYPE === 'result') {
-    window.speedKitAnalyzer.renderResult('gaNDEbalibaba')
+    window.speedKitAnalyzer.renderResult('uECZ6qtest')
   }
   else if (process.env.REACT_APP_SCREEN_TYPE === 'test') {
     window.startTest('www.test.com').then(res => {
