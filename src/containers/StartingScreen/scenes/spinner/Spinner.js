@@ -29,6 +29,15 @@ class Spinner extends Component {
         this.props.actions.resetTest()
       })
     }
+
+    this.onAfterFinish = this.props.onAfterFinish
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.result.isFinished) {
+      this.onAfterFinish && this.onAfterFinish(nextProps.testOverview)
+      this.onAfterFinish = null
+    }
   }
 
   render() {

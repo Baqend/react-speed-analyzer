@@ -11,8 +11,8 @@ window.speedKitAnalyzer = {
   renderResult: (testId) => {
     ReactDOM.render(<Result testId={testId} />, document.getElementById('speed-kit-analyzer'))
   },
-  renderTest: (testId) => {
-    ReactDOM.render(<Test testId={testId} />, document.getElementById('speed-kit-analyzer'))
+  renderTest: (testId, callback) => {
+    ReactDOM.render(<Test testId={testId} onAfterFinish={callback} />, document.getElementById('speed-kit-analyzer'))
   }
 }
 
@@ -35,8 +35,10 @@ if (process.env.NODE_ENV === 'development') {
     window.speedKitAnalyzer.renderResult('uECZ6qtest')
   }
   else if (process.env.REACT_APP_SCREEN_TYPE === 'test') {
-    window.startTest('www.test.com').then(res => {
-      window.speedKitAnalyzer.renderTest(res)
+    window.startTest('www.alibaba.com').then(res => {
+      window.speedKitAnalyzer.renderTest(res, () => {
+        alert("test finished")
+      })
     })
   }
 }

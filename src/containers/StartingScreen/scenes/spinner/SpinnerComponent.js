@@ -63,14 +63,15 @@ class StartingScreenComponent extends Component {
   }
 
   renderCarousel(statusMessage) {
+    const { statusCode, statusText } = this.props.result
     const pageSpeedInsights = this.props.result.testOverview && this.props.result.testOverview.psiDomains
     const message = <div className="dn db-ns" style={{ marginTop: 16 }}>{statusMessage}</div>
     return (
       <Carousel message={message}>
-        {(!this.props.result.statusCode || !pageSpeedInsights) && renderDefaultPage()}
-        {pageSpeedInsights && this.props.result.statusCode === 101 && renderIsInQueuePage(this.props.result.statusText)}
-        {pageSpeedInsights && this.props.result.statusCode === 100 && renderHasStartedPage()}
-        {pageSpeedInsights && this.state.showFacts && renderFactsPages}
+        {(!statusCode || !pageSpeedInsights) && statusCode !== 101 && statusCode !== 100 && renderDefaultPage()}
+        {statusCode === 101 && renderIsInQueuePage(statusText)}
+        {statusCode === 100 && renderHasStartedPage()}
+        {this.state.showFacts && renderFactsPages}
       </Carousel>
     )
   }
