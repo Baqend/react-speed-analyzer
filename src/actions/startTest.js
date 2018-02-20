@@ -100,8 +100,8 @@ export const createTestOverview = ({ speedkit, speedkitVersion }) => ({
 
     const ids = await Promise.all([
       db.modules.post('generateUniqueId', { entityClass: 'TestOverview' }),
-      dispatch(startCompetitorTest()),
-      dispatch(startSpeedKitTest()),
+      dispatch(startCompetitorTest({ speedkit, speedkitVersion })),
+      dispatch(startSpeedKitTest({ speedkit, speedkitVersion })),
     ])
 
     testOverview.id = ids[0] + tld.substring(0, tld.length - 1)
@@ -157,15 +157,14 @@ const callPageSpeedInsightsAPI = ({ testOverview: testOverviewObject, url, isMob
 /**
  * Starts the test for the competitor version.
  */
-const startCompetitorTest = () => ({
+const startCompetitorTest = ({ speedkit }) => ({
   'BAQEND': async ({ dispatch, getState, db }) => {
-    const { isSpeedKitComparison }  = getState().result
     const { url, location, caching, isMobile: mobile, activityTimeout } = getState().config
 
     const competitorTestId = await db.modules.post('queueTest', {
       url,
       activityTimeout,
-      isSpeedKitComparison,
+      isSpeedKitComparison: speedkit,
       location,
       isClone: false,
       caching,
@@ -179,15 +178,14 @@ const startCompetitorTest = () => ({
 /**
  * Starts the test for the speed kit version.
  */
-const startSpeedKitTest = () => ({
+const startSpeedKitTest = ({ speedkit }) => ({
   'BAQEND': async ({ dispatch, getState, db }) => {
-    const { isSpeedKitComparison } = getState().result
     const { url, location, caching, isMobile, speedKitConfig, activityTimeout } = getState().config
 
     const competitorTestId = await db.modules.post('queueTest', {
       url,
       activityTimeout,
-      isSpeedKitComparison,
+      isSpeedKitComparison: speedkit,
       // speedKitConfig: speedKitConfig || generateSpeedKitConfig(url, '', isMobile),
       speedKitConfig,
       location,
