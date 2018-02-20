@@ -77,10 +77,8 @@ class Result extends Component {
         {mainMetric !== "speedIndex" && (
           <div>
             <hr />
-            <div className="pa1 text-center">
-              <small>
-                Because your website uses a lot of asynchrounous resources, we replaced the speed index metric by the first meaningful paint!
-              </small>
+            <div className="pa2 text-center" style={{ fontSize: 12 }}>
+              <span className="dn dib-ns">Because your website uses a lot of asynchrounous resources, w</span><span className="dib dn-ns">W</span>e replaced the speed index metric by the first meaningful paint!
             </div>
             <hr />
           </div>
