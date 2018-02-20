@@ -29,7 +29,6 @@ class Spinner extends Component {
         this.props.actions.resetTest()
       })
     }
-
     this.onAfterFinish = this.props.onAfterFinish
   }
 

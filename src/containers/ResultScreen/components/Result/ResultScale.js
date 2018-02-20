@@ -75,10 +75,12 @@ const calculateMaxTimeForRequests = (requests) => {
   }
   return (3.40064 * Math.log(requests) - 10.4462) * 1000
 }
-const calculateOffset = (maxTime, time) => Math.min(maxTime, time / maxTime * 100)
+const calculateOffset = (maxTime, time) => {
+  return Math.min(97.5, time / maxTime * 100)
+}
 
 const calculateMargin = (containerWidth, offset1, offset2, order) => {
-  if (order === 2) {
+  if (offset2 && order === 2) {
     return Math.max(8, ((containerWidth * (offset1 - offset2) / 100) - 80))
   }
   return containerWidth * offset1 / 100 - 40
@@ -167,7 +169,7 @@ class ResultScaleComponent extends Component {
                 description="With Speedkit"
                 time={`${Math.round(speedKitTime / 100) / 10}s`}
                 style={{
-                  top: -8,
+                  marginTop: -8,
                   order: speedKitOrder,
                   marginLeft: calculateMargin(this.state.width, speedKitOffset, competitorOffset, speedKitOrder)
                 }}
@@ -178,7 +180,7 @@ class ResultScaleComponent extends Component {
                 description="Your Website"
                 time={`${Math.round(competitorTime / 100) / 10}s`}
                 style={{
-                  top: -8,
+                  marginTop: -8,
                   order: competitorOrder,
                   marginLeft: calculateMargin(this.state.width, competitorOffset, speedKitOffset, competitorOrder)
                 }}
