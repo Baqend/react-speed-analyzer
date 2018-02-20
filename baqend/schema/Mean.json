@@ -1,0 +1,45 @@
+{
+  "class": "/db/Mean",
+  "acl": {
+    "schemaAdd": {
+      "/db/Role/1": "allow"
+    },
+    "schemaReplace": {
+      "/db/Role/1": "allow"
+    }
+  },
+  "embedded": true,
+  "metadata": {},
+  "fields": {
+    "speedIndex": {
+      "name": "speedIndex",
+      "type": "/db/Double",
+      "order": 0
+    },
+    "firstMeaningfulPaint": {
+      "name": "firstMeaningfulPaint",
+      "type": "/db/Double",
+      "order": 1
+    },
+    "ttfb": {
+      "name": "ttfb",
+      "type": "/db/Double",
+      "order": 2
+    },
+    "domLoaded": {
+      "name": "domLoaded",
+      "type": "/db/Double",
+      "order": 3
+    },
+    "fullyLoaded": {
+      "name": "fullyLoaded",
+      "type": "/db/Double",
+      "order": 4
+    },
+    "lastVisualChange": {
+      "name": "lastVisualChange",
+      "type": "/db/Double",
+      "order": 5
+    }
+  }
+}

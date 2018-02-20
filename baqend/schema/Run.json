@@ -1,0 +1,105 @@
+{
+  "class": "/db/Run",
+  "acl": {
+    "schemaAdd": {
+      "/db/Role/1": "allow"
+    },
+    "schemaReplace": {
+      "/db/Role/1": "allow"
+    }
+  },
+  "embedded": true,
+  "metadata": {},
+  "fields": {
+    "loadTime": {
+      "name": "loadTime",
+      "type": "/db/Integer",
+      "order": 0
+    },
+    "ttfb": {
+      "name": "ttfb",
+      "type": "/db/Integer",
+      "order": 1
+    },
+    "domLoaded": {
+      "name": "domLoaded",
+      "type": "/db/Integer",
+      "order": 2
+    },
+    "load": {
+      "name": "load",
+      "type": "/db/Integer",
+      "order": 3
+    },
+    "fullyLoaded": {
+      "name": "fullyLoaded",
+      "type": "/db/Integer",
+      "order": 4
+    },
+    "firstPaint": {
+      "name": "firstPaint",
+      "type": "/db/Integer",
+      "order": 5
+    },
+    "startRender": {
+      "name": "startRender",
+      "type": "/db/Integer",
+      "order": 6
+    },
+    "speedIndex": {
+      "name": "speedIndex",
+      "type": "/db/Integer",
+      "order": 7
+    },
+    "firstMeaningfulPaint": {
+      "name": "firstMeaningfulPaint",
+      "type": "/db/Integer",
+      "order": 8
+    },
+    "lastVisualChange": {
+      "name": "lastVisualChange",
+      "type": "/db/Integer",
+      "order": 9
+    },
+    "requests": {
+      "name": "requests",
+      "type": "/db/Integer",
+      "order": 10
+    },
+    "failedRequests": {
+      "name": "failedRequests",
+      "type": "/db/Integer",
+      "order": 11
+    },
+    "domains": {
+      "name": "domains",
+      "type": "/db/JsonArray",
+      "order": 12
+    },
+    "bytes": {
+      "name": "bytes",
+      "type": "/db/Integer",
+      "order": 13
+    },
+    "domElements": {
+      "name": "domElements",
+      "type": "/db/Integer",
+      "order": 14
+    },
+    "basePageCDN": {
+      "name": "basePageCDN",
+      "type": "/db/String",
+      "order": 15
+    },
+    "visualCompleteness": {
+      "name": "visualCompleteness",
+      "type": "/db/Completeness",
+      "order": 16
+    },
+    "hits": {
+      "name": "hits",
+      "type": "/db/Hits",
+      "order": 17
+    }
+  }
+}

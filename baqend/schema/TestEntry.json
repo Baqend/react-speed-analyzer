@@ -1,0 +1,24 @@
+{
+  "class": "/db/TestEntry",
+  "acl": {
+    "schemaAdd": {
+      "/db/Role/1": "allow"
+    },
+    "schemaReplace": {
+      "/db/Role/1": "allow"
+    }
+  },
+  "embedded": true,
+  "fields": {
+    "test": {
+      "name": "test",
+      "type": "/db/BulkTest",
+      "order": 0
+    },
+    "time": {
+      "name": "time",
+      "type": "/db/DateTime",
+      "order": 1
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "class": "/db/Completeness",
+  "acl": {
+    "schemaAdd": {
+      "/db/Role/1": "allow"
+    },
+    "schemaReplace": {
+      "/db/Role/1": "allow"
+    }
+  },
+  "embedded": true,
+  "metadata": {},
+  "fields": {
+    "p85": {
+      "name": "p85",
+      "type": "/db/Integer",
+      "order": 0
+    },
+    "p90": {
+      "name": "p90",
+      "type": "/db/Integer",
+      "order": 1
+    },
+    "p95": {
+      "name": "p95",
+      "type": "/db/Integer",
+      "order": 2
+    },
+    "p99": {
+      "name": "p99",
+      "type": "/db/Integer",
+      "order": 3
+    },
+    "p100": {
+      "name": "p100",
+      "type": "/db/Integer",
+      "order": 4
+    }
+  }
+}

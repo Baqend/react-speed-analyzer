@@ -1,0 +1,49 @@
+{
+  "class": "/db/UrlAnalysis",
+  "acl": {
+    "schemaAdd": {
+      "/db/Role/1": "allow"
+    },
+    "schemaReplace": {
+      "/db/Role/1": "allow"
+    }
+  },
+  "embedded": true,
+  "fields": {
+    "url": {
+      "name": "url",
+      "type": "/db/String",
+      "order": 0
+    },
+    "displayUrl": {
+      "name": "displayUrl",
+      "type": "/db/String",
+      "order": 1
+    },
+    "type": {
+      "name": "type",
+      "type": "/db/String",
+      "order": 2
+    },
+    "secured": {
+      "name": "secured",
+      "type": "/db/Boolean",
+      "order": 3
+    },
+    "mobile": {
+      "name": "mobile",
+      "type": "/db/Boolean",
+      "order": 4
+    },
+    "supported": {
+      "name": "supported",
+      "type": "/db/Boolean",
+      "order": 5
+    },
+    "enabled": {
+      "name": "enabled",
+      "type": "/db/Boolean",
+      "order": 6
+    }
+  }
+}

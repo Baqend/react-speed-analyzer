@@ -1,0 +1,93 @@
+{
+  "class": "/db/TestResult",
+  "superClass": "/db/Object",
+  "acl": {
+    "schemaAdd": {
+      "/db/Role/1": "allow"
+    },
+    "schemaReplace": {
+      "/db/Role/1": "allow"
+    },
+    "schemaSubclass": {
+      "/db/Role/1": "allow"
+    }
+  },
+  "metadata": {},
+  "fields": {
+    "testId": {
+      "name": "testId",
+      "type": "/db/String",
+      "order": 0
+    },
+    "location": {
+      "name": "location",
+      "type": "/db/String",
+      "order": 1
+    },
+    "firstView": {
+      "name": "firstView",
+      "type": "/db/Run",
+      "order": 2
+    },
+    "repeatView": {
+      "name": "repeatView",
+      "type": "/db/Run",
+      "order": 3
+    },
+    "url": {
+      "name": "url",
+      "type": "/db/String",
+      "order": 4
+    },
+    "summaryUrl": {
+      "name": "summaryUrl",
+      "type": "/db/String",
+      "order": 5
+    },
+    "videoIdFirstView": {
+      "name": "videoIdFirstView",
+      "type": "/db/String",
+      "order": 6
+    },
+    "videoIdRepeatedView": {
+      "name": "videoIdRepeatedView",
+      "type": "/db/String",
+      "order": 7
+    },
+    "testDataMissing": {
+      "name": "testDataMissing",
+      "type": "/db/Boolean",
+      "order": 8
+    },
+    "videoFileFirstView": {
+      "name": "videoFileFirstView",
+      "type": "/db/File",
+      "order": 9
+    },
+    "videoFileRepeatView": {
+      "name": "videoFileRepeatView",
+      "type": "/db/File",
+      "order": 10
+    },
+    "hasFinished": {
+      "name": "hasFinished",
+      "type": "/db/Boolean",
+      "order": 11
+    },
+    "retryRequired": {
+      "name": "retryRequired",
+      "type": "/db/Boolean",
+      "order": 12
+    },
+    "isWordPress": {
+      "name": "isWordPress",
+      "type": "/db/Boolean",
+      "order": 13
+    },
+    "priority": {
+      "name": "priority",
+      "type": "/db/Integer",
+      "order": 14
+    }
+  }
+}

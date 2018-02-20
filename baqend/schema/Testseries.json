@@ -1,0 +1,68 @@
+{
+  "class": "/db/Testseries",
+  "superClass": "/db/Object",
+  "acl": {
+    "schemaAdd": {
+      "/db/Role/1": "allow"
+    },
+    "schemaReplace": {
+      "/db/Role/1": "allow"
+    },
+    "schemaSubclass": {
+      "/db/Role/1": "allow"
+    }
+  },
+  "metadata": {},
+  "fields": {
+    "url": {
+      "name": "url",
+      "type": "/db/String",
+      "order": 0
+    },
+    "cronpattern": {
+      "name": "cronpattern",
+      "type": "/db/String",
+      "order": 1
+    },
+    "end": {
+      "name": "end",
+      "type": "/db/DateTime",
+      "order": 2
+    },
+    "start": {
+      "name": "start",
+      "type": "/db/DateTime",
+      "order": 3
+    },
+    "runs": {
+      "name": "runs",
+      "type": "/db/Integer",
+      "order": 4
+    },
+    "location": {
+      "name": "location",
+      "type": "/db/String",
+      "order": 5
+    },
+    "whitelist": {
+      "name": "whitelist",
+      "type": "/db/String",
+      "order": 6
+    },
+    "speedKitConfig": {
+      "name": "speedKitConfig",
+      "type": "/db/JsonObject",
+      "order": 7
+    },
+    "mobile": {
+      "name": "mobile",
+      "type": "/db/Boolean",
+      "order": 8
+    },
+    "testEntries": {
+      "name": "testEntries",
+      "type": "/db/collection.List[/db/TestEntry]",
+      "order": 9
+    }
+  }
+}

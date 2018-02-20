@@ -1,0 +1,35 @@
+{
+  "class": "/db/Hits",
+  "acl": {
+    "schemaAdd": {
+      "/db/Role/1": "allow"
+    },
+    "schemaReplace": {
+      "/db/Role/1": "allow"
+    }
+  },
+  "embedded": true,
+  "metadata": {},
+  "fields": {
+    "hit": {
+      "name": "hit",
+      "type": "/db/Integer",
+      "order": 0
+    },
+    "miss": {
+      "name": "miss",
+      "type": "/db/Integer",
+      "order": 1
+    },
+    "other": {
+      "name": "other",
+      "type": "/db/Integer",
+      "order": 2
+    },
+    "size": {
+      "name": "size",
+      "type": "/db/Integer",
+      "order": 3
+    }
+  }
+}

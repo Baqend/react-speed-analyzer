@@ -1,0 +1,22 @@
+{
+  "class": "/db/Device",
+  "superClass": "/db/Object",
+  "acl": {
+    "schemaAdd": {
+      "/db/Role/1": "allow"
+    },
+    "schemaReplace": {
+      "/db/Role/1": "allow"
+    },
+    "schemaSubclass": {
+      "/db/Role/1": "allow"
+    }
+  },
+  "fields": {
+    "deviceOs": {
+      "name": "deviceOs",
+      "type": "/db/String",
+      "order": 0
+    }
+  }
+}
