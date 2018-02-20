@@ -50,12 +50,23 @@
     bottom: 0;
     left: 0;
     overflow: hidden;
+    background: black;
     /* border: 1px solid #e8e8e8; */
     box-shadow: 0 0 4px rgba(0,0,0,0.1);
     video {
       margin-left: -1.75%;
       margin-top: -7.25%;
       width: 103.8%;
+      .mobile & {
+        margin-top: initial;
+        top: -6.5%;
+        width: 64.8%;
+        position: relative;
+        margin-left: auto;
+        display: block;
+        margin-right: auto;
+        border: none;
+      }
     }
   }
   .video__wrapper-play {
@@ -65,7 +76,7 @@
     left: 50%;
     margin-left: -37.5px;
     margin-top: -37.5px;
-    color: rgba(255, 255, 255, 0.95);
+    color: rgba(255, 255, 255, 0.75);
     cursor: pointer;
     width: 75px;
     height: 75px;

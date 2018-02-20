@@ -148,10 +148,10 @@ class Result extends Component {
     return (
       <div className="result__details">
         <Collapse isOpen={this.state.showDetails}>
-          <div className="mb4">
+          <div className="mb4" style={{ fontSize: 16 }}>
             {/*<hr />*/}
             <hr className="mt3" style={{ marginTop: 24 }}/>
-            <h3 className="text-center mt5">Pagespeed Insights</h3>
+            <h3 className="text-center mt5">General Page Metrics</h3>
             {this.renderPSI()}
             <hr />
             <ResultMetrics { ...this.props } />

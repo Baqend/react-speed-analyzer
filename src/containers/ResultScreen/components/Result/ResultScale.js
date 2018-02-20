@@ -149,7 +149,7 @@ class ResultScaleComponent extends Component {
           )}
           {speedKitTime && this.state.windowWidth < 480 && (
             <Bobbel
-              description="With Speedkit"
+              description="With Speed Kit"
               time={`${Math.round(speedKitTime / 100) / 10}s`}
               style={{ left: `${speedKitOffset}%`, top: 64, marginLeft: -22.5 }}
               absolute
