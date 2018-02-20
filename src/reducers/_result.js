@@ -106,7 +106,13 @@ const initialState = {
 export default function result(state = initialState, action = {}) {
   switch (action.type) {
     case TESTOVERVIEW_LOAD:
-      return { ...state, testOverview: action.payload }
+      return {
+        ...state,
+        testOverview: {
+          ...action.payload,
+          psiScreenshot: createScreenshot(action.payload.psiScreenshot),
+        }
+      }
     case TESTOVERVIEW_SAVE:
       return { ...state, testOverview: action.payload }
     case RATE_LIMITER_GET:
@@ -126,16 +132,16 @@ export default function result(state = initialState, action = {}) {
       return { ...state, isStarted: true }
     case CONTINUE_TEST:
       return { ...state, isInitiated: true, isStarted: true }
-    case CALL_PAGESPEED_INSIGHTS_GET:
-      return {
-        ...state, testOverview: {
-          ...state.testOverview,
-          psiDomains: action.payload.domains,
-          psiRequests: action.payload.requests,
-          psiResponseSize: action.payload.bytes,
-          psiScreenshot: createScreenshot(action.payload.screenshot),
-        }
-      }
+    // case CALL_PAGESPEED_INSIGHTS_GET:
+    //   return {
+    //     ...state, testOverview: {
+    //       ...state.testOverview,
+    //       psiDomains: action.payload.domains,
+    //       psiRequests: action.payload.requests,
+    //       psiResponseSize: action.payload.bytes,
+    //       psiScreenshot: createScreenshot(action.payload.screenshot),
+    //     }
+    //   }
     // case START_TEST_COMPETITOR_POST:
     //   return {
     //     ...state, testOverview: {

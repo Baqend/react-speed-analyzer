@@ -26,12 +26,13 @@ export const monitorTest = (testId, bulkTest) => ({
   'BAQEND': async ({ dispatch }) => {
     dispatch({ type: MONITOR_TEST })
 
-    let testOverview
-    if (bulkTest) {
-      testOverview = await dispatch(subscribeToTestOverview({ testId }))
-    } else {
-      testOverview = await dispatch(getTestOverview({ testId }))
-    }
+    // let testOverview
+    // if (bulkTest) {
+    //   testOverview = await dispatch(subscribeToTestOverview({ testId }))
+    // } else {
+    //   testOverview = await dispatch(getTestOverview({ testId }))
+    // }
+    const testOverview = await dispatch(subscribeToTestOverview({ testId }))
     const { competitorTestResult, speedKitTestResult } = testOverview
 
     dispatch(updateConfigByTestOverview(testOverview))
@@ -202,15 +203,15 @@ const finalizeTestingProcess = (testOverviewObject) => ({
   'BAQEND': [testOverviewObject, async ({ dispatch, getState, db }, testOverview) => {
     const { competitorTest, speedKitTest } = getState().result
     if (competitorTest.hasFinished && speedKitTest.hasFinished && !testOverview.hasFinished) {
-      try {
-        const update = testOverview.partialUpdate().set('hasFinished', true)
-        dispatch({
-          type: TESTOVERVIEW_SAVE,
-          payload: await update.execute()
-        })
-      } catch (e) {
-        console.log(e)
-      }
+      // try {
+      //   const update = testOverview.partialUpdate().set('hasFinished', true)
+      //   dispatch({
+      //     type: TESTOVERVIEW_SAVE,
+      //     payload: await update.execute()
+      //   })
+      // } catch (e) {
+      //   console.log(e)
+      // }
       dispatch({
         type: TERMINATE_TEST
       })

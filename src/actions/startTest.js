@@ -68,12 +68,13 @@ export const startTest = (urlInfo = {}) => ({
   'BAQEND': async ({ dispatch, getState, db }) => {
     dispatch({ type: RESET_TEST_RESULT })
     try {
-      const { url, isMobile } = getState().config
+      // const { url, isMobile } = getState().config
       dispatch({
         type: START_TEST,
       })
-      const testOverview = await dispatch(createTestOverview({ ...urlInfo }))
-      dispatch(callPageSpeedInsightsAPI({ testOverview, url, isMobile }))
+      // const testOverview = await dispatch(createTestOverview({ ...urlInfo }))
+      // dispatch(callPageSpeedInsightsAPI({ testOverview, url, isMobile }))
+      const testOverview = await dispatch(runComparison({ ...urlInfo }))
       return testOverview
     } catch(e) {
       dispatch({
@@ -85,6 +86,27 @@ export const startTest = (urlInfo = {}) => ({
       })
       throw e
     }
+  }
+})
+
+export const runComparison = ({ speedkit, speedkitVersion }) => ({
+  'BAQEND': async ({ dispatch, getState, db }) => {
+    const { url, location, caching, isMobile, speedKitConfig, activityTimeout } = getState().config
+    const testOverview = await db.modules.post('runComparison', {
+      url,
+      location,
+      caching,
+      isMobile,
+      speedKitConfig,
+      activityTimeout,
+      speedkit,
+      speedkitVersion,
+    })
+    dispatch({
+      type: TESTOVERVIEW_SAVE,
+      payload: testOverview
+    })
+    return testOverview
   }
 })
 
