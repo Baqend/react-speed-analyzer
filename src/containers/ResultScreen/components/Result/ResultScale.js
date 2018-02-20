@@ -69,11 +69,12 @@ const Bobbel = ({ description, time, style, upsideDown, absolute, mobile }) => (
 
 const calculateMaxTimeForRequests = (requests) => {
   if (requests <= 50) {
-    return 3000
+    return 1500
   } else if (requests >= 400){
-    return 10000
+    return 8000
   }
-  return (3.40064 * Math.log(requests) - 10.4462) * 1000
+  return (0.0184884 * requests + 0.610465) * 1000
+
 }
 const calculateOffset = (maxTime, time) => {
   return Math.min(97.5, time / maxTime * 100)
@@ -189,9 +190,9 @@ class ResultScaleComponent extends Component {
           </div>
 
         </div>
-        <div className="">
+        {/*<div className="">
           competitor Time: {competitorTime}, Speed Kit Time: {speedKitTime}, Requests: {requests}, maxTime: {maxTime}
-        </div>
+        </div>*/}
       </div>
     )
   }
