@@ -9,6 +9,7 @@ const Marker = ({ style }) => (
     y="0px"
     viewBox="-5 -5 56 64"
     width="47"
+    height="54"
     aria-labelledby="Label__score-marker"
     style={style}>
     <title id="Label__score-marker">
@@ -33,24 +34,92 @@ const Marker = ({ style }) => (
   </svg>
 )
 
-const Bobbel = ({ description, time, style, upsideDown }) => (
-  <div className="flex justify-center items-center absolute" style={style}>
-    <div className="relative">
-      <div style={{ position: 'absolute', left: 54, top: upsideDown ? 14 : 8, whiteSpace: 'nowrap' }}>
+const Bobbel = ({ description, time, style, upsideDown, absolute, mobile }) => (
+  <div
+    className={`flex justify-center items-center ${absolute ? 'absolute' : ''}`}
+    style={style}>
+    <div className={`relative flex items-center justify-center ${mobile ? '' : 'flex-column'}`}>
+      <div style={{
+        left: 54,
+        top: upsideDown ? 14 : 8,
+        whiteSpace: 'nowrap',
+        position: mobile ? 'absolute' : 'initial',
+        order: mobile ? 1 : 0
+      }}>
         <small style={{ fontWeight: 600, fontSize: 12 }}>{description}</small>
       </div>
-      <span style={{ position: 'absolute', display: 'block', width: '100%', textAlign: 'center', top: upsideDown ? 19 : 13, fontWeight: 400, fontSize: 14, zIndex: 1 }}>{time}</span>
+      <span style={{
+        position: 'absolute',
+        display: 'block',
+        width: '100%',
+        textAlign: 'center',
+        top: mobile ? ((upsideDown && 19) || 13) : 38,
+        left: 0,
+        fontWeight: 400,
+        fontSize: 14,
+        zIndex: 1
+      }}>
+        {time}
+      </span>
       <Marker style={{ transform: upsideDown ? 'rotate(180deg)' : null }} />
     </div>
   </div>
 )
 
-const calculateOffset = (maxTime, time) => maxTime / 1000 * time
+
+const calculateMaxTimeForRequests = (requests) => {
+  if (requests <= 50) {
+    return 3000
+  } else if (requests >= 400){
+    return 10000
+  }
+  return (3.40064 * Math.log(requests) - 10.4462) * 1000
+}
+const calculateOffset = (maxTime, time) => Math.min(maxTime, time / maxTime * 100)
+
+const calculateMargin = (containerWidth, offset1, offset2, order) => {
+  if (order === 2) {
+    return Math.max(8, ((containerWidth * (offset1 - offset2) / 100) - 80))
+  }
+  return containerWidth * offset1 / 100 - 40
+}
 
 class ResultScaleComponent extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      windowWidth: null,
+      width: null
+    }
+    this.scalaContainerWidth = null
+  }
+
+  updateWidths = () => {
+    const windowWidth = window.innerWidth
+    const width = this.scalaContainer && this.scalaContainer.getBoundingClientRect().width
+    if (width && (width !== this.state.width)) {
+      this.setState({ windowWidth, width })
+    } else {
+      this.setState({ windowWidth })
+    }
+  }
+
+  componentWillMount = () => {
+    this.updateWidths()
+  }
+
+  componentDidMount = () => {
+    window.addEventListener("resize", this.updateWidths)
+  }
+
+  componentWillUnmount = () => {
+    window.removeEventListener("resize", this.updateWidths)
+  }
+
   render() {
     const { speedKitError, competitorTest, speedKitTest, mainMetric } = this.props.result
-    const maxTime = 10
+    const requests = competitorTest.firstView && competitorTest.firstView.requests
+    const maxTime = calculateMaxTimeForRequests(requests)
 
     const competitorTime = competitorTest.firstView && competitorTest.firstView[mainMetric]
     const speedKitTime = !speedKitError && speedKitTest.firstView && speedKitTest.firstView[mainMetric]
@@ -58,28 +127,68 @@ class ResultScaleComponent extends Component {
     const competitorOffset = competitorTime && calculateOffset(maxTime, competitorTime)
     const speedKitOffset = speedKitTime && calculateOffset(maxTime, speedKitTime)
 
+    const competitorOrder = competitorTime > speedKitTime ? 2 : 1
+    const speedKitOrder = speedKitTime > competitorTime ? 2 : 1
+
     return (
-      <div className={`relative pt4 mt1 ${(speedKitTime && 'pb3') || 'pb1'}`}>
-        {competitorTime && (
-          <Bobbel
-            description="Your Website"
-            time={`${Math.round(competitorTime / 100) / 10}s`}
-            style={{ left: `${competitorOffset}%`, top: -8, marginLeft: -22.5 }}
-          />
-        )}
-        {speedKitTime && (
-          <Bobbel
-            description="With Speedkit"
-            time={`${Math.round(speedKitTime / 100) / 10}s`}
-            style={{ left: `${speedKitOffset}%`, top: 64, marginLeft: -22.5 }}
-            upsideDown
-          />
-        )}
-        <div className="flex" style={{ fontWeight: 400 }}>
-          <div className="w-10 pa1 dark-green bg-dark-green border-left">Excellent</div>
-          <div className="w-20 pa1 green bg-light-green">Good</div>
-          <div className="w-30 pa1 orange bg-light-orange">Fair</div>
-          <div className="w-40 pa1 red bg-light-red border-right">Poor</div>
+      <div ref={(container) => {
+        if (!this.scalaContainer) {
+          this.scalaContainer = container
+          this.updateWidths()
+        }
+      }}>
+        <div className={`relative pt4 pt5-ns mt1 ${(speedKitTime && 'pb3') || 'pb1'}`}>
+          {competitorTime && this.state.windowWidth < 480 && (
+            <Bobbel
+              description="Your Website"
+              time={`${Math.round(competitorTime / 100) / 10}s`}
+              style={{ left: `${competitorOffset}%`, top: -8, marginLeft: -22.5 }}
+              absolute
+              mobile
+            />
+          )}
+          {speedKitTime && this.state.windowWidth < 480 && (
+            <Bobbel
+              description="With Speedkit"
+              time={`${Math.round(speedKitTime / 100) / 10}s`}
+              style={{ left: `${speedKitOffset}%`, top: 64, marginLeft: -22.5 }}
+              absolute
+              mobile
+              upsideDown
+            />
+          )}
+          <div className="flex" style={{ fontWeight: 400, background: 'linear-gradient(to right, #c8e4b0, #fef1ea, #fdecec)' }}>
+            <div className="w-50 pa1 dark-green border-left">Excellent</div>
+            <div className="w-50 pa1 red border-right tr">Poor</div>
+          </div>
+          <div className="flex absolute" style={{ top: 0, width: '100%' }}>
+            {speedKitTime && this.state.windowWidth >= 480 && this.state.width && (
+              <Bobbel
+                description="With Speedkit"
+                time={`${Math.round(speedKitTime / 100) / 10}s`}
+                style={{
+                  top: -8,
+                  order: speedKitOrder,
+                  marginLeft: calculateMargin(this.state.width, speedKitOffset, competitorOffset, speedKitOrder)
+                }}
+              />
+            )}
+            {competitorTime && this.state.windowWidth >= 480 && this.state.width && (
+              <Bobbel
+                description="Your Website"
+                time={`${Math.round(competitorTime / 100) / 10}s`}
+                style={{
+                  top: -8,
+                  order: competitorOrder,
+                  marginLeft: calculateMargin(this.state.width, competitorOffset, speedKitOffset, competitorOrder)
+                }}
+              />
+            )}
+          </div>
+
+        </div>
+        <div className="">
+          competitor Time: {competitorTime}, Speed Kit Time: {speedKitTime}, Requests: {requests}, maxTime: {maxTime}
         </div>
       </div>
     )
