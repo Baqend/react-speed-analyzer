@@ -166,7 +166,7 @@ class ResultScaleComponent extends Component {
           <div className="flex absolute" style={{ top: 0, width: '100%' }}>
             {speedKitTime && this.state.windowWidth >= 480 && this.state.width && (
               <Bobbel
-                description="With Speedkit"
+                description="With Speed Kit"
                 time={`${Math.round(speedKitTime / 100) / 10}s`}
                 style={{
                   marginTop: -8,
