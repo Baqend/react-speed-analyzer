@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Tooltip } from 'react-tippy'
+import ReactTooltip from 'react-tooltip'
 
 import { calculateFactor, calculateAbsolute } from 'helper/resultHelper'
 
@@ -61,10 +61,13 @@ class ResultMetrics extends Component {
                     <div className="metricValue">{competitorData[metric.name]}ms</div>
                   </div>
                   <div className="w-third text-center">
-                    <Tooltip title={metric.tooltip} position="top" arrow>
+                    <div data-tip data-for={metric.name}>
                       <div className="factor">{absolute} {factor > 1 ? 'Faster' : ''} ({factor}x)</div>
                       <div className="metricLabel">{metric.label}</div>
-                    </Tooltip>
+                    </div>
+                    <ReactTooltip id={metric.name} type='dark' place='top' effect='solid'>
+                      <span>{metric.tooltip}</span>
+                    </ReactTooltip>
                   </div>
                   <div className="w-third text-center">
                     <div className="metricValue">{speedKitData[metric.name]}ms</div>
@@ -87,10 +90,13 @@ class ResultMetrics extends Component {
                     <div className="metricValue">{competitorData[metric.name]}ms</div>
                   </div>
                   <div className="w-third text-center">
-                    <Tooltip title={metric.tooltip} position="top" arrow>
+                    <div data-tip data-for={metric.name}>
                       <div className="factor">{absolute} {factor > 1 ? 'Faster' : ''} ({factor}x)</div>
                       <div className="metricLabel">{metric.label}</div>
-                    </Tooltip>
+                    </div>
+                    <ReactTooltip id={metric.name} type='dark' place='top' effect='solid'>
+                      <span>{metric.tooltip}</span>
+                    </ReactTooltip>
                   </div>
                   <div className="w-third text-center">
                     <div className="metricValue">{speedKitData[metric.name]}ms</div>
@@ -130,7 +136,7 @@ class ResultMetrics extends Component {
           <div key={index} className="flex justify-center">
             <div className="w-100">
               {index !== 0 && <hr/>}
-              <Tooltip title={metric.tooltip} position="top" arrow>
+              <div data-tip data-for={metric.name}>
                 <div className="flex items-center border-top">
                   <div className="w-50 tr pt2 pb2 pr2">
                     <div className="metricValue faded">{metric.label}</div>
@@ -139,7 +145,10 @@ class ResultMetrics extends Component {
                     <div className="metricValue">{competitorData[metric.name]}ms</div>
                   </div>
                 </div>
-              </Tooltip>
+              </div>
+              <ReactTooltip id={metric.name} type='dark' place='top' effect='solid'>
+                <span>{metric.tooltip}</span>
+              </ReactTooltip>
             </div>
           </div>
         ))}
@@ -150,7 +159,7 @@ class ResultMetrics extends Component {
           <div key={index} className="flex justify-center">
             <div className="w-100">
               {index !== 0 && <hr/>}
-              <Tooltip title={metric.tooltip} position="top" arrow>
+              <div data-tip data-for={metric.name}>
                 <div className="flex items-center border-top">
                   <div className="w-50 tr pt2 pb2 pr2">
                     <div className="metricValue faded">{metric.label}</div>
@@ -159,7 +168,10 @@ class ResultMetrics extends Component {
                     <div className="metricValue">{competitorData[metric.name]}ms</div>
                   </div>
                 </div>
-              </Tooltip>
+              </div>
+              <ReactTooltip id={metric.name} type='dark' place='top' effect='solid'>
+                <span>{metric.tooltip}</span>
+              </ReactTooltip>
             </div>
           </div>
         ))}

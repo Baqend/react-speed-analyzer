@@ -116,10 +116,7 @@ textarea {
   box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
 }
 
-.tippy-tooltip {
+.__react_component_tooltip.type-dark {
   background-color: rgba(0,0,0,0.95);
   font-weight: 400;
-  [x-arrow] {
-    border-top: 7px solid rgba(0,0,0,0.95) !important;
-  }
 }

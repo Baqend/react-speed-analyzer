@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Tooltip } from 'react-tippy'
+import ReactTooltip from 'react-tooltip'
 
 import { formatFileSize } from 'helper/utils'
 
@@ -17,7 +17,7 @@ const pageSpeedInsights = ({ testOverview }) => {
   return (
     <div className={`flex justify-between mt2`}>
       <div className="pa2 text-center">
-        <Tooltip title="Number of unique hosts referenced by the page." position="top" arrow>
+        <div data-tip data-for='psiDomains'>
           <small className="faded">Domains</small>
           <br />
           {psiDomains ? (
@@ -25,10 +25,13 @@ const pageSpeedInsights = ({ testOverview }) => {
           ) : (
             <strong>{dots}</strong>
           )}
-        </Tooltip>
+        </div>
+        <ReactTooltip id='psiDomains' type='dark' place='top' effect='solid'>
+          <span>Number of unique hosts referenced by the page.</span>
+        </ReactTooltip>
       </div>
       <div className="pa2 text-center">
-        <Tooltip title="Number of HTTP resources loaded by the page." position="top" arrow>
+        <div data-tip data-for='psiRequests'>
           <small className="faded">Requests</small>
           <br />
           {psiRequests ? (
@@ -36,10 +39,13 @@ const pageSpeedInsights = ({ testOverview }) => {
           ) : (
             <strong>{dots}</strong>
           )}
-        </Tooltip>
+        </div>
+        <ReactTooltip id='psiRequests' type='dark' place='top' effect='solid'>
+          <span>Number of HTTP resources loaded by the page.</span>
+        </ReactTooltip>
       </div>
       <div className="pa2 text-center">
-        <Tooltip title="Number of uncompressed response bytes for resources on the page." position="top" arrow>
+        <div data-tip data-for='psiResponseSize'>
           <small className="faded">Response Size</small>
           <br />
           {psiResponseSize ? (
@@ -47,7 +53,10 @@ const pageSpeedInsights = ({ testOverview }) => {
           ) : (
             <strong>{dots}</strong>
           )}
-        </Tooltip>
+        </div>
+        <ReactTooltip id='psiResponseSize' type='dark' place='top' effect='solid'>
+          <span>Number of uncompressed response bytes for resources on the page.</span>
+        </ReactTooltip>
       </div>
     </div>
   )
