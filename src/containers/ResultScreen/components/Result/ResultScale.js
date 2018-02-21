@@ -67,17 +67,17 @@ const Bobbel = ({ description, time, style, upsideDown, absolute, mobile }) => (
 )
 
 
-const calculateMaxTimeForRequests = (requests) => {
+const calculateMaxTimeForRequests = (requests, competitorTime) => {
   if (requests <= 50) {
     return 1500
   } else if (requests >= 400){
     return 8000
   }
-  return (0.0184884 * requests + 0.610465) * 1000
+  return Math.max(competitorTime, (0.0184884 * requests + 0.610465) * 1000)
 
 }
 const calculateOffset = (maxTime, time) => {
-  return Math.min(97.5, time / maxTime * 100)
+  return Math.min(95, time / maxTime * 100)
 }
 
 const calculateMargin = (containerWidth, offset1, offset2, order) => {
@@ -121,11 +121,12 @@ class ResultScaleComponent extends Component {
 
   render() {
     const { speedKitError, competitorTest, speedKitTest, mainMetric } = this.props.result
-    const requests = competitorTest.firstView && competitorTest.firstView.requests
-    const maxTime = calculateMaxTimeForRequests(requests)
 
+    const requests = competitorTest.firstView && competitorTest.firstView.requests
     const competitorTime = competitorTest.firstView && competitorTest.firstView[mainMetric]
     const speedKitTime = !speedKitError && speedKitTest.firstView && speedKitTest.firstView[mainMetric]
+
+    const maxTime = calculateMaxTimeForRequests(requests, competitorTime)
 
     const competitorOffset = competitorTime && calculateOffset(maxTime, competitorTime)
     const speedKitOffset = speedKitTime && calculateOffset(maxTime, speedKitTime)
