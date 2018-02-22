@@ -101,8 +101,9 @@ function urlToUnicode(url) {
  * @return {Promise<*>}
  */
 function fetchUrl(url, mobile, db, redirectsPerformed = 0) {
+  db.log.info(`Analyzing ${url}`, { mobile, redirectsPerformed, url });
   const userAgent = mobile ? MOBILE_USER_AGENT : undefined;
-  return fetch(url, { redirect: 'manual', headers: { 'UserAgent': userAgent }, timeout: 12000 })
+  return fetch(url, { redirect: 'manual', headers: { 'User-Agent': userAgent }, timeout: 12000 })
     .then((response) => {
       if (response.status >= 400) {
         throw new Error('Status Code of Response is 400 or higher.');
@@ -115,6 +116,7 @@ function fetchUrl(url, mobile, db, redirectsPerformed = 0) {
           throw new Abort('The URL resolves in too many redirects.');
         }
 
+        db.log.info(`Found redirect from ${url} to ${location}`, { mobile, redirectsPerformed, url });
         return fetchUrl(location, mobile, db, redirectsPerformed + 1);
       }
 
@@ -126,7 +128,7 @@ function fetchUrl(url, mobile, db, redirectsPerformed = 0) {
     .then(opts => Object.assign(opts, { supported: opts.enabled || opts.type === 'wordpress' }))
     .then(opts => testForSpeedKit(url).then(speedKit => Object.assign(opts, speedKit)))
     .catch((error) => {
-     db.log.warn(`Error while fetching ${url} in analyzeURL: ${error.stack}`);
+     db.log.error(`Error while fetching ${url} in analyzeURL: ${error.stack}`);
      return null;
     });
 }

@@ -6,7 +6,7 @@ const { queueTest, DEFAULT_LOCATION, DEFAULT_ACTIVITY_TIMEOUT } = require('./que
 const { generateSpeedKitConfig, getTLD } = require('./getSpeedKitUrl');
 const { generateUniqueId } = require('./generateUniqueId');
 const { analyzeUrl } = require('./analyzeUrl');
-const { callPageSpeed} = require('./callPageSpeed');
+const { callPageSpeed } = require('./callPageSpeed');
 
 const fields = ['speedIndex', 'firstMeaningfulPaint', 'ttfb', 'domLoaded', 'fullyLoaded', 'lastVisualChange'];
 
@@ -18,7 +18,7 @@ const fields = ['speedIndex', 'firstMeaningfulPaint', 'ttfb', 'domLoaded', 'full
 function checkComparisonState(db, testOverview, onAfterFinish) {
   if (testOverview.competitorTestResult.hasFinished && testOverview.speedKitTestResult.hasFinished) {
     testOverview.hasFinished = true;
-    onAfterFinish && onAfterFinish(db, testOverview)
+    onAfterFinish && onAfterFinish(testOverview)
   }
   return testOverview.ready().then(() => testOverview.save())
 }
@@ -35,10 +35,13 @@ function runComparison(db, {
   whitelist,
   mobile,
   priority,
-}) {
+  skipPrewarm
+}, callback = null) {
   return new Promise((resolve, reject) => {
     const testOverview = new db.TestOverview();
-
+    db.log.info("runComparison", {
+      bulkTest, location, caching, url, activityTimeout, speedKitConfig, isSpeedKitComparison, speedKitVersion, whitelist, mobile, priority,
+    })
     return generateUniqueId(db, 'TestOverview').then((uniqueId) => {
       const tld = getTLD(url);
       testOverview.id = uniqueId + tld.substring(0, tld.length - 1);
@@ -66,6 +69,9 @@ function runComparison(db, {
           .execute()
       })
 
+      db.log.info("runCompetitorTest", {
+        location, caching, url, activityTimeout, priority, isSpeedKitComparison, mobile
+      })
       const competitorTestRun = queueTest({
         db, location, caching, url, activityTimeout, priority, isSpeedKitComparison, mobile,
         isClone: false,
@@ -76,17 +82,22 @@ function runComparison(db, {
           //   testOverview.psiRequests = testResult.firstView.requests;
           //   testOverview.psiResponseSize = testResult.firstView.bytes;
           // }
-          return checkComparisonState(db, testOverview, null);
+          return checkComparisonState(db, testOverview, callback);
         }
       })
 
+      db.log.info("runSpeedKitTest", {
+        location, caching, url, activityTimeout, priority, isSpeedKitComparison, mobile, speedKitConfig,
+      })
       const speedKitTestRun = queueTest({
         db, location, caching, url, activityTimeout, priority, isSpeedKitComparison, mobile,
         speedKitConfig,
         isClone: true,
+        skipPrewarm,
         finish: (testResult) => {
           testOverview.speedKitTestResult = testResult;
-          return checkComparisonState(db, testOverview, null);
+          testOverview.speedKitConfig = testResult.speedKitConfig;
+          return checkComparisonState(db, testOverview, callback);
         }
       })
 

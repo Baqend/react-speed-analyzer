@@ -18,7 +18,9 @@ function executeTest(testScript, pendingTest, { testOptions }, db) {
 function waitForStartedTest(testId, testScript, pendingTest, db) {
   db.log.info(`Test started: ${testId}`, { testScript });
   pendingTest.testId = testId;
-  pendingTest.ready().then(() => pendingTest.save());
+  pendingTest.ready().then(() => pendingTest.save()).catch((error) => {
+    db.log.warn(`Saving pendingTest failed.`, { error: error.stack, test: pendingTest.id, testId });
+  });
   return API.waitOnTest(testId, db);
 }
 
@@ -31,7 +33,7 @@ function saveTestResult(testId, pendingTest, testScript, db) {
 /**
  * Handles the failure of the pending test.
  *
- * @param pendingTest The test which failed.
+ * @param test The test which failed.
  * @param {string|null} testScript The script which was executed.
  * @param {Error} error The error that was thrown.
  * @param db The Baqend instance.
@@ -44,6 +46,9 @@ function handleTestError(test, testScript, error, db) {
       test.testDataMissing = true;
       test.hasFinished = true;
       return test.save();
+    }).catch((error) => {
+      db.log.error(`Couldnt save failed test.`, {test: test.id, error: error.stack, testScript});
+      return test;
     });
 }
 

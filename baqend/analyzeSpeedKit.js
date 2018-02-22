@@ -29,7 +29,7 @@ function analyzeSpeedKit(urlToTest, db) {
         return info;
       });
     }).catch(err => {
-      throw new Error(`Fetching config from Speed Kit website failed, request time: ${Date.now() - start}ms`, err);
+      throw new Error(`Fetching config from Speed Kit website failed, request time: ${Date.now() - start}ms. Error: ${err.stack}`);
     });
 }
 

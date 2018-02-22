@@ -55,8 +55,8 @@ function calculateFMP(data) {
   return (parseFloat(firstMeaningfulPaint) * 1000).toString();
 }
 
-function getFMP(testId) {
-  const url = `http://${credentials.wpt_dns}/video/compare.php?tests=${testId}`;
+function getFMP(testId, runIndex) {
+  const url = `http://${credentials.wpt_dns}/video/compare.php?tests=${testId}-r:${runIndex}-c:0`;
   return request(url)
     .then((htmlString) => {
       const dataArray = getDataFromHtml(htmlString);

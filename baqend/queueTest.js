@@ -99,8 +99,11 @@ function queueTest({
   pendingTest.url = url;
   pendingTest.priority = priority;
 
-  executePrewarm(testInfo, pendingTest, db)
-    .then(testScript => executeTest(testScript, pendingTest, testInfo, db))
+  executePrewarm(testInfo, db)
+    .then(([testScript, config]) => {
+      pendingTest.speedKitConfig = config;
+      return executeTest(testScript, pendingTest, testInfo, db);
+    })
     // Trigger the callback
     .then(updatedResult => finish && finish(updatedResult))
     .catch(error => handleTestError(pendingTest, 'No script', error, db));

@@ -8,32 +8,32 @@ const CDN_LOCAL_URL = 'https://makefast.app.baqend.com/v1/file/www/assets/selfMa
 /**
  * Returns the default Speed Kit config for the given url.
  */
-function getMinimalConfig(url) {
+function getMinimalConfig(url, mobile) {
   const tld = getTLD(url);
   const domainRegex = `/^(?:[\\w-]*\\.){0,3}(?:${escapeForRegex(tld)})/`;
 
   return `{
     appName: "${credentials.app}",
     whitelist: [{ host: [ ${domainRegex} ] }],
-    userAgentDetection: false
+    userAgentDetection: ${mobile}
   }`;
 }
 
-function getCacheWarmingConfig() {
+function getCacheWarmingConfig(mobile) {
   return `{
     appName: "${credentials.app}",
-    userAgentDetection: false
+    userAgentDetection: ${mobile}
   }`;
 }
 
-function getFallbackConfig(url) {
+function getFallbackConfig(url, mobile) {
   const tld = getTLD(url);
   const domainRegex = `/^(?:[\\w-]*\\.){0,3}(?:${escapeForRegex(tld)})/`;
 
   return `{
     appName: "${credentials.app}",
     whitelist: [{ host: [ ${domainRegex}, /cdn/, /assets\./, /static\./ ] }],
-    userAgentDetection: false
+    userAgentDetection: ${mobile}
   }`;
 }
 
@@ -60,16 +60,17 @@ function getTLD(url) {
  * @param whitelist Whitelisted domains as string.
  * @return
  */
-function createSmartConfig(url, testResult, db, whitelist = '') {
+function createSmartConfig(url, testResult, mobile, db, whitelist = '') {
   const domains = getDomains(testResult, db);
 
   db.log.info(`Analyzing domains: ${url}`, {domains});
   return filterCDNs(domains, db)
     .then((cdnsWithAds) => {
+      db.log.info(`CDN domains`, {cdnsWithAds});
       return filterAds(cdnsWithAds, db);
     })
     .then((cdnsWithoutAds) => {
-      db.log.info(`Filtered domains to whitelist`, {cdnsWithoutAds});
+      db.log.info(`Domains without ads`, {cdnsWithoutAds});
       return cdnsWithoutAds.map(toRegex).join(', ');
     })
     .then((cdnRegexs) => {
@@ -81,7 +82,7 @@ function createSmartConfig(url, testResult, db, whitelist = '') {
       return `{
         appName: "${credentials.app}",
         whitelist: [{ host: [ ${domainRegex}, ${whitelistedHosts} ] }],
-        userAgentDetection: false
+        userAgentDetection: ${mobile}
       }`;
     });
 }
@@ -90,7 +91,6 @@ function filterCDNs(domains, db) {
   return fetch(CDN_LOCAL_URL)
     .then(resp => resp.text())
     .then((text) => {
-      db.log.info(`Text: ${text}`);
       return text.trim().split('\n').map(toRegex)
     })
     .then((regExs) => {
@@ -119,7 +119,12 @@ function getDomains(testResult, db) {
     throw new Error(`No testdata to analyze domains ${testResult.url}`);
   }
 
-  return Object.keys(testResult.runs['1'].firstView.domains);
+  const domains = Object.keys(testResult.runs['1'].firstView.domains);
+  if (!domains.length) {
+    db.log.warn(`Analyzed domains empty.`, {testResult});
+  }
+
+  return domains;
 }
 
 exports.getTLD = getTLD;

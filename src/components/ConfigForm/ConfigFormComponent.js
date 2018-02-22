@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import Toggle from 'react-toggle'
 // import CodeMirror from 'react-codemirror'
-import stringifyObject from 'stringify-object'
+import stringifyObject from 'lib/stringify-object'
 import { Controlled as CodeMirror } from 'react-codemirror2'
 
 import { getTLD } from '../../helper/configHelper'
@@ -53,7 +53,7 @@ class ConfigFormComponent extends Component {
     super(props)
     this.state = {
       showAdvancedConfig: props.showAdvancedConfig,
-      speedKitConfig: null,
+      speedKitConfig: props.showAdvancedConfig ? stringifyObject(getDefaultSpeedKitConfig(this.props.config.url), { indent: '  ' }) : null,
       whiteListCandidates: [],
     }
     // console.log(stringifyObject(this.state.speedKitConfig, { indent: '  ' }))
