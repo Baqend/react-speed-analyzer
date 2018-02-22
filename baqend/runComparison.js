@@ -39,9 +39,6 @@ function runComparison(db, {
 }, callback = null) {
   return new Promise((resolve, reject) => {
     const testOverview = new db.TestOverview();
-    db.log.info("runComparison", {
-      bulkTest, location, caching, url, activityTimeout, speedKitConfig, isSpeedKitComparison, speedKitVersion, whitelist, mobile, priority,
-    })
     return generateUniqueId(db, 'TestOverview').then((uniqueId) => {
       const tld = getTLD(url);
       testOverview.id = uniqueId + tld.substring(0, tld.length - 1);
@@ -69,9 +66,6 @@ function runComparison(db, {
           .execute()
       })
 
-      db.log.info("runCompetitorTest", {
-        location, caching, url, activityTimeout, priority, isSpeedKitComparison, mobile
-      })
       const competitorTestRun = queueTest({
         db, location, caching, url, activityTimeout, priority, isSpeedKitComparison, mobile,
         isClone: false,
@@ -86,14 +80,11 @@ function runComparison(db, {
         }
       })
 
-      db.log.info("runSpeedKitTest", {
-        location, caching, url, activityTimeout, priority, isSpeedKitComparison, mobile, speedKitConfig,
-      })
       const speedKitTestRun = queueTest({
         db, location, caching, url, activityTimeout, priority, isSpeedKitComparison, mobile,
         speedKitConfig,
-        isClone: true,
         skipPrewarm,
+        isClone: true,
         finish: (testResult) => {
           testOverview.speedKitTestResult = testResult;
           testOverview.speedKitConfig = testResult.speedKitConfig;

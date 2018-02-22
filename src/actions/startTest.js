@@ -96,13 +96,9 @@ export const runComparison = ({ speedkit, speedkitVersion }) => ({
       mobile,
       speedKitConfig,
       activityTimeout,
-      speedkit,
-      speedkitVersion,
+      isSpeedKitComparison: speedkit,
+      speedKitVersion: speedkitVersion,
     })
-    // dispatch({
-    //   type: TESTOVERVIEW_SAVE,
-    //   payload: testOverview
-    // })
     return testOverview
   }
 })
