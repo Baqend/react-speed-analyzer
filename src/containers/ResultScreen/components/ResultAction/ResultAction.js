@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
-import { prepareTest, startTest } from 'actions/startTest'
+import { prepareTest, startTest } from 'actions/test'
 import { getObjectKey } from 'helper/utils'
 
 import WordPressLogo from 'assets/wordpress.png'

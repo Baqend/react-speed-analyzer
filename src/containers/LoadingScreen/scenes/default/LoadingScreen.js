@@ -7,9 +7,8 @@ import './LoadingScreen.css'
 import LoadingScreenComponent from './LoadingScreenComponent'
 
 import { resetConfig } from 'actions/config'
-import { terminateTest } from 'actions/terminateTest'
-import { resetTest, monitorTest } from 'actions/result'
-import { prepareTest, startTest } from 'actions/startTest'
+import { resetResult } from 'actions/result'
+import { monitorTest } from 'actions/test'
 
 
 class StartingScreen extends Component {
@@ -21,7 +20,7 @@ class StartingScreen extends Component {
         history.replace(`/test/${testId}/result`)
       })
     } catch(e) {
-      this.props.actions.resetTest()
+      this.props.actions.resetResult()
       history.replace('/')
     }
   }
@@ -59,11 +58,8 @@ function mapDispatchToProps(dispatch) {
   return {
     actions: bindActionCreators({
       resetConfig,
-      prepareTest,
-      startTest,
-      resetTest,
+      resetResult,
       monitorTest,
-      terminateTest,
     }, dispatch),
   }
 }

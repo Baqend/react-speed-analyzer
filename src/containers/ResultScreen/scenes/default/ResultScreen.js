@@ -6,10 +6,8 @@ import { connect } from 'react-redux'
 
 import ResultScreenComponent from './ResultScreenComponent'
 
-import { loadTest } from 'actions/result'
-import { prepareTest, startTest } from 'actions/startTest'
-import { resetTest, monitorTest } from 'actions/monitorTest'
-import { terminateTest } from 'actions/terminateTest'
+import { startTest, prepareTest } from 'actions/test'
+import { loadResult, resetResult } from 'actions/result'
 
 import { getObjectKey, isIFrame } from 'helper/utils'
 
@@ -35,7 +33,7 @@ class ResultScreen extends Component {
 
   loadTestResult = async (testId) => {
     try {
-      await this.props.actions.loadTest(testId)
+      await this.props.actions.loadResult(testId)
     } catch(e) {
       console.log(e)
     }
@@ -50,7 +48,7 @@ class ResultScreen extends Component {
   componentWillReceiveProps(nextProps) {
     if (this.props.match.params.testId !== nextProps.match.params.testId) {
       window.scrollTo(0, 0)
-      this.props.actions.resetTest()
+      this.props.actions.resetResult()
       this.loadTestResult(nextProps.props.match.params.testId)
     }
   }
@@ -93,12 +91,10 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     actions: bindActionCreators({
+      loadResult,
+      resetResult,
       prepareTest,
       startTest,
-      resetTest,
-      monitorTest,
-      terminateTest,
-      loadTest,
     }, dispatch),
   }
 }

@@ -9,9 +9,8 @@ import StartingScreenComponent from './StartingScreenComponent'
 import { getObjectKey } from 'helper/utils'
 
 import { resetConfig } from 'actions/config'
-import { terminateTest } from 'actions/terminateTest'
-import { resetTest, monitorTest } from 'actions/monitorTest'
-import { prepareTest, startTest } from 'actions/startTest'
+import { resetResult } from 'actions/result'
+import { prepareTest, startTest } from 'actions/test'
 
 
 class StartingScreen extends Component {
@@ -24,7 +23,7 @@ class StartingScreen extends Component {
 
   reset = () => {
     this.props.actions.resetConfig()
-    this.props.actions.resetTest()
+    this.props.actions.resetResult()
   }
 
   parseQueryString = (queryString) => {
@@ -53,7 +52,7 @@ class StartingScreen extends Component {
 
     if (testId && !isMonitored) {
       this.props.actions.monitorTest(testId).catch((e) => {
-        this.props.actions.resetTest()
+        this.props.actions.resetResult()
         history.replace('/')
       })
     }
@@ -71,7 +70,6 @@ class StartingScreen extends Component {
     if (!this.props.result.isInitiated) {
       this.reset()
     }
-
     const params = this.parseQueryString(this.props.location.search)
     if (params.url) {
       this.startTest(params.url)
@@ -79,10 +77,6 @@ class StartingScreen extends Component {
     if (params.advanced) {
       this.setState({ showAdvancedConfig: true })
     }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    // this.checkTest(nextProps)
   }
 
   render() {
@@ -120,9 +114,7 @@ function mapDispatchToProps(dispatch) {
       resetConfig,
       prepareTest,
       startTest,
-      resetTest,
-      monitorTest,
-      terminateTest,
+      resetResult,
     }, dispatch),
   }
 }
