@@ -131,7 +131,7 @@ class ResultScaleComponent extends Component {
     const competitorOffset = competitorTime && calculateOffset(maxTime, competitorTime)
     const speedKitOffset = speedKitTime && calculateOffset(maxTime, speedKitTime)
 
-    const competitorOrder = competitorTime > speedKitTime ? 2 : 1
+    const competitorOrder = competitorTime >= speedKitTime ? 2 : 1
     const speedKitOrder = speedKitTime > competitorTime ? 2 : 1
 
     return (
