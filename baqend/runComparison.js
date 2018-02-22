@@ -62,7 +62,7 @@ function runComparison(db, {
         .set('psiResponseSize', pageSpeedInsightsResult.bytes)
         .set('psiScreenshot', pageSpeedInsightsResult.screenshot)
         .execute()
-      );
+      ).catch(error => db.log.warn(`Could not call page speed`, { url, mobile, error: error.stack }));
 
       const competitorTestRun = queueTest({
         db,

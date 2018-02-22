@@ -15,7 +15,10 @@ exports.get = function(db, req, res) {
 function getTimings(test) {
   return fetch(`http://ec2-18-195-220-131.eu-central-1.compute.amazonaws.com/viewlog.php?test=${test.testId}`)
     .then(response => response.text())
-    .then(text => analyzeText(text));
+    .then(text => analyzeText(text))
+    .catch(error => {
+      return {wait: null, exec: null};
+    });
 }
 
 function analyzeText(text) {

@@ -121,7 +121,7 @@ function createTestResult(wptData, pendingTest, db) {
     .then((repeatView) => {
       pendingTest.repeatView = repeatView
     })
-    .then(() => iskWordPress(wptData.testUrl))
+    .then(() => iskWordPress(wptData.testUrl, db))
     .then((isWordPress) => {
       pendingTest.isWordPress = isWordPress
     })
@@ -208,7 +208,11 @@ function chooseFMP(db, data, testId, runIndex) {
  * @return {boolean}
  */
 function iskWordPress(url) {
-  const analyzeSite = fetch(url).then(res => res.text().then(text => text.indexOf('wp-content') !== -1));
+  const analyzeSite = fetch(url).then(res => res.text().then(text => text.indexOf('wp-content') !== -1))
+    .catch(error => {
+      db.log.warn(`Cannot analyze whether site is WordPress`, { url, errror: error.stack});
+      return false;
+    });
   const timneout = sleep(10000, false);
   return Promise.race([ analyzeSite, timneout ]);
 }
