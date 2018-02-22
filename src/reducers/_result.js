@@ -4,12 +4,15 @@ import {
   MONITOR_TEST,
   CONTINUE_TEST,
   TESTOVERVIEW_LOAD,
+  TESTOVERVIEW_NEXT,
   TESTOVERVIEW_SAVE,
   RATE_LIMITER_GET,
   CALL_PAGESPEED_INSIGHTS_GET,
   TEST_STATUS_GET,
   COMPETITOR_RESULT_NEXT,
   SPEED_KIT_RESULT_NEXT,
+  COMPETITOR_RESULT_LOAD,
+  SPEED_KIT_RESULT_LOAD,
   COMPETITOR_SUBSCRIPTION,
   SPEED_KIT_SUBSCRIPTION,
   TERMINATE_TEST,
@@ -106,6 +109,7 @@ const initialState = {
 export default function result(state = initialState, action = {}) {
   switch (action.type) {
     case TESTOVERVIEW_LOAD:
+    case TESTOVERVIEW_NEXT:
       return {
         ...state,
         testOverview: {
@@ -113,8 +117,8 @@ export default function result(state = initialState, action = {}) {
           psiScreenshot: createScreenshot(action.payload.psiScreenshot),
         }
       }
-    case TESTOVERVIEW_SAVE:
-      return { ...state, testOverview: action.payload }
+    // case TESTOVERVIEW_SAVE:
+    //   return { ...state, testOverview: action.payload }
     case RATE_LIMITER_GET:
       return { ...state, isRateLimited: action.payload }
     // case NORMALIZE_URL_POST:
@@ -156,20 +160,30 @@ export default function result(state = initialState, action = {}) {
     //   }
     case TEST_STATUS_GET:
       return { ...state, statusCode: action.payload.statusCode, statusText: action.payload.statusText  }
-    case COMPETITOR_RESULT_NEXT:
-      const competitorTest = action.payload[0] ? action.payload[0] : {}
-      return { ...state, competitorTest }
-    case SPEED_KIT_RESULT_NEXT:
-      if (action.payload[0]) {
-        const speedKitTest = action.payload[0]
-        const whiteListCandidates = getWhiteListCandidates(state, speedKitTest)
-        return { ...state, speedKitTest, whiteListCandidates }
+    case COMPETITOR_RESULT_LOAD:
+      if (action.payload) {
+        const competitorTest = action.payload
+        return {
+          ...state,
+          competitorTest,
+        }
       }
       return state
-    case COMPETITOR_SUBSCRIPTION:
-      return { ...state, competitorSubscription: action.payload }
-    case SPEED_KIT_SUBSCRIPTION:
-      return { ...state, speedKitSubscription: action.payload }
+    case SPEED_KIT_RESULT_LOAD:
+      if (action.payload) {
+        const speedKitTest = action.payload
+        const whiteListCandidates = getWhiteListCandidates(state, speedKitTest)
+        return {
+          ...state,
+          speedKitTest,
+          whiteListCandidates
+        }
+      }
+      return state
+    // case COMPETITOR_SUBSCRIPTION:
+    //   return { ...state, competitorSubscription: action.payload }
+    // case SPEED_KIT_SUBSCRIPTION:
+    //   return { ...state, speedKitSubscription: action.payload }
     case TERMINATE_TEST:
       const metrics = verifyMainMetric(state)
       const errors = getResultErrors(state)
@@ -187,6 +201,8 @@ export default function result(state = initialState, action = {}) {
     case RESET_TEST_RESULT:
       return {
         ...initialState,
+        isInitiated: state.isInitiated,
+        isStarted: state.isStarted,
         isBaqendApp: state.isBaqendApp,
         isSpeedKitComparison: state.isSpeedKitComparison,
         speedKitVersion: state.speedKitVersion,

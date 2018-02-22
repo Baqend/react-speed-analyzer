@@ -13,7 +13,9 @@ import Navbar from '../components/Navbar/Navbar'
 import Footer from '../components/Footer/Footer'
 
 import StartingScreen from './StartingScreen'
+import LoadingScreen from './LoadingScreen'
 import ResultScreen from './ResultScreen'
+
 import ToastContainer from '../components/Toasts/ToastContainer'
 
 const store = createStore()
@@ -52,7 +54,7 @@ class App extends Component {
               <Route exact path="/test/:testId" render={props => (
                 <div id="main">
                   <div className="content">
-                    <StartingScreen { ...props } />
+                    <LoadingScreen { ...props } />
                   </div>
                   <Footer />
                 </div>

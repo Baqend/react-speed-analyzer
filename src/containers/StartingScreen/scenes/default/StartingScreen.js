@@ -82,7 +82,7 @@ class StartingScreen extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.checkTest(nextProps)
+    // this.checkTest(nextProps)
   }
 
   render() {

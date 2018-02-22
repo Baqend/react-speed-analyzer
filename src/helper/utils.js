@@ -21,8 +21,11 @@ export const formatFileSize = (bytes, decimals) => {
  * @return {string}
  */
 export const getObjectKey = (objectId) => {
-  const objectSplit = objectId.split('/')
-  return objectSplit[objectSplit.length - 1]
+  if (objectId) {
+    const objectSplit = objectId.split('/')
+    return objectSplit[objectSplit.length - 1]
+  }
+  return null
 }
 
 /**

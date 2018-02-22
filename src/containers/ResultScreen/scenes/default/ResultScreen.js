@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 
 import ResultScreenComponent from './ResultScreenComponent'
 
+import { loadTest } from 'actions/result'
 import { prepareTest, startTest } from 'actions/startTest'
 import { resetTest, monitorTest } from 'actions/monitorTest'
 import { terminateTest } from 'actions/terminateTest'
@@ -32,32 +33,26 @@ class ResultScreen extends Component {
     })
   }
 
-  loadTestResult = (props) => {
-    const { match } = props
-    const { testId } = match.params
-    const { testOverview, isStarted, isFinished } = props.result
-
-    if (Object.keys(testOverview).length && getObjectKey(testOverview.id) !== testId) {
-      window.scrollTo(0, 0)
-      this.props.actions.resetTest()
-    }
-
-    if (testId && !isStarted && !isFinished) {
-      const { history } = this.props
-      this.props.actions.monitorTest(testId).catch((e) => {
-        this.props.actions.resetTest()
-        history.replace('/')
-      })
+  loadTestResult = async (testId) => {
+    try {
+      await this.props.actions.loadTest(testId)
+    } catch(e) {
+      console.log(e)
     }
   }
 
   componentWillMount() {
+    const { testId } = this.props.match.params
     this.checkUrlParams(this.props)
-    this.loadTestResult(this.props)
+    testId && this.loadTestResult(testId)
   }
 
   componentWillReceiveProps(nextProps) {
-    this.loadTestResult(nextProps)
+    if (this.props.match.params.testId !== nextProps.match.params.testId) {
+      window.scrollTo(0, 0)
+      this.props.actions.resetTest()
+      this.loadTestResult(nextProps.props.match.params.testId)
+    }
   }
 
   onSubmit = async () => {
@@ -103,6 +98,7 @@ function mapDispatchToProps(dispatch) {
       resetTest,
       monitorTest,
       terminateTest,
+      loadTest,
     }, dispatch),
   }
 }

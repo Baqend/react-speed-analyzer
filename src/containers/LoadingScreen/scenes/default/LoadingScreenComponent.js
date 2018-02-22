@@ -1,12 +1,11 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import './SpinnerComponent.css'
-
 import Spinner from 'components/Spinner'
-import DeviceContainer from '../../components/DeviceContainer/DeviceContainer'
-import PageSpeedInsights from '../../components/PageSpeedInsights/PageSpeedInsights'
+// import ConfigForm from 'components/ConfigForm/ConfigForm'
 
+import Devices from '../../components/DeviceContainer/DeviceContainer'
+import PageSpeedInsights from '../../components/PageSpeedInsights/PageSpeedInsights'
 import Carousel, {
   renderDefaultPage,
   renderIsInQueuePage,
@@ -28,12 +27,13 @@ class StartingScreenComponent extends Component {
     this.state = {
       showCarousel: false,
       showFacts: false,
-      showAdvancedConfig: props.showAdvancedConfig,
     }
   }
 
-  onToggleAdvancedConfig = (showAdvancedConfig) => {
-    this.setState({ showAdvancedConfig })
+  componentWillMount() {
+    this.showCarouselTimeout = setTimeout(() => {
+      this.setState({ showCarousel: true })
+    }, 500)
   }
 
   componentWillReceiveProps(nextProps) {
@@ -45,10 +45,11 @@ class StartingScreenComponent extends Component {
         }, 10000)
       })
     }
-    if (!this.state.showCarousel && nextProps.result.isStarted) {
-      const timeout = window.innerWidth <= 997 ? 500 : 2500
-      setTimeout(() => this.setState({ showCarousel: true }), timeout)
-    }
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.showCarouselTimeout)
+    clearTimeout(this.showFactsTimeout)
   }
 
   renderSpinner(statusMessage) {
@@ -63,15 +64,16 @@ class StartingScreenComponent extends Component {
   }
 
   renderCarousel(statusMessage) {
-    const { statusCode, statusText } = this.props.result
     const pageSpeedInsights = this.props.result.testOverview && this.props.result.testOverview.psiDomains
-    const message = <div className="dn db-ns" style={{ marginTop: 16 }}>{statusMessage}</div>
+    const message = (
+      <div className="dn db-ns" style={{ marginTop: 16 }}>{statusMessage}</div>
+    )
     return (
       <Carousel message={message}>
-        {(!statusCode || !pageSpeedInsights) && statusCode !== 101 && statusCode !== 100 && renderDefaultPage()}
-        {statusCode === 101 && renderIsInQueuePage(statusText)}
-        {statusCode === 100 && renderHasStartedPage()}
-        {this.state.showFacts && renderFactsPages}
+        {(!this.props.result.statusCode || !pageSpeedInsights) && renderDefaultPage()}
+        {pageSpeedInsights && this.props.result.statusCode === 101 && renderIsInQueuePage(this.props.result.statusText)}
+        {pageSpeedInsights && this.props.result.statusCode === 100 && renderHasStartedPage()}
+        {pageSpeedInsights && this.state.showFacts && renderFactsPages}
       </Carousel>
     )
   }
@@ -87,11 +89,11 @@ class StartingScreenComponent extends Component {
 
     return (
       <div className="loading-screen flex-column flex-grow-1 flex items-center">
-        <DeviceContainer
-          showDevice={false}
-          mobile={false}
-          showRight={true}
-          backgroundImage={null}
+        <Devices
+          showDevice={!this.state.showAdvancedConfig}
+          mobile={this.props.config.mobile}
+          showRight={this.state.showCarousel}
+          backgroundImage={this.props.result.testOverview.psiScreenshot}
           left={
             <div className="left">
               {this.renderSpinner(statusMessage)}
@@ -103,6 +105,11 @@ class StartingScreenComponent extends Component {
             </div>
           }
         />
+        {(this.props.result.statusCode === 100 || this.props.result.statusCode === 101) && (
+          <div className="statusMessage animated fadeInDown tc">
+            {statusMessage}
+          </div>
+        )}
       </div>
     )
   }
@@ -110,7 +117,6 @@ class StartingScreenComponent extends Component {
 
 StartingScreenComponent.propTypes = {
   config: PropTypes.object.isRequired,
-  // onSubmit: PropTypes.func.isRequired,
 }
 
 export default StartingScreenComponent

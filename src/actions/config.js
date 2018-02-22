@@ -6,6 +6,7 @@ import {
   CHANGE_SPEED_KIT_CONFIG,
   SWITCH_MOBILE,
   SWITCH_CACHING,
+  UPDATE_CONFIG,
 } from './types'
 
 export function resetConfig() {
@@ -42,10 +43,10 @@ export function handleSpeedKitConfigChange(config) {
   }
 }
 
-export function handleMobileSwitch(isMobile) {
+export function handleMobileSwitch(mobile) {
   return {
     type: SWITCH_MOBILE,
-    payload: !isMobile,
+    payload: !mobile,
   }
 }
 
@@ -55,3 +56,15 @@ export function handleCachingSwitch(caching) {
     payload: !caching,
   }
 }
+
+export const updateConfigByTestOverview = (testOverview) => ({
+  type: UPDATE_CONFIG,
+  payload: {
+    url: testOverview.url,
+    location: testOverview.location,
+    caching: testOverview.caching,
+    mobile: testOverview.mobile,
+    activityTimeout: testOverview.activityTimeout,
+    speedKitConfig: testOverview.speedKitConfig,
+  }
+})

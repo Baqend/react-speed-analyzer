@@ -22,8 +22,9 @@ export const resetTest = () => ({
  * Checks the status of a given test and subscribes to the result.
  * @param testId The id of the test to be monitored.
  */
-export const monitorTest = (testId, bulkTest) => ({
+export const monitorTest = (testId, onAfterFinish) => ({
   'BAQEND': async ({ dispatch }) => {
+    // debugger
     dispatch({ type: MONITOR_TEST })
 
     // let testOverview
@@ -32,21 +33,21 @@ export const monitorTest = (testId, bulkTest) => ({
     // } else {
     //   testOverview = await dispatch(getTestOverview({ testId }))
     // }
-    const testOverview = await dispatch(subscribeToTestOverview({ testId }))
+    const testOverview = await dispatch(subscribeToTestOverview({ testId, onAfterFinish }))
     const { competitorTestResult, speedKitTestResult } = testOverview
 
     dispatch(updateConfigByTestOverview(testOverview))
 
     if (testOverview.hasFinished) {
-      dispatch(loadTestResults({ competitorTestResult, speedKitTestResult }))
+      // dispatch(loadTestResults({ competitorTestResult, speedKitTestResult }))
     } else {
       const checkTestRunnterInterval = dispatch(checkTestStatus({ competitorTestResult }))
-      dispatch(subscribeToTestResults({
-        testOverview,
-        competitorTestResult,
-        speedKitTestResult,
-        checkTestRunnterInterval
-      }))
+      // dispatch(subscribeToTestResults({
+      //   testOverview,
+      //   competitorTestResult,
+      //   speedKitTestResult,
+      //   checkTestRunnterInterval
+      // }))
     }
   }
 })
@@ -80,7 +81,7 @@ const getTestOverview = ({ testId }) => ({
   }
 })
 
-const subscribeToTestOverview = ({ testId }) => ({
+const subscribeToTestOverview = ({ testId, onAfterFinish }) => ({
   'BAQEND': async ({ dispatch, getState, db }) => {
     const testOverviewStream = db.TestOverview.find().equal('id', `/db/TestOverview/${testId}`).resultStream()
     return new Promise((resolve, reject) => {
@@ -92,7 +93,10 @@ const subscribeToTestOverview = ({ testId }) => ({
             payload: testOverview
           })
           if (testOverview.hasFinished) {
+            // const { competitorTestResult, speedKitTestResult } = testOverview
             testOverviewSubscription && testOverviewSubscription.unsubscribe()
+            onAfterFinish && onAfterFinish({ testId })
+            // dispatch(loadTestResults({ competitorTestResult, speedKitTestResult }))
           }
           resolve(testOverview)
         }
@@ -107,7 +111,7 @@ const updateConfigByTestOverview = (testOverview) => ({
     url: testOverview.url,
     location: testOverview.location,
     caching: testOverview.caching,
-    isMobile: testOverview.mobile,
+    mobile: testOverview.mobile,
     activityTimeout: testOverview.activityTimeout,
     speedKitConfig: testOverview.speedKitConfig,
   }
