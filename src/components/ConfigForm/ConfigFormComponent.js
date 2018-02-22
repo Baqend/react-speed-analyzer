@@ -42,12 +42,6 @@ export const getDefaultSpeedKitConfig = (url = '') => ({
   ]
 })
 
-const testConfig = {
-  appName: "makefast-dev",
-  whitelist: [{ host: [ /^(?:[\w-]*\.){0,3}(?:alibaba\.)/, /sc01\.alicdn\.com/, /sc02\.alicdn\.com/, /g\.alicdn\.com/, /img\.alicdn\.com/, /i\.alicdn\.com/, /is\.alicdn\.com/, /u\.alicdn\.com/, /gw\.alicdn\.com/ ] }],
-  userAgentDetection: false
-}
-
 class ConfigFormComponent extends Component {
   constructor(props) {
     super(props)
@@ -116,6 +110,7 @@ class ConfigFormComponent extends Component {
   handleWhiteListDomainClick = (e, domain) => {
     const checked = e.target.checked
     try {
+      // eslint-disable-next-line no-eval
       const config = eval(`(${this.state.speedKitConfig})`)
 
       if (!config.whitelist) config.whitelist = []
@@ -150,6 +145,7 @@ class ConfigFormComponent extends Component {
     if (nextProps.config.speedKitConfig) {
       let speedKitConfig
       try {
+        // eslint-disable-next-line no-eval
         speedKitConfig = stringifyObject(eval(`(${nextProps.config.speedKitConfig})`), { indent: '  ' })
       } catch(e) {
         speedKitConfig = nextProps.config.speedKitConfig
