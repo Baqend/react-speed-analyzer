@@ -32,7 +32,7 @@ class ConfigForm extends Component {
   }
 
   onMobileSwitch = () => {
-    this.props.actions.handleMobileSwitch(this.props.config.isMobile)
+    this.props.actions.handleMobileSwitch(this.props.config.mobile)
   }
 
   onCachingSwitch = () => {

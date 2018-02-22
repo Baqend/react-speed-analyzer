@@ -85,6 +85,7 @@
     "redux-baqend": "git://github.com/Baqend/redux-baqend.git#thunk",
     "redux-logger": "^3.0.6",
     "slick-carousel": "^1.8.1",
+    "stringify-object": "^3.2.2",
     "style-loader": "0.20.2",
     "sw-precache-webpack-plugin": "0.11.4",
     "tachyons": "^4.9.0",

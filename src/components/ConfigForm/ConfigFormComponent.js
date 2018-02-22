@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 
 import Toggle from 'react-toggle'
 // import CodeMirror from 'react-codemirror'
+import stringifyObject from 'stringify-object'
 import { Controlled as CodeMirror } from 'react-codemirror2'
 
 import { getTLD } from '../../helper/configHelper'
@@ -25,7 +26,6 @@ export function splitUrl(url) {
       hostname = hostname.substr(hostname.indexOf('www.') + 4)
     }
     if (hostname && url.indexOf(hostname) !== -1 ) {
-      console.log(hostname, url)
       const parts = url.split(hostname)
       return [parts[0], hostname, parts[1]]
     }
@@ -35,31 +35,45 @@ export function splitUrl(url) {
   }
 }
 
-export const getDefaultSpeedKitConfig = (url = '') => (
-  `{
-    "appName": "makefast",
-    "whitelist": [
-      { "host": [ "${getTLD(url)}" ] }
-    ]
-  }`
-)
+export const getDefaultSpeedKitConfig = (url = '') => ({
+  appName: "makefast",
+  whitelist: [
+    { host: [ `${getTLD(url)}` ] }
+  ]
+})
+
+const testConfig = {
+  appName: "makefast-dev",
+  whitelist: [{ host: [ /^(?:[\w-]*\.){0,3}(?:alibaba\.)/, /sc01\.alicdn\.com/, /sc02\.alicdn\.com/, /g\.alicdn\.com/, /img\.alicdn\.com/, /i\.alicdn\.com/, /is\.alicdn\.com/, /u\.alicdn\.com/, /gw\.alicdn\.com/ ] }],
+  userAgentDetection: false
+}
 
 class ConfigFormComponent extends Component {
   constructor(props) {
     super(props)
     this.state = {
       showAdvancedConfig: props.showAdvancedConfig,
-      speedKitConfig: getDefaultSpeedKitConfig(),
+      speedKitConfig: null,
       whiteListCandidates: [],
     }
+    // console.log(stringifyObject(this.state.speedKitConfig, { indent: '  ' }))
+    // const obj = eval(`(${this.state.speedKitConfig})`)
+    // console.log(obj)
+    // debugger
   }
 
   handleUrlChange = (changeEvent) => {
     this.props.onUrlChange(changeEvent.target.value)
 
-    const speedKitConfig = getDefaultSpeedKitConfig(changeEvent.target.value)
-    if(this.state.showAdvancedConfig) {
-      this.setState({ speedKitConfig }, () => {
+    if(splitUrl(this.props.config.url)[1] !== splitUrl(changeEvent.target.value)[1]) {
+      let speedKitConfig
+      if (this.state.showAdvancedConfig) {
+        speedKitConfig = stringifyObject(getDefaultSpeedKitConfig(changeEvent.target.value), { indent: '  ' })
+      } else {
+        speedKitConfig = null
+      }
+      const whiteListCandidates = []
+      this.setState({ speedKitConfig, whiteListCandidates }, () => {
         this.props.onSpeedKitConfigChange(speedKitConfig)
       })
     }
@@ -84,7 +98,13 @@ class ConfigFormComponent extends Component {
   toggleAdvancedConfig = () => {
     const showAdvancedConfig = !this.state.showAdvancedConfig
     if (showAdvancedConfig) {
-      this.props.onSpeedKitConfigChange(this.state.speedKitConfig)
+      let speedKitConfig
+      if (!this.state.speedKitConfig) {
+        speedKitConfig = stringifyObject(getDefaultSpeedKitConfig(this.props.config.url), { indent: '  ' })
+      } else {
+        speedKitConfig = this.state.speedKitConfig
+      }
+      this.props.onSpeedKitConfigChange(speedKitConfig)
     } else {
       this.props.onSpeedKitConfigChange(null)
     }
@@ -96,7 +116,7 @@ class ConfigFormComponent extends Component {
   handleWhiteListDomainClick = (e, domain) => {
     const checked = e.target.checked
     try {
-      const config = JSON.parse(this.state.speedKitConfig)
+      const config = eval(`(${this.state.speedKitConfig})`)
 
       if (!config.whitelist) config.whitelist = []
       if (!config.whitelist[0]) config.whitelist[0] = { host: [] }
@@ -108,12 +128,13 @@ class ConfigFormComponent extends Component {
         config.whitelist[0].host.splice(config.whitelist[0].host.indexOf(domain.url), 1)
       }
 
-      const value = JSON.stringify(config, null, 2)
+      const value = stringifyObject(config, { indent: '  ' })
       this.setState({ speedKitConfig: value }, () => {
         this.props.onSpeedKitConfigChange(value)
       })
     } catch (e) {
       alert("Your config JSON seems not to be valid")
+      return false
     }
   }
 
@@ -127,7 +148,13 @@ class ConfigFormComponent extends Component {
       this.setState({ whiteListCandidates: nextProps.whiteListCandidates })
     }
     if (nextProps.config.speedKitConfig) {
-      this.setState({ speedKitConfig: nextProps.config.speedKitConfig })
+      let speedKitConfig
+      try {
+        speedKitConfig = stringifyObject(eval(`(${nextProps.config.speedKitConfig})`), { indent: '  ' })
+      } catch(e) {
+        speedKitConfig = nextProps.config.speedKitConfig
+      }
+      this.setState({ speedKitConfig })
     }
   }
 
@@ -139,7 +166,7 @@ class ConfigFormComponent extends Component {
             <span className="flex-auto w-100 text-right">Desktop</span>
             <Toggle
               className="mh1"
-              defaultChecked={this.props.config.isMobile}
+              defaultChecked={this.props.config.mobile}
               icons={false}
               onChange={this.handleMobileSwitch}
             />
@@ -174,7 +201,7 @@ class ConfigFormComponent extends Component {
                 <span className="flex-auto w-100">Mobile</span>
                 <Toggle
                   className="ml1"
-                  defaultChecked={this.props.config.isMobile}
+                  defaultChecked={this.props.config.mobile}
                   icons={false}
                   onChange={this.handleMobileSwitch}
                 />
@@ -203,6 +230,16 @@ class ConfigFormComponent extends Component {
           <div className="flex-grow-1 flex-shrink-0" style={{ maxWidth: '100%' }}>
             <div className="ph2">
               <h5 className="mv1 text-center">Speed Kit Config</h5>
+              <div className="pt1">
+                <CodeMirror
+                  value={this.state.speedKitConfig}
+                  onBeforeChange={(editor, data, value) => {
+                    this.setState({ speedKitConfig: value }, () => {
+                      this.props.onSpeedKitConfigChange(value)
+                    })
+                  }}
+                />
+              </div>
               {this.state.whiteListCandidates.length > 0 && (
                 <div className="mt2" style={{ marginLeft: -8, marginRight: -8 }}>
                   {this.state.whiteListCandidates.map(domain => (
@@ -215,16 +252,6 @@ class ConfigFormComponent extends Component {
                   ))}
                 </div>
               )}
-              <div className="pt1">
-                <CodeMirror
-                  value={this.state.speedKitConfig}
-                  onBeforeChange={(editor, data, value) => {
-                    this.setState({ speedKitConfig: value }, () => {
-                      this.props.onSpeedKitConfigChange(value)
-                    })
-                  }}
-                />
-              </div>
             </div>
           </div>
         </div>
