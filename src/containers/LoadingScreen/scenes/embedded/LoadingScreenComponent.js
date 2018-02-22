@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import './SpinnerComponent.css'
+import './LoadingScreenComponent.css'
 
 import Spinner from 'components/Spinner'
-import DeviceContainer from '../../components/DeviceContainer/DeviceContainer'
+import DeviceContainer from 'components/DeviceContainer/DeviceContainer'
 import PageSpeedInsights from '../../components/PageSpeedInsights/PageSpeedInsights'
 
 import Carousel, {

@@ -4,7 +4,7 @@ import { Provider } from 'react-redux'
 import '../styles/index_modules.css'
 
 import store from '../store/store_modules'
-import Spinner from './StartingScreen/scenes/spinner'
+import LoadingScreen from './LoadingScreen/scenes/embedded'
 
 class App extends Component {
   render() {
@@ -13,7 +13,7 @@ class App extends Component {
         <div id="wrapper">
           <div id="main">
             <div className="content">
-              <Spinner { ...this.props } />
+              <LoadingScreen { ...this.props } />
             </div>
           </div>
         </div>

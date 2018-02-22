@@ -32,7 +32,7 @@ window.startTest = (url) => fetch(`https://${process.env.REACT_APP_BAQEND}.app.b
 
 if (process.env.NODE_ENV === 'development') {
   if (process.env.REACT_APP_SCREEN_TYPE === 'result') {
-    window.speedKitAnalyzer.renderResult('uECZ6qtest')
+    window.speedKitAnalyzer.renderResult('S5oS1Zalibaba')
   }
   else if (process.env.REACT_APP_SCREEN_TYPE === 'test') {
     window.startTest('www.alibaba.com').then(res => {

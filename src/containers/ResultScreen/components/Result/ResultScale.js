@@ -76,9 +76,7 @@ const calculateMaxTimeForRequests = (requests, competitorTime) => {
   return Math.max(competitorTime, (0.0184884 * requests + 0.610465) * 1000)
 
 }
-const calculateOffset = (maxTime, time) => {
-  return Math.min(95, time / maxTime * 100)
-}
+const calculateOffset = (maxTime, time) => Math.min(95, time / maxTime * 100)
 
 const calculateMargin = (containerWidth, offset1, offset2, order) => {
   if (offset2 && order === 2) {

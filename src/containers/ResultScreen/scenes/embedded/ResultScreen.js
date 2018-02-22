@@ -4,9 +4,7 @@ import PropTypes from 'prop-types'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
-import { prepareTest, startTest } from 'actions/startTest'
-import { resetTest, monitorTest } from 'actions/monitorTest'
-import { terminateTest } from 'actions/terminateTest'
+import { loadResult } from 'actions/result'
 
 import ResultScreenComponent from './ResultScreenComponent'
 
@@ -20,12 +18,11 @@ class ResultScreen extends Component {
     }
   }
 
-  loadTestResult = ({ testId }) => {
-    if (testId) {
-      this.props.actions.monitorTest(testId)
-        .catch((e) => {
-          console.log(e)
-        })
+  loadTestResult = async ({ testId }) => {
+    try {
+      await this.props.actions.loadResult(testId)
+    } catch(e) {
+      console.log(e)
     }
   }
 
@@ -62,11 +59,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     actions: bindActionCreators({
-      prepareTest,
-      startTest,
-      resetTest,
-      monitorTest,
-      terminateTest,
+      loadResult,
     }, dispatch),
   }
 }

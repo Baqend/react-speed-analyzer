@@ -5,16 +5,10 @@ import {
   CONTINUE_TEST,
   TESTOVERVIEW_LOAD,
   TESTOVERVIEW_NEXT,
-  TESTOVERVIEW_SAVE,
   RATE_LIMITER_GET,
-  CALL_PAGESPEED_INSIGHTS_GET,
   TEST_STATUS_GET,
-  COMPETITOR_RESULT_NEXT,
-  SPEED_KIT_RESULT_NEXT,
   COMPETITOR_RESULT_LOAD,
   SPEED_KIT_RESULT_LOAD,
-  COMPETITOR_SUBSCRIPTION,
-  SPEED_KIT_SUBSCRIPTION,
   TERMINATE_TEST,
   RESET_TEST_RESULT,
 } from '../actions/types'
@@ -117,17 +111,8 @@ export default function result(state = initialState, action = {}) {
           psiScreenshot: createScreenshot(action.payload.psiScreenshot),
         }
       }
-    // case TESTOVERVIEW_SAVE:
-    //   return { ...state, testOverview: action.payload }
     case RATE_LIMITER_GET:
       return { ...state, isRateLimited: action.payload }
-    // case NORMALIZE_URL_POST:
-    //   return {
-    //     ...state,
-    //     isBaqendApp: action.payload.isBaqendApp,
-    //     isSpeedKitComparison: action.payload.speedkit,
-    //     speedKitVersion: action.payload.speedkitVersion,
-    //   }
     case MONITOR_TEST:
       return { ...state, isStarted: true, isMonitored: true }
     case INIT_TEST:
@@ -136,28 +121,6 @@ export default function result(state = initialState, action = {}) {
       return { ...state, isStarted: true }
     case CONTINUE_TEST:
       return { ...state, isInitiated: true, isStarted: true }
-    // case CALL_PAGESPEED_INSIGHTS_GET:
-    //   return {
-    //     ...state, testOverview: {
-    //       ...state.testOverview,
-    //       psiDomains: action.payload.domains,
-    //       psiRequests: action.payload.requests,
-    //       psiResponseSize: action.payload.bytes,
-    //       psiScreenshot: createScreenshot(action.payload.screenshot),
-    //     }
-    //   }
-    // case START_TEST_COMPETITOR_POST:
-    //   return {
-    //     ...state, testOverview: {
-    //       ...state.testOverview, competitorTestResult: `/db/TestResult/${action.payload.baqendId }`
-    //     }
-    //   }
-    // case START_TEST_SPEED_KIT_POST:
-    //   return {
-    //     ...state, testOverview: {
-    //       ...state.testOverview, speedKitTestResult: `/db/TestResult/${action.payload.baqendId }`
-    //     }
-    //   }
     case TEST_STATUS_GET:
       return { ...state, statusCode: action.payload.statusCode, statusText: action.payload.statusText  }
     case COMPETITOR_RESULT_LOAD:
@@ -180,13 +143,9 @@ export default function result(state = initialState, action = {}) {
         }
       }
       return state
-    // case COMPETITOR_SUBSCRIPTION:
-    //   return { ...state, competitorSubscription: action.payload }
-    // case SPEED_KIT_SUBSCRIPTION:
-    //   return { ...state, speedKitSubscription: action.payload }
     case TERMINATE_TEST:
       const metrics = verifyMainMetric(state)
-      const errors = getResultErrors(state)
+      const errors = getResultErrors({ ...state, ...metrics })
       return {
         ...state,
         ...errors,
