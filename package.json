@@ -85,7 +85,6 @@
     "redux-baqend": "git://github.com/Baqend/redux-baqend.git#thunk",
     "redux-logger": "^3.0.6",
     "slick-carousel": "^1.8.1",
-    "stringify-object": "^3.2.2",
     "style-loader": "0.20.2",
     "sw-precache-webpack-plugin": "0.11.4",
     "tachyons": "^4.9.0",
@@ -95,6 +94,21 @@
     "webpack-dev-server": "2.11.1",
     "webpack-manifest-plugin": "1.3.2",
     "whatwg-fetch": "^2.0.3"
+  },
+  "devDependencies": {
+    "babel-eslint": "8.0.3",
+    "baqend-coding-standard": "^1.1.2",
+    "eslint": "4.13.1",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-config-react-app": "^2.0.1",
+    "eslint-loader": "1.9.0",
+    "eslint-plugin-flowtype": "2.40.1",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-jsx-a11y": "6.0.3",
+    "eslint-plugin-react": "^7.4.0",
+    "get-own-enumerable-property-symbols": "^2.0.1",
+    "is-obj": "^1.0.1",
+    "is-regexp": "^1.0.0"
   },
   "jest": {
     "collectCoverageFrom": [
@@ -137,17 +151,5 @@
   },
   "eslintConfig": {
     "extends": "react-app"
-  },
-  "devDependencies": {
-    "babel-eslint": "8.0.3",
-    "baqend-coding-standard": "^1.1.2",
-    "eslint": "4.13.1",
-    "eslint-config-airbnb": "^16.1.0",
-    "eslint-config-react-app": "^2.0.1",
-    "eslint-loader": "1.9.0",
-    "eslint-plugin-flowtype": "2.40.1",
-    "eslint-plugin-import": "^2.8.0",
-    "eslint-plugin-jsx-a11y": "6.0.3",
-    "eslint-plugin-react": "^7.4.0"
   }
 }
