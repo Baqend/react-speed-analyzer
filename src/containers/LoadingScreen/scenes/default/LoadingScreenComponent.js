@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import Spinner from 'components/Spinner'
 // import ConfigForm from 'components/ConfigForm/ConfigForm'
 
-import Devices from '../../components/DeviceContainer/DeviceContainer'
+import DeviceContainer from 'components/DeviceContainer/DeviceContainer'
 import PageSpeedInsights from '../../components/PageSpeedInsights/PageSpeedInsights'
 import Carousel, {
   renderDefaultPage,
@@ -89,7 +89,7 @@ class StartingScreenComponent extends Component {
 
     return (
       <div className="loading-screen flex-column flex-grow-1 flex items-center">
-        <Devices
+        <DeviceContainer
           showDevice={!this.state.showAdvancedConfig}
           mobile={this.props.config.mobile}
           showRight={this.state.showCarousel}

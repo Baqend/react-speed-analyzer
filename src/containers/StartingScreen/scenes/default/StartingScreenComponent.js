@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import ConfigForm from 'components/ConfigForm/ConfigForm'
 
-import Devices from '../../components/DeviceContainer/DeviceContainer'
+import DeviceContainer from 'components/DeviceContainer/DeviceContainer'
 
 class StartingScreenComponent extends Component {
   constructor(props) {
@@ -41,7 +41,7 @@ class StartingScreenComponent extends Component {
   render() {
     return (
       <div className="loading-screen flex-column flex-grow-1 flex items-center">
-        <Devices
+        <DeviceContainer
           showDevice={!this.state.showAdvancedConfig}
           mobile={this.props.config.mobile}
           showRight={this.props.result.isStarted}
