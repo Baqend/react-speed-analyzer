@@ -7,7 +7,6 @@
 @import "slick-carousel/slick/slick.scss";
 @import "slick-carousel/slick/slick-theme.scss";
 @import "codemirror/lib/codemirror.css";
-@import "react-tippy/dist/tippy.css";
 @import 'tachyons/src/_media-queries';
 
 @import "./lib/animate.css";

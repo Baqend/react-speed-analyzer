@@ -5,7 +5,6 @@
 @import 'tachyons/src/_media-queries';
 
 @import "codemirror/lib/codemirror.css";
-@import "react-tippy/dist/tippy.css";
 
 @import "./lib/animate.css";
 @import "./lib/toggle.css";
