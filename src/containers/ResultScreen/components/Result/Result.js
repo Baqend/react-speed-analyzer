@@ -4,7 +4,7 @@ import './ResultScale.css'
 
 import React, { Component } from 'react'
 import Collapse from 'react-css-collapse'
-import { Tooltip } from 'react-tippy'
+import ReactTooltip from 'react-tooltip'
 
 import ResultVideos from './ResultVideos'
 import ResultScale from './ResultScale'
@@ -54,9 +54,12 @@ class Result extends Component {
               )}
             </small>
             <br/>
-            <Tooltip title={tooltipText[mainMetric]} arrow>
+            <div data-tip data-for={mainMetric + 'CompetitorData'}>
               <b>{ competitorData[mainMetric] }ms</b>
-            </Tooltip>
+            </div>
+            <ReactTooltip id={mainMetric + 'CompetitorData'} type='dark' place='top' effect='solid'>
+              <span>{tooltipText[mainMetric]}</span>
+            </ReactTooltip>
           </div>
           {!speedKitError && (
             <div className="w-50 flex-auto text-center pa1 pl4 pl0-ns" style={{ background: '#f6f6f6' }}>
@@ -68,9 +71,12 @@ class Result extends Component {
                 )}
               </small>
               <br/>
-              <Tooltip title={tooltipText[mainMetric]} arrow>
+              <div data-tip data-for={mainMetric + 'SpeedKitData'}>
                 <b>{ speedKitData[mainMetric] }ms</b>
-              </Tooltip>
+              </div>
+              <ReactTooltip id={mainMetric + 'SpeedKitData'} type='dark' place='top' effect='solid'>
+                <span>{tooltipText[mainMetric]}</span>
+              </ReactTooltip>
             </div>
           )}
         </div>
@@ -102,7 +108,7 @@ class Result extends Component {
     return (
       <div className="flex">
         <div className="pa1 w-33 flex-auto text-center">
-          <Tooltip title="Number of unique hosts referenced by the page." position="top" arrow>
+          <div data-tip data-for='psiDomains'>
             <small className="faded">Domains</small>
             <br />
             {psiDomains ? (
@@ -110,10 +116,13 @@ class Result extends Component {
             ) : (
               <strong>-</strong>
             )}
-          </Tooltip>
+          </div>
+          <ReactTooltip id='psiDomains' type='dark' place='top' effect='solid'>
+            <span>Number of unique hosts referenced by the page.</span>
+          </ReactTooltip>
         </div>
         <div className="pa1 w-33 flex-auto text-center">
-          <Tooltip title="Number of HTTP resources loaded by the page." position="top" arrow>
+          <div data-tip data-for='psiRequests'>
             <small className="faded">Requests</small>
             <br />
             {psiRequests ? (
@@ -121,10 +130,13 @@ class Result extends Component {
             ) : (
               <strong>-</strong>
             )}
-          </Tooltip>
+          </div>
+          <ReactTooltip id='psiRequests' type='dark' place='top' effect='solid'>
+            <span>Number of HTTP resources loaded by the page.</span>
+          </ReactTooltip>
         </div>
         <div className="pa1 w-33 flex-auto text-center" style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>
-          <Tooltip title="Number of uncompressed response bytes for resources on the page." position="top" arrow>
+          <div data-tip data-for='psiResponseSize'>
             <small className="faded">Response Size</small>
             <br />
             {psiResponseSize ? (
@@ -132,7 +144,10 @@ class Result extends Component {
             ) : (
               <strong>-</strong>
             )}
-          </Tooltip>
+          </div>
+          <ReactTooltip id='psiResponseSize' type='dark' place='top' effect='solid'>
+            <span>Number of uncompressed response bytes for resources on the page.</span>
+          </ReactTooltip>
         </div>
       </div>
     )
