@@ -184,6 +184,7 @@ function createTestOverview(db, {
     testOverview.url = url;
     testOverview.whitelist = whitelist;
     testOverview.caching = caching;
+    testOverview.location = location;
     testOverview.mobile = mobile;
     testOverview.hasFinished = false;
     testOverview.speedKitConfig = speedKitConfig;
@@ -360,3 +361,4 @@ exports.post = function bulkTestPost(db, req, res) {
 };
 
 exports.createBulkTest = createBulkTest;
+exports.updateBulkTest = updateBulkTest;

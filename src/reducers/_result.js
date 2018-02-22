@@ -11,6 +11,7 @@ import {
   SPEED_KIT_RESULT_LOAD,
   TERMINATE_TEST,
   RESET_TEST_RESULT,
+  RESET_TEST_STATUS,
 } from '../actions/types'
 
 import { generateRules } from '../helper/configHelper'
@@ -165,6 +166,10 @@ export default function result(state = initialState, action = {}) {
         isBaqendApp: state.isBaqendApp,
         isSpeedKitComparison: state.isSpeedKitComparison,
         speedKitVersion: state.speedKitVersion,
+      }
+    case RESET_TEST_STATUS:
+      return {
+        ...initialState
       }
     default:
       return state

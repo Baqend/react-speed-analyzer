@@ -44,7 +44,6 @@ class StartingScreenComponent extends Component {
         <DeviceContainer
           showDevice={!this.state.showAdvancedConfig}
           mobile={this.props.config.mobile}
-          showRight={this.props.result.isStarted}
           backgroundImage={this.props.result.testOverview.psiScreenshot}
           left={
             <div className="left">

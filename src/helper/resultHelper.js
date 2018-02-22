@@ -51,7 +51,7 @@ export function resultIsValid(competitorResult, speedKitResult, mainMetric, seco
   if (mainCompetitor > 0 && mainSpeedKit > 0) {
     if ((mainSpeedKit / mainCompetitor < 0.95) || (mainCompetitor - mainSpeedKit > 200)) {
       return true
-    } else if (mainSpeedKit <= mainCompetitor) {
+    } else if (mainSpeedKit + 50 <= mainCompetitor) {
       if(secondarySpeedKit / secondaryCompetitor < 0.9) {
         return true
       }

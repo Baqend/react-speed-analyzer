@@ -121,7 +121,8 @@ function getDomains(testResult, db) {
 
   const domains = Object.keys(testResult.runs['1'].firstView.domains);
   if (!domains.length) {
-    db.log.warn(`Analyzed domains empty.`, {testResult});
+    db.log.warn(`Analyzed domains empty.`, { testResult });
+    throw new Error(`No testdata to analyze domains ${testResult.url}`);
   }
 
   return domains;

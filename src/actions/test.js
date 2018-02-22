@@ -23,36 +23,33 @@ export const prepareTest = (url = null) => ({
     })
     try {
       if (!isURL(url)) {
-        throw new Error("Input is not a valid url")
+        throw new Error({ message: "Input is not a valid url" })
       }
-      const rateLimitResult = await db.modules.get('rateLimiter')
+      // const rateLimitResult = await db.modules.get('rateLimiter')
+      // dispatch({
+      //   type: RATE_LIMITER_GET,
+      //   payload: rateLimitResult.isRateLimited,
+      // })
+      const { mobile } = getState().config
+      const urlInfo = await db.modules.post('normalizeUrl', { urls: url, mobile: mobile })
+      if (!urlInfo[0]) {
+        throw new Error({ message: "Input is not a valid url" })
+      }
+      if (urlInfo[0].isBaqendApp) {
+        throw new Error({ message: "Url is already a Baqend app" })
+      }
       dispatch({
-        type: RATE_LIMITER_GET,
-        payload: rateLimitResult.isRateLimited,
+        type: NORMALIZE_URL_POST,
+        payload: urlInfo[0]
       })
-
-      if(!rateLimitResult.isRateLimited) {
-        const { mobile } = getState().config
-        const urlInfo = await db.modules.post('normalizeUrl', { urls: url, mobile: mobile })
-        if (!urlInfo[0]) {
-          throw new Error("Input is not a valid url")
-        }
-        if (urlInfo[0].isBaqendApp) {
-          throw new Error("Url is already a Baqend app")
-        }
-        dispatch({
-          type: NORMALIZE_URL_POST,
-          payload: urlInfo[0]
-        })
-        return urlInfo[0]
-      }
+      return urlInfo[0]
     } catch(e) {
       dispatch({
         type: RESET_TEST_RESULT,
       })
       dispatch({
         type: ADD_ERROR,
-        payload: e,
+        payload: e.message,
       })
       throw e
     }
@@ -91,7 +88,7 @@ export const startTest = (urlInfo = {}) => ({
       })
       dispatch({
         type: ADD_ERROR,
-        payload: e,
+        payload: e.message,
       })
       throw e
     }

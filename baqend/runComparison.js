@@ -1,14 +1,11 @@
 /* eslint-disable comma-dangle, function-paren-newline */
 /* eslint-disable no-restricted-syntax, no-param-reassign */
 
-const { aggregateFields } = require('./helpers');
-const { queueTest, DEFAULT_LOCATION, DEFAULT_ACTIVITY_TIMEOUT } = require('./queueTest');
-const { generateSpeedKitConfig, getTLD } = require('./getSpeedKitUrl');
+const { isRateLimited } = require('./rateLimiter');
+const { queueTest, DEFAULT_ACTIVITY_TIMEOUT } = require('./queueTest');
+const { getTLD } = require('./getSpeedKitUrl');
 const { generateUniqueId } = require('./generateUniqueId');
-const { analyzeUrl } = require('./analyzeUrl');
 const { callPageSpeed } = require('./callPageSpeed');
-
-const fields = ['speedIndex', 'firstMeaningfulPaint', 'ttfb', 'domLoaded', 'fullyLoaded', 'lastVisualChange'];
 
 /**
  * @param db The Baqend instance.
@@ -18,9 +15,11 @@ const fields = ['speedIndex', 'firstMeaningfulPaint', 'ttfb', 'domLoaded', 'full
 function checkComparisonState(db, testOverview, onAfterFinish) {
   if (testOverview.competitorTestResult.hasFinished && testOverview.speedKitTestResult.hasFinished) {
     testOverview.hasFinished = true;
-    onAfterFinish && onAfterFinish(testOverview)
+    if (onAfterFinish) {
+      onAfterFinish(testOverview);
+    }
   }
-  return testOverview.ready().then(() => testOverview.save())
+  return testOverview.ready().then(() => testOverview.save());
 }
 
 function runComparison(db, {
@@ -55,19 +54,25 @@ function runComparison(db, {
 
       return testOverview.save();
     }).then((testOverview) => {
-      resolve(testOverview)
+      resolve(testOverview);
 
-      callPageSpeed(url, mobile).then((pageSpeedInsightsResult) => {
-        return testOverview.partialUpdate()
-          .set('psiDomains', pageSpeedInsightsResult.domains)
-          .set('psiRequests', pageSpeedInsightsResult.requests)
-          .set('psiResponseSize', pageSpeedInsightsResult.bytes)
-          .set('psiScreenshot', pageSpeedInsightsResult.screenshot)
-          .execute()
-      })
+      callPageSpeed(url, mobile).then(pageSpeedInsightsResult => testOverview.partialUpdate()
+        .set('psiDomains', pageSpeedInsightsResult.domains)
+        .set('psiRequests', pageSpeedInsightsResult.requests)
+        .set('psiResponseSize', pageSpeedInsightsResult.bytes)
+        .set('psiScreenshot', pageSpeedInsightsResult.screenshot)
+        .execute()
+      );
 
       const competitorTestRun = queueTest({
-        db, location, caching, url, activityTimeout, priority, isSpeedKitComparison, mobile,
+        db,
+        location,
+        caching,
+        url,
+        activityTimeout,
+        priority,
+        isSpeedKitComparison,
+        mobile,
         isClone: false,
         finish: (testResult) => {
           testOverview.competitorTestResult = testResult;
@@ -78,10 +83,17 @@ function runComparison(db, {
           // }
           return checkComparisonState(db, testOverview, callback);
         }
-      })
+      });
 
       const speedKitTestRun = queueTest({
-        db, location, caching, url, activityTimeout, priority, isSpeedKitComparison, mobile,
+        db,
+        location,
+        caching,
+        url,
+        activityTimeout,
+        priority,
+        isSpeedKitComparison,
+        mobile,
         speedKitConfig,
         skipPrewarm,
         isClone: true,
@@ -90,22 +102,24 @@ function runComparison(db, {
           testOverview.speedKitConfig = testResult.speedKitConfig;
           return checkComparisonState(db, testOverview, callback);
         }
-      })
+      });
 
-      return Promise.all([ competitorTestRun, speedKitTestRun ])
-        .then(([ competitorTestResult, speedKitTestResult ]) => {
+      return Promise.all([competitorTestRun, speedKitTestRun])
+        .then(([competitorTestResult, speedKitTestResult]) => {
           testOverview.competitorTestResult = competitorTestResult;
           testOverview.speedKitTestResult = speedKitTestResult;
           return testOverview.ready().then(() => testOverview.save());
         });
-    })
-
-  })
+    });
+  });
 }
 
 exports.post = (db, req, res) => {
-  const { body } = req;
-  return runComparison(db, body).then(testOverview => res.send(testOverview));
+  // Check if IP is rate-limited
+  if (isRateLimited(req)) {
+    throw new Abort({ message: 'Too many requests', status: 429 });
+  }
+  return runComparison(db, req.body).then(testOverview => res.send(testOverview));
 };
 
 exports.runComparison = runComparison;

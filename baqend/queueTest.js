@@ -46,6 +46,7 @@ function queueTest({
   speedKitConfig = null,
   mobile = false,
   priority = 0,
+  skipPrewarm = false,
   finish = null,
 }) {
   const commandLine = createCommandLineFlags(url, isClone);
@@ -79,7 +80,7 @@ function queueTest({
     device: mobile ? 'iPhone6' : '',
     priority,
     mobile,
-    location,
+    location: location? location:DEFAULT_LOCATION,
   };
 
   const testInfo = {
@@ -89,7 +90,7 @@ function queueTest({
     isSpeedKitComparison: isSpeedKitComparison,
     activityTimeout: activityTimeout,
     testOptions: testOptions,
-    skipPrewarm: false // TODO should be an option that is set by the bulk test after the first test.
+    skipPrewarm: skipPrewarm
   };
 
   // Create a new test result

@@ -2,6 +2,7 @@ const { getMinimalConfig, createSmartConfig, getFallbackConfig, getCacheWarmingC
 const { createTestScript } = require('./createTestScript');
 const { analyzeSpeedKit } = require('./analyzeSpeedKit');
 const { API } = require('./Pagetest');
+const stringifyObject = require('stringify-object');
 
 const PREWARM_RUNS = 2;
 /**
@@ -16,6 +17,7 @@ function executePrewarm(testInfo, db) {
   return getPrewarmConfig(testInfo, db)
     .then(config => {
       if (testInfo.skipPrewarm || !testInfo.isTestWithSpeedKit) {
+        db.log.info(`Prewarm skipped`, {testInfo});
         return config;
       }
 
@@ -61,7 +63,7 @@ function getPrewarmConfig({url, customSpeedKitConfig, isSpeedKitComparison, test
   // Get the config from the actual site if it uses Speed Kit
   if (isSpeedKitComparison) {
     db.log.info(`Extracting config from Website: ${url}`, {url, isSpeedKitComparison});
-    return analyzeSpeedKit(url, db).then(it => it.config).catch(error => {
+    return analyzeSpeedKit(url, db).then(it => stringifyObject(it.config)).catch(error => {
       db.log.warn(`Could not analyze speed kit config`, {url, error: error.stack});
       return getFallbackConfig(url, testOptions.mobile);
     });
@@ -84,6 +86,7 @@ function prewarm(testScript, runs, { url, testOptions }, db) {
   db.log.info(`Executing ${runs} prewarm runs`, {url, testScript});
   return API.runTest(testScript, prewarmOptions, db)
     .then(testId => {
+      new db.Prewarms({ testId }).save().catch();
       db.log.info(`Prewarm done`, {url, testId});
       return testId;
     })

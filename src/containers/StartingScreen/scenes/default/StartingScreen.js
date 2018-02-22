@@ -8,8 +8,8 @@ import StartingScreenComponent from './StartingScreenComponent'
 
 import { getObjectKey } from 'helper/utils'
 
-import { resetConfig } from 'actions/config'
-import { resetResult } from 'actions/result'
+import { handleUrlInput, resetConfig } from 'actions/config'
+import { resetResult, resetTestStatus } from 'actions/result'
 import { prepareTest, startTest } from 'actions/test'
 
 
@@ -42,23 +42,8 @@ class StartingScreen extends Component {
       history.push('/')
       const testOverview = await this.props.actions.startTest(urlInfo)
       history.push(`/test/${getObjectKey(testOverview.id)}`)
-    } catch (e) {}
-  }
-
-  checkTest = (props) => {
-    const { history } = props
-    const { testId } = props.match.params
-    const { isMonitored, isFinished } = props.result
-
-    if (testId && !isMonitored) {
-      this.props.actions.monitorTest(testId).catch((e) => {
-        this.props.actions.resetResult()
-        history.replace('/')
-      })
-    }
-
-    if (testId && isFinished) {
-      history.replace(`/test/${testId}/result`)
+    } catch (e) {
+      this.props.actions.resetTestStatus()
     }
   }
 
@@ -72,6 +57,9 @@ class StartingScreen extends Component {
     }
     const params = this.parseQueryString(this.props.location.search)
     if (params.url) {
+      const { history } = this.props
+      history.push('/')
+      this.props.actions.handleUrlInput(params.url)
       this.startTest(params.url)
     }
     if (params.advanced) {
@@ -111,10 +99,12 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     actions: bindActionCreators({
+      handleUrlInput,
+      resetResult,
+      resetTestStatus,
       resetConfig,
       prepareTest,
       startTest,
-      resetResult,
     }, dispatch),
   }
 }

@@ -1,10 +1,15 @@
 import {
+  RESET_TEST_STATUS,
   RESET_TEST_RESULT,
   TESTOVERVIEW_LOAD,
   COMPETITOR_RESULT_LOAD,
   SPEED_KIT_RESULT_LOAD,
   TERMINATE_TEST,
 } from './types'
+
+export const resetTestStatus = () => ({
+  type: RESET_TEST_STATUS
+})
 
 export const resetResult = () => ({
   'BAQEND': async ({ dispatch }) => {
