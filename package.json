@@ -31,8 +31,15 @@
     "deploy:prod": "npm run deploy:app:prod && npm run deploy:modules:prod",
     "deploy:app:prod": "npm run build:app:prod && baqend deploy --file-dir build --bucket-path www makefast",
     "deploy:modules:prod": "npm run build:modules:prod && baqend deploy -F --file-dir build-modules --bucket-path embedded makefast",
+    "deploy-code:dev": "baqend deploy --code makefast-dev",
+    "deploy-code:staging": "baqend deploy --code makefast-staging",
+    "deploy-code:prod": "baqend deploy --code makefast",
+    "schema-download:dev": "baqend schema download makefast-dev && baqend typings makefast-dev",
+    "schema-upload:dev": "baqend schema upload makefast-dev",
+    "schema-upload:staging": "baqend schema upload makefast-staging",
+    "schema-upload:prod": "baqend schema upload makefast",
+    "build-proxy": "cd makefast-proxy && node build.js",
     "test": "node scripts/test.js --env=jsdom",
-    "flow": "flow"
   },
   "dependencies": {
     "autoprefixer": "7.2.3",
@@ -108,7 +115,8 @@
     "eslint-plugin-react": "^7.4.0",
     "get-own-enumerable-property-symbols": "^2.0.1",
     "is-obj": "^1.0.1",
-    "is-regexp": "^1.0.0"
+    "is-regexp": "^1.0.0",
+    "node-fetch": "^1.7.3",
   },
   "jest": {
     "collectCoverageFrom": [
