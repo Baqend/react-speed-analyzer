@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 
 import Result from './containers/Result'
 import Test from './containers/Test'
+import Embedded from './containers/Embedded'
 
 import 'promise-polyfill'
 import 'whatwg-fetch'
@@ -13,6 +14,9 @@ window.speedKitAnalyzer = {
   },
   renderTest: (testId, callback) => {
     ReactDOM.render(<Test testId={testId} onAfterFinish={callback} />, document.getElementById('speed-kit-analyzer'))
+  },
+  renderAnalyzer: () => {
+    ReactDOM.render(<Embedded />)
   }
 }
 
@@ -40,5 +44,8 @@ if (process.env.NODE_ENV === 'development') {
         alert("test finished")
       })
     })
+  }
+  else if (process.env.REACT_APP_SCREEN_TYPE === 'embedded') {
+    window.speedKitAnalyzer.renderAnalyzer()
   }
 }
