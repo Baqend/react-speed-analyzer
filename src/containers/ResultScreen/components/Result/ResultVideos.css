@@ -36,39 +36,53 @@
 
 .video__wrapper {
   position: relative;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
   &:not(.auto):before {
     content: "";
     display: block;
     position: relative;
     padding-top: 67.5%;
+    background: black;
+    top: 1px;
   }
   .video__wrapper-inner {
     position: absolute;
-    /* z-index: 1; */
+    z-index: 0;
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
     overflow: hidden;
-    box-shadow: 0 0 4px rgba(0,0,0,0.1);
+    border: 1px solid #e8e8e8;
     .relative {
-      background: black
-    }
-    video {
-      margin-left: -1.75%;
-      margin-top: -7.25%;
-      width: 103.8%;
-      min-height: 112%;
-      background: #f8f8f8;
-      border: none;
+      width: 100%;
+      height: 111.35%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: -7.35%;
+      video {
+        width: 104%;
+        /* min-height: 120.5%; */
+        background: #f8f8f8;
+        border: none;
+        z-index: 1;
+        min-height: 100%;
+        flex-shrink: 0;
+      }
       .mobile & {
-        margin-top: initial;
-        top: -6.5%;
-        width: 64.8%;
-        position: relative;
-        margin-left: auto;
-        display: block;
-        margin-right: auto;
+        height: 107%;
+        margin-top: -4.25%;
+        video {
+          margin-top: initial;
+          width: 64.8%;
+          min-height: 100%;
+          position: relative;
+          margin-left: auto;
+          display: block;
+          margin-right: auto;
+        }
       }
     }
   }
@@ -89,6 +103,7 @@
     overflow: hidden;
     padding-left: 10px;
     text-shadow: 0 0px 16px rgba(0,0,0,0.1);
+    z-index: 2;
     &:hover {
       color: white;
     }
@@ -97,9 +112,11 @@
     position: absolute;
     bottom: 0px;
     width: 100%;
+    left: 0;
     display: flex;
     background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.75));
     height: 20px;
+    z-index: 2;
     .video__wrapper-progress-inner {
       width: 100%;
       margin: 8px;

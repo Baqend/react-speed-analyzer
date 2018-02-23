@@ -115,7 +115,7 @@ class ResultVideos extends Component {
         <div className={`w-50 pa2 pv4-ns ph6-ns ${this.props.testOverview.mobile ? 'mobile' : ''}`}>
           <div className="video__wrapper">
             <div className="video__wrapper-inner">
-              <div className="relative" style={{ width: '100%', height: '100%'}}>
+              <div className="relative">
                 <video id="competitorVideo"
                   playsInline
                   controls={false}
@@ -149,7 +149,7 @@ class ResultVideos extends Component {
           <div className={`w-50 speedKitVideo pa2 pv4-ns ph6-ns ${this.props.testOverview.mobile ? 'mobile' : ''}`}>
             <div className="video__wrapper">
               <div className="video__wrapper-inner">
-                <div className="relative" style={{ width: '100%', height: '100%'}}>
+                <div className="relative">
                   <video id="speedKitVideo"
                     playsInline
                     controls={false}
