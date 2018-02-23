@@ -49,7 +49,7 @@ class ResultScreen extends Component {
     if (this.props.match.params.testId !== nextProps.match.params.testId) {
       window.scrollTo(0, 0)
       this.props.actions.resetResult()
-      this.loadTestResult(nextProps.props.match.params.testId)
+      this.loadTestResult(nextProps.match.params.testId)
     }
   }
 
