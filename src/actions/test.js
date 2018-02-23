@@ -11,6 +11,7 @@ import {
 } from './types'
 
 import { isURL } from '../helper/utils'
+import stringifyObject from 'lib/stringify-object'
 
 /**
  * Prepares the test before its execution (check rate limiting and normalize url).
@@ -67,8 +68,18 @@ export const startTest = (urlInfo = {}) => ({
       dispatch({
         type: START_TEST,
       })
-      const { url, location, caching, mobile, speedKitConfig, activityTimeout } = getState().config
-      const { speedkit, speedkitVersion } = urlInfo
+      let { url, location, caching, mobile, speedKitConfig, activityTimeout } = getState().config
+      let { speedkit, speedkitVersion } = urlInfo
+
+      if (mobile && speedKitConfig) {
+        // eslint-disable-next-line no-eval
+        const speedKitConfigObj = eval(`(${speedKitConfig})`)
+        if (!speedKitConfigObj.userAgentDetection)  {
+          speedKitConfigObj.userAgentDetection = true
+        }
+        speedKitConfig = stringifyObject(speedKitConfigObj, { indent: '  ' })
+      }
+
 
       const testOverview = await db.modules.post('runComparison', {
         url,

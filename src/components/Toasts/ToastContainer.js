@@ -14,7 +14,7 @@ class ToastContainer extends Component {
     return (
       <div className="toasts">
         {this.props.errors.map(error => {
-          const { message } = error
+          const message = error.message ? error.message : error
           return (
             <Toast key={message} message={message} dismiss={() => this.props.actions.removeError(error)} />
           )
@@ -26,7 +26,7 @@ class ToastContainer extends Component {
 
 
 ToastContainer.propTypes = {
-  errors: PropTypes.arrayOf(PropTypes.object).isRequired
+  errors: PropTypes.arrayOf(PropTypes.any).isRequired
 }
 
 function mapStateToProps(state) {
