@@ -39,7 +39,7 @@
     "schema-upload:staging": "baqend schema upload makefast-staging",
     "schema-upload:prod": "baqend schema upload makefast",
     "build-proxy": "cd makefast-proxy && node build.js",
-    "test": "node scripts/test.js --env=jsdom",
+    "test": "node scripts/test.js --env=jsdom"
   },
   "dependencies": {
     "autoprefixer": "7.2.3",
