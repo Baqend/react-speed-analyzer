@@ -116,7 +116,7 @@
     "get-own-enumerable-property-symbols": "^2.0.1",
     "is-obj": "^1.0.1",
     "is-regexp": "^1.0.0",
-    "node-fetch": "^1.7.3",
+    "node-fetch": "^1.7.3"
   },
   "jest": {
     "collectCoverageFrom": [
