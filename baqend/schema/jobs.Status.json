@@ -1,0 +1,52 @@
+{
+  "class": "/db/jobs.Status",
+  "superClass": "/db/Object",
+  "acl": {
+    "load": {
+      "/db/Role/2": "allow"
+    },
+    "insert": {
+      "/db/Role/2": "allow"
+    },
+    "update": {
+      "/db/Role/2": "allow"
+    },
+    "delete": {
+      "/db/Role/2": "allow"
+    },
+    "query": {
+      "/db/Role/2": "allow"
+    },
+    "schemaAdd": {
+      "/db/Role/2": "allow"
+    },
+    "schemaReplace": {
+      "/db/Role/2": "allow"
+    },
+    "schemaSubclass": {
+      "/db/Role/2": "allow"
+    }
+  },
+  "fields": {
+    "cronjob": {
+      "name": "cronjob",
+      "type": "/db/jobs.Definition",
+      "order": 0
+    },
+    "executedAt": {
+      "name": "executedAt",
+      "type": "/db/DateTime",
+      "order": 1
+    },
+    "status": {
+      "name": "status",
+      "type": "/db/String",
+      "order": 2
+    },
+    "error": {
+      "name": "error",
+      "type": "/db/String",
+      "order": 3
+    }
+  }
+}

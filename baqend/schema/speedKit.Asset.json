@@ -1,0 +1,72 @@
+{
+  "class": "/db/speedKit.Asset",
+  "superClass": "/db/Object",
+  "acl": {
+    "load": {
+      "/db/Role/1": "allow"
+    },
+    "insert": {
+      "/db/Role/1": "allow"
+    },
+    "update": {
+      "/db/Role/1": "allow"
+    },
+    "delete": {
+      "/db/Role/1": "allow"
+    },
+    "query": {
+      "/db/Role/1": "allow"
+    },
+    "schemaAdd": {
+      "/db/Role/1": "allow"
+    },
+    "schemaReplace": {
+      "/db/Role/1": "allow"
+    },
+    "schemaSubclass": {
+      "/db/Role/1": "allow"
+    }
+  },
+  "fields": {
+    "url": {
+      "name": "url",
+      "type": "/db/String",
+      "order": 0
+    },
+    "extendedURL": {
+      "name": "extendedURL",
+      "type": "/db/String",
+      "order": 1
+    },
+    "eTag": {
+      "name": "eTag",
+      "type": "/db/String",
+      "order": 2
+    },
+    "lastModified": {
+      "name": "lastModified",
+      "type": "/db/DateTime",
+      "order": 3
+    },
+    "contentType": {
+      "name": "contentType",
+      "type": "/db/String",
+      "order": 4
+    },
+    "mediaType": {
+      "name": "mediaType",
+      "type": "/db/String",
+      "order": 5
+    },
+    "contentHash": {
+      "name": "contentHash",
+      "type": "/db/String",
+      "order": 6
+    },
+    "variation": {
+      "name": "variation",
+      "type": "/db/String",
+      "order": 7
+    }
+  }
+}

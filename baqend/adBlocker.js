@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 
 const AD_SERVER_URL = 'https://raw.githubusercontent.com/easylist/easylist/master/easylist/easylist_adservers.txt';
-const AD_LOCAL_URL = 'https://makefast.app.baqend.com/v1/file/www/assets/selfMaintainedAdList';
+const AD_LOCAL_URL = 'https://makefast.app.baqend.com/v1/file/www/selfMaintainedAdList';
 
 let adHosts;
 
