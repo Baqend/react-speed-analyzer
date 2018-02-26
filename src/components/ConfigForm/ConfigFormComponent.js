@@ -142,7 +142,7 @@ class ConfigFormComponent extends Component {
     if (nextProps.whiteListCandidates !== this.props.whiteListCandidates) {
       this.setState({ whiteListCandidates: nextProps.whiteListCandidates })
     }
-    if (nextProps.config.speedKitConfig) {
+    if (!this.props.config.speedKitConfig && nextProps.config.speedKitConfig) {
       let speedKitConfig
       try {
         // eslint-disable-next-line no-eval
