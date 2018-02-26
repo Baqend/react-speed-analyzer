@@ -2,7 +2,7 @@ const credentials = require('./credentials');
 const fetch = require('node-fetch');
 const URL = require('url');
 
-const CDN_LOCAL_URL = 'https://makefast.app.baqend.com/v1/file/www/assets/selfMaintainedCDNList';
+const CDN_LOCAL_URL = 'https://makefast.app.baqend.com/v1/file/www/selfMaintainedCDNList';
 /**
  * Extracts the first level domain of a URL.
  *

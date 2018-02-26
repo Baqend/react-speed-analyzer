@@ -1,0 +1,32 @@
+ec2_key=AKIAJ525CJIRDD2XJWJA
+ec2_secret=<ec2 secret>
+api_key=<API key>
+ec2_instance_size=t2.xlarge
+headless=1
+iq=100
+EC2.default=eu-central-1
+EC2.us-east-1.min=1
+EC2.us-east-1.max=2
+EC2.eu-central-1.min=1
+EC2.eu-central-1.max=2
+EC2.ScaleFactor=10
+
+archive_s3_server=s3.amazonaws.com
+archive_s3_key=AKIAJQLPG6VFVZWQCDEA
+archive_s3_secret=<s3 secret>
+archive_s3_bucket=makefast-bq
+archive_days=1
+
+archive_s3_server=s3-eu-central-1.amazonaws.com
+archive_s3_key=AKIAJ525CJIRDD2XJWJA
+archive_s3_secret=<s3 secret>
+archive_s3_bucket=bq-wpt
+;Run archive script hourly automatically as agents poll for work
+cron_archive=1
+
+
+Useful:
+Finding Logs: https://wikitech.wikimedia.org/wiki/WebPageTest#Logs
+sudo nano /var/www/webpagetest/www/settings/settings.ini
+wc -l /var/www/webpagetest/www/cli/archive.log
+cd /var/www/webpagetest/www/cli && php archive.php

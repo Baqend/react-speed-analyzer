@@ -1,0 +1,24 @@
+version: '3'
+services:
+  chrome:
+    image: "justinribeiro/chrome-headless"
+    restart: always
+    command:
+      - "--headless"
+      - "--disable-gpu"
+      - "--remote-debugging-address=0.0.0.0"
+      - "--remote-debugging-port=9222"
+      - "--disk-cache-dir=/dev/null"
+      - "--download-whole-document"
+      - "--deterministic-fetch"
+    cap_add:
+      - SYS_ADMIN
+  makefast:
+    image: "docker.baqend.com/makefast/makefast-proxy:latest"
+    depends_on:
+      - chrome
+    restart: always
+    tty: true
+    ports:
+      - "80:80"
+      - "443:443"

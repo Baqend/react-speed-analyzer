@@ -44,50 +44,60 @@
       "type": "/db/String",
       "order": 5
     },
+    "publishedSummaryUrl": {
+      "name": "publishedSummaryUrl",
+      "type": "/db/String",
+      "order": 6
+    },
     "videoIdFirstView": {
       "name": "videoIdFirstView",
       "type": "/db/String",
-      "order": 6
+      "order": 7
     },
     "videoIdRepeatedView": {
       "name": "videoIdRepeatedView",
       "type": "/db/String",
-      "order": 7
+      "order": 8
     },
     "testDataMissing": {
       "name": "testDataMissing",
       "type": "/db/Boolean",
-      "order": 8
+      "order": 9
     },
     "videoFileFirstView": {
       "name": "videoFileFirstView",
       "type": "/db/File",
-      "order": 9
+      "order": 10
     },
     "videoFileRepeatView": {
       "name": "videoFileRepeatView",
       "type": "/db/File",
-      "order": 10
+      "order": 11
     },
     "hasFinished": {
       "name": "hasFinished",
       "type": "/db/Boolean",
-      "order": 11
+      "order": 12
     },
     "retryRequired": {
       "name": "retryRequired",
       "type": "/db/Boolean",
-      "order": 12
+      "order": 13
     },
     "isWordPress": {
       "name": "isWordPress",
       "type": "/db/Boolean",
-      "order": 13
+      "order": 14
     },
     "priority": {
       "name": "priority",
       "type": "/db/Integer",
-      "order": 14
+      "order": 15
+    },
+    "speedKitConfig": {
+      "name": "speedKitConfig",
+      "type": "/db/String",
+      "order": 16
     }
   }
 }
