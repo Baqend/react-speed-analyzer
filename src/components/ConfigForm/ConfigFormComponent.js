@@ -229,6 +229,9 @@ class ConfigFormComponent extends Component {
               <div className="pt1">
                 <CodeMirror
                   value={this.state.speedKitConfig}
+                  options={{
+                    tabSize: 2,
+                  }}
                   onBeforeChange={(editor, data, value) => {
                     this.setState({ speedKitConfig: value }, () => {
                       this.props.onSpeedKitConfigChange(value)
