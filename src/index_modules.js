@@ -16,7 +16,7 @@ window.speedKitAnalyzer = {
     ReactDOM.render(<Test testId={testId} onAfterFinish={callback} />, document.getElementById('speed-kit-analyzer'))
   },
   renderAnalyzer: () => {
-    ReactDOM.render(<Embedded />)
+    ReactDOM.render(<Embedded />, document.getElementById('speed-kit-analyzer'))
   }
 }
 
@@ -35,7 +35,10 @@ window.startTest = (url) => fetch(`https://${process.env.REACT_APP_BAQEND}.app.b
 )
 
 if (process.env.NODE_ENV === 'development') {
-  if (process.env.REACT_APP_SCREEN_TYPE === 'result') {
+  if (process.env.REACT_APP_SCREEN_TYPE === 'analyzer') {
+    window.speedKitAnalyzer.renderAnalyzer()
+  }
+  else if (process.env.REACT_APP_SCREEN_TYPE === 'result') {
     window.speedKitAnalyzer.renderResult('S5oS1Zalibaba')
   }
   else if (process.env.REACT_APP_SCREEN_TYPE === 'test') {
@@ -44,8 +47,5 @@ if (process.env.NODE_ENV === 'development') {
         alert("test finished")
       })
     })
-  }
-  else if (process.env.REACT_APP_SCREEN_TYPE === 'embedded') {
-    window.speedKitAnalyzer.renderAnalyzer()
   }
 }

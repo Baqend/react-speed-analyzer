@@ -18,7 +18,8 @@ class ResultScreen extends Component {
     }
   }
 
-  loadTestResult = async ({ testId }) => {
+  loadTestResult = async (props) => {
+    const testId = this.props.testId ? this.props.testId : this.props.match.params.testId
     try {
       await this.props.actions.loadResult(testId)
     } catch(e) {

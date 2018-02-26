@@ -20,7 +20,7 @@ class Spinner extends Component {
   }
 
   componentDidMount() {
-    const { testId } = this.props
+    const testId = this.props.testId ? this.props.testId : this.props.match.params.testId
     try {
       this.props.actions.monitorTest(testId, (testOverview) => {
         this.setState({ isFinished: true }, () => {

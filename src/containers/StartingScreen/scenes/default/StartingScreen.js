@@ -39,7 +39,7 @@ class StartingScreen extends Component {
     const { history } = this.props
     try {
       const urlInfo = await this.props.actions.prepareTest(url)
-      history.push('/')
+      // history.push('/')
       const testOverview = await this.props.actions.startTest(urlInfo)
       history.push(`/test/${getObjectKey(testOverview.id)}`)
     } catch (e) {
@@ -58,7 +58,7 @@ class StartingScreen extends Component {
     const params = this.parseQueryString(this.props.location.search)
     if (params.url) {
       const { history } = this.props
-      history.push('/')
+      // history.push('/')
       this.props.actions.handleUrlInput(params.url)
       this.startTest(params.url)
     }

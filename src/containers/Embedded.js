@@ -7,7 +7,7 @@ import { Provider } from 'react-redux'
 
 import '../styles/index.css'
 
-import createStore from '../store/store_modules'
+import store from '../store/store_modules'
 
 import StartingScreen from './StartingScreen'
 import LoadingScreen from './LoadingScreen/scenes/embedded'
@@ -15,10 +15,9 @@ import ResultScreen from './ResultScreen/scenes/embedded'
 
 import ToastContainer from '../components/Toasts/ToastContainer'
 
-const store = createStore()
-
 class App extends Component {
   render() {
+    debugger
     return (
       <Provider store={store}>
         <div id="wrapper">
