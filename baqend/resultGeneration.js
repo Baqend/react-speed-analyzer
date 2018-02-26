@@ -107,7 +107,7 @@ function createTestResult(wptData, pendingTest, db) {
       .then(() => pendingTest.save())
       .then(() => {
         db.log.error(`No valid test run`, {testResult: pendingTest.id, wptData});
-        throw new Error(`No valid test run found: ${wptData.testId}`);
+        throw new Error(`No valid test run found: ${wptData.id}`);
       });
   }
 

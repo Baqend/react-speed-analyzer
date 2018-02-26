@@ -5,6 +5,7 @@ exports.get = function(db, req, res) {
     .notEqual('priority', 9)
     .equal('testDataMissing', false)
     .descending('createdAt')
+    // return db.Prewarms.find()
     .limit(50)
     .resultList(tests => Promise.all(tests.map(test => getTimings(test))))
     .then(data => toHistogram(data))
