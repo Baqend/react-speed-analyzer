@@ -70,6 +70,12 @@
       color: white;
       border-radius: 3px;
       outline: none;
+      .CodeMirror-cursor {
+        border-color: white;
+      }
+      .CodeMirror-selected {
+        background: rgba(255,255,255,0.2);
+      }
     }
   }
   .toggleAdvancedSettings {

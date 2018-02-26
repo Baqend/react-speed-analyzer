@@ -86,7 +86,9 @@ function prewarm(testScript, runs, { url, testOptions }, db) {
   db.log.info(`Executing ${runs} prewarm runs`, {url, testScript});
   return API.runTest(testScript, prewarmOptions, db)
     .then(testId => {
-      new db.Prewarms({ testId }).save().catch();
+      new db.Prewarms({ testId, prio: testOptions.priority || 0, url }).save().catch(error => {
+        db.log.error(`Could not save prewarm info`, {error: error.stack});
+      });
       db.log.info(`Prewarm done`, {url, testId});
       return testId;
     })
