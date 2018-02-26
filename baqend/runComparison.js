@@ -6,6 +6,7 @@ const { queueTest, DEFAULT_ACTIVITY_TIMEOUT } = require('./queueTest');
 const { getTLD } = require('./getSpeedKitUrl');
 const { generateUniqueId } = require('./generateUniqueId');
 const { callPageSpeed } = require('./callPageSpeed');
+const { factorize } = require('./bulkTest');
 
 /**
  * @param db The Baqend instance.
@@ -15,11 +16,20 @@ const { callPageSpeed } = require('./callPageSpeed');
 function checkComparisonState(db, testOverview, onAfterFinish) {
   if (testOverview.competitorTestResult.hasFinished && testOverview.speedKitTestResult.hasFinished) {
     testOverview.hasFinished = true;
+    testOverview.factors = calculateFactors(testOverview.competitorTestResult, testOverview.speedKitTestResult, db);
     if (onAfterFinish) {
       onAfterFinish(testOverview);
     }
   }
   return testOverview.ready().then(() => testOverview.save());
+}
+
+function calculateFactors(compResult, skResult, db) {
+  if (skResult.testDataMissing || compResult.testDataMissing || !compResult.firstView || ! skResult.firstView) {
+    return null;
+  }
+
+  return factorize(db, compResult.firstView, skResult.firstView);
 }
 
 function runComparison(db, {

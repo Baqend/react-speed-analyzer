@@ -362,3 +362,4 @@ exports.post = function bulkTestPost(db, req, res) {
 
 exports.createBulkTest = createBulkTest;
 exports.updateBulkTest = updateBulkTest;
+exports.factorize = factorize;
