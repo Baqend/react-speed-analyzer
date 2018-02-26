@@ -29,60 +29,75 @@
       "type": "/db/String",
       "order": 2
     },
+    "psiScreenshot": {
+      "name": "psiScreenshot",
+      "type": "/db/JsonObject",
+      "order": 3
+    },
     "location": {
       "name": "location",
       "type": "/db/String",
-      "order": 3
+      "order": 4
     },
     "caching": {
       "name": "caching",
       "type": "/db/Boolean",
-      "order": 4
+      "order": 5
     },
     "mobile": {
       "name": "mobile",
       "type": "/db/Boolean",
-      "order": 5
+      "order": 6
     },
     "url": {
       "name": "url",
       "type": "/db/String",
-      "order": 6
+      "order": 7
     },
     "competitorTestResult": {
       "name": "competitorTestResult",
       "type": "/db/TestResult",
-      "order": 7
+      "order": 8
     },
     "speedKitTestResult": {
       "name": "speedKitTestResult",
       "type": "/db/TestResult",
-      "order": 8
+      "order": 9
     },
     "whitelist": {
       "name": "whitelist",
       "type": "/db/String",
-      "order": 9
+      "order": 10
     },
     "hasFinished": {
       "name": "hasFinished",
       "type": "/db/Boolean",
-      "order": 10
+      "order": 11
     },
     "factors": {
       "name": "factors",
       "type": "/db/Mean",
-      "order": 11
+      "order": 12
     },
     "isSpeedKitComparison": {
       "name": "isSpeedKitComparison",
       "type": "/db/Boolean",
-      "order": 12
+      "order": 13
     },
     "speedKitVersion": {
       "name": "speedKitVersion",
       "type": "/db/String",
-      "order": 13
+      "order": 14
+    },
+    "activityTimeout": {
+      "name": "activityTimeout",
+      "type": "/db/Integer",
+      "order": 15
+    },
+    "speedKitConfig": {
+      "name": "speedKitConfig",
+      "type": "/db/String",
+      "order": 16
     }
   }
 }

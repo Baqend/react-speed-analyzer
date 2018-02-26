@@ -3,7 +3,7 @@ const fetch = require('node-fetch');
 const URL = require('url');
 const { getAdSet } = require('./adBlocker');
 
-const CDN_LOCAL_URL = 'https://makefast.app.baqend.com/v1/file/www/assets/selfMaintainedCDNList';
+const CDN_LOCAL_URL = 'https://makefast.app.baqend.com/v1/file/www/selfMaintainedCDNList';
 
 /**
  * Returns the default Speed Kit config for the given url.
