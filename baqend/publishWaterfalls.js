@@ -1,25 +1,5 @@
 const fetch = require('node-fetch');
 
-exports.call = function callQueueTest(db, data, req) {
-
-  return db.TestOverview.load(data.testId, { depth: 2 }).then(test => {
-
-    const competitorId = test.competitorTestResult.testId;
-    const speedKitId = test.speedKitTestResult.testId;
-    const compLink = publishWaterfall(competitorId, db);
-    const skLink = publishWaterfall(speedKitId, db);
-
-    return Promise.all([ skLink, compLink ])
-      .then(([ speedKit, competitor ]) => {
-        return { speedKit, competitor };
-      });
-
-  }).catch(error => {
-    db.log.error(`Waterfall publishing failed`, {testOverview: data.testId, error: error.stack});
-    return { speedKit: 'Link generation failed', competitor: 'Link generation failed' };
-  });
-};
-
 function publishWaterfall(testId, db) {
   const linkRegex = /href(?:s*)=(?:s*)(?:\\?)"(https:\/\/www\.webpagetest\.org\/results\.php\?.*?)(?:\\?)"(?:s*)>/;
 
@@ -35,3 +15,40 @@ function publishWaterfall(testId, db) {
       return 'Link generation failed';
     });
 }
+
+exports.post = (db, req, res) => {
+  return db.TestResult.load(req.body.id).then(testResult => {
+    if (testResult.publishedSummaryUrl) {
+        return testResult.publishedSummaryUrl
+    }
+    return publishWaterfall(testResult.testId, db).then(publishedSummaryUrl => {
+        return testResult.partialUpdate().set('publishedSummaryUrl', publishedSummaryUrl).execute().then(() => {
+            return publishedSummaryUrl;
+        })
+    })
+  })
+  .then(publishedSummaryUrl => {
+    res.send(publishedSummaryUrl)
+  })
+  .catch(error => {
+    db.log.error(`Waterfall publishing failed`, {testResult: req.body.id, error: error.stack});
+    return 'Link generation failed';
+  });
+};
+
+const html = (id) => `
+<p>Redirecting to webpagetest.org ...</p>
+<script>
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/v1/code/publishWaterfalls', true);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.onload = function () {
+        window.location.href = this.responseText
+    };
+    xhr.send("id=${id}");
+</script>
+`
+
+exports.get = function(db, req, res) {
+  res.send(html(req.query.id));
+};

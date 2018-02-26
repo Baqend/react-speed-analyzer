@@ -44,6 +44,11 @@
       "name": "enabled",
       "type": "/db/Boolean",
       "order": 6
+    },
+    "speedKitVersion": {
+      "name": "speedKitVersion",
+      "type": "/db/String",
+      "order": 7
     }
   }
 }
