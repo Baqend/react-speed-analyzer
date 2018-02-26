@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 
-import { Route, Switch } from 'react-router'
-import { HashRouter } from 'react-router-dom'
+import { Route, Switch, Redirect } from 'react-router'
+import { MemoryRouter } from 'react-router-dom'
 
 import { Provider } from 'react-redux'
 
@@ -9,7 +9,6 @@ import '../styles/index.css'
 
 import store from '../store/store_modules'
 
-import StartingScreen from './StartingScreen/scenes/embedded'
 import LoadingScreen from './LoadingScreen/scenes/embedded'
 import ResultScreen from './ResultScreen/scenes/embedded'
 
@@ -21,16 +20,12 @@ class App extends Component {
       <Provider store={store}>
         <div id="wrapper">
           <div id="main">
-            <HashRouter hashType="noslash">
-              <Route render={({ location }) => {
-                location.pathname = location.pathname.replace(/%2F/g, '/')
+            <MemoryRouter>
+              <Route render={({ location, ...rest }) => {
+                const { testId, onAfterFinish } = this.props
                 return (
                   <Switch>
-                    <Route exact path="/" render={props => (
-                      <div className="content">
-                        <StartingScreen { ...props } { ...this.props } />
-                      </div>
-                    )}/>
+                    <Redirect exact from="/" to={`/test/${testId}`} />
                     <Route exact path="/test/:testId" render={props => (
                       <div className="content">
                         <LoadingScreen { ...props } />
@@ -38,13 +33,13 @@ class App extends Component {
                     )}/>
                     <Route exact path="/test/:testId/result" render={props => (
                       <div className="content">
-                        <ResultScreen { ...props } { ...this.props } />
+                        <ResultScreen { ...props } onAfterFinish={onAfterFinish} />
                       </div>
                     )}/>
                   </Switch>
                 )
               }}/>
-            </HashRouter>
+            </MemoryRouter>
           </div>
           <ToastContainer />
         </div>

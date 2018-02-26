@@ -41,6 +41,7 @@ export const loadResult = (testId) => ({
     } catch(e) {
       throw new Error("Test Result could not be loaded")
     }
+    return testOverview
   }
 })
 

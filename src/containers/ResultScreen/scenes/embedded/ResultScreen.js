@@ -21,7 +21,8 @@ class ResultScreen extends Component {
   loadTestResult = async (props) => {
     const testId = this.props.testId ? this.props.testId : this.props.match.params.testId
     try {
-      await this.props.actions.loadResult(testId)
+      const testOverview = await this.props.actions.loadResult(testId)
+      this.props.onAfterFinish && this.props.onAfterFinish(testOverview)
     } catch(e) {
       console.log(e)
     }
@@ -32,7 +33,6 @@ class ResultScreen extends Component {
   }
 
   render() {
-    // <ResultScreenComponent { ...this.props } { ...this.state } onSubmit={this.onSubmit} />
     return (
       <ResultScreenComponent { ...this.props } { ...this.state } onSubmit={this.onSubmit} />
     )
