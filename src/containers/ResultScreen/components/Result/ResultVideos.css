@@ -68,8 +68,9 @@
         background: #f8f8f8;
         border: none;
         z-index: 1;
-        min-height: 100%;
+        /* min-height: 100%; */
         flex-shrink: 0;
+        flex-grow: 1;
       }
       .mobile & {
         height: 107%;
