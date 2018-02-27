@@ -39,7 +39,6 @@ class StartingScreen extends Component {
     const { history } = this.props
     try {
       const urlInfo = await this.props.actions.prepareTest(url)
-      history.push('/')
       const testOverview = await this.props.actions.startTest(urlInfo)
       history.push(`/test/${getObjectKey(testOverview.id)}`)
     } catch (e) {

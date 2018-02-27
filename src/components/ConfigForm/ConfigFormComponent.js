@@ -50,10 +50,6 @@ class ConfigFormComponent extends Component {
       speedKitConfig: props.showAdvancedConfig ? stringifyObject(getDefaultSpeedKitConfig(this.props.config.url), { indent: '  ' }) : null,
       whiteListCandidates: [],
     }
-    // console.log(stringifyObject(this.state.speedKitConfig, { indent: '  ' }))
-    // const obj = eval(`(${this.state.speedKitConfig})`)
-    // console.log(obj)
-    // debugger
   }
 
   handleUrlChange = (changeEvent) => {
@@ -128,7 +124,7 @@ class ConfigFormComponent extends Component {
         this.props.onSpeedKitConfigChange(value)
       })
     } catch (e) {
-      alert("Your config JSON seems not to be valid")
+      alert("Your config seems not to be valid")
       return false
     }
   }
@@ -142,7 +138,7 @@ class ConfigFormComponent extends Component {
     if (nextProps.whiteListCandidates !== this.props.whiteListCandidates) {
       this.setState({ whiteListCandidates: nextProps.whiteListCandidates })
     }
-    if (!this.props.config.speedKitConfig && nextProps.config.speedKitConfig) {
+    if (!this.state.speedKitConfig && nextProps.config.speedKitConfig) {
       let speedKitConfig
       try {
         // eslint-disable-next-line no-eval
