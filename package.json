@@ -5,6 +5,7 @@
   "scripts": {
     "start": "cross-env REACT_APP_BAQEND=makefast node scripts/start.js",
     "start:modules": "cross-env REACT_APP_BAQEND=makefast node scripts/start-modules.js",
+    "start:modules:analyzer": "cross-env REACT_APP_BAQEND=makefast REACT_APP_SCREEN_TYPE=analyzer node scripts/start-modules.js",
     "start:modules:result": "cross-env REACT_APP_BAQEND=makefast REACT_APP_SCREEN_TYPE=result node scripts/start-modules.js",
     "start:modules:test": "cross-env REACT_APP_BAQEND=makefast REACT_APP_SCREEN_TYPE=test node scripts/start-modules.js",
     "start:app:dev": "cross-env REACT_APP_BAQEND=makefast-dev node scripts/start.js",

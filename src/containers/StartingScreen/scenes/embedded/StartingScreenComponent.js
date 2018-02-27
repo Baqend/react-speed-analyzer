@@ -43,7 +43,7 @@ class StartingScreenComponent extends Component {
     return (
       <div className="loading-screen flex-column flex-grow-1 flex items-center">
         <DeviceContainer
-          showDevice={!this.state.showAdvancedConfig}
+          showDevice={false}
           mobile={this.props.config.mobile}
           backgroundImage={this.props.result.testOverview.psiScreenshot}
           left={

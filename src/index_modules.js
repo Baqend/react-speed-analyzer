@@ -2,7 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 
 import Result from './containers/Result'
-import Test from './containers/Test'
+import Loader from './containers/Loader'
+import Embedded from './containers/Embedded'
 
 import 'promise-polyfill'
 import 'whatwg-fetch'
@@ -12,26 +13,29 @@ window.speedKitAnalyzer = {
     ReactDOM.render(<Result testId={testId} />, document.getElementById('speed-kit-analyzer'))
   },
   renderTest: (testId, callback) => {
-    ReactDOM.render(<Test testId={testId} onAfterFinish={callback} />, document.getElementById('speed-kit-analyzer'))
+    ReactDOM.render(<Loader testId={testId} onAfterFinish={callback} />, document.getElementById('speed-kit-analyzer'))
+  },
+  renderAnalyzer: (params) => {
+    ReactDOM.render(<Embedded { ...params } />, document.getElementById('speed-kit-analyzer'))
   }
 }
 
-window.startTest = (url) => fetch(`https://${process.env.REACT_APP_BAQEND}.app.baqend.com/v1/code/bulkTest`, {
-  method: 'POST',
-  body: JSON.stringify({
-    "tests": [{ "url": url, "priority": 0 }]
-  }),
-  headers: {
-    'content-type': 'application/json'
-  },
-}).then(r => r.json()
-  .then(r => r[0].testOverviews[0].replace('/db/TestOverview/', '')
-    // fetch(`https://${process.env.REACT_APP_BAQEND}.app.baqend.com/v1${r[0].testOverviews[0]}`).then((r) => r.json())
-  )
-)
-
 if (process.env.NODE_ENV === 'development') {
-  if (process.env.REACT_APP_SCREEN_TYPE === 'result') {
+  window.startTest = (url) => fetch(`https://${process.env.REACT_APP_BAQEND}.app.baqend.com/v1/code/bulkTest`, {
+    method: 'POST',
+    body: JSON.stringify({
+      "tests": [{ "url": url, "priority": 0 }]
+    }),
+    headers: {
+      'content-type': 'application/json'
+    },
+  }).then(r => r.json()
+    .then(r => r[0].testOverviews[0].replace('/db/TestOverview/', '')))
+
+  if (process.env.REACT_APP_SCREEN_TYPE === 'analyzer') {
+    window.speedKitAnalyzer.renderAnalyzer({ url: 'www.bild.de' })
+  }
+  else if (process.env.REACT_APP_SCREEN_TYPE === 'result') {
     window.speedKitAnalyzer.renderResult('S5oS1Zalibaba')
   }
   else if (process.env.REACT_APP_SCREEN_TYPE === 'test') {

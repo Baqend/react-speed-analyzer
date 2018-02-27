@@ -45,6 +45,7 @@ class ConfigForm extends Component {
         config={this.props.config}
         whiteListCandidates={this.props.whiteListCandidates}
         showConfig={this.props.showConfig}
+        showConfigToggle={this.props.showConfigToggle}
         showAdvancedConfig={this.props.showAdvancedConfig}
         isInitiated={this.props.isInitiated}
         onSubmit={this.props.onSubmit}
@@ -62,11 +63,13 @@ class ConfigForm extends Component {
 
 ConfigForm.defaultProps = {
   showConfig: true,
+  showConfigToggle: true,
   showAdvancedConfig: false,
 }
 
 ConfigForm.propTypes = {
   showConfig: PropTypes.bool,
+  showConfigToggle: PropTypes.bool,
   showAdvancedConfig: PropTypes.bool,
   onToggleAdvancedConfig: PropTypes.func,
   onSubmit: PropTypes.func.isRequired,

@@ -10,18 +10,15 @@ import { getTLD } from '../../helper/configHelper'
 import Spinner from 'components/Spinner'
 
 import arrow from '../../assets/arrow_right.svg'
+import settings from 'assets/settings.svg'
+
 import './ConfigForm.css'
 
 export function splitUrl(url) {
   try {
-    // if(url.indexOf('http') === -1 && url.indexOf('https') === -1) {
-    //   // url = `http://${url}`
-    //   return url
-    // }
     const dummyElement = document.createElement('a')
     dummyElement.href = url.indexOf('http') === -1 && url.indexOf('https') === -1 ? `http://${url}` : url
     let { hostname } = dummyElement
-    // Remove "www" in the beginning
     if (hostname.indexOf('www') !== -1) {
       hostname = hostname.substr(hostname.indexOf('www.') + 4)
     }
@@ -46,14 +43,15 @@ class ConfigFormComponent extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      showConfig: props.showConfig,
       showAdvancedConfig: props.showAdvancedConfig,
       speedKitConfig: props.showAdvancedConfig ? stringifyObject(getDefaultSpeedKitConfig(this.props.config.url), { indent: '  ' }) : null,
       whiteListCandidates: [],
     }
-    // console.log(stringifyObject(this.state.speedKitConfig, { indent: '  ' }))
-    // const obj = eval(`(${this.state.speedKitConfig})`)
-    // console.log(obj)
-    // debugger
+  }
+
+  isDefaultConfig = (speedKitConfig) => {
+    return speedKitConfig === stringifyObject(getDefaultSpeedKitConfig(this.props.config.url), { indent: '  ' })
   }
 
   handleUrlChange = (changeEvent) => {
@@ -87,6 +85,10 @@ class ConfigFormComponent extends Component {
 
   handleCachingSwitch = () => {
     this.props.onCachingSwitch()
+  }
+
+  toggleConfig = () => {
+    this.setState({ showConfig: !this.state.showConfig })
   }
 
   toggleAdvancedConfig = () => {
@@ -128,7 +130,7 @@ class ConfigFormComponent extends Component {
         this.props.onSpeedKitConfigChange(value)
       })
     } catch (e) {
-      alert("Your config JSON seems not to be valid")
+      alert("Your config seems not to be valid")
       return false
     }
   }
@@ -142,7 +144,7 @@ class ConfigFormComponent extends Component {
     if (nextProps.whiteListCandidates !== this.props.whiteListCandidates) {
       this.setState({ whiteListCandidates: nextProps.whiteListCandidates })
     }
-    if (!this.props.config.speedKitConfig && nextProps.config.speedKitConfig) {
+    if ((!this.state.speedKitConfig || this.isDefaultConfig(this.state.speedKitConfig)) && nextProps.config.speedKitConfig) {
       let speedKitConfig
       try {
         // eslint-disable-next-line no-eval
@@ -285,19 +287,22 @@ class ConfigFormComponent extends Component {
                 <span>{url}</span>
               )}
             </div>*/}
-            <div className="config__form-submit-wrapper">
+            <div className="config__form-submit-wrapper flex">
+              {this.props.showConfigToggle && (<a onClick={this.toggleConfig} className="config__form-settings flex justify-center items-center mr2" style={{ width: 'auto', background: 'none' }}>
+                <img width="24" src={settings} alt="settings" />
+              </a>)}
               <button className="config__form-submit flex justify-center items-center" type="submit">
                 {this.props.isInitiated ? (
                   <div className="spinner__wrapper" style={{ width: 25, height: 25 }}>
                     <Spinner />
                   </div>
                 ) : (
-                  <img src={arrow} alt="arrow"/>
+                  <img src={arrow} alt="arrow" />
                 )}
               </button>
             </div>
           </div>
-          {this.props.showConfig &&
+          {this.state.showConfig &&
             <div className="flex-grow-1 flex flex-column justify-between">
               {this.state.showAdvancedConfig ? this.renderAdvancedConfig() : this.renderConfig()}
               <div className="toggleAdvancedSettings">

@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 
 import styles from './ResultScreen.css'
 
+import ConfigForm from 'components/ConfigForm/ConfigForm'
 import Result from 'containers/ResultScreen/components/Result/Result'
 
 class ResultScreenComponent extends Component {
@@ -32,16 +33,23 @@ class ResultScreenComponent extends Component {
     this.setState({ showModal: false })
   }
 
+  renderForm() {
+    return (
+      <div className="container pa2">
+        <div className="mb1">
+          <ConfigForm
+            config={this.props.config}
+            showConfig={this.state.showConfig}
+            showAdvancedConfig={this.state.showAdvancedConfig}
+            onSubmit={this.props.onSubmit}
+          />
+        </div>
+      </div>
+    )
+  }
+
   renderResults() {
-    // const competitorData = this.props.competitorTest.firstView
-    // const speedKitData = this.props.speedKitTest.firstView
     const { competitorError } = this.props.result
-    // const speedKitError = this.props.speedKitError
-    // console.log(this.props.competitorTest)
-    // const competitorData = null
-    // const speedKitData = null
-    // const competitorError = true
-    // const speedKitError = true
 
     return (
       <div className={`flex-grow-1 ${styles.results}`}>
@@ -66,6 +74,7 @@ class ResultScreenComponent extends Component {
     return (
       <div className="flex results__wrapper pt7">
         <div className="flex-grow-1 flex flex-column">
+          {this.props.showInput && this.renderForm()}
           <div className="flex-grow-1 flex flex-column results" style={{marginTop: competitorError ? 0 : 80, animationDelay: '0.6s', transition: 'margin 0.5s ease' }}>
             {this.props.result.isFinished && this.renderResults()}
           </div>

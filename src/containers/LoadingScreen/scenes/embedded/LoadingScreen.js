@@ -4,7 +4,6 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
 import LoadingScreenComponent from './LoadingScreenComponent'
-import ResultScreen from 'containers/ResultScreen/scenes/embedded'
 
 import { resetConfig } from 'actions/config'
 import { monitorTest } from 'actions/test'
@@ -12,20 +11,12 @@ import { resetResult } from 'actions/result'
 
 
 class Spinner extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      isFinished: false
-    }
-  }
-
   componentDidMount() {
-    const { testId } = this.props
+    const { history } = this.props
+    const testId = this.props.testId ? this.props.testId : this.props.match.params.testId
     try {
       this.props.actions.monitorTest(testId, (testOverview) => {
-        this.setState({ isFinished: true }, () => {
-          this.props.onAfterFinish && this.props.onAfterFinish(testOverview)
-        })
+        history.replace(`/test/${testId}/result`)
       })
     } catch(e) {
       this.props.actions.resetResult()
@@ -33,9 +24,6 @@ class Spinner extends Component {
   }
 
   render() {
-    if (this.state.isFinished) {
-      return (<ResultScreen { ...this.props } />)
-    }
     return (
       <LoadingScreenComponent { ...this.props } />
     )

@@ -58,11 +58,11 @@ class ResultScreenComponent extends Component {
             onSubmit={this.props.onSubmit}
           />
         </div>
-        {!this.state.showConfig &&
+        {/*!this.state.showConfig &&
           <div className="toggleSettings text-right">
             <span><a onClick={this.toggleConfig}>Show Settings</a></span>
           </div>
-        }
+        */}
       </div>
     )
   }

@@ -4,7 +4,10 @@ import PropTypes from 'prop-types'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
+import { startTest, prepareTest } from 'actions/test'
 import { loadResult } from 'actions/result'
+
+import { getObjectKey } from 'helper/utils'
 
 import ResultScreenComponent from './ResultScreenComponent'
 
@@ -18,12 +21,23 @@ class ResultScreen extends Component {
     }
   }
 
-  loadTestResult = async ({ testId }) => {
+  loadTestResult = async (props) => {
+    const testId = this.props.testId ? this.props.testId : this.props.match.params.testId
     try {
-      await this.props.actions.loadResult(testId)
+      const testOverview = await this.props.actions.loadResult(testId)
+      this.props.onAfterFinish && this.props.onAfterFinish(testOverview)
     } catch(e) {
       console.log(e)
     }
+  }
+
+  onSubmit = async () => {
+    const { history } = this.props
+    try {
+      const urlInfo = await this.props.actions.prepareTest(this.props.config.url)
+      const testOverview = await this.props.actions.startTest(urlInfo)
+      history.push(`/test/${getObjectKey(testOverview.id)}${history.location.search}`)
+    } catch (e) {}
   }
 
   componentWillMount() {
@@ -31,14 +45,18 @@ class ResultScreen extends Component {
   }
 
   render() {
-    // <ResultScreenComponent { ...this.props } { ...this.state } onSubmit={this.onSubmit} />
     return (
       <ResultScreenComponent { ...this.props } { ...this.state } onSubmit={this.onSubmit} />
     )
   }
 }
 
+ResultScreen.defaultProps = {
+  showInput: false,
+}
+
 ResultScreen.propTypes = {
+  showInput: PropTypes.bool,
   config: PropTypes.object.isRequired,
   result: PropTypes.object.isRequired,
   testOverview: PropTypes.object.isRequired,
@@ -60,6 +78,8 @@ function mapDispatchToProps(dispatch) {
   return {
     actions: bindActionCreators({
       loadResult,
+      startTest,
+      prepareTest,
     }, dispatch),
   }
 }

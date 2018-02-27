@@ -40,7 +40,7 @@ class StartingScreen extends Component {
     try {
       const urlInfo = await this.props.actions.prepareTest(url)
       const testOverview = await this.props.actions.startTest(urlInfo)
-      history.push(`/test/${getObjectKey(testOverview.id)}${history.location.search}`)
+      history.push(`/test/${getObjectKey(testOverview.id)}`)
     } catch (e) {
       this.props.actions.resetTestStatus()
     }
@@ -51,18 +51,8 @@ class StartingScreen extends Component {
   }
 
   componentWillMount() {
-    if (!this.props.result.isInitiated) {
-      this.reset()
-    }
-    const params = this.parseQueryString(this.props.location.search)
-    if (params.url) {
-      const { history } = this.props
-      history.push('/')
-      this.props.actions.handleUrlInput(params.url)
-      this.startTest(params.url)
-    }
-    if (params.advanced) {
-      this.setState({ showAdvancedConfig: true })
+    if (this.props.url) {
+      this.props.actions.handleUrlInput(this.props.url)
     }
   }
 
