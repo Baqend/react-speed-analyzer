@@ -55,9 +55,21 @@
       }
     }
   }
+  &-settings {
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    border: none;
+    opacity: 0.8;
+    cursor: pointer;
+    &:hover {
+      opacity: 1;
+    }
+  }
   .advanced {
     width: 100%;
-    max-width: 720px;
+    /* max-width: 720px; */
+    max-width: 75%;
     margin: 0 auto;
     h5 {
       font-size: 16px;
