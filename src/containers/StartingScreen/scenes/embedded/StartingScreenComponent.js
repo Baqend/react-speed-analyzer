@@ -29,6 +29,7 @@ class StartingScreenComponent extends Component {
           <ConfigForm
             config={this.props.config}
             showConfig={true}
+            showConfigToggle={false}
             showAdvancedConfig={this.state.showAdvancedConfig}
             onToggleAdvancedConfig={this.onToggleAdvancedConfig}
             onSubmit={this.props.onSubmit}

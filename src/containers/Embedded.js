@@ -38,7 +38,7 @@ class App extends Component {
                     )}/>
                     <Route exact path="/test/:testId/result" render={props => (
                       <div className="content">
-                        <ResultScreen { ...props } { ...this.props } />
+                        <ResultScreen { ...props } { ...this.props } showInput={true} />
                       </div>
                     )}/>
                   </Switch>

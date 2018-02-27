@@ -4,7 +4,10 @@ import PropTypes from 'prop-types'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
+import { startTest, prepareTest } from 'actions/test'
 import { loadResult } from 'actions/result'
+
+import { getObjectKey } from 'helper/utils'
 
 import ResultScreenComponent from './ResultScreenComponent'
 
@@ -28,6 +31,15 @@ class ResultScreen extends Component {
     }
   }
 
+  onSubmit = async () => {
+    const { history } = this.props
+    try {
+      const urlInfo = await this.props.actions.prepareTest(this.props.config.url)
+      const testOverview = await this.props.actions.startTest(urlInfo)
+      history.push(`/test/${getObjectKey(testOverview.id)}${history.location.search}`)
+    } catch (e) {}
+  }
+
   componentWillMount() {
     this.loadTestResult(this.props)
   }
@@ -39,7 +51,12 @@ class ResultScreen extends Component {
   }
 }
 
+ResultScreen.defaultProps = {
+  showInput: false,
+}
+
 ResultScreen.propTypes = {
+  showInput: PropTypes.bool,
   config: PropTypes.object.isRequired,
   result: PropTypes.object.isRequired,
   testOverview: PropTypes.object.isRequired,
@@ -61,6 +78,8 @@ function mapDispatchToProps(dispatch) {
   return {
     actions: bindActionCreators({
       loadResult,
+      startTest,
+      prepareTest,
     }, dispatch),
   }
 }

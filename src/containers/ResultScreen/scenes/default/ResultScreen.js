@@ -9,7 +9,7 @@ import ResultScreenComponent from './ResultScreenComponent'
 import { startTest, prepareTest } from 'actions/test'
 import { loadResult, resetResult } from 'actions/result'
 
-import { getObjectKey, isIFrame } from 'helper/utils'
+import { getObjectKey } from 'helper/utils'
 
 class ResultScreen extends Component {
   constructor(props) {
@@ -17,8 +17,7 @@ class ResultScreen extends Component {
     this.state = {
       showDetails: false,
       showConfig: false,
-      showAdvancedConfig: false,
-      isIFrame: isIFrame(),
+      showAdvancedConfig: false
     }
   }
 
@@ -70,6 +69,7 @@ class ResultScreen extends Component {
 }
 
 ResultScreen.propTypes = {
+  showInput: PropTypes.object,
   config: PropTypes.object.isRequired,
   result: PropTypes.object.isRequired,
   testOverview: PropTypes.object.isRequired,
