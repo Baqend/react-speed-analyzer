@@ -58,7 +58,7 @@ class ResultScreen extends Component {
     try {
       const urlInfo = await this.props.actions.prepareTest(this.props.config.url)
       const testOverview = await this.props.actions.startTest(urlInfo)
-      history.push(`/test/${getObjectKey(testOverview.id)}`)
+      history.push(`/test/${getObjectKey(testOverview.id)}${history.location.search}`)
     } catch (e) {}
   }
 

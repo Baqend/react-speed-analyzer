@@ -50,6 +50,10 @@ class ConfigFormComponent extends Component {
     }
   }
 
+  isDefaultConfig = (speedKitConfig) => {
+    return speedKitConfig === stringifyObject(getDefaultSpeedKitConfig(this.props.config.url), { indent: '  ' })
+  }
+
   handleUrlChange = (changeEvent) => {
     this.props.onUrlChange(changeEvent.target.value)
 
@@ -140,7 +144,7 @@ class ConfigFormComponent extends Component {
     if (nextProps.whiteListCandidates !== this.props.whiteListCandidates) {
       this.setState({ whiteListCandidates: nextProps.whiteListCandidates })
     }
-    if (!this.state.speedKitConfig && nextProps.config.speedKitConfig) {
+    if ((!this.state.speedKitConfig || this.isDefaultConfig(this.state.speedKitConfig)) && nextProps.config.speedKitConfig) {
       let speedKitConfig
       try {
         // eslint-disable-next-line no-eval

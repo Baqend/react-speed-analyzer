@@ -17,7 +17,7 @@ class StartingScreen extends Component {
     const { testId } = this.props.match.params
     try {
       this.props.actions.monitorTest(testId, () => {
-        history.replace(`/test/${testId}/result`)
+        history.replace(`/test/${testId}/result${history.location.search}`)
       })
     } catch(e) {
       this.props.actions.resetResult()
