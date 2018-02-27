@@ -71,6 +71,9 @@ function getPrewarmConfig({url, customSpeedKitConfig, isSpeedKitComparison, test
 
   // Return a default config
   db.log.info(`Using a default config: ${url}`);
+
+  // FIXME Testing whether fallback config leads to fewer errors in WPT and still does prewarming
+  // return Promise.resolve(getCacheWarmingConfig(testOptions.mobile));
   return Promise.resolve(getCacheWarmingConfig(testOptions.mobile));
 }
 
