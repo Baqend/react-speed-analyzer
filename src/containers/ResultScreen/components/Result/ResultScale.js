@@ -34,11 +34,11 @@ const Marker = ({ style }) => (
   </svg>
 )
 
-const Bobbel = ({ description, time, style, upsideDown, absolute, mobile }) => (
+const Bobbel = ({ description, time, style, upsideDown, absolute, mobile, order }) => (
   <div
     className={`flex justify-center items-center ${absolute ? 'absolute' : ''}`}
     style={style}>
-    <div className={`relative flex items-center justify-center ${mobile ? '' : 'flex-column'}`}>
+    <div className={`relative flex justify-center ${mobile ? '' : 'flex-column'} ${order ? ((order === 1 && 'items-end') || 'items-start') : 'items-center'}`}>
       <div style={{
         left: 54,
         top: upsideDown ? 14 : 8,
@@ -51,10 +51,11 @@ const Bobbel = ({ description, time, style, upsideDown, absolute, mobile }) => (
       <span style={{
         position: 'absolute',
         display: 'block',
-        width: '100%',
+        width: 47,
         textAlign: 'center',
         top: mobile ? ((upsideDown && 19) || 13) : 38,
-        left: 0,
+        right: order === 1 ? 0 : 'auto',
+        left: order === 2 ? 0 : 'auto',
         fontWeight: 400,
         fontSize: 14,
         zIndex: 1
@@ -80,9 +81,9 @@ const calculateOffset = (maxTime, time) => Math.min(95, time / maxTime * 100)
 
 const calculateMargin = (containerWidth, offset1, offset2, order) => {
   if (offset2 && order === 2) {
-    return Math.max(8, ((containerWidth * (offset1 - offset2) / 100) - 80))
+    return Math.max(8, ((containerWidth * (offset1 - offset2) / 100) - 70))
   }
-  return containerWidth * offset1 / 100 - 40
+  return containerWidth * offset1 / 100 - 50
 }
 
 class ResultScaleComponent extends Component {
@@ -168,6 +169,7 @@ class ResultScaleComponent extends Component {
               <Bobbel
                 description="With Speed Kit"
                 time={`${Math.round(speedKitTime / 100) / 10}s`}
+                order={speedKitOrder}
                 style={{
                   marginTop: -8,
                   order: speedKitOrder,
@@ -179,6 +181,7 @@ class ResultScaleComponent extends Component {
               <Bobbel
                 description="Your Website"
                 time={`${Math.round(competitorTime / 100) / 10}s`}
+                order={competitorOrder}
                 style={{
                   marginTop: -8,
                   order: competitorOrder,
