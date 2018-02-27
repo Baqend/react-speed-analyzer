@@ -288,9 +288,9 @@ class ConfigFormComponent extends Component {
               )}
             </div>*/}
             <div className="config__form-submit-wrapper flex">
-              <a onClick={this.toggleConfig} className="config__form-settings flex justify-center items-center mr2" style={{ width: 'auto', background: 'none' }}>
+              {this.props.showConfigToggle && (<a onClick={this.toggleConfig} className="config__form-settings flex justify-center items-center mr2" style={{ width: 'auto', background: 'none' }}>
                 <img width="24" src={settings} alt="settings" />
-              </a>
+              </a>)}
               <button className="config__form-submit flex justify-center items-center" type="submit">
                 {this.props.isInitiated ? (
                   <div className="spinner__wrapper" style={{ width: 25, height: 25 }}>
