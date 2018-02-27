@@ -74,7 +74,7 @@ function getPrewarmConfig({url, customSpeedKitConfig, isSpeedKitComparison, test
 
   // FIXME Testing whether fallback config leads to fewer errors in WPT and still does prewarming
   // return Promise.resolve(getCacheWarmingConfig(testOptions.mobile));
-  return Promise.resolve(getCacheWarmingConfig(testOptions.mobile));
+  return Promise.resolve(getFallbackConfig(url, testOptions.mobile));
 }
 
 function prewarm(testScript, runs, { url, testOptions }, db) {
@@ -136,7 +136,5 @@ function getSmartConfig(url, testId, testInfo, db) {
       return createSmartConfig(url, domains, testInfo.testOptions.mobile, db);
     });
 }
-
-
 
 exports.executePrewarm = executePrewarm;
