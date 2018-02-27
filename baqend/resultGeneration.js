@@ -207,7 +207,7 @@ function chooseFMP(db, data, testId, runIndex) {
  * @param url
  * @return {boolean}
  */
-function iskWordPress(url) {
+function iskWordPress(url, db) {
   const analyzeSite = fetch(url).then(res => res.text().then(text => text.indexOf('wp-content') !== -1))
     .catch(error => {
       db.log.warn(`Cannot analyze whether site is WordPress`, { url, errror: error.stack});
