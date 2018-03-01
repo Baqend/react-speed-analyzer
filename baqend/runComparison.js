@@ -10,7 +10,7 @@ const { factorize } = require('./bulkTest');
 function runComparison(db, params, callback = null) {
   return new Promise((resolve, reject) => createTestOverview(db, params)
     .then(testOverview => {
-      resolve(testOverview);
+      //resolve(testOverview);
 
       const pageSpeedInsights = getPageSpeedInfo(db, testOverview, params);
 
@@ -21,6 +21,7 @@ function runComparison(db, params, callback = null) {
       .then(([competitorTestResult, speedKitTestResult]) => {
         testOverview.competitorTestResult = competitorTestResult;
         testOverview.speedKitTestResult = speedKitTestResult;
+        resolve(testOverview)
         return testOverview.ready().then(() => testOverview.save());
       });
     })
@@ -57,7 +58,7 @@ function getPageSpeedInfo(db, testOverview, { url, mobile}) {
 }
 
 function startCompetitorTest(db, testOverview, params, callback = null) {
-  return queueTest(Object.assign(params, {
+  return queueTest(Object.assign({}, params, {
     db: db,
     speedKitConfig: null,
     skipPrewarm: null,
@@ -75,7 +76,7 @@ function startCompetitorTest(db, testOverview, params, callback = null) {
 }
 
 function startSpeedKitTest(db, testOverview, params, callback = null) {
-  return queueTest(Object.assign(params, {
+  return queueTest(Object.assign({}, params, {
     db: db,
     isClone: true,
     finish: (testResult) => {
