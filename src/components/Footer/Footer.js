@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import { withRouter } from 'react-router'
-// import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import './Footer.css'
 import LogoWhite from '../../assets/logo_white.png'
@@ -22,10 +22,11 @@ class Footer extends Component {
       <footer>
         <div className="info">
           <div className="container pa2">
-            <div className="flex justify-between items-center flex-wrap flex-nowrap-l">
+            <div className="flex justify-start items-center flex-wrap flex-nowrap-l">
               <div className="flex items-center w-100 w-auto-l flex-grow-1 flex-grow-0-l justify-center justify-start-l order-1 order-0-l">
-                <img className="mr2" src={LogoWhite} height={32} alt="Logo White" style={{ marginTop: 4 }}/>
-                <small style={{ whiteSpace: 'nowrap' }}>© 2018 Baqend</small>
+                <Link to="/" style={{ marginTop: 4, display: 'inline-grid' }}>
+                  <img className="mr2" src={LogoWhite} height={32} alt="Logo White" />
+                </Link>
               </div>
               <div className="flex items-center w-100 w-auto-l flex-grow-1 flex-grow-0-l justify-center justify-start-l order-0 order-1-l mb2 mb0-ns">
                 <a
@@ -51,7 +52,11 @@ class Footer extends Component {
                 </a>
               </div>
             </div>
-
+          </div>
+        </div>
+        <div style={{ background: '#12212e' }}>
+          <div className="container ph2 pv1">
+            <small style={{ whiteSpace: 'nowrap' }}>© 2018 Baqend</small>
           </div>
         </div>
       </footer>
