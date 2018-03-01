@@ -45,7 +45,7 @@ const createWaterfallLink = (testResult) => {
   if (testResult.publishedSummaryUrl) {
     return testResult.publishedSummaryUrl
   }
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV === 'development' || process.env.REACT_APP_TYPE === 'modules') {
     return `https://${process.env.REACT_APP_BAQEND}.app.baqend.com/v1/code/publishWaterfalls?id=${testResult.id}`
   }
   return `/v1/code/publishWaterfalls?id=${testResult.id}`
