@@ -1,3 +1,4 @@
+@import 'styles/_variables';
 @import 'tachyons/src/_media-queries';
 
 .result__details-metrics {
@@ -20,7 +21,7 @@
     }
   }
   .factor {
-    color: #5cb85c;
+    color: #558928;
     font-weight: 500;
     font-size: 16px;
     @media (--breakpoint-not-small) {
@@ -39,9 +40,9 @@
   width: 40px;
   height: 40px;
   position: absolute;
-  background: #f8f8f8;
+  background: #fff;
   border-radius: 50%;
-  border: 1px solid #e8e8e8;
+  border: 1px solid var(--orange);
   box-shadow: 0 1px 4px rgba(0,0,0,0.1);
   left: 50%;
   margin-left: -20px;
@@ -54,7 +55,7 @@
     position: relative;
     display: block;
     path {
-      fill: rgb(90, 105, 115);
+      fill: var(--orange);
     }
   }
 }

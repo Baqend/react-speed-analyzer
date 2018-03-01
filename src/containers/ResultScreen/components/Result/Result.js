@@ -11,7 +11,7 @@ import ResultScale from './ResultScale'
 import ResultMetrics from './ResultMetrics'
 
 import { formatFileSize } from 'helper/utils'
-import { calculateAbsolute } from 'helper/resultHelper'
+import { calculateFactor, calculateAbsolute } from 'helper/resultHelper'
 
 const tooltipText = {
   'speedIndex': 'Speed Index',
@@ -40,7 +40,7 @@ class Result extends Component {
         <div className="flex items-center relative">
           {!speedKitError && (
             <div className="mainFactor text-center" title={tooltipText[mainMetric]} style={{ display: 'flex'}}>
-              {calculateAbsolute(competitorData[mainMetric], speedKitData[mainMetric])}
+              {calculateFactor(competitorData[mainMetric], speedKitData[mainMetric])}x
               <br/>
               Faster
             </div>
@@ -174,7 +174,7 @@ class Result extends Component {
         </Collapse>
 
 
-        <div className="pt3 pb2">
+        <div className="pt3 pb1">
           <hr />
           <div className="mt2 w-100 text-center relative">
             <a className="result__details-toggle" onClick={this.toggleDetails}
