@@ -23,7 +23,7 @@ export const prepareTest = (url = null) => ({
     })
     try {
       if (!isURL(url)) {
-        throw new Error({ message: "Input is not a valid url" })
+        throw new Error("Input is not a valid url")
       }
       // const rateLimitResult = await db.modules.get('rateLimiter')
       // dispatch({
@@ -33,10 +33,10 @@ export const prepareTest = (url = null) => ({
       const { mobile } = getState().config
       const urlInfo = await db.modules.post('normalizeUrl', { urls: url, mobile: mobile })
       if (!urlInfo[0]) {
-        throw new Error({ message: "Input is not a valid url" })
+        throw new Error("Input is not a valid url")
       }
       if (urlInfo[0].isBaqendApp) {
-        throw new Error({ message: "Url is already a Baqend app" })
+        throw new Error("Url is already a Baqend app")
       }
       dispatch({
         type: NORMALIZE_URL_POST,
