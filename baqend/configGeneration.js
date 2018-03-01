@@ -120,9 +120,14 @@ function getDomains(testResult, db) {
   }
 
   const domains = Object.keys(testResult.runs['1'].firstView.domains);
-  if (!domains.length) {
+  if (!domains.length || domains.length < 1) {
     db.log.warn(`Analyzed domains empty.`, { testResult });
     throw new Error(`No testdata to analyze domains ${testResult.url}`);
+  }
+
+  if (domains.length === 1) {
+    db.log.warn(`Analyzed domains limited.`, { testResult });
+    throw new Error(`Only one domain to analyse ${testResult.url}`);
   }
 
   return domains;

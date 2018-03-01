@@ -1,5 +1,6 @@
 const { runComparison } = require('./runComparison');
-const { updateBulkTest } = require('./bulkTest');
+const { DEFAULT_LOCATION, DEFAULT_ACTIVITY_TIMEOUT } = require('./queueTest');
+const { updateBulkTest } = require('./updateBulkComparison');
 const { analyzeUrl } = require('./analyzeUrl');
 
 function createBulkTest(db, createdBy, {
@@ -72,7 +73,7 @@ function createBulkTest(db, createdBy, {
 
 function startComparison(db, bulkTest, testInfo) {
   return new Promise((resolve) => {
-    const comparison = runComparison(db, testInfo, resolve).then(comparison => {
+    runComparison(db, testInfo, resolve).then(comparison => {
       bulkTest.testOverviews.push(comparison);
     })
     .catch(error => {
@@ -80,6 +81,7 @@ function startComparison(db, bulkTest, testInfo) {
     });
   })
   .then(testOverview => {
+    bulkTest.completedRuns += 1;
     updateBTest(db, bulkTest);
     return testOverview;
   });
@@ -93,12 +95,18 @@ function updateBTest(db, bulkTest) {
     });
 }
 
-exports.post = function runComparisons(db, req, res) {
+function runComparisons(db, req, res) {
   const { body } = req;
   const { createdBy = null } = body;
-  let { test } = body;
+  let { tests } = body;
+  if (body instanceof Array) {
+    tests = body;
+  }
 
-  return createBulkTest(db, createdBy, test)
+  return Promise.all(tests.map(entry => createBulkTest(db, createdBy, entry)))
     .catch(error => `Error: ${error.stack}`)
-    .then(result => res.send(result))
-};
+    .then(results => res.send(results));
+}
+
+exports.post = runComparisons;
+exports.runComparisons = runComparisons;

@@ -1,6 +1,7 @@
 /* eslint-disable comma-dangle, function-paren-newline */
 /* eslint-disable no-restricted-syntax, no-param-reassign */
 
+const { runComparisons } = require('./runMultipleComparisons');
 const { aggregateFields } = require('./helpers');
 const { queueTest, DEFAULT_LOCATION, DEFAULT_ACTIVITY_TIMEOUT } = require('./queueTest');
 const { generateSpeedKitConfig, getTLD } = require('./getSpeedKitUrl');
@@ -349,7 +350,8 @@ function createBulkTest(db, createdBy, {
 }
 
 exports.post = function bulkTestPost(db, req, res) {
-  const { body } = req;
+  return runComparisons(db, req, res);
+/*  const { body } = req;
   const { createdBy = null } = body;
   let { tests } = body;
   if (body instanceof Array) {
@@ -357,9 +359,9 @@ exports.post = function bulkTestPost(db, req, res) {
   }
 
   return Promise.all(tests.map(entry => createBulkTest(db, createdBy, entry)))
-    .then(results => res.send(results));
+    .then(results => res.send(results));*/
 };
 
-exports.createBulkTest = createBulkTest;
+/*exports.createBulkTest = createBulkTest;
 exports.updateBulkTest = updateBulkTest;
-exports.factorize = factorize;
+exports.factorize = factorize;*/
