@@ -34,11 +34,11 @@ const Marker = ({ style }) => (
   </svg>
 )
 
-const Bobbel = ({ description, time, style, upsideDown, absolute, mobile, order }) => (
+const Bobbel = ({ description, time, style, upsideDown, absolute, mobile, order, delta }) => (
   <div
     className={`flex justify-center items-center ${absolute ? 'absolute' : ''}`}
     style={style}>
-    <div className={`relative flex justify-center ${mobile ? '' : 'flex-column'} ${order ? ((order === 1 && 'items-end') || 'items-start') : 'items-center'}`}>
+    <div className={`relative flex justify-center ${mobile ? '' : 'flex-column'} ${order && delta < 250 ? ((order === 1 && 'items-end') || 'items-start') : 'items-center'}`}>
       <div style={{
         left: 54,
         top: upsideDown ? 14 : 8,
@@ -51,11 +51,11 @@ const Bobbel = ({ description, time, style, upsideDown, absolute, mobile, order 
       <span style={{
         position: 'absolute',
         display: 'block',
-        width: 47,
+        width: delta < 250 ? 47: '100%',
         textAlign: 'center',
         top: mobile ? ((upsideDown && 19) || 13) : 38,
-        right: order === 1 ? 0 : 'auto',
-        left: order === 2 ? 0 : 'auto',
+        right: order === 1 && delta < 250 ? 0 : 'auto',
+        left: order === 2 && delta < 250 ? 0 : 'auto',
         fontWeight: 400,
         fontSize: 14,
         zIndex: 1
@@ -125,6 +125,8 @@ class ResultScaleComponent extends Component {
     const competitorTime = competitorTest.firstView && competitorTest.firstView[mainMetric]
     const speedKitTime = !speedKitError && speedKitTest.firstView && speedKitTest.firstView[mainMetric]
 
+    const timeDelta = Math.abs(competitorTime - speedKitTime)
+
     const maxTime = calculateMaxTimeForRequests(requests, competitorTime)
 
     const competitorOffset = competitorTime && calculateOffset(maxTime, competitorTime)
@@ -170,6 +172,7 @@ class ResultScaleComponent extends Component {
                 description="With Speed Kit"
                 time={`${Math.round(speedKitTime / 100) / 10}s`}
                 order={speedKitOrder}
+                delta={timeDelta}
                 style={{
                   marginTop: -8,
                   order: speedKitOrder,
@@ -182,6 +185,7 @@ class ResultScaleComponent extends Component {
                 description="Your Website"
                 time={`${Math.round(competitorTime / 100) / 10}s`}
                 order={competitorOrder}
+                delta={timeDelta}
                 style={{
                   marginTop: -8,
                   order: competitorOrder,
