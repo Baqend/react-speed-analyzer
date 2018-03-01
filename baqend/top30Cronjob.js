@@ -1,5 +1,5 @@
 /* eslint-disable object-curly-newline */
-const { createBulkTest } = require('./bulkTest');
+const { createBulkTest } = require('./runMultipleComparisons');
 const request = require('request');
 
 // The maximum number of iterations to check the status of given bulk tests (4 hours).
@@ -11,36 +11,36 @@ const NEW_TEST_WAITING_MILLIS = 300000;
 // A list of test parameters to test.
 const TOP_LIST =
   [
-    { url: 'http://www.alibaba.com/', location: 'us-east-1:Chrome.Native', whitelist: 'i.alicdn.com, img.alicdn.com, sc01.alicdn.com, sc02.alicdn.com', isCachingEnabled: false, runs: 10, mobile: false },
-    { url: 'http://www.condenast.com/', location: 'eu-central-1:Chrome.Native', whitelist: 'netdna-cdn.com', isCachingEnabled: false, runs: 10, mobile: false },
-    { url: 'https://diply.com/', location: 'us-east-1:Chrome.Native', whitelist: '', isCachingEnabled: false, runs: 10, mobile: false },
-    { url: 'http://www.espn.com/', location: 'us-east-1:Chrome.Native', whitelist: 'espncdn.com', isCachingEnabled: false, runs: 10, mobile: false },
-    { url: 'http://fandom.wikia.com/explore', location: 'us-east-1:Chrome.Native', whitelist: '', isCachingEnabled: false, runs: 10, mobile: false },
-    { url: 'https://www.golem.de/', location: 'eu-central-1:Chrome.Native', whitelist: '', isCachingEnabled: false, runs: 10, mobile: false },
-    { url: 'https://imgur.com/', location: 'us-east-1:Chrome.Native', whitelist: '', isCachingEnabled: false, runs: 10, mobile: false },
-    { url: 'http://www.kicker.de/', location: 'eu-central-1:Chrome.Native', whitelist: '', isCachingEnabled: false, runs: 10, mobile: false },
-    { url: 'http://www.molsoncoors.com/en', location: 'us-east-1:Chrome.Native', whitelist: '', isCachingEnabled: false, runs: 10, mobile: false },
-    { url: 'http://www.msn.com/de-de/', location: 'us-east-1:Chrome.Native', whitelist: 'static-global-s-msn-com.akamaized.net', isCachingEnabled: false, runs: 10, mobile: false },
-    { url: 'https://www.realtor.com/', location: 'us-east-1:Chrome.Native', whitelist: 'krxd.net', isCachingEnabled: false, runs: 10, mobile: false },
-    { url: 'https://www.reddit.com/', location: 'us-east-1:Chrome.Native', whitelist: '', isCachingEnabled: false, runs: 10, mobile: false },
-    { url: 'https://www.theguardian.com/international', location: 'us-east-1:Chrome.Native', whitelist: '', isCachingEnabled: false, runs: 10, mobile: false },
-    { url: 'https://www.tumblr.com/', location: 'us-east-1:Chrome.Native', whitelist: '', isCachingEnabled: false, runs: 10, mobile: false },
-    { url: 'https://www.walmart.com/', location: 'us-east-1:Chrome.Native', whitelist: '', isCachingEnabled: false, runs: 10, mobile: false },
-    { url: 'https://www.yelp.com/sf', location: 'us-east-1:Chrome.Native', whitelist: 'yelpcdn.com', isCachingEnabled: false, runs: 10, mobile: false },
-    { url: 'https://www.ebay.com/', location: 'us-east-1:Chrome.Native', whitelist: 'i.ebayimg.com', isCachingEnabled: false, runs: 10, mobile: false },
-    { url: 'https://www.office.com/', location: 'us-east-1:Chrome.Native', whitelist: 'weuofficehome.msocdn.com, assets.onestore.ms', isCachingEnabled: false, runs: 10, mobile: false },
-    { url: 'http://www.imdb.com/', location: 'us-east-1:Chrome.Native', whitelist: 'ia.media-imdb.com, images-na.ssl-images-amazon.com', isCachingEnabled: false, runs: 10, mobile: false },
-    { url: 'https://www.wellsfargo.com/', location: 'us-east-1:Chrome.Native', whitelist: 'wellsfargomedia.com', isCachingEnabled: false, runs: 10, mobile: false },
-    { url: 'http://www.breitbart.com/', location: 'us-east-1:Chrome.Native', whitelist: '', isCachingEnabled: false, runs: 10, mobile: false },
-    { url: 'https://www.microsoft.com/en-us/', location: 'us-east-1:Chrome.Native', whitelist: 'img-prod-cms-rt-microsoft-com.akamaized.net', isCachingEnabled: false, runs: 10, mobile: false },
-    { url: 'https://www.upworthy.com/', location: 'us-east-1:Chrome.Native', whitelist: 'f1.media.brightcove.com', isCachingEnabled: false, runs: 10, mobile: false },
-    { url: 'https://www.wsj.com/news/us', location: 'us-east-1:Chrome.Native', whitelist: '', isCachingEnabled: false, runs: 10, mobile: false },
-    { url: 'https://www.usatoday.com/', location: 'us-east-1:Chrome.Native', whitelist: 'gannett-cdn.com', isCachingEnabled: false, runs: 10, mobile: false },
-    { url: 'https://www.booking.com/', location: 'us-east-1:Chrome.Native', whitelist: '', isCachingEnabled: false, runs: 10, mobile: false },
-    { url: 'https://www.tripadvisor.com/', location: 'us-east-1:Chrome.Native', whitelist: 'static.tacdn.com', isCachingEnabled: false, runs: 10, mobile: false },
-    { url: 'http://www.computerbild.de/', location: 'eu-central-1:Chrome.Native', whitelist: 'i.computer-bild.de', isCachingEnabled: false, runs: 10, mobile: false },
-    { url: 'http://www.bild.de/', location: 'eu-central-1:Chrome.Native', whitelist: 'code.bildstatic.de', isCachingEnabled: false, runs: 10, mobile: false },
-    { url: 'http://www.spiegel.de/', location: 'eu-central-1:Chrome.Native', whitelist: '', isCachingEnabled: false, runs: 10, mobile: false },
+    { url: 'http://www.alibaba.com/', location: 'us-east-1:Chrome.Native', isCachingEnabled: false, runs: 10, mobile: false },
+    { url: 'http://www.condenast.com/', location: 'eu-central-1:Chrome.Native', isCachingEnabled: false, runs: 10, mobile: false },
+    { url: 'https://diply.com/', location: 'us-east-1:Chrome.Native', isCachingEnabled: false, runs: 10, mobile: false },
+    { url: 'http://www.espn.com/', location: 'us-east-1:Chrome.Native', isCachingEnabled: false, runs: 10, mobile: false },
+    { url: 'http://fandom.wikia.com/explore', location: 'us-east-1:Chrome.Native', isCachingEnabled: false, runs: 10, mobile: false },
+    { url: 'https://www.golem.de/', location: 'eu-central-1:Chrome.Native', isCachingEnabled: false, runs: 10, mobile: false },
+    { url: 'https://imgur.com/', location: 'us-east-1:Chrome.Native', isCachingEnabled: false, runs: 10, mobile: false },
+    { url: 'http://www.kicker.de/', location: 'eu-central-1:Chrome.Native', isCachingEnabled: false, runs: 10, mobile: false },
+    { url: 'http://www.molsoncoors.com/en', location: 'us-east-1:Chrome.Native', isCachingEnabled: false, runs: 10, mobile: false },
+    { url: 'http://www.msn.com/de-de/', location: 'us-east-1:Chrome.Native', isCachingEnabled: false, runs: 10, mobile: false },
+    { url: 'https://www.realtor.com/', location: 'us-east-1:Chrome.Native', isCachingEnabled: false, runs: 10, mobile: false },
+    { url: 'https://www.reddit.com/', location: 'us-east-1:Chrome.Native', isCachingEnabled: false, runs: 10, mobile: false },
+    { url: 'https://www.theguardian.com/international', location: 'us-east-1:Chrome.Native', isCachingEnabled: false, runs: 10, mobile: false },
+    { url: 'https://www.tumblr.com/', location: 'us-east-1:Chrome.Native', isCachingEnabled: false, runs: 10, mobile: false },
+    { url: 'https://www.walmart.com/', location: 'us-east-1:Chrome.Native', isCachingEnabled: false, runs: 10, mobile: false },
+    { url: 'https://www.yelp.com/sf', location: 'us-east-1:Chrome.Native', isCachingEnabled: false, runs: 10, mobile: false },
+    { url: 'https://www.ebay.com/', location: 'us-east-1:Chrome.Native', isCachingEnabled: false, runs: 10, mobile: false },
+    { url: 'https://www.office.com/', location: 'us-east-1:Chrome.Native', isCachingEnabled: false, runs: 10, mobile: false },
+    { url: 'http://www.imdb.com/', location: 'us-east-1:Chrome.Native', isCachingEnabled: false, runs: 10, mobile: false },
+    { url: 'https://www.wellsfargo.com/', location: 'us-east-1:Chrome.Native', isCachingEnabled: false, runs: 10, mobile: false },
+    { url: 'http://www.breitbart.com/', location: 'us-east-1:Chrome.Native', isCachingEnabled: false, runs: 10, mobile: false },
+    { url: 'https://www.microsoft.com/en-us/', location: 'us-east-1:Chrome.Native', isCachingEnabled: false, runs: 10, mobile: false },
+    { url: 'https://www.upworthy.com/', location: 'us-east-1:Chrome.Native', isCachingEnabled: false, runs: 10, mobile: false },
+    { url: 'https://www.wsj.com/news/us', location: 'us-east-1:Chrome.Native', isCachingEnabled: false, runs: 10, mobile: false },
+    { url: 'https://www.usatoday.com/', location: 'us-east-1:Chrome.Native', isCachingEnabled: false, runs: 10, mobile: false },
+    { url: 'https://www.booking.com/', location: 'us-east-1:Chrome.Native', isCachingEnabled: false, runs: 10, mobile: false },
+    { url: 'https://www.tripadvisor.com/', location: 'us-east-1:Chrome.Native', isCachingEnabled: false, runs: 10, mobile: false },
+    { url: 'http://www.computerbild.de/', location: 'eu-central-1:Chrome.Native', isCachingEnabled: false, runs: 10, mobile: false },
+    { url: 'http://www.bild.de/', location: 'eu-central-1:Chrome.Native', isCachingEnabled: false, runs: 10, mobile: false },
+    { url: 'http://www.spiegel.de/', location: 'eu-central-1:Chrome.Native', isCachingEnabled: false, runs: 10, mobile: false },
   ];
 
 /**

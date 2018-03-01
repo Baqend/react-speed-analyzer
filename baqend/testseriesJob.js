@@ -1,4 +1,4 @@
-const { createBulkTest } = require('./bulkTest');
+const { createBulkTest } = require('./runMultipleComparisons');
 
 exports.run = function(db, jobsStatus, jobsDefinition) {
   db.log.info('Running testseries job');
@@ -11,7 +11,6 @@ exports.run = function(db, jobsStatus, jobsDefinition) {
 
     const options = clean({
       url: series.url,
-      whitelist: series.whitelist,
       runs: series.runs,
       location: series.location,
       mobile: series.mobile,

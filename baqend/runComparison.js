@@ -5,7 +5,7 @@ const { queueTest, DEFAULT_ACTIVITY_TIMEOUT } = require('./queueTest');
 const { getTLD } = require('./getSpeedKitUrl');
 const { generateUniqueId } = require('./generateUniqueId');
 const { callPageSpeed } = require('./callPageSpeed');
-const { factorize } = require('./bulkTest');
+const { factorize } = require('./updateBulkComparison');
 
 function runComparison(db, params, callback = null) {
   return new Promise((resolve, reject) => createTestOverview(db, params)
@@ -21,7 +21,7 @@ function runComparison(db, params, callback = null) {
       .then(([competitorTestResult, speedKitTestResult]) => {
         testOverview.competitorTestResult = competitorTestResult;
         testOverview.speedKitTestResult = speedKitTestResult;
-        resolve(testOverview)
+        resolve(testOverview);
         return testOverview.ready().then(() => testOverview.save());
       });
     })
