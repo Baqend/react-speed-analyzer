@@ -46,7 +46,13 @@ function calculateFMP(data) {
   for (let i = 1; i < data.length; i += 1) {
     const diff = data[i][1] - data[i - 1][1];
 
-    if (diff > highestDiff) {
+    // stop loop if the visual progress is negative => FMP is last highest diff
+    if(diff < 0) {
+      break;
+    }
+
+    // The current diff is the highest and the visual progress is at least 33%
+    if (diff > highestDiff && data[i][1] >= 33) {
       highestDiff = diff;
       [firstMeaningfulPaint] = data[i];
     }
