@@ -57,18 +57,18 @@ class ConfigFormComponent extends Component {
   handleUrlChange = (changeEvent) => {
     this.props.onUrlChange(changeEvent.target.value)
 
-    if(splitUrl(this.props.config.url)[1] !== splitUrl(changeEvent.target.value)[1]) {
-      let speedKitConfig
-      if (this.state.showAdvancedConfig) {
-        speedKitConfig = stringifyObject(getDefaultSpeedKitConfig(changeEvent.target.value), { indent: '  ' })
-      } else {
-        speedKitConfig = null
-      }
-      const whiteListCandidates = []
-      this.setState({ speedKitConfig, whiteListCandidates }, () => {
-        this.props.onSpeedKitConfigChange(speedKitConfig)
-      })
+    // if(splitUrl(this.props.config.url)[1] !== splitUrl(changeEvent.target.value)[1]) {
+    let speedKitConfig
+    if (this.state.showAdvancedConfig) {
+      speedKitConfig = stringifyObject(getDefaultSpeedKitConfig(changeEvent.target.value), { indent: '  ' })
+    } else {
+      speedKitConfig = null
     }
+    const whiteListCandidates = []
+    this.setState({ speedKitConfig, whiteListCandidates }, () => {
+      this.props.onSpeedKitConfigChange(speedKitConfig)
+    })
+    // }
   }
 
   handleLocationChange = (changeEvent) => {
