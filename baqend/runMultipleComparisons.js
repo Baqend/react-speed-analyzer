@@ -109,4 +109,5 @@ function runComparisons(db, req, res) {
 }
 
 exports.post = runComparisons;
+exports.createBulkTest = createBulkTest;
 exports.runComparisons = runComparisons;
