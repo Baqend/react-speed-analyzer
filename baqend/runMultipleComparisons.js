@@ -69,6 +69,9 @@ function createBulkTest(db, createdBy, {
       bulkTest.testOverviews = [];
       return startComparison(db, bulkTest, options, callback);
     })
+    .catch((e) => {
+      db.log.error('While running the bulk test an error occurred', { e });
+    });
 }
 
 function startComparison(db, bulkTest, testInfo, callback = null) {
