@@ -30,7 +30,13 @@ function runComparison(db, params, callback = null) {
 
 function createTestOverview(db, params) {
   return generateUniqueId(db, 'TestOverview').then((uniqueId) => {
-    const tld = getTLD(params.url);
+    let tld = 'comparison';
+    try {
+      tld = getTLD(params.url);
+    } catch (e) {
+      db.log.warn(`Get TLD for url ${params.url} failed.`);
+    }
+
     const testOverview = new db.TestOverview(Object.assign(params, {
       id: uniqueId + tld.substring(0, tld.length - 1),
       hasFinished: false,
