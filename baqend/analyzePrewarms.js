@@ -1,4 +1,4 @@
-const { API } = require('./Pagetest');
+const API = require('./Pagetest');
 
 exports.get = function(db, req, res) {
 

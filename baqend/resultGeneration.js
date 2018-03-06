@@ -2,7 +2,7 @@ const { toFile } = require('./download');
 const { getAdSet } = require('./adBlocker');
 const credentials = require('./credentials');
 const { sleep } = require('./sleep');
-const { API } = require('./Pagetest');
+const API = require('./Pagetest');
 const { countHits } = require('./countHits');
 const fetch = require('node-fetch');
 const { getFMP } = require('./calculateFMP');
@@ -44,21 +44,27 @@ function getResultData(testId, pendingTest, db) {
     .then(result => createTestResult(result.data, pendingTest, db));
 }
 
+/**
+ * @param {string} testId
+ * @param {TestResult} pendingTest
+ * @param {number} runIndex
+ * @param db
+ */
 function createVideos(testId, pendingTest, runIndex, db) {
   db.log.info(`Creating video: ${testId}`);
 
-  const videoFirst = API.createVideo(`${testId}-r:${runIndex}-c:0`);
-  const videoRepeat = API.createVideo(`${testId}-r:${runIndex}-c:1`);
+  const videoFirst = API.createVideo(testId, runIndex, 0);
+  const videoRepeat = API.createVideo(testId, runIndex, 1);
 
-  return Promise.all([ videoFirst, videoRepeat ])
-    .then(([ firstVideoResult, repeatedVideoResult ]) => {
+  return Promise.all([videoFirst, videoRepeat])
+    .then(([firstVideoResult, repeatedVideoResult]) => {
 
-      pendingTest.videoIdFirstView = firstVideoResult.data.videoId;
+      pendingTest.videoIdFirstView = firstVideoResult;
       const videoFirstViewPromise = toFile(db, constructVideoLink(testId, pendingTest.videoIdFirstView), `/www/videoFirstView/${testId}.mp4`);
 
       let videoRepeatViewPromise = Promise.resolve(true);
-      if (repeatedVideoResult.data && repeatedVideoResult.data.videoId) {
-        pendingTest.videoIdRepeatedView = repeatedVideoResult.data.videoId;
+      if (repeatedVideoResult) {
+        pendingTest.videoIdRepeatedView = repeatedVideoResult;
         videoRepeatViewPromise = toFile(db, constructVideoLink(testId, pendingTest.videoIdRepeatedView), `/www/videoRepeatView/${testId}.mp4`);
       }
 

@@ -6,39 +6,56 @@ const PING_BACK_URL = `https://${credentials.app}.app.baqend.com/v1/code/testPin
 
 class Pagetest {
   /**
-   * @param {string} url
-   * @param {string} apiKey
+   * @param {string} wptEndpoint WebpageTest's URL endpoint.
+   * @param {string} wptApiKey WebpageTest's API key.
    */
-  constructor(url, apiKey) {
-    this.wpt = new WebPageTest(url, apiKey);
-    this.testResolver = {};
-    this.testRejecter = {};
-    this.waitPromises = {};
+  constructor(wptEndpoint, wptApiKey) {
+    /**
+     * @type {WebPageTest}
+     */
+    this.wpt = new WebPageTest(wptEndpoint, wptApiKey);
+
+    /**
+     * @type {Map<string, Function>}
+     */
+    this.testResolver = new Map();
+
+    /**
+     * @type {Map<string, Function>}
+     */
+    this.testRejecter = new Map();
+
+    /**
+     * @type {Map<string, Promise>}
+     */
+    this.waitPromises = new Map();
   }
 
   /**
    * Queues a new test run of the given url with the given options.
    *
-   * @param {string} testUrl The URL under test.
+   * @param {string} testScriptOrUrl The URL under test or a test script.
    * @param {object} options The options of this test (see https://github.com/marcelduran/webpagetest-api).
    * @param db Baqend database instance
-   * @returns {Promise} A promise of the test
+   * @returns {Promise<TestResult>} A promise of the test
    */
-  runTest(testUrl, options, db) {
-    return this.runTestWithoutWait(testUrl, options)
+  runTest(testScriptOrUrl, options, db) {
+    return this.runTestWithoutWait(testScriptOrUrl, options)
       .then(testId => this.waitOnTest(testId, db));
   }
 
   /**
-   * @param {string} testUrl The URL under test.
+   * Runs a WebpageTest without waiting for the result.
+   *
+   * @param {string} testScriptOrUrl The URL under test or a test script.
    * @param {object} options The options to pass to WPT.
-   * @return {Promise}
+   * @return {Promise<string>} A promise resolving with the queued test's ID.
    */
-  runTestWithoutWait(testUrl, options = {}) {
+  runTestWithoutWait(testScriptOrUrl, options = {}) {
     const opts = Object.assign({ pingback: PING_BACK_URL }, options);
 
     return new Promise((resolve, reject) => {
-      this.wpt.runTest(testUrl, opts, (err, result) => {
+      this.wpt.runTest(testScriptOrUrl, opts, (err, result) => {
         if (err) {
           reject(err);
           return;
@@ -50,74 +67,98 @@ class Pagetest {
         }
 
         const { testId } = result.data;
-        this.waitPromises[testId] = new Promise((nestedResolve, nestedReject) => {
-          this.testResolver[testId] = nestedResolve;
-          this.testRejecter[testId] = nestedReject;
-        });
+        this.waitPromises.set(testId, new Promise((nestedResolve, nestedReject) => {
+          this.testResolver.set(testId, nestedResolve);
+          this.testRejecter.set(testId, nestedReject);
+        }));
 
         resolve(testId);
       });
     });
   }
 
+  /**
+   * Waits for a test to complete.
+   *
+   * @param {string} testId The ID of the test to wait for.
+   * @param db
+   * @return {Promise<string>} A promise resolving with the test ID when the test is finished.
+   */
   waitOnTest(testId, db) {
     this.pingFallback(testId, db);
 
-    const result = this.waitPromises[testId];
-    delete this.waitPromises[testId];
+    const result = this.waitPromises.get(testId);
+    this.waitPromises.delete(testId);
+
     return result;
   }
 
+  /**
+   * @param db
+   * @param {string} testId The ID of the test to resolve.
+   */
   resolveTest(db, testId) {
-    if (this.testResolver[testId]) {
+    if (this.testResolver.has(testId)) {
       db.log.info(`Resolver found for test: ${testId}`);
-      this.testResolver[testId].call(null, testId);
-      delete this.testResolver[testId];
-      delete this.testRejecter[testId];
+      this.testResolver.get(testId).call(null, testId);
+      this.testResolver.delete(testId);
+      this.testRejecter.delete(testId);
     } else {
       db.log.info(`No resolver for test: ${testId}`);
     }
   }
 
+  /**
+   * @param {string} testId The ID of the test to reject.
+   * @private
+   */
   rejectTest(testId) {
-    if (this.testRejecter[testId]) {
-      this.testRejecter[testId].call(null, new Error(`Test rejected for testId: ${testId}`));
-      delete this.testResolver[testId];
-      delete this.testRejecter[testId];
+    if (this.testRejecter.has(testId)) {
+      this.testRejecter.get(testId).call(null, new Error(`Test rejected for testId: ${testId}`));
+      this.testResolver.delete(testId);
+      this.testRejecter.delete(testId);
     }
   }
 
+  /**
+   * @param {string} testId
+   * @param db
+   * @private
+   */
   pingFallback(testId, db) {
-    let executionCount = 0;
+    let executionCount = 0
     const interval = setInterval(() => {
       if (executionCount >= 10) {
-        clearInterval(interval);
+        clearInterval(interval)
       }
 
-      this.getTestStatus(testId).then((testStatus) => {
-        const { statusCode } = testStatus;
+      this.getTestStatus(testId).then(({ statusCode }) => {
         // 4XX status code indicates some error
         if (!statusCode || statusCode >= 400) {
-          this.rejectTest(testId);
-          clearInterval(interval);
-          // 200 indicates test is completed
-        } else if (statusCode === 200) {
+          this.rejectTest(testId)
+          clearInterval(interval)
+          return
+        }
+
+        // 200 indicates test is completed
+        if (statusCode === 200) {
           db.TestResult.find().equal('testId', testId).singleResult((testResult) => {
             if (!testResult || !testResult.firstView) {
-              this.resolveTest(db, testId);
+              this.resolveTest(db, testId)
             }
-            clearInterval(interval);
-          });
+            clearInterval(interval)
+          })
         }
-      });
-      executionCount += 1;
-    }, 120000);
+      })
+      executionCount += 1
+    }, 120000)
   }
+
   /**
    * Returns the current test status of the queued test.
    *
    * @param {string} testId The ID of the test.
-   * @returns {Promise} A status result containing a 'statusCode' which is
+   * @returns {Promise<number>} A status result containing a 'statusCode' which is
    * 101 for waiting
    * 100 for running
    * 200 for completed
@@ -157,6 +198,13 @@ class Pagetest {
       });
   }
 
+  /**
+   * Get the test result from WebPageTest for a given ID.
+   *
+   * @param {string} testId The ID of the test to get the result for.
+   * @param {*} options
+   * @private
+   */
   wptGetTestResults(testId, options = {}) {
     return new Promise((resolve, reject) => {
       this.wpt.getTestResults(testId, options, (err, result) => {
@@ -173,15 +221,18 @@ class Pagetest {
    * Creates a video and returns the ID.
    *
    * @param {string} testId The ID of the test.
-   * @returns {Promise}
+   * @param {number} run The index of the run.
+   * @param {number} view The index of the view.
+   * @returns {Promise<string|null>} Return the video ID or null, if it not exists.
    */
-  createVideo(testId) {
+  createVideo(testId, run, view) {
+    const video = `${testId}-r:${run}-c:${view}`;
     return new Promise((resolve, reject) => {
-      this.wpt.createVideo(testId, {}, (err, result) => {
+      this.wpt.createVideo(video, {}, (err, result) => {
         if (err) {
           reject(err);
         } else {
-          resolve(result);
+          resolve(result.data && result.data.videoId || null);
         }
       });
     });
@@ -189,6 +240,8 @@ class Pagetest {
 
   /**
    * Returns the embed video URL.
+   *
+   * TODO: This method seems not be used anywhere.
    *
    * @param {string} videoId The video to get the embed for.
    * @returns {Promise}
@@ -206,4 +259,7 @@ class Pagetest {
   }
 }
 
-exports.API = new Pagetest(credentials.wpt_dns, credentials.wpt_api_key);
+/**
+ * @type {Pagetest}
+ */
+exports.API = module.exports = new Pagetest(credentials.wpt_dns, credentials.wpt_api_key);

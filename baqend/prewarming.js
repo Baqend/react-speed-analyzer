@@ -1,7 +1,7 @@
 const { getMinimalConfig, createSmartConfig, getFallbackConfig, getCacheWarmingConfig } = require('./configGeneration');
 const { createTestScript } = require('./createTestScript');
 const { analyzeSpeedKit } = require('./analyzeSpeedKit');
-const { API } = require('./Pagetest');
+const API = require('./Pagetest');
 const stringifyObject = require('stringify-object');
 
 const PREWARM_RUNS = 2;
