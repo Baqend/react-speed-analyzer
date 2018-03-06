@@ -2,6 +2,12 @@
 
 # dependencies
 /node_modules
+### Credentials
+baqend/credentials.js
+baqend/schema/jobs.Definition.json
+baqend/schema/jobs.Status.json
+baqend/schema/speedKit.Asset.json
+baqend/schema/Means.json
 
 # testing
 /coverage
