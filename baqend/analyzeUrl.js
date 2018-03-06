@@ -68,7 +68,7 @@ function analyzeType(response) {
 function testForSpeedKit(url) {
   const parsedUrl = parse(url);
   const swUrl = format(Object.assign({}, parsedUrl, { pathname: '/sw.js' }));
-  const error = { enabled: false, version: null };
+  const error = { enabled: false, speedKitVersion: null };
 
   return fetch(swUrl).then((res) => {
     if (!res.ok) { return error; }
@@ -76,8 +76,8 @@ function testForSpeedKit(url) {
     return res.text().then((text) => {
       const matches = /\/\* ! speed-kit ([\d.]+) \|/.exec(text);
       if (matches) {
-        const [, version] = matches;
-        return { enabled: true, version };
+        const [, speedKitVersion] = matches;
+        return { enabled: true, speedKitVersion };
       }
       return error;
     });
