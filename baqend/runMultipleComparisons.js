@@ -1,7 +1,6 @@
 const { runComparison } = require('./runComparison');
 const { DEFAULT_LOCATION, DEFAULT_ACTIVITY_TIMEOUT } = require('./queueTest');
 const { updateBulkTest } = require('./updateBulkComparison');
-const { analyzeUrl } = require('./analyzeUrl');
 
 function createBulkTest(db, createdBy, {
   url,
@@ -36,16 +35,8 @@ function createBulkTest(db, createdBy, {
     priority,
   };
 
-  const savedBulktest = bulkTest.save()
-    .then(() => analyzeUrl(url, db))
-    .then((urlAnalysis) => {
-      bulkTest.urlAnalysis = urlAnalysis && new db.UrlAnalysis(urlAnalysis);
-
-      return bulkTest.save();
-    });
-
   // async
-  return savedBulktest
+  return bulkTest.save()
     .then(() => {
       const callback = firstOverview => {
         updateBTest(db, bulkTest);

@@ -6,7 +6,6 @@ const { aggregateFields } = require('./helpers');
 const { queueTest, DEFAULT_LOCATION, DEFAULT_ACTIVITY_TIMEOUT } = require('./queueTest');
 const { generateSpeedKitConfig, getTLD } = require('./getSpeedKitUrl');
 const { generateUniqueId } = require('./generateUniqueId');
-const { analyzeUrl } = require('./analyzeUrl');
 
 const fields = ['speedIndex', 'firstMeaningfulPaint', 'ttfb', 'domLoaded', 'fullyLoaded', 'lastVisualChange'];
 
@@ -314,16 +313,8 @@ function createBulkTest(db, createdBy, {
   bulkTest.completedRuns = 0;
 
   return bulkTest.save()
-    .then(() => analyzeUrl(url, db))
-    .then((urlAnalysis) => {
-      bulkTest.urlAnalysis = urlAnalysis && new db.UrlAnalysis(urlAnalysis);
-
-      return bulkTest.save();
-    })
     .then(() => {
-      const urlTo = bulkTest.urlAnalysis ? bulkTest.urlAnalysis.url : url;
-
-      return speedKitConfig || generateSpeedKitConfig(urlTo, whitelist, mobile);
+      return speedKitConfig || generateSpeedKitConfig(url, whitelist, mobile);
     })
     .then(config => createTestOverviews(db, {
       bulkTest,
@@ -337,7 +328,7 @@ function createBulkTest(db, createdBy, {
       speedKitConfig: config,
       url: bulkTest.urlAnalysis ? bulkTest.urlAnalysis.url : url,
       isSpeedKitComparison: bulkTest.urlAnalysis ? bulkTest.urlAnalysis.enabled : false,
-      speedKitVersion: bulkTest.urlAnalysis ? bulkTest.urlAnalysis.version : null,
+      speedKitVersion: bulkTest.urlAnalysis ? bulkTest.urlAnalysis.speedKitVersion : null,
     }))
     .then((overviews) => {
       bulkTest.testOverviews = overviews;
