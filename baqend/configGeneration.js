@@ -1,15 +1,15 @@
 const credentials = require('./credentials');
 const fetch = require('node-fetch');
-const URL = require('url');
 const { getAdSet } = require('./adBlocker');
+const { getTLD } = require('./getSpeedKitUrl')
 
 const CDN_LOCAL_URL = 'https://makefast.app.baqend.com/v1/file/www/selfMaintainedCDNList';
 
 /**
  * Returns the default Speed Kit config for the given url.
  */
-function getMinimalConfig(url, mobile) {
-  const tld = getTLD(url);
+function getMinimalConfig(db, url, mobile) {
+  const tld = getTLD(db, url);
   const domainRegex = `/^(?:[\\w-]*\\.){0,3}(?:${escapeForRegex(tld)})/`;
 
   return `{
@@ -26,8 +26,8 @@ function getCacheWarmingConfig(mobile) {
   }`;
 }
 
-function getFallbackConfig(url, mobile) {
-  const tld = getTLD(url);
+function getFallbackConfig(db, url, mobile) {
+  const tld = getTLD(db, url);
   const domainRegex = `/^(?:[\\w-]*\\.){0,3}(?:${escapeForRegex(tld)})/`;
 
   return `{
@@ -35,22 +35,6 @@ function getFallbackConfig(url, mobile) {
     whitelist: [{ host: [ ${domainRegex}, /cdn/, /assets\./, /static\./ ] }],
     userAgentDetection: ${mobile}
   }`;
-}
-
-/**
- * Extracts the first level domain of a URL.
- *
- * @param {string} url The URL to extract the hostname of.
- * @return {string} The extracted hostname.
- */
-function getTLD(url) {
-  const { hostname } = URL.parse(url);
-
-  const domainFilter = /^(?:[\w-]*\.){0,3}([\w-]*\.)[\w]*$/;
-  const [, domain] = domainFilter.exec(hostname);
-
-  // remove the dot at the end of the string
-  return domain;
 }
 
 /**
@@ -76,7 +60,7 @@ function createSmartConfig(url, testResult, mobile, db, whitelist = '') {
     .then((cdnRegexs) => {
       const whitelistedHosts = whitelist.length? `${cdnRegexs}, ${whitelist}` : cdnRegexs;
 
-      const tld = getTLD(url);
+      const tld = getTLD(db, url);
       const domainRegex = `/^(?:[\\w-]*\\.){0,3}(?:${escapeForRegex(tld)})/`;
 
       return `{
@@ -133,7 +117,6 @@ function getDomains(testResult, db) {
   return domains;
 }
 
-exports.getTLD = getTLD;
 exports.getMinimalConfig = getMinimalConfig;
 exports.createSmartConfig = createSmartConfig;
 exports.getFallbackConfig = getFallbackConfig;

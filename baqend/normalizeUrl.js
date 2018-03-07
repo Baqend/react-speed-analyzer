@@ -8,6 +8,6 @@ exports.call = (db, { urls, mobile }) => analyzeUrls([].concat(urls), db, mobile
     isBaqendApp: result.type === 'baqend',
     isSecured: result.secured,
     speedkit: result.enabled,
-    speedkitVersion: result.version,
+    speedkitVersion: result.speedKitVersion,
     type: result.type,
   })));

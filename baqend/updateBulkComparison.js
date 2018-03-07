@@ -134,6 +134,7 @@ function updateBulkTest(db, bulkTestRef) {
     bulkTest.factors = factorize(db, bulkTest.competitorMeanValues, bulkTest.speedKitMeanValues);
     bulkTest.bestFactors = calcBestFactors(db, bulkTest);
     bulkTest.worstFactors = calcWorstFactors(db, bulkTest);
+    bulkTest.completedRuns += 1;
 
     return bulkTest.save();
   }).catch((e) => {

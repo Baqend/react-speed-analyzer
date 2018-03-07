@@ -1,7 +1,6 @@
 const { runComparison } = require('./runComparison');
 const { DEFAULT_LOCATION, DEFAULT_ACTIVITY_TIMEOUT } = require('./queueTest');
 const { updateBulkTest } = require('./updateBulkComparison');
-const { analyzeUrl } = require('./analyzeUrl');
 
 function createBulkTest(db, createdBy, {
   url,
@@ -36,42 +35,44 @@ function createBulkTest(db, createdBy, {
     priority,
   };
 
-  const savedBulktest = bulkTest.save()
-    .then(() => analyzeUrl(url, db))
-    .then((urlAnalysis) => {
-      bulkTest.urlAnalysis = urlAnalysis && new db.UrlAnalysis(urlAnalysis);
-
-      return bulkTest.save();
-    });
-
   // async
-  savedBulktest
+  return bulkTest.save()
     .then(() => {
+      const callback = firstOverview => {
+        updateBTest(db, bulkTest);
+        // other tests
+        const newOptions = Object.assign({}, options, { speedKitConfig: firstOverview.speedKitConfig, skipPrewarm: true });
+        db.log.info(`Starting other (${runs - 1}) test(s)`, { newOptions });
+        const promises = new Array(runs - 1)
+          .fill(null)
+          .map(() => startComparison(db, bulkTest, newOptions));
+        return Promise.all(promises)
+          .then(() => {
+            db.log.info(`Bulktest successful`, {bulkTest: bulkTest.id});
+          })
+          .catch(error => {
+            db.log.error(`Bulktest not entirely successful`, {bulkTest: bulkTest.id, error: error.stack});
+          });
+      };
+
       // first test
       db.log.info(`Starting first of ${runs} tests`);
       bulkTest.testOverviews = [];
-      return startComparison(db, bulkTest, options);
+      return startComparison(db, bulkTest, options, callback);
     })
-    .then(firstOverview => {
-      // other tests
-      const newOptions = Object.assign({}, options, { speedKitConfig: firstOverview.speedKitConfig, skipPrewarm: true });
-      db.log.info(`Starting other (${runs - 1}) test(s)`, { newOptions });
-      const promises = new Array(runs - 1)
-        .fill(null)
-        .map(() => startComparison(db, bulkTest, newOptions));
-      return Promise.all(promises);
-    })
-    .then(() => {
-      db.log.info(`Bulktest successful`, {bulkTest: bulkTest.id});
-    })
-    .catch(error => {
-      db.log.error(`Bulktest not entirely successful`, {bulkTest: bulkTest.id, error: error.stack});
+    .catch((e) => {
+      db.log.error('While running the bulk test an error occurred', { e });
     });
-
-  return savedBulktest;
 }
 
-function startComparison(db, bulkTest, testInfo) {
+function startComparison(db, bulkTest, testInfo, callback = null) {
+  if (callback) {
+    return runComparison(db, testInfo, callback).then(comparison => {
+      bulkTest.testOverviews.push(comparison);
+      return bulkTest.ready().then(() => bulkTest.save());
+    });
+  }
+
   return new Promise((resolve) => {
     runComparison(db, testInfo, resolve).then(comparison => {
       bulkTest.testOverviews.push(comparison);
@@ -81,7 +82,6 @@ function startComparison(db, bulkTest, testInfo) {
     });
   })
   .then(testOverview => {
-    bulkTest.completedRuns += 1;
     updateBTest(db, bulkTest);
     return testOverview;
   });
