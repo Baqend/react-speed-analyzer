@@ -1,87 +1,163 @@
 const { API } = require('./Pagetest');
-// const { generateTestResult } = require('./resultGeneration');
+const { getTestScriptWithMinimalWhitelist, getScriptForConfig } = require('./prewarming');
 
-/**
- * Executes the given test and returns the result.
- * @param testScript The test script to execute.
- * @param pendingTest The test data object that is update along the way
- * @param db The Baqend instance.
- * @return The generated test result.
- */
-// function executeTest(testScript, pendingTest, { testOptions }, db) {
-//   return API.runTestWithoutWait(testScript, testOptions)
-//     .then(testId => waitForStartedTest(testId, testScript, pendingTest, db))
-//     .then(testId => saveTestResult(testId, pendingTest, testScript, db))
-//     .catch(error => handleTestError(pendingTest, testScript, error, db));
-// }
+const credentials = require('./credentials');
+const PING_BACK_URL = `https://${credentials.app}.app.baqend.com/v1/code/_testResultHandler`;
 
+const prewarmOptions = {
+  runs: 2,
+  timeline: false,
+  video: false,
+  firstViewOnly: true,
+  minimalResults: true
+}
 
-function resumeTest(db, testResult) {
-  if (testResult.isFinished) {
-    return escalateToComparisonWorker(testResult.testOverview)
+class TestWorker {
+  constructor(db, testResultHandler = null) {
+    this.db = db
+    this.testResultHandler = testResultHandler
   }
-  if (testResult.isClone) {
-    if (shouldStartPreparationTests(testResult)) {
-      !testResult.speedKitConfig && startConfigGenerationWebPagetest(db, testResult)
-      startPrewarmingWebPagetest(db, testResult)
-    } else {
-      if (hasNotFinishedWebPagetests(testResult)) {
-        checkWebPagetestsStatus(testResult)
-      } else {
-        shouldStartPerformanceTests(testResult) && startPerformanceWebPagetest(db, testResult)
-      }
+
+  setTestResultHandler(testResultHandler) {
+    this.testResultHandler = testResultHandler
+  }
+
+  resume(testResultId) {
+    this.db.log.info("callTestWorker", testResultId)
+    this.db.TestResult.load(testResultId)
+      .then(testResult => {
+        if (testResult.hasFinished) {
+          this.db.log.info(`TestResult is finished`, { testResult })
+          // escalateToComparisonWorker(testResult.testOverview)
+        }
+        if (testResult.isClone) {
+          if (this.shouldStartPreparationTests(testResult)) {
+            !testResult.speedKitConfig && this.startConfigGenerationWebPagetest(testResult)
+            this.startPrewarmWebPagetest(testResult)
+          } else {
+            if (this.hasNotFinishedWebPagetests(testResult)) {
+              this.checkWebPagetestsStatus(testResult)
+            } else {
+              this.shouldStartPerformanceTests(testResult) && this.startPerformanceWebPagetest(testResult)
+            }
+          }
+        } else {
+          this.shouldStartPerformanceTests(testResult) && this.startPerformanceWebPagetest(testResult)
+        }
+      })
+      .catch(error => this.db.log.warn(`Could not find testResult`, {id: testResultId, error: error.stack}))
+  }
+
+  shouldStartPreparationTests(testResult) {
+    if (testResult.skipPrewarm) {
+      return false
     }
-  } else {
-    shouldStartPerformanceTests(testResult) && startPerformanceWebPagetest(db, testResult)
+    return !testResult.webPagetests || !testResult.webPagetests.length
   }
-}
 
-function shouldStartPreparationTests(testResult) {
-  if (testResult.skipPrewarm) {
-    return false
+  shouldStartPerformanceTests(testResult) {
+    return testResult.webPagetests.map(wpt => wpt.testType).indexOf('performance') === -1
   }
-  return !testResult.webPageTests.length
-}
 
-function shouldStartPerformanceTests(testResult) {
-  return !testResult.webPageTests.map(wpt => wpt.testType).contains('performance')
-}
+  hasNotFinishedWebPagetests(testResult) {
+    return testResult.webPagetests.filter(wpt => !wpt.hasFinished).length > 0
+  }
 
-function hasNotFinishedWebPagetests(testResult) {
-  return testResult.webPageTests.filter(wpt => !wpt.hasFinished).length > 0
-}
+  checkWebPagetestsStatus(testResult) {
+    const checkWebPagetestStatus = (testId) => {
+      API.getTestStatus(testId).then(test => {
+        test.statusCode === 200 && this.testResultHandler && this.testResultHandler.handleTestResult(testId)
+      })
+    }
+    testResult.webPagetests.filter(wpt => !wpt.hasFinished).map(wpt => checkWebPagetestStatus(wpt.testId))
+  }
 
-function checkWebPagetestsStatus(testResult) {
-  const checkWebPagetestStatus = () => {
-    API.getTestStatus(testId).then(testId => {
-      callResultHandler(testId)
+  startPrewarmWebPagetest(testResult) {
+    const { speedKitConfig, testInfo } = testResult
+    const { testOptions } = testInfo
+    const prewarmTestScript = getScriptForConfig(speedKitConfig, testInfo);
+    const prewarmTestOptions = Object.assign({ pingback: PING_BACK_URL }, testOptions, prewarmOptions);
+    return API.runTestWithoutWait(prewarmTestScript, prewarmTestOptions).then(testId => {
+      return this.pushWebPagetestToTestResult(testResult, new this.db.WebPagetest({
+        testId: testId,
+        testType: 'prewarm',
+        testScript: prewarmTestScript,
+        testOptions: prewarmTestOptions,
+        hasFinished: false
+      }))
     })
   }
-  testResult.webPageTests.filter(wpt => !wpt.hasFinished).map(wpt => checkWebPagetestStatus(wpt.testId))
+
+  startConfigGenerationWebPagetest(testResult) {
+    const { speedKitConfig, testInfo } = testResult
+    const { testOptions } = testInfo;
+    const configTestScript = getTestScriptWithMinimalWhitelist(testInfo);
+    const configTestOptions = Object.assign({ pingback: PING_BACK_URL }, testOptions, prewarmOptions, { runs: 1 });
+    return API.runTestWithoutWait(configTestScript, configTestOptions).then(testId => {
+      return this.pushWebPagetestToTestResult(testResult, new this.db.WebPagetest({
+        testId: testId,
+        testType: 'config',
+        testScript: configTestScript,
+        testOptions: configTestOptions,
+        hasFinished: false
+      }))
+    })
+  }
+
+  startPerformanceWebPagetest(testResult) {
+    const { speedKitConfig, testInfo } = testResult
+    const { testOptions } = testInfo
+    const performanceTestScript = getScriptForConfig(speedKitConfig, testInfo)
+    const performanceTestOptions = Object.assign({ pingback: PING_BACK_URL }, testOptions)
+    return API.runTestWithoutWait(performanceTestScript, performanceTestOptions).then(testId => {
+      return this.pushWebPagetestToTestResult(testResult, new this.db.WebPagetest({
+        testId: testId,
+        testType: 'performance',
+        testScript: performanceTestScript,
+        testOptions: performanceTestOptions,
+        hasFinished: false
+      }))
+    })
+  }
+
+  pushWebPagetestToTestResult(testResult, WebPagetest) {
+    testResult.webPagetests.push(WebPagetest)
+    if (testResult._metadata.isReady) {
+      return testResult.save()
+    } else {
+      return testResult.ready().then(() => testResult.save())
+    }
+  }
 }
 
-function startPrewarmingWebPagetest(db, testResult) {
+exports.TestWorker = TestWorker;
 
+const { TestResultHandler } = require('./_testResultHandler')
+
+function callTestWorker(db, testResultId) {
+  const testResultHandler = new TestResultHandler(db)
+  const testWorker = new TestWorker(db, testResultHandler)
+  testResultHandler.setTestWorker(testWorker)
+  testWorker.resume(testResultId)
 }
 
-function startConfigGenerationWebPagetest(db, testResult) {
+function runTestWorker(db, jobsStatus, jobsDefinition) {
+  db.log.info('Running callTestWorker job');
+  const testResultHandler = new TestResultHandler(db)
+  const testWorker = new TestWorker(db, testResultHandler)
+  testResultHandler.setTestWorker(testWorker)
 
+  const date = new Date()
+  date.setMinutes(date.getMinutes() - 1)
+
+  db.TestResult.find()
+    .equal('hasFinished', false)
+    .lessThan('updatedAt', date)
+    .isNotNull('webPagetests')
+    .resultList(testResults => {
+      testResults.map(testResult => testWorker.resume(testResult.id))
+    })
 }
 
-function startPerformanceWebPagetest(db, testResult) {
-
-}
-
-
-exports.run = function(db, jobsStatus, jobsDefinition) {
-  db.log.info('Running testseries job');
-  return jobsDefinition.testseries.load().then(series => {
-    db.log.info('Found test series, starting new bulk test');
-  });
-};
-
-exports.call = function(db, data, req) {
-
-};
-
-exports.executeTest = executeTest;
+exports.callTestWorker = callTestWorker;
+exports.run = runTestWorker;
