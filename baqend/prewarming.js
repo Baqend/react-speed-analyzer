@@ -48,18 +48,19 @@ function getFinalTestConfig(config, testInfo, db) {
   return prepareSmartConfig(minimalTestScript, testInfo, db);
 }
 
-function getScriptForConfig(config, { url, isSpeedKitComparison, isTestWithSpeedKit, activityTimeout }) {
+function getScriptForConfig(config, { url, isSpeedKitComparison, isTestWithSpeedKit, activityTimeout, testOptions }) {
+  if (!config) {
+    config = getFallbackConfig(url, testOptions.mobile);
+  }
   return createTestScript(url, isTestWithSpeedKit, isSpeedKitComparison, config, activityTimeout);
 }
 
 function getPrewarmConfig({url, customSpeedKitConfig, isSpeedKitComparison, testOptions}, db) {
-
   // Always return the config if it is given
   if (customSpeedKitConfig) {
     db.log.info(`Using custom config: ${url}`, {url, customSpeedKitConfig, isSpeedKitComparison});
     return Promise.resolve(customSpeedKitConfig);
   }
-
   // Get the config from the actual site if it uses Speed Kit
   if (isSpeedKitComparison) {
     db.log.info(`Extracting config from Website: ${url}`, {url, isSpeedKitComparison});
@@ -68,10 +69,8 @@ function getPrewarmConfig({url, customSpeedKitConfig, isSpeedKitComparison, test
       return getFallbackConfig(url, testOptions.mobile);
     });
   }
-
   // Return a default config
   db.log.info(`Using a default config: ${url}`);
-
   // FIXME Testing whether fallback config leads to fewer errors in WPT and still does prewarming
   // return Promise.resolve(getCacheWarmingConfig(testOptions.mobile));
   return Promise.resolve(getFallbackConfig(url, testOptions.mobile));
@@ -138,3 +137,6 @@ function getSmartConfig(url, testId, testInfo, db) {
 }
 
 exports.executePrewarm = executePrewarm;
+exports.getScriptForConfig = getScriptForConfig;
+exports.getPrewarmConfig = getPrewarmConfig;
+exports.getTestScriptWithMinimalWhitelist = getTestScriptWithMinimalWhitelist;
