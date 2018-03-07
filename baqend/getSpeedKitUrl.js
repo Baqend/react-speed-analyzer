@@ -19,7 +19,7 @@ function getTLD(db, url) {
 
     return domain
   } catch (e) {
-    db.log.warn(`Get TLD for url ${params.url} failed.`);
+    db.log.warn(`Get TLD for url ${url} failed.`);
     return '';
   }
 }
