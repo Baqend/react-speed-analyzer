@@ -32,7 +32,7 @@ function executePrewarm(testInfo, db) {
     })
     .catch(error => {
       db.log.warn(`Prewarm failed, using fallback config`, {testInfo, error: error.stack});
-      return getFallbackConfig(testInfo.url, testInfo.testOptions.mobile);
+      return getFallbackConfig(db, testInfo.url, testInfo.testOptions.mobile);
     })
     .then(config => [getScriptForConfig(config, testInfo), config]);
 }
@@ -44,7 +44,7 @@ function getFinalTestConfig(config, testInfo, db) {
     return Promise.resolve(config);
   }
 
-  const minimalTestScript = getTestScriptWithMinimalWhitelist(testInfo);
+  const minimalTestScript = getTestScriptWithMinimalWhitelist(db, testInfo);
   return prepareSmartConfig(minimalTestScript, testInfo, db);
 }
 
@@ -65,7 +65,7 @@ function getPrewarmConfig({url, customSpeedKitConfig, isSpeedKitComparison, test
     db.log.info(`Extracting config from Website: ${url}`, {url, isSpeedKitComparison});
     return analyzeSpeedKit(url, db).then(it => stringifyObject(it.config)).catch(error => {
       db.log.warn(`Could not analyze speed kit config`, {url, error: error.stack});
-      return getFallbackConfig(url, testOptions.mobile);
+      return getFallbackConfig(db, url, testOptions.mobile);
     });
   }
 
@@ -74,7 +74,7 @@ function getPrewarmConfig({url, customSpeedKitConfig, isSpeedKitComparison, test
 
   // FIXME Testing whether fallback config leads to fewer errors in WPT and still does prewarming
   // return Promise.resolve(getCacheWarmingConfig(testOptions.mobile));
-  return Promise.resolve(getFallbackConfig(url, testOptions.mobile));
+  return Promise.resolve(getFallbackConfig(db, url, testOptions.mobile));
 }
 
 function prewarm(testScript, runs, { url, testOptions }, db) {
@@ -101,8 +101,8 @@ function prewarm(testScript, runs, { url, testOptions }, db) {
     });
 }
 
-function getTestScriptWithMinimalWhitelist({ url, isTestWithSpeedKit, isSpeedKitComparison, activityTimeout, testOptions }) {
-  const config = getMinimalConfig(url, testOptions.mobile);
+function getTestScriptWithMinimalWhitelist(db, { url, isTestWithSpeedKit, isSpeedKitComparison, activityTimeout, testOptions }) {
+  const config = getMinimalConfig(db, url, testOptions.mobile);
   return createTestScript(url, isTestWithSpeedKit, isSpeedKitComparison, config, activityTimeout);
 }
 
@@ -118,7 +118,7 @@ function prepareSmartConfig(testScript, testInfo, db) {
     })
     .catch(error => {
       db.log.warn(`Smart generation failed`, {url, error});
-      return getFallbackConfig(url);
+      return getFallbackConfig(db, url);
     });
 }
 

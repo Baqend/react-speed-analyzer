@@ -179,7 +179,7 @@ function createTestOverview(db, {
   const testOverview = new db.TestOverview();
 
   return generateUniqueId(db, 'TestOverview').then((uniqueId) => {
-    const tld = getTLD(url);
+    const tld = getTLD(db, url);
     testOverview.id = uniqueId + tld.substring(0, tld.length - 1);
     testOverview.url = url;
     testOverview.whitelist = whitelist;
@@ -314,7 +314,7 @@ function createBulkTest(db, createdBy, {
 
   return bulkTest.save()
     .then(() => {
-      return speedKitConfig || generateSpeedKitConfig(url, whitelist, mobile);
+      return speedKitConfig || generateSpeedKitConfig(db, url, whitelist, mobile);
     })
     .then(config => createTestOverviews(db, {
       bulkTest,
