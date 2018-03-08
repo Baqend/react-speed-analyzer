@@ -1,4 +1,4 @@
-const { API } = require('./Pagetest');
+const API = require('./Pagetest');
 const { generateTestResult } = require('./resultGeneration');
 const { createSmartConfig, getFallbackConfig } = require('./configGeneration');
 
@@ -6,14 +6,10 @@ const CONFIG_TYPE = 'config';
 const PERFORMANCE_TYPE = 'performance';
 
 class TestResultHandler {
-  constructor(db, testWorker = null) {
+  constructor(db) {
     this.db = db
-    this.testWorker = testWorker
   }
 
-  setTestWorker(testWorker) {
-    this.testWorker = testWorker
-  }
   /**
    * Get the smart config based on the domains of a given testId.
    *
@@ -41,7 +37,7 @@ class TestResultHandler {
       })
       .catch(error => {
         this.db.log.warn(`Smart generation failed`, {url: testInfo.url, error});
-        return getFallbackConfig(testInfo.url);
+        return getFallbackConfig(this.db, testInfo.url);
       });
   }
 
@@ -61,7 +57,7 @@ class TestResultHandler {
    * @param db The Baqend instance.
    * @param {string} testId The id of the WPT test to be handled.
    */
-  handleTestResult(testId) {
+  handleResult(testId) {
     this.db.log.info("handleTestResult", testId)
     return this.db.TestResult.find().equal('webPagetests.testId', testId).singleResult().then(testResult => {
       if (!testResult) {
@@ -76,35 +72,22 @@ class TestResultHandler {
       }
 
       let promise = Promise.resolve();
-      if (webPageTestInfo.testType === CONFIG_TYPE) {
-        const testInfo = testResult.testInfo;
-        promise = this.getSmartConfig(testId, testInfo).then((config) => {
-          testResult.speedKitConfig = config;
-        })
-      } else if (webPageTestInfo.testType === PERFORMANCE_TYPE) {
-        this.db.log.info(`Test successful: ${testId}`, { testResult: testResult.id, testId});
-        promise = generateTestResult(testId, testResult, this.db);
-      }
+      // if (webPageTestInfo.testType === CONFIG_TYPE) {
+      //   const testInfo = testResult.testInfo;
+      //   promise = this.getSmartConfig(testId, testInfo).then((config) => {
+      //     testResult.speedKitConfig = config;
+      //   })
+      // } else if (webPageTestInfo.testType === PERFORMANCE_TYPE) {
+      //   this.db.log.info(`Test successful: ${testId}`, { testResult: testResult.id, testId});
+      //   promise = generateTestResult(testId, testResult, this.db);
+      // }
 
       return promise.then(() => {
         webPageTestInfo.hasFinished = true;
-        return testResult.ready().then(() => testResult.save().then(testResult => {
-          this.testWorker && this.testWorker.resume(testResult.id);
-        }));
+        return testResult.ready().then(() => testResult.save());
       });
     });
   }
 }
 
 exports.TestResultHandler = TestResultHandler;
-
-const { TestWorker } = require('./_testWorker');
-
-function callResultHandler(db, data, req) {
-  db.log.info('Pingback received for ' + data.id);
-  const testWorker = new TestWorker(db)
-  const testResultHandler = new TestResultHandler(db, testWorker)
-  testResultHandler.handleTestResult(data.id)
-}
-
-exports.call = callResultHandler;

@@ -1,8 +1,5 @@
 /* eslint-disable comma-dangle, no-use-before-define, no-restricted-syntax */
 /* global Abort */
-
-const { callTestWorker } = require('./_testWorker');
-
 const DEFAULT_LOCATION = 'eu-central-1:Chrome.Native';
 const DEFAULT_ACTIVITY_TIMEOUT = 75;
 const DEFAULT_TIMEOUT = 30;
@@ -48,29 +45,28 @@ class TestRequestHandler {
    * @param {number} [priority=0] Defines the test's priority, from 0 (highest) to 9 (lowest).
    * @return {Promise<TestResult>} A promise resolving when the test has been created.
    */
-  handleTestRequest(params) {
-    const commandLine = createCommandLineFlags(params.url, params.isClone);
+  handleRequest(params) {
+    const commandLine = this.createCommandLineFlags(params.url, params.isClone);
     if (commandLine) {
       this.db.log.info('flags: %s', commandLine);
     }
-    const testOptions = Object.assign({}, defaultTestOptions, {
-      runs: 2,
-      firstViewOnly: !params.caching,
-      commandLine: commandLine,
-      priority: params.priority || 0,
-      location: params.location ? params.location : DEFAULT_LOCATION,
-      mobile: params.mobile,
-      device: params.mobile ? 'iPhone6' : '',
-    });
 
     const testInfo = {
       url: params.url,
       isTestWithSpeedKit: params.isClone,
-      // customSpeedKitConfig: speedKitConfig,
       isSpeedKitComparison: params.isSpeedKitComparison,
       activityTimeout: params.activityTimeout,
-      testOptions: params.testOptions,
-      skipPrewarm: params.skipPrewarm
+      skipPrewarm: params.skipPrewarm,
+      // customSpeedKitConfig: speedKitConfig,
+      testOptions: Object.assign({}, defaultTestOptions, {
+        runs: 2,
+        firstViewOnly: !params.caching,
+        commandLine: commandLine,
+        priority: params.priority || 0,
+        location: params.location ? params.location : DEFAULT_LOCATION,
+        mobile: params.mobile,
+        device: params.mobile ? 'iPhone6' : '',
+      }),
     };
 
     // Create a new test result
@@ -85,10 +81,6 @@ class TestRequestHandler {
     })
 
     return testResult.save()
-      .then(testResult => {
-        callTestWorker(this.db, testResult.id)
-        return testResult
-      })
   }
 
   /**
@@ -106,15 +98,6 @@ class TestRequestHandler {
     }
     return '';
   }
-
 }
 
 exports.TestRequestHandler = TestRequestHandler
-
-exports.call = function(db, data, req) {
-  const testRequestHandler = new TestRequestHandler(db)
-  return testRequestHandler.handleTestRequest(data);
-};
-
-exports.DEFAULT_LOCATION = DEFAULT_LOCATION;
-exports.DEFAULT_ACTIVITY_TIMEOUT = DEFAULT_ACTIVITY_TIMEOUT;

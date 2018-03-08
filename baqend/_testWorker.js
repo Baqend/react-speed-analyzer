@@ -1,8 +1,13 @@
-const { API } = require('./Pagetest');
-const { getTestScriptWithMinimalWhitelist, getScriptForConfig } = require('./prewarming');
+const API = require('./Pagetest');
+
+const { TestRequestHandler } = require('./_testRequestHandler')
+const { TestResultHandler } = require('./_testResultHandler')
+
+const { getMinimalConfig, getFallbackConfig } = require('./configGeneration');
+const { createTestScript } = require('./createTestScript');
 
 const credentials = require('./credentials');
-const PING_BACK_URL = `https://${credentials.app}.app.baqend.com/v1/code/_testResultHandler`;
+const PING_BACK_URL = `https://${credentials.app}.app.baqend.com/v1/code/_handleTestResult`;
 
 const prewarmOptions = {
   runs: 2,
@@ -13,18 +18,15 @@ const prewarmOptions = {
 }
 
 class TestWorker {
-  constructor(db, testResultHandler = null) {
+  constructor(db) {
     this.db = db
-    this.testResultHandler = testResultHandler
+    this.testRequestHandler = new TestRequestHandler(db)
+    this.testResultHandler = new TestResultHandler(db)
   }
 
-  setTestResultHandler(testResultHandler) {
-    this.testResultHandler = testResultHandler
-  }
-
-  resume(testResultId) {
+  next(testResultId) {
     this.db.log.info("callTestWorker", testResultId)
-    this.db.TestResult.load(testResultId)
+    this.db.TestResult.load(testResultId, { refresh: true })
       .then(testResult => {
         if (testResult.hasFinished) {
           this.db.log.info(`TestResult is finished`, { testResult })
@@ -48,6 +50,22 @@ class TestWorker {
       .catch(error => this.db.log.warn(`Could not find testResult`, {id: testResultId, error: error.stack}))
   }
 
+  handleTestRequest(params) {
+    return this.testRequestHandler.handleRequest(params)
+      .then(testResult => {
+        this.next(testResult.id)
+        return testResult
+      })
+  }
+
+  handleTestResult(testResultId) {
+    return this.testResultHandler.handleResult(testResultId)
+      .then(testResult => {
+        this.next(testResult.id)
+        return testResult
+      })
+  }
+
   shouldStartPreparationTests(testResult) {
     if (testResult.skipPrewarm) {
       return false
@@ -66,7 +84,7 @@ class TestWorker {
   checkWebPagetestsStatus(testResult) {
     const checkWebPagetestStatus = (testId) => {
       API.getTestStatus(testId).then(test => {
-        test.statusCode === 200 && this.testResultHandler && this.testResultHandler.handleTestResult(testId)
+        test.statusCode === 200 && this.handleTestResult(testId)
       })
     }
     testResult.webPagetests.filter(wpt => !wpt.hasFinished).map(wpt => checkWebPagetestStatus(wpt.testId))
@@ -75,7 +93,7 @@ class TestWorker {
   startPrewarmWebPagetest(testResult) {
     const { speedKitConfig, testInfo } = testResult
     const { testOptions } = testInfo
-    const prewarmTestScript = getScriptForConfig(speedKitConfig, testInfo);
+    const prewarmTestScript = this.getScriptForConfig(speedKitConfig, testInfo);
     const prewarmTestOptions = Object.assign({ pingback: PING_BACK_URL }, testOptions, prewarmOptions);
     return API.runTestWithoutWait(prewarmTestScript, prewarmTestOptions).then(testId => {
       return this.pushWebPagetestToTestResult(testResult, new this.db.WebPagetest({
@@ -91,7 +109,7 @@ class TestWorker {
   startConfigGenerationWebPagetest(testResult) {
     const { speedKitConfig, testInfo } = testResult
     const { testOptions } = testInfo;
-    const configTestScript = getTestScriptWithMinimalWhitelist(testInfo);
+    const configTestScript = this.getTestScriptWithMinimalWhitelist(testInfo);
     const configTestOptions = Object.assign({ pingback: PING_BACK_URL }, testOptions, prewarmOptions, { runs: 1 });
     return API.runTestWithoutWait(configTestScript, configTestOptions).then(testId => {
       return this.pushWebPagetestToTestResult(testResult, new this.db.WebPagetest({
@@ -107,7 +125,7 @@ class TestWorker {
   startPerformanceWebPagetest(testResult) {
     const { speedKitConfig, testInfo } = testResult
     const { testOptions } = testInfo
-    const performanceTestScript = getScriptForConfig(speedKitConfig, testInfo)
+    const performanceTestScript = this.getScriptForConfig(speedKitConfig, testInfo)
     const performanceTestOptions = Object.assign({ pingback: PING_BACK_URL }, testOptions)
     return API.runTestWithoutWait(performanceTestScript, performanceTestOptions).then(testId => {
       return this.pushWebPagetestToTestResult(testResult, new this.db.WebPagetest({
@@ -128,34 +146,47 @@ class TestWorker {
       return testResult.ready().then(() => testResult.save())
     }
   }
+
+  getScriptForConfig(config, { url, isSpeedKitComparison, isTestWithSpeedKit, activityTimeout, testOptions }) {
+    config = config || getFallbackConfig(this.db, url, testOptions.mobile);
+    return createTestScript(url, isTestWithSpeedKit, isSpeedKitComparison, config, activityTimeout);
+  }
+
+  getTestScriptWithMinimalWhitelist({ url, isTestWithSpeedKit, isSpeedKitComparison, activityTimeout, testOptions }) {
+    const config = getMinimalConfig(this.db, url, testOptions.mobile);
+    return createTestScript(url, isTestWithSpeedKit, isSpeedKitComparison, config, activityTimeout);
+  }
 }
 
 exports.TestWorker = TestWorker;
 
-const { TestResultHandler } = require('./_testResultHandler')
-
 function callTestWorker(db, testResultId) {
-  const testResultHandler = new TestResultHandler(db)
-  const testWorker = new TestWorker(db, testResultHandler)
-  testResultHandler.setTestWorker(testWorker)
-  testWorker.resume(testResultId)
+  // const testResultHandler = new TestResultHandler(db)
+  const testWorker = new TestWorker(db)
+  testWorker.next(testResultId)
 }
 
 function runTestWorker(db, jobsStatus, jobsDefinition) {
   db.log.info('Running callTestWorker job');
-  const testResultHandler = new TestResultHandler(db)
-  const testWorker = new TestWorker(db, testResultHandler)
-  testResultHandler.setTestWorker(testWorker)
+  // const testResultHandler = new TestResultHandler(db)
+  const testWorker = new TestWorker(db)
 
   const date = new Date()
-  date.setMinutes(date.getMinutes() - 1)
+  // date.setMinutes(date.getMinutes() - 1)
 
   db.TestResult.find()
     .equal('hasFinished', false)
-    .lessThan('updatedAt', date)
+    .lessThanOrEqualTo('updatedAt', new Date(date.getTime() - 1000 * 60))
+    // .greaterThanOrEqualTo('checked', new Date(date.getTime() + 1000 * 120))
     .isNotNull('webPagetests')
     .resultList(testResults => {
-      testResults.map(testResult => testWorker.resume(testResult.id))
+      db.log.info("job testResults", testResults)
+      testResults.map(testResult => {
+        testResult.retries = testResult.retries >= 0 ? testResult.retries + 1 : 0
+        testResult.checked = new Date()
+        // testResult.save().then(() => testWorker.next(testResult.id))
+        testResult.save()
+      })
     })
 }
 
