@@ -16,23 +16,50 @@ const { getFMP } = require('./calculateFMP');
  * @return The updated test object containing the test result.
  */
 function generateTestResult(testId, pendingTest, db) {
-  db.log.info(`Generating test result: ${testId}`, { testResult: pendingTest.id, testId: testId });
+  db.log.info(`Generating test result: ${testId}`, { testResult: pendingTest.id, testId });
 
   if (pendingTest.hasFinished) {
     db.log.info(`Result already exists: ${testId}`);
     return Promise.resolve(pendingTest);
   }
 
-  return getResultData(testId, pendingTest, db)
-    .then(usedRunIndex => createVideos(testId, pendingTest, usedRunIndex, db))
+  return getResultRawData(testId)
+    .then((rawData) => {
+      pendingTest.location = rawData.location;
+      pendingTest.url = rawData.testUrl;
+      pendingTest.summaryUrl = rawData.summary;
+      pendingTest.testDataMissing = false;
+
+      const runIndex = getValidTestRun(db, rawData, pendingTest.id);
+      return Promise.all([
+        createTestResult(db, rawData, testId, runIndex),
+        createVideos(db, testId, runIndex)
+      ]);
+    })
+    .then(([testResult, videos]) => {
+      const [firstView, repeatView, isWordPress] = testResult;
+      const [videoFirstView, videoRepeatView] = videos;
+
+      pendingTest.firstView = firstView;
+      pendingTest.repeatView = repeatView;
+      pendingTest.isWordPress = isWordPress;
+
+      db.log.info(`Videos created: ${testId}`);
+      pendingTest.videoFileFirstView = videoFirstView;
+      pendingTest.videoFileRepeatView = videoRepeatView;
+
+      pendingTest.hasFinished = true;
+      return pendingTest.ready().then(() => pendingTest.save());
+    })
     .catch(error => {
+      pendingTest.testDataMissing = true;
       db.log.error(`Generating test result failed: ${testId}`,
-        { testResult: pendingTest.id, testId: testId, error: error.stack });
+        { testResult: pendingTest.id, testId, error: error.stack });
       throw error;
     });
 }
 
-function getResultData(testId, pendingTest, db) {
+function getResultRawData(testId) {
   const options = {
     requests: true,
     breakdown: false,
@@ -40,17 +67,15 @@ function getResultData(testId, pendingTest, db) {
     pageSpeed: false,
   };
 
-  return API.getTestResults(testId, options)
-    .then(result => createTestResult(result.data, pendingTest, db));
+  return API.getTestResults(testId, options).then(result => result.data);
 }
 
 /**
- * @param {string} testId
- * @param {TestResult} pendingTest
- * @param {number} runIndex
- * @param db
+ *  @param db The Baqend instance.
+ * @param testId
+ * @param runIndex
  */
-function createVideos(testId, pendingTest, runIndex, db) {
+function createVideos(db, testId, runIndex) {
   db.log.info(`Creating video: ${testId}`);
 
   const videoFirst = API.createVideo(testId, runIndex, 0);
@@ -58,24 +83,14 @@ function createVideos(testId, pendingTest, runIndex, db) {
 
   return Promise.all([videoFirst, videoRepeat])
     .then(([firstVideoResult, repeatedVideoResult]) => {
-
-      pendingTest.videoIdFirstView = firstVideoResult;
-      const videoFirstViewPromise = toFile(db, constructVideoLink(testId, pendingTest.videoIdFirstView), `/www/videoFirstView/${testId}.mp4`);
+      const videoFirstViewPromise = toFile(db, constructVideoLink(testId, firstVideoResult), `/www/videoFirstView/${testId}.mp4`);
 
       let videoRepeatViewPromise = Promise.resolve(true);
       if (repeatedVideoResult) {
-        pendingTest.videoIdRepeatedView = repeatedVideoResult;
-        videoRepeatViewPromise = toFile(db, constructVideoLink(testId, pendingTest.videoIdRepeatedView), `/www/videoRepeatView/${testId}.mp4`);
+        videoRepeatViewPromise = toFile(db, constructVideoLink(testId, repeatedVideoResult), `/www/videoRepeatView/${testId}.mp4`);
       }
 
-      return Promise.all([videoFirstViewPromise, videoRepeatViewPromise])
-    })
-    .then(([videoFirstView, videoRepeatView]) => {
-      db.log.info(`Videos created: ${testId}`);
-      pendingTest.videoFileFirstView = videoFirstView;
-      pendingTest.videoFileRepeatView = videoRepeatView;
-      pendingTest.hasFinished = true;
-      return pendingTest.ready().then(() => pendingTest.save());
+      return Promise.all([videoFirstViewPromise, videoRepeatViewPromise]);
     });
 }
 
@@ -93,55 +108,43 @@ function constructVideoLink(testId, videoId) {
 /**
  * Creates the test result and returns which run was used for that.
  *
- * @param wptData The data from the WPT test.
- * @param pendingTest The test database object used to set the result.
  * @param db The Baqend instance.
- * @return {Promise<TestResult>} The index of the run used to create the test result.
+ * @param wptData The data from the WPT test.
+ * @param testId The id of the test to create the result for.
+ * @param {string} runIndex The index of the run to create the result for.
+ * @return {Promise} The test result with its views and a WordPress flag.
  */
-function createTestResult(wptData, pendingTest, db) {
-  pendingTest.location = wptData.location;
-  pendingTest.url = wptData.testUrl;
-  pendingTest.summaryUrl = wptData.summary;
-  pendingTest.testDataMissing = false;
-
-  const runIndex = Object.keys(wptData.runs).find(index => isValidRun(wptData.runs[index]));
-  db.log.info(`Choosing run ${runIndex}`, { runs: Object.keys(wptData.runs) });
-
-  if (!runIndex) {
-    pendingTest.testDataMissing = true;
-    return pendingTest.ready()
-      .then(() => pendingTest.save())
-      .then(() => {
-        db.log.error(`No valid test run`, {testResult: pendingTest.id, wptData});
-        throw new Error(`No valid test run found: ${wptData.id}`);
-      });
-  }
-
+function createTestResult(db, wptData, testId, runIndex) {
   const resultRun = wptData.runs[runIndex];
-
-  return createRun(db, resultRun.firstView, pendingTest.testId, runIndex)
-    .then((firstView) => {
-      pendingTest.firstView = firstView
-    })
-    .then(() => createRun(db, resultRun.repeatView, pendingTest.testId, runIndex))
-    .then((repeatView) => {
-      pendingTest.repeatView = repeatView
-    })
-    .then(() => iskWordPress(wptData.testUrl, db))
-    .then((isWordPress) => {
-      pendingTest.isWordPress = isWordPress
-    })
-    .then(() => pendingTest.ready().then(() => pendingTest.save()))
-    .then(() => runIndex);
+  return Promise.all([
+    createRun(db, resultRun.firstView, testId, runIndex),
+    createRun(db, resultRun.repeatView, testId, runIndex),
+    iskWordPress(wptData.testUrl, db)
+  ])
 }
 
 function isValidRun(run) {
   return run.firstView && run.firstView.SpeedIndex > 0 && run.firstView.lastVisualChange > 0;
 }
 
+
+function getValidTestRun(db, wptData, testId) {
+  const runIndex = Object.keys(wptData.runs).find(index => isValidRun(wptData.runs[index]));
+  db.log.info(`Choosing run ${runIndex}`, { runs: Object.keys(wptData.runs) });
+
+  if (!runIndex) {
+    db.log.error(`No valid test run`, {testResult: testId, wptData});
+    throw new Error(`No valid test run found: ${wptData.id}`);
+  }
+
+  return runIndex;
+}
+
 /**
  * @param db The Baqend instance.
  * @param {object} data The data to create the run of.
+ * @param {string} testId The test id to create the run for.
+ * @param {string} runIndex The index of the run to create the run for.
  * @return {Promise<Run>} A promise resolving with the created run.
  */
 function createRun(db, data, testId, runIndex) {
@@ -179,17 +182,19 @@ function createRun(db, data, testId, runIndex) {
   completeness.p100 = data.visualComplete;
   run.visualCompleteness = completeness;
 
-  run.domains = [];
-
-  return chooseFMP(db, data, testId, runIndex).then((firstMeaningfulPaint) => {
-    run.firstMeaningfulPaint = firstMeaningfulPaint;
-  }).then(() => createDomainList(data, run));
+  return Promise.all([chooseFMP(db, data, testId, runIndex), createDomainList(data)])
+    .then(([firstMeaningfulPaint, domains]) => {
+      run.firstMeaningfulPaint = firstMeaningfulPaint;
+      run.domains = domains;
+      return run;
+  })
 }
 
 /**
  * @param db The Baqend instance.
  * @param {object} data The data to choose the FMP of.
  * @param {string} testId The id of the test to choose the FMP for.
+ * @param {string} runIndex The index of the run to choose the FMP for.
  */
 function chooseFMP(db, data, testId, runIndex) {
   return getFMP(testId, runIndex).then(firstMeaningfulPaint => parseInt(firstMeaningfulPaint, 10))
@@ -207,13 +212,14 @@ function chooseFMP(db, data, testId, runIndex) {
     });
 }
 
-
 /**
  * Method to check whether the website with the given url is based on WordPress
+ *
+ * @param db The Baqend instance.
  * @param url
  * @return {boolean}
  */
-function iskWordPress(url, db) {
+function iskWordPress(db, url) {
   const analyzeSite = fetch(url).then(res => res.text().then(text => text.indexOf('wp-content') !== -1))
     .catch(error => {
       db.log.warn(`Cannot analyze whether site is WordPress`, { url, errror: error.stack});
@@ -234,22 +240,18 @@ function createFailedRequestsCount(data) {
   return failedRequests;
 }
 
-/**
- * @param {{ domains: Object<string, object> }} data
- * @param {Run} run The run to create the domain list for.
- * @return {Promise<Run>} Passing through `run`.
- */
-function createDomainList(data, run) {
+function createDomainList(data) {
+  const domains = [];
   return getAdSet().then((adSet) => {
     for (const key of Object.keys(data.domains)) {
       const domainObject = data.domains[key];
       domainObject.isAdDomain = isAdDomain(key, adSet);
       domainObject.url = key;
-      run.domains.push(domainObject);
+      domains.push(domainObject);
     }
 
-    return run;
-  });
+    return domains;
+  }).catch(e => domains);
 }
 
 /**
