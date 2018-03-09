@@ -26,10 +26,6 @@ class ComparisonWorker {
     this.db.TestOverview.load(testOverviewId, {depth: 1}).then((testOverview) => {
       if (this.shouldStartPageSpeedInsights(testOverview)) {
         this.setPsiMetrics(testOverview);
-        this.pushWebTaskToTestOverview(testOverview, new this.db.Task({
-          taskType: PSI_TYPE,
-          lastExecution: new Date()
-        }));
       }
 
       this.finishTestOverview(testOverview);
@@ -50,11 +46,6 @@ class ComparisonWorker {
     }
 
     return factorize(this.db, compResult.firstView, skResult.firstView);
-  }
-
-  pushWebTaskToTestOverview(testOverview, task) {
-    testOverview.tasks.push(task)
-    return testOverview.ready().then(() => testOverview.save())
   }
 
   finishTestOverview(testOverview) {
@@ -80,6 +71,12 @@ class ComparisonWorker {
       .catch(error => {
         this.db.log.warn(`Could not call page speed`, { url, mobile, error: error.stack })
       });
+
+    testOverview.tasks.push(new this.db.Task({
+      taskType: PSI_TYPE,
+      lastExecution: new Date()
+    }));
+    testOverview.ready().then(() => testOverview.save());
   }
 
   shouldStartPageSpeedInsights(testOverview) {
