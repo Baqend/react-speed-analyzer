@@ -102,3 +102,16 @@ class TestRequest {
 }
 
 exports.TestRequest = TestRequest
+
+const { TestWorker } = require('./_testWorker');
+
+exports.call = function(db, data, req) {
+  const params = data
+  const testWorker = new TestWorker(db)
+  const testRequest = new TestRequest(db, params)
+
+  return testRequest.create().then(testResult => {
+    testWorker.next(testResult.id)
+    return testResult
+  })
+};

@@ -29,9 +29,7 @@ class TestWorker {
       .then(testResult => testResult.ready().then(() => {
         if (testResult.hasFinished) {
           this.db.log.info(`TestResult is finished`, { testResult })
-          // escalateToComparisonWorker(testResult.testOverview)
-          // this.comparisonWorker.next(testResult.id)
-          this.comparisonWorker.handleTestResult(testResult.id)
+          this.comparisonWorker && this.comparisonWorker.handleTestResult(testResult.id)
         }
         if (testResult.isClone) {
           if (this.shouldStartPreparationTests(testResult)) {

@@ -103,20 +103,20 @@ class ComparisonRequest {
 
 exports.ComparisonRequest = ComparisonRequest
 
-// const { ComparisonWorker } = require('./_comparisonWorker')
-//
-// exports.post = (db, req, res) => {
-//   // Check if IP is rate-limited
-//   if (isRateLimited(req)) {
-//     throw new Abort({ message: 'Too many requests', status: 429 });
-//   }
-//   const params = req.body
-//
-//   // const testRequestHandler = new TestRequestHandler(db)
-//   // const testResultHandler = new TestResultHandler(db)
-//   // const testWorker = new TestWorker(db)
-//
-//   const comparisonRequest = new ComparisonRequest(db, params)
-//
-//   return comparisonRequest.create().then(testOverview => res.send(testOverview))
-// };
+const { ComparisonWorker } = require('./_comparisonWorker');
+
+exports.call = function(db, data, req) {
+  const params = data
+
+  const comparisonWorker = new ComparisonWorker(db)
+  const { testWorker } = comparisonWorker
+
+  const comparisonRequest = new ComparisonRequest(db, params)
+
+  return comparisonRequest.create().then(testOverview => {
+    comparisonWorker.next(testOverview.id)
+    testWorker.next(testOverview.competitorTestResult.id)
+    testWorker.next(testOverview.speedKitTestResult.id)
+    return testOverview
+  })
+};
