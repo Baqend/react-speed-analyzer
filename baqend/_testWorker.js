@@ -60,7 +60,7 @@ class TestWorker {
           }
         }
       }))
-      .catch(error => this.db.log.warn(`Could not find testResult`, {id: testResultId, error: error.stack}))
+      .catch(error => this.db.log.warn(`Error while next iteration`, {id: testResultId, error: error.stack}))
   }
 
   handleWebPagetestResult(testId) {
@@ -70,6 +70,7 @@ class TestWorker {
         this.next(testResult.id)
         return testResult
       })
+      .catch(error => this.db.log.error(`Error while handling WPT result`, {testId, error: error.stack}))
   }
 
   /* private */
@@ -93,13 +94,16 @@ class TestWorker {
     const checkWebPagetestStatus = (testId) => {
       return API.getTestStatus(testId).then(test => {
         if (test.statusCode === 200) {
-          return Promise.resolve(this.testResultHandler.handleResult(testId))
+          return Promise.resolve(
+            this.testResultHandler.handleResult(testId)
+              .catch(error => this.db.log.warn(`Could not find testResult`, {id: testResultId, error: error.stack}))
+          )
         }
         return Promise.reject(false)
       })
     }
     const checks = testResult.webPagetests.filter(wpt => !wpt.hasFinished).map(wpt => checkWebPagetestStatus(wpt.testId))
-    Promise.all(checks).then(() => this.next(testResult.id)).catch((e) => this.db.log.info("errrrrrr", e))
+    Promise.all(checks).then(() => this.next(testResult.id));
   }
 
   startPrewarmWebPagetest(testResult) {
@@ -115,7 +119,7 @@ class TestWorker {
         testOptions: prewarmTestOptions,
         hasFinished: false
       }))
-    })
+    }).catch(error => this.db.log(`Error while starting WPT test`,{ testResult: testResult.id, error:error.stack }))
   }
 
   startConfigGenerationWebPagetest(testResult) {
@@ -131,7 +135,7 @@ class TestWorker {
         testOptions: configTestOptions,
         hasFinished: false
       }))
-    })
+    }).catch(error => this.db.log(`Error while starting WPT test`,{ testResult: testResult.id, error:error.stack }))
   }
 
   startPerformanceWebPagetest(testResult) {
@@ -147,7 +151,7 @@ class TestWorker {
         testOptions: performanceTestOptions,
         hasFinished: false
       }))
-    })
+    }).catch(error => this.db.log(`Error while starting WPT test`,{ testResult: testResult.id, error:error.stack }))
   }
 
   pushWebPagetestToTestResult(testResult, WebPagetest) {

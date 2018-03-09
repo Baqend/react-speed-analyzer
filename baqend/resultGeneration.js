@@ -52,10 +52,11 @@ function generateTestResult(testId, pendingTest, db) {
       return pendingTest.ready().then(() => pendingTest.save());
     })
     .catch(error => {
-      pendingTest.testDataMissing = true;
       db.log.error(`Generating test result failed: ${testId}`,
         { testResult: pendingTest.id, testId, error: error.stack });
-      throw error;
+      pendingTest.testDataMissing = true;
+      pendingTest.hasFinished = true;
+      return pendingTest.ready().then(() => pendingTest.save());
     });
 }
 

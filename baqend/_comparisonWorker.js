@@ -24,12 +24,25 @@ class ComparisonWorker {
 
   next(testOverviewId) {
     this.db.log.info("ComparisonWorker next", testOverviewId)
+    const { competitorTestResult, speedKitTestResult } = testOverview;
+
     this.db.TestOverview.load(testOverviewId, {depth: 1}).then((testOverview) => {
       if (this.shouldStartPageSpeedInsights(testOverview)) {
         this.setPsiMetrics(testOverview);
+        testOverview.tasks.push(new this.db.Task({
+          taskType: PSI_TYPE,
+          lastExecution: new Date()
+        }));
       }
 
-      this.finishTestOverview(testOverview);
+      // Finish testOverview
+      if (competitorTestResult.hasFinished && speedKitTestResult.hasFinished) {
+        testOverview.speedKitConfig = speedKitTestResult.speedKitConfig;
+        testOverview.factors = this.calculateFactors(competitorTestResult, speedKitTestResult);
+        testOverview.hasFinished = true;
+      }
+
+      testOverview.ready().then(() => testOverview.save());
     })
   }
 
@@ -39,6 +52,7 @@ class ComparisonWorker {
         this.next(testOverview.id)
         return testOverview
       })
+      .catch(error => this.db.log.error(`Error while handling test result`, {id: testResultId, error: error.stack}))
   }
 
   calculateFactors(compResult, skResult) {
@@ -46,16 +60,11 @@ class ComparisonWorker {
       return null;
     }
 
-    return factorize(this.db, compResult.firstView, skResult.firstView);
-  }
-
-  finishTestOverview(testOverview) {
-    const { competitorTestResult, speedKitTestResult } = testOverview;
-    if (competitorTestResult.hasFinished && speedKitTestResult.hasFinished) {
-      testOverview.speedKitConfig = speedKitTestResult.speedKitConfig;
-      testOverview.factors = this.calculateFactors(competitorTestResult, speedKitTestResult);
-      testOverview.hasFinished = true;
-      testOverview.ready().then(() => testOverview.save());
+    try {
+      return factorize(this.db, compResult.firstView, skResult.firstView);
+    } catch(e) {
+      this.db.log.warn(`Could not calculate factors for overview with competitor ${compResult.id}`)
+      return null;
     }
   }
 
@@ -70,14 +79,8 @@ class ComparisonWorker {
       })
       .then(() => testOverview.ready().then(() => testOverview.save()))
       .catch(error => {
-        this.db.log.warn(`Could not call page speed`, { url, mobile, error: error.stack })
+        this.db.log.warn(`Could not call page speed insights`, { url, mobile, error: error.stack })
       });
-
-    testOverview.tasks.push(new this.db.Task({
-      taskType: PSI_TYPE,
-      lastExecution: new Date()
-    }));
-    testOverview.ready().then(() => testOverview.save());
   }
 
   shouldStartPageSpeedInsights(testOverview) {
