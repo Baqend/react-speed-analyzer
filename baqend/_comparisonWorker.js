@@ -9,6 +9,7 @@
 //
 const { TestWorker } = require('./_testWorker')
 const { TestResultHandler } = require('./_testResultHandler')
+const { factorize } = require('./updateBulkComparison');
 
 class ComparisonWorker {
   constructor(db) {
@@ -19,6 +20,17 @@ class ComparisonWorker {
 
   next(testOverviewId) {
     this.db.log.info("ComparisonWorker next", testOverviewId)
+
+    db.TestOverview.load(testOverviewId, {depth: 1}).then((testOverview) => {
+      const competitorTest = testOverview.competitorTestResult;
+      const speedKitTest = testOverview.speedKitTestResult;
+
+      if(competitorTest.hasFinished && speedKitTest.hasFinished) {
+        testOverview.hasFinished = true;
+        testOverview.factors = this.calculateFactors(competitorTest, speedKitTest);
+        testOverview.ready().then(() => testOverview.save());
+      }
+    })
   }
 
   handleTestResult(testResultId) {
@@ -27,6 +39,14 @@ class ComparisonWorker {
         this.next(testOverview.id)
         return testOverview
       })
+  }
+
+  calculateFactors(compResult, skResult) {
+    if (skResult.testDataMissing || compResult.testDataMissing || !compResult.firstView || ! skResult.firstView) {
+      return null;
+    }
+
+    return factorize(this.db, compResult.firstView, skResult.firstView);
   }
 }
 
