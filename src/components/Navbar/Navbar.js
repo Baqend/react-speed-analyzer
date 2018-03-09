@@ -53,7 +53,7 @@ class Navbar extends Component {
           <a
             className="btn btn-small btn-white no-border no-shadow dn db-ns"
             target="_blank" rel="noopener noreferrer"
-            href="https://www.baqend.com/guide/topics/speed-kit/#page-speed-analyzer">About the Analyzer</a>
+            href="http://www.baqend.com/guide/topics/speed-kit/analyzer/">About the Analyzer</a>
         </div>
         <a
           className="btn btn-small btn-white"
@@ -81,7 +81,7 @@ class Navbar extends Component {
           <a
             className="btn btn-small btn-black no-border no-shadow dn db-ns"
             target="_blank" rel="noopener noreferrer"
-            href="https://www.baqend.com/guide/topics/speed-kit/#page-speed-analyzer">About the Analyzer</a>
+            href="http://www.baqend.com/guide/topics/speed-kit/analyzer/">About the Analyzer</a>
         </div>
         <a
           className="btn btn-small btn-orange no-shadow"
