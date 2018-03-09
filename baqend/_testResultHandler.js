@@ -1,5 +1,4 @@
 const API = require('./Pagetest');
-const { generateTestResult } = require('./resultGeneration');
 const { createSmartConfig, getFallbackConfig } = require('./configGeneration');
 
 const CONFIG_TYPE = 'config';
@@ -13,9 +12,9 @@ class TestResultHandler {
   /**
    * Get the smart config based on the domains of a given testId.
    *
-   * @param db The Baqend instance.
    * @param {string} testId The id of the test to get the domains from.
    * @param {object} testInfo The info of the corresponding test.
+   * @return {string} The generated config as string formatted json.
    */
   getSmartConfig(testId, testInfo) {
     const options = {
@@ -46,6 +45,7 @@ class TestResultHandler {
    *
    * @param {TestResult} testResult The result in which the info is to be found.
    * @param {string} testId The id to get the WPT info for.
+   * @return {object} The WPT info object.
    */
   getWPTInfo(testResult, testId) {
     return testResult.webPagetests.find(wpt => wpt.testId === testId)
@@ -54,8 +54,8 @@ class TestResultHandler {
   /**
    * Handles the result of a given WPT test id.
    *
-   * @param db The Baqend instance.
    * @param {string} testId The id of the WPT test to be handled.
+   * @return {TestResult} The updated test result.
    */
   handleResult(testId) {
     this.db.log.info("handleTestResult", testId)
@@ -72,15 +72,17 @@ class TestResultHandler {
       }
 
       let promise = Promise.resolve();
-      // if (webPageTestInfo.testType === CONFIG_TYPE) {
-      //   const testInfo = testResult.testInfo;
-      //   promise = this.getSmartConfig(testId, testInfo).then((config) => {
-      //     testResult.speedKitConfig = config;
-      //   })
-      // } else if (webPageTestInfo.testType === PERFORMANCE_TYPE) {
-      //   this.db.log.info(`Test successful: ${testId}`, { testResult: testResult.id, testId});
-      //   promise = generateTestResult(testId, testResult, this.db);
-      // }
+      if (webPageTestInfo.testType === CONFIG_TYPE) {
+        promise = this.getSmartConfig(testId, testResult.testInfo).then((config) => {
+          testResult.speedKitConfig = config;
+        })
+      } else if (webPageTestInfo.testType === PERFORMANCE_TYPE) {
+        this.db.log.info(`Test successful: ${testId}`, { testResult: testResult.id, testId});
+        promise = generateTestResult(testId, testResult, this.db).then((updatedResult) => {
+          testResult = updatedResult;
+          testResult.hasFinished = true;
+        });
+      }
 
       return promise.then(() => {
         webPageTestInfo.hasFinished = true;
