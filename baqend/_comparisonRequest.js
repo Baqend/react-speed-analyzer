@@ -4,6 +4,7 @@ const { isRateLimited } = require('./rateLimiter');
 const { getTLD } = require('./getSpeedKitUrl');
 const { generateUniqueId } = require('./generateUniqueId');
 const { analyzeSpeedKit } = require('./analyzeSpeedKit');
+const stringifyObject = require('stringify-object');
 
 const { TestRequest } = require('./_testRequest')
 
