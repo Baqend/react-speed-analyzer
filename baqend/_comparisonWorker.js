@@ -10,6 +10,9 @@
 const { TestWorker } = require('./_testWorker')
 const { TestResultHandler } = require('./_testResultHandler')
 const { factorize } = require('./updateBulkComparison');
+const { callPageSpeed } = require('./callPageSpeed');
+
+const PSI_TYPE = 'psi';
 
 class ComparisonWorker {
   constructor(db) {
@@ -20,16 +23,16 @@ class ComparisonWorker {
 
   next(testOverviewId) {
     this.db.log.info("ComparisonWorker next", testOverviewId)
-
     this.db.TestOverview.load(testOverviewId, {depth: 1}).then((testOverview) => {
-      const competitorTest = testOverview.competitorTestResult;
-      const speedKitTest = testOverview.speedKitTestResult;
-
-      if(competitorTest.hasFinished && speedKitTest.hasFinished) {
-        testOverview.hasFinished = true;
-        testOverview.factors = this.calculateFactors(competitorTest, speedKitTest);
-        testOverview.ready().then(() => testOverview.save());
+      if (this.shouldStartPageSpeedInsights(testOverview)) {
+        this.setPsiMetrics(testOverview);
+        this.pushWebTaskToTestOverview(testOverview, new this.db.Task({
+          taskType: PSI_TYPE,
+          lastExecution: new Date()
+        }));
       }
+
+      this.finishTestOverview(testOverview);
     })
   }
 
@@ -47,6 +50,43 @@ class ComparisonWorker {
     }
 
     return factorize(this.db, compResult.firstView, skResult.firstView);
+  }
+
+  pushWebTaskToTestOverview(testOverview, Task) {
+    testOverview.tasks.push(Task)
+    return testOverview.ready().then(() => testOverview.save())
+  }
+
+  finishTestOverview(testOverview) {
+    const { competitorTestResult, speedKitTestResult } = testOverview;
+    if (competitorTestResult.hasFinished && speedKitTestResult.hasFinished) {
+      testOverview.speedKitConfig = speedKitTestResult.speedKitConfig;
+      testOverview.factors = this.calculateFactors(competitorTestResult, speedKitTestResult);
+      testOverview.hasFinished = true;
+      testOverview.ready().then(() => testOverview.save());
+    }
+  }
+
+  setPsiMetrics(testOverview) {
+    const { url, mobile } = testOverview;
+    callPageSpeed(url, mobile)
+      .then(pageSpeedInsights => {
+        testOverview.psiDomains = pageSpeedInsights.domains;
+        testOverview.psiRequests = pageSpeedInsights.requests;
+        testOverview.psiResponseSize = pageSpeedInsights.bytes;
+        testOverview.psiScreenshot = pageSpeedInsights.screenshot;
+      })
+      .then(() => testOverview.ready().then(() => testOverview.save()))
+      .catch(error => {
+        this.db.log.warn(`Could not call page speed`, { url, mobile, error: error.stack })
+      });
+  }
+
+  shouldStartPageSpeedInsights(testOverview) {
+    if (!testOverview.tasks || !testOverview.tasks.length) {
+      return false
+    }
+    return testOverview.tasks.map(task => task.taskType).indexOf(PSI_TYPE) === -1
   }
 }
 
