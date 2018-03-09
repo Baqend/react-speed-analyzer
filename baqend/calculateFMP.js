@@ -51,10 +51,11 @@ function calculateFMP(data) {
       break;
     }
 
-    // The current diff is the highest and the visual progress is at least 33%
-    if (diff > highestDiff && data[i][1] >= 33) {
+    // The current diff is the highest and the visual progress is at least 50%
+    if (diff > highestDiff && data[i][1] >= 50) {
       highestDiff = diff;
       [firstMeaningfulPaint] = data[i];
+      break;
     }
   }
 
