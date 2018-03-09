@@ -27,6 +27,8 @@ const defaultTestOptions = {
 };
 
 /**
+ * Creates a TestResult object, that has all the information needed in order to be processed by the TestWorker
+ *
  * @param db The Baqend instance.
  * @param {string} url The URL to test.
  * @param {boolean} isClone True, if this is the cloned page.
@@ -58,7 +60,6 @@ class TestRequest {
       isSpeedKitComparison: params.isSpeedKitComparison,
       activityTimeout: params.activityTimeout,
       skipPrewarm: params.skipPrewarm,
-      // customSpeedKitConfig: speedKitConfig,
       testOptions: Object.assign({}, defaultTestOptions, {
         runs: 2,
         firstViewOnly: !params.caching,
@@ -70,7 +71,6 @@ class TestRequest {
       }),
     };
 
-    // Create a new test result
     const testResult = new this.db.TestResult({
       url: params.url,
       isClone: params.isClone,

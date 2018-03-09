@@ -16,6 +16,15 @@ const prewarmOptions = {
   minimalResults: true
 }
 
+/**
+ * The TestWorker takes care of finishing the tests that are running for a comparison. It can
+ * be either called manually or via cronjob by passing a testResultId into the testWorker instances
+ * next method. The worker will load the testResult and check what to do next in order to finish the task.
+ *
+ * Takes care of starting the right webPagetests at the right time
+ *
+ * @return {TestWorker}
+ */
 class TestWorker {
   constructor(db, comparisonWorker) {
     this.db = db
@@ -23,6 +32,7 @@ class TestWorker {
     this.testResultHandler = new WebPagetestResultHandler(db)
   }
 
+  /* public */
   next(testResultId) {
     this.db.log.info("testWorker next", testResultId)
     this.db.TestResult.load(testResultId, { refresh: true })
@@ -62,6 +72,7 @@ class TestWorker {
       })
   }
 
+  /* private */
   shouldStartPreparationTests(testResult) {
     if (testResult.skipPrewarm) {
       return false

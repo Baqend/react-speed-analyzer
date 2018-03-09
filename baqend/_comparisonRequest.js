@@ -10,6 +10,10 @@ const { TestRequest } = require('./_testRequest')
 
 const DEFAULT_ACTIVITY_TIMEOUT = 75;
 
+/**
+ * Creates a TestOverview object and the TestResult objects that are processed by the ComparisonWorker
+ * and the TestWorker
+ */
 class ComparisonRequest {
   constructor(db, params) {
     this.db = db

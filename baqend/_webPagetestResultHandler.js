@@ -5,6 +5,11 @@ const { createSmartConfig, getFallbackConfig } = require('./configGeneration');
 const CONFIG_TYPE = 'config';
 const PERFORMANCE_TYPE = 'performance';
 
+/**
+ * Handles a webpage test result to continue a single comparison test.
+ * Instance in TestWorker
+ * @return {WebPagetestResultHandler}
+ */
 class WebPagetestResultHandler {
   constructor(db) {
     this.db = db

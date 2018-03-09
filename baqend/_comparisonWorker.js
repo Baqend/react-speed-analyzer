@@ -1,6 +1,5 @@
 // /* eslint-disable comma-dangle, function-paren-newline */
 // /* eslint-disable no-restricted-syntax, no-param-reassign */
-
 const { TestWorker } = require('./_testWorker')
 const { TestResultHandler } = require('./_testResultHandler')
 const { factorize } = require('./updateBulkComparison');
@@ -8,6 +7,14 @@ const { callPageSpeed } = require('./callPageSpeed');
 
 const PSI_TYPE = 'psi';
 
+/**
+ * The ComparisonWorker takes care of finishing a comparison. It can be either called manually
+ * or via cronjob by passing a testOverviewId into its next method.
+ * The worker will load the testOverview and check what to do next in order to finish the task.
+ * The next method is called by the TestWorker, when a testResult is finished
+ *
+ * @return {TestWorker}
+ */
 class ComparisonWorker {
   constructor(db) {
     this.db = db
