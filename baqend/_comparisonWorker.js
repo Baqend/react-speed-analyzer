@@ -21,7 +21,7 @@ class ComparisonWorker {
   next(testOverviewId) {
     this.db.log.info("ComparisonWorker next", testOverviewId)
 
-    db.TestOverview.load(testOverviewId, {depth: 1}).then((testOverview) => {
+    this.db.TestOverview.load(testOverviewId, {depth: 1}).then((testOverview) => {
       const competitorTest = testOverview.competitorTestResult;
       const speedKitTest = testOverview.speedKitTestResult;
 
