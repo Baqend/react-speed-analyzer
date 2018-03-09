@@ -1,12 +1,6 @@
 // /* eslint-disable comma-dangle, function-paren-newline */
 // /* eslint-disable no-restricted-syntax, no-param-reassign */
-// const { isRateLimited } = require('./rateLimiter');
-// const { queueTest, DEFAULT_ACTIVITY_TIMEOUT } = require('./queueTest');
-// const { getTLD } = require('./getSpeedKitUrl');
-// const { generateUniqueId } = require('./generateUniqueId');
-// const { callPageSpeed } = require('./callPageSpeed');
-// const { factorize } = require('./updateBulkComparison');
-//
+
 const { TestWorker } = require('./_testWorker')
 const { TestResultHandler } = require('./_testResultHandler')
 const { factorize } = require('./updateBulkComparison');
@@ -96,10 +90,25 @@ exports.ComparisonWorker = ComparisonWorker
 //   const testWorker = new ComparisonWorker(db)
 //   ComparisonWorker.next(testResultId)
 // }
-//
-// function runTestWorker(db, jobsStatus, jobsDefinition) {
-//   db.log.info('Running comparison worker job');
-// }
+
+function runTestWorker(db, jobsStatus, jobsDefinition) {
+  const comparisonWorker = new ComparisonWorker(db)
+
+  const date = new Date()
+
+  db.TestResult.find()
+    .equal('hasFinished', false)
+    .lessThanOrEqualTo('updatedAt', new Date(date.getTime() - 1000 * 60))
+    .resultList(testOverviews => {
+      db.log.info("Running comparison worker job", testOverviews)
+      testOverviews.map(testOverview => {
+        // testResult.retries = testResult.retries >= 0 ? testResult.retries + 1 : 0
+        // testOverview.save().then(() => testWorker.next(testResult.id))
+        comparisonWorker.next(testOverview.id)
+        // testResult.save()
+      })
+    })
+}
 
 // exports.callComparisonWorker = callComparisonWorker;
-// exports.run = runTestWorker;
+exports.run = runTestWorker;

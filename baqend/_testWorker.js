@@ -165,24 +165,20 @@ exports.TestWorker = TestWorker;
 const { ComparisonWorker } = require('./_comparisonWorker')
 
 function runTestWorker(db, jobsStatus, jobsDefinition) {
-  db.log.info('Running callTestWorker job');
   const comparisonWorker = new ComparisonWorker(db)
   const testWorker = new TestWorker(db, comparisonWorker)
 
   const date = new Date()
-  // date.setMinutes(date.getMinutes() - 1)
 
   db.TestResult.find()
     .equal('hasFinished', false)
     .lessThanOrEqualTo('updatedAt', new Date(date.getTime() - 1000 * 60))
-    // .greaterThanOrEqualTo('checked', new Date(date.getTime() + 1000 * 120))
     .isNotNull('webPagetests')
     .resultList(testResults => {
-      db.log.info("job testResults", testResults)
+      db.log.info("Running callTestWorker job", testResults)
       testResults.map(testResult => {
         testResult.retries = testResult.retries >= 0 ? testResult.retries + 1 : 0
         testResult.save().then(() => testWorker.next(testResult.id))
-        // testResult.save()
       })
     })
 }
