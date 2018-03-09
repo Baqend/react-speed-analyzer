@@ -82,7 +82,7 @@ export const startTest = (urlInfo = {}) => ({
 
 
       // const testOverview = await db.modules.post('runComparison', {
-      const testOverview = await db.modules.post('__handleComparisonRequest', {
+      const testOverview = await db.modules.post('_comparisonRequest', {
         url,
         location,
         caching,

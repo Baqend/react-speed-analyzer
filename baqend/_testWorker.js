@@ -41,22 +41,22 @@ class TestWorker {
           this.db.log.info(`TestResult is finished`, { testResult })
           this.comparisonWorker && this.comparisonWorker.handleTestResult(testResult.id)
         }
-        if (testResult.isClone) {
-          if (this.shouldStartPreparationTests(testResult)) {
-            !testResult.speedKitConfig && this.startConfigGenerationWebPagetest(testResult)
-            this.startPrewarmWebPagetest(testResult)
-          } else {
-            if (this.hasNotFinishedWebPagetests(testResult)) {
-              this.db.log.info(`checkWebPagetestStatus`, { testResult })
-              this.checkWebPagetestsStatus(testResult)
+        if (this.hasNotFinishedWebPagetests(testResult)) {
+          this.db.log.info(`checkWebPagetestStatus`, { testResult })
+          this.checkWebPagetestsStatus(testResult)
+        } else {
+          if (testResult.isClone) {
+            if (this.shouldStartPreparationTests(testResult)) {
+              !testResult.speedKitConfig && this.startConfigGenerationWebPagetest(testResult)
+              this.startPrewarmWebPagetest(testResult)
             } else if (this.shouldStartPerformanceTests(testResult)) {
               this.db.log.info(`startPerformanceTest`, { testResult })
               this.startPerformanceWebPagetest(testResult)
             }
-          }
-        } else {
-          if (this.shouldStartPerformanceTests(testResult)) {
-            this.startPerformanceWebPagetest(testResult)
+          } else {
+            if (this.shouldStartPerformanceTests(testResult)) {
+              this.startPerformanceWebPagetest(testResult)
+            }
           }
         }
       }))
@@ -174,6 +174,7 @@ exports.TestWorker = TestWorker;
 const { ComparisonWorker } = require('./_comparisonWorker')
 
 function runTestWorker(db, jobsStatus, jobsDefinition) {
+  db.log.info("Running callTestWorker job")
   const comparisonWorker = new ComparisonWorker(db)
   const testWorker = new TestWorker(db, comparisonWorker)
 
@@ -184,7 +185,7 @@ function runTestWorker(db, jobsStatus, jobsDefinition) {
     .lessThanOrEqualTo('updatedAt', new Date(date.getTime() - 1000 * 60))
     .isNotNull('webPagetests')
     .resultList(testResults => {
-      db.log.info("Running callTestWorker job", testResults)
+      db.log.info("Running callTestWorker job for", testResults)
       testResults.map(testResult => {
         testResult.retries = testResult.retries >= 0 ? testResult.retries + 1 : 0
         testResult.save().then(() => testWorker.next(testResult.id))
