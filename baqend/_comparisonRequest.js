@@ -1,23 +1,22 @@
 /* eslint-disable comma-dangle, function-paren-newline */
 /* eslint-disable no-restricted-syntax, no-param-reassign */
 const { isRateLimited } = require('./rateLimiter');
-const { queueTest, DEFAULT_ACTIVITY_TIMEOUT } = require('./queueTest');
 const { getTLD } = require('./getSpeedKitUrl');
 const { generateUniqueId } = require('./generateUniqueId');
-const { callPageSpeed } = require('./callPageSpeed');
-const { factorize } = require('./updateBulkComparison');
-
 const { analyzeSpeedKit } = require('./analyzeSpeedKit');
 
-class ComparisonRequestHandler {
-  constructor(db, testWorker, params) {
+const { TestRequest } = require('./_testRequest')
+
+const DEFAULT_ACTIVITY_TIMEOUT = 75;
+
+class ComparisonRequest {
+  constructor(db, params) {
     this.db = db
-    this.testWorker = testWorker
     this.params = params
     this.existingSpeedKitConfig = null
   }
 
-  handleRequest() {
+  create() {
     return this.getExistingSpeedKitConfigForUrl().then(existingSpeedKitConfig => {
       this.existingSpeedKitConfig = existingSpeedKitConfig
 
@@ -67,7 +66,7 @@ class ComparisonRequestHandler {
   }
 
   createCompetitorTest() {
-    return this.testWorker.handleTestRequest({
+    const params = {
       isClone: false,
       url: this.params.url,
       location: this.params.location,
@@ -77,11 +76,13 @@ class ComparisonRequestHandler {
       isSpeedKitComparison: this.params.isSpeedKitComparison,
       speedKitConfig: this.existingSpeedKitConfig,
       priority: this.params.priority,
-    });
+    }
+    const competitorTest = new TestRequest(this.db, params)
+    return competitorTest.create()
   }
 
   createSpeedKitTest() {
-    return this.testWorker.handleTestRequest({
+    const params = {
       isClone: true,
       url: this.params.url,
       location: this.params.location,
@@ -92,28 +93,28 @@ class ComparisonRequestHandler {
       speedKitConfig: this.params.speedKitConfig || this.existingSpeedKitConfig,
       priority: this.params.priority,
       skipPrewarm: false,
-    });
+    }
+    const speedKitTest = new TestRequest(this.db, params)
+    return speedKitTest.create()
   }
 }
 
-exports.ComparisonRequestHandler = ComparisonRequestHandler
+exports.ComparisonRequest = ComparisonRequest
 
-const { TestWorker } = require('./_testWorker')
-const { TestRequestHandler } = require('./_testRequestHandler')
-const { TestResultHandler } = require('./_testResultHandler')
-
-exports.post = (db, req, res) => {
-  // Check if IP is rate-limited
-  if (isRateLimited(req)) {
-    throw new Abort({ message: 'Too many requests', status: 429 });
-  }
-  const params = req.body
-
-  const testRequestHandler = new TestRequestHandler(db)
-  const testResultHandler = new TestResultHandler(db)
-  const testWorker = new TestWorker({ db, testResultHandler, testResultHandler })
-
-  const comparisonRequestHandler = new ComparisonRequestHandler({ db, testWorker, params })
-
-  return comparisonRequestHandler.handleRequest().then(testOverview => res.send(testOverview))
-};
+// const { ComparisonWorker } = require('./_comparisonWorker')
+//
+// exports.post = (db, req, res) => {
+//   // Check if IP is rate-limited
+//   if (isRateLimited(req)) {
+//     throw new Abort({ message: 'Too many requests', status: 429 });
+//   }
+//   const params = req.body
+//
+//   // const testRequestHandler = new TestRequestHandler(db)
+//   // const testResultHandler = new TestResultHandler(db)
+//   // const testWorker = new TestWorker(db)
+//
+//   const comparisonRequest = new ComparisonRequest(db, params)
+//
+//   return comparisonRequest.create().then(testOverview => res.send(testOverview))
+// };

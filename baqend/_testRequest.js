@@ -26,26 +26,27 @@ const defaultTestOptions = {
   timeout: 2 * DEFAULT_TIMEOUT,
 };
 
-
-class TestRequestHandler {
-  constructor(db) {
+/**
+ * @param db The Baqend instance.
+ * @param {string} url The URL to test.
+ * @param {boolean} isClone True, if this is the cloned page.
+ * @param {string} [location] The server location to execute the test.
+ * @param {boolean} [caching] True, if browser caching should be used.
+ * @param {number} [activityTimeout] The timeout when the test should be aborted.
+ * @param {boolean} [isSpeedKitComparison] True, if Speed Kit is already running on the tested site.
+ * @param {Object} [speedKitConfig] The speedKit configuration.
+ * @param {boolean} [mobile] True, if a mobile-only test should be made.
+ * @param {number} [priority=0] Defines the test's priority, from 0 (highest) to 9 (lowest).
+ * @return {Promise<TestResult>} A promise resolving when the test has been created.
+ */
+class TestRequest {
+  constructor(db, params) {
     this.db = db
+    this.params = params
   }
 
-  /**
-   * @param db The Baqend instance.
-   * @param {string} url The URL to test.
-   * @param {boolean} isClone True, if this is the cloned page.
-   * @param {string} [location] The server location to execute the test.
-   * @param {boolean} [caching] True, if browser caching should be used.
-   * @param {number} [activityTimeout] The timeout when the test should be aborted.
-   * @param {boolean} [isSpeedKitComparison] True, if Speed Kit is already running on the tested site.
-   * @param {Object} [speedKitConfig] The speedKit configuration.
-   * @param {boolean} [mobile] True, if a mobile-only test should be made.
-   * @param {number} [priority=0] Defines the test's priority, from 0 (highest) to 9 (lowest).
-   * @return {Promise<TestResult>} A promise resolving when the test has been created.
-   */
-  handleRequest(params) {
+  create() {
+    const params = this.params
     const commandLine = this.createCommandLineFlags(params.url, params.isClone);
     if (commandLine) {
       this.db.log.info('flags: %s', commandLine);
@@ -100,4 +101,4 @@ class TestRequestHandler {
   }
 }
 
-exports.TestRequestHandler = TestRequestHandler
+exports.TestRequest = TestRequest

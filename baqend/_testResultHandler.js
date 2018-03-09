@@ -11,83 +11,35 @@ class TestResultHandler {
   }
 
   /**
-   * Get the smart config based on the domains of a given testId.
-   *
-   * @param db The Baqend instance.
-   * @param {string} testId The id of the test to get the domains from.
-   * @param {object} testInfo The info of the corresponding test.
-   */
-  getSmartConfig(testId, testInfo) {
-    const options = {
-      requests: true,
-      breakdown: false,
-      domains: true,
-      pageSpeed: false,
-    };
-
-    return API.getTestResults(testId, options)
-      .then(result => {
-        const domains = result.data;
-        this.db.log.info(`Generating Smart Config`, {url: testInfo.url});
-        return createSmartConfig(testInfo.url, domains, testInfo.isMobile, db);
-      })
-      .then(config => {
-        this.db.log.info(`Smart Config generated`, {url: testInfo.url, config});
-        return config;
-      })
-      .catch(error => {
-        this.db.log.warn(`Smart generation failed`, {url: testInfo.url, error});
-        return getFallbackConfig(this.db, testInfo.url);
-      });
-  }
-
-  /**
-   * Get the corresponding WPT info object (id, type and status) of a given testId.
-   *
-   * @param {TestResult} testResult The result in which the info is to be found.
-   * @param {string} testId The id to get the WPT info for.
-   */
-  getWPTInfo(testResult, testId) {
-    return testResult.webPagetests.find(wpt => wpt.testId === testId)
-  }
-
-  /**
    * Handles the result of a given WPT test id.
    *
    * @param db The Baqend instance.
    * @param {string} testId The id of the WPT test to be handled.
    */
-  handleResult(testId) {
-    this.db.log.info("handleTestResult", testId)
-    return this.db.TestResult.find().equal('webPagetests.testId', testId).singleResult().then(testResult => {
-      if (!testResult) {
-        this.db.log.warn(`There was no testResult found for testId`, { testId });
-        throw new Error(`No testResult found in cache ${testId}`);
-      }
+  handleResult(testResultId) {
+    this.db.log.info("handle Comparison Result", testResultId)
+    return this.db.TestOverview.find()
+      .where({
+        "$or": [
+          { "competitorTestResult": { "$eq" : testResultId } },
+          { "speedKitTestResult": { "$eq" : testResultId } }
+        ]
+      }).singleResult().then(testOverview => {
+        this.db.log.info("handle Comparison Result Obj", testOverview)
+        return testOverview
+      })
 
-      const webPageTestInfo = this.getWPTInfo(testResult, testId);
-      if (!webPageTestInfo) {
-        this.db.log.warn(`Unable to verify test type`, { testResult });
-        throw new Error(`No WPT info with id ${testId} found for testResult ${testResult.id}`);
-      }
-
-      let promise = Promise.resolve();
-      // if (webPageTestInfo.testType === CONFIG_TYPE) {
-      //   const testInfo = testResult.testInfo;
-      //   promise = this.getSmartConfig(testId, testInfo).then((config) => {
-      //     testResult.speedKitConfig = config;
-      //   })
-      // } else if (webPageTestInfo.testType === PERFORMANCE_TYPE) {
-      //   this.db.log.info(`Test successful: ${testId}`, { testResult: testResult.id, testId});
-      //   promise = generateTestResult(testId, testResult, this.db);
-      // }
-
-      return promise.then(() => {
-        webPageTestInfo.hasFinished = true;
-        return testResult.ready().then(() => testResult.save());
-      });
-    });
   }
 }
 
 exports.TestResultHandler = TestResultHandler;
+
+// const { TestWorker } = require('./_testWorker');
+//
+// function callResultHandler(db, data, req) {
+//   db.log.info('Comparison Pingback received for ' + data.id);
+//   const ComparisonResultHandler = new ComparisonResultHandler(db)
+//   testResultHandler.handleTestResult(data.id)
+// }
+//
+// exports.call = callResultHandler;
