@@ -52,8 +52,8 @@ class ComparisonWorker {
     return factorize(this.db, compResult.firstView, skResult.firstView);
   }
 
-  pushWebTaskToTestOverview(testOverview, Task) {
-    testOverview.tasks.push(Task)
+  pushWebTaskToTestOverview(testOverview, task) {
+    testOverview.tasks.push(task)
     return testOverview.ready().then(() => testOverview.save())
   }
 
@@ -84,7 +84,7 @@ class ComparisonWorker {
 
   shouldStartPageSpeedInsights(testOverview) {
     if (!testOverview.tasks || !testOverview.tasks.length) {
-      return false
+      return true
     }
     return testOverview.tasks.map(task => task.taskType).indexOf(PSI_TYPE) === -1
   }

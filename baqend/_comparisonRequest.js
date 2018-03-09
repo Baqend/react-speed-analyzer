@@ -60,6 +60,7 @@ class ComparisonRequest {
           hasFinished: false,
           competitorTestResult: competitorTest,
           speedKitTestResult: speedKitTest,
+          tasks: []
         });
         return testOverview.save();
       })
