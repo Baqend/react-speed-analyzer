@@ -119,7 +119,7 @@ function createTestResult(db, wptData, testId, runIndex) {
   return Promise.all([
     createRun(db, resultRun.firstView, testId, runIndex),
     createRun(db, resultRun.repeatView, testId, runIndex),
-    iskWordPress(wptData.testUrl, db)
+    iskWordPress(db, wptData.testUrl)
   ])
 }
 
