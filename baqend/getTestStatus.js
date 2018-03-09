@@ -16,8 +16,11 @@ function getTestStatus(db, baqendId) {
       if (!result) {
           throw new Abort('Object not found');
       }
-
-      return API.getTestStatus(result.testId);
+      if (result.testId) {
+        return API.getTestStatus(result.testId);
+      } else if (result.webPagetests && result.webPagetests.length){
+        return API.getTestStatus(result.webPagetests[0].testId)
+      }
     })
     .then(status => ({ status }));
 }
