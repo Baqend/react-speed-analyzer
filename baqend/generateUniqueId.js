@@ -26,6 +26,7 @@ function generateUniqueId(db, entityClass, length = 5) {
     return uniqueId;
   }).catch((error) => {
     db.log.warn(`Could not generateUniqueId with error ${error.stack}.`);
+    return null;
   });
 }
 

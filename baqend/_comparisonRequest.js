@@ -49,24 +49,29 @@ class ComparisonRequest {
   }
 
   createTestOverview([competitorTest, speedKitTest]) {
+    const attributes = {
+      url: this.params.url,
+      caching: this.params.caching,
+      location: this.params.location,
+      mobile: this.params.mobile,
+      activityTimeout: this.params.activityTimeout || DEFAULT_ACTIVITY_TIMEOUT,
+      isSpeedKitComparison: this.params.isSpeedKitComparison,
+      speedKitVersion: this.params.speedKitVersion,
+      speedKitConfig: null,
+      hasFinished: false,
+      competitorTestResult: competitorTest,
+      speedKitTestResult: speedKitTest,
+      tasks: []
+    }
+
     return generateUniqueId(this.db, 'TestOverview')
       .then(uniqueId => {
         const tld = getTLD(this.db, this.params.url);
-        const testOverview = new this.db.TestOverview({
-          id: uniqueId + tld.substring(0, tld.length - 1),
-          url: this.params.url,
-          caching: this.params.caching,
-          location: this.params.location,
-          mobile: this.params.mobile,
-          activityTimeout: this.params.activityTimeout || DEFAULT_ACTIVITY_TIMEOUT,
-          isSpeedKitComparison: this.params.isSpeedKitComparison,
-          speedKitVersion: this.params.speedKitVersion,
-          speedKitConfig: null,
-          hasFinished: false,
-          competitorTestResult: competitorTest,
-          speedKitTestResult: speedKitTest,
-          tasks: []
-        });
+        if (uniqueId) {
+          attributes.id = uniqueId + tld.substring(0, tld.length - 1);
+        }
+
+        const testOverview = new this.db.TestOverview(attributes);
         return testOverview.save();
       })
   }
