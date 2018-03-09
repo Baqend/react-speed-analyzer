@@ -1,6 +1,4 @@
 const API = require('./Pagetest');
-const { generateTestResult } = require('./resultGeneration');
-const { createSmartConfig, getFallbackConfig } = require('./configGeneration');
 
 const CONFIG_TYPE = 'config';
 const PERFORMANCE_TYPE = 'performance';
