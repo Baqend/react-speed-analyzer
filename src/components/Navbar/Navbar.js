@@ -49,11 +49,15 @@ class Navbar extends Component {
           <a
             className="btn btn-small btn-white no-border no-shadow dn db-ns"
             target="_blank" rel="noopener noreferrer"
+            href="https://www.baqend.com/speedkit.html#sk-features">Features</a>
+          <a
+            className="btn btn-small btn-white no-border no-shadow dn db-ns"
+            target="_blank" rel="noopener noreferrer"
             href="https://www.baqend.com/pricing_speedkit.html">Pricing</a>
           <a
             className="btn btn-small btn-white no-border no-shadow dn db-ns"
             target="_blank" rel="noopener noreferrer"
-            href="https://www.baqend.com/guide/topics/speed-kit/#page-speed-analyzer">About the Analyzer</a>
+            href="https://www.baqend.com/guide/topics/speed-kit/#page-speed-analyzer">Analyzer</a>
         </div>
         <a
           className="btn btn-small btn-white"
@@ -77,11 +81,15 @@ class Navbar extends Component {
           <a
             className="btn btn-small btn-black no-border no-shadow dn db-ns"
             target="_blank" rel="noopener noreferrer"
+            href="https://www.baqend.com/speedkit.html#sk-features">Features</a>
+          <a
+            className="btn btn-small btn-black no-border no-shadow dn db-ns"
+            target="_blank" rel="noopener noreferrer"
             href="https://www.baqend.com/pricing_speedkit.html">Pricing</a>
           <a
             className="btn btn-small btn-black no-border no-shadow dn db-ns"
             target="_blank" rel="noopener noreferrer"
-            href="https://www.baqend.com/guide/topics/speed-kit/#page-speed-analyzer">About the Analyzer</a>
+            href="https://www.baqend.com/guide/topics/speed-kit/#page-speed-analyzer">Analyzer</a>
         </div>
         <a
           className="btn btn-small btn-orange no-shadow"
