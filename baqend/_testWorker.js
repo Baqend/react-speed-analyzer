@@ -187,6 +187,7 @@ function runTestWorker(db, jobsStatus, jobsDefinition) {
   db.TestResult.find()
     .equal('hasFinished', false)
     .lessThanOrEqualTo('updatedAt', new Date(date.getTime() - 1000 * 60))
+    .greaterThanOrEqualTo('updatedAt', new Date(date.getTime() - 1000 * 60 * 60))
     .isNotNull('webPagetests')
     .resultList(testResults => {
       db.log.info("Running callTestWorker job for", testResults)

@@ -1,7 +1,6 @@
 // /* eslint-disable comma-dangle, function-paren-newline */
 // /* eslint-disable no-restricted-syntax, no-param-reassign */
 const { TestWorker } = require('./_testWorker')
-const { TestResultHandler } = require('./_testResultHandler')
 const { factorize } = require('./updateBulkComparison');
 const { callPageSpeed } = require('./callPageSpeed');
 
@@ -19,7 +18,6 @@ class ComparisonWorker {
   constructor(db) {
     this.db = db
     this.testWorker = new TestWorker(db, this)
-    this.testResultHandler = new TestResultHandler(db)
   }
 
   next(testOverviewId) {
@@ -47,7 +45,8 @@ class ComparisonWorker {
   }
 
   handleTestResult(testResultId) {
-    return this.testResultHandler.handleResult(testResultId)
+    this.db.log.info("handle comparison result", testResultId)
+    return this.loadTestOverview(testResultId)
       .then(testOverview => {
         this.next(testOverview.id)
         return testOverview
@@ -89,6 +88,20 @@ class ComparisonWorker {
     }
     return testOverview.tasks.map(task => task.taskType).indexOf(PSI_TYPE) === -1
   }
+
+
+  loadTestOverview(testResultId) {
+    return this.db.TestOverview.find()
+      .where({
+        "$or": [
+          { "competitorTestResult": { "$eq" : testResultId } },
+          { "speedKitTestResult": { "$eq" : testResultId } }
+        ]
+      }).singleResult().then(testOverview => {
+        this.db.log.info("Comparison found to handle test result", testOverview)
+        return testOverview
+      })
+  }
 }
 
 exports.ComparisonWorker = ComparisonWorker
@@ -106,6 +119,7 @@ function runTestWorker(db, jobsStatus, jobsDefinition) {
   db.TestResult.find()
     .equal('hasFinished', false)
     .lessThanOrEqualTo('updatedAt', new Date(date.getTime() - 1000 * 60))
+    .greaterThanOrEqualTo('updatedAt', new Date(date.getTime() - 1000 * 60 * 60))
     .resultList(testOverviews => {
       db.log.info("Running comparison worker job", testOverviews)
       testOverviews.map(testOverview => {
