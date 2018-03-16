@@ -86,11 +86,12 @@ function fetchServiceWorkerUrl(swUrl) {
 
 /**
  * @param {string} url
+ * @param {boolean} isWordPress
  * @return {Promise}
  */
-function testForSpeedKit(db, url) {
+function testForSpeedKit(db, url, isWordPress) {
   const parsedUrl = parse(url);
-  const paths = parsedUrl.path.split('/').filter(path => path);
+  const paths = isWordPress ? parsedUrl.path.split('/').filter(path => path) : [];
   paths.unshift(parsedUrl.host);
 
   const promises = paths.map((path, index) => {
@@ -154,7 +155,7 @@ function fetchUrl(url, mobile, db, redirectsPerformed = 0) {
       return analyzeType(response).then(type => ({ url, displayUrl, type, secured, mobile }));
     })
     .then(opts => Object.assign(opts, { supported: opts.enabled || opts.type === 'wordpress' }))
-    .then(opts => testForSpeedKit(db, url).then(speedKit => Object.assign(opts, speedKit)))
+    .then(opts => testForSpeedKit(db, url, opts.type === 'wordpress').then(speedKit => Object.assign(opts, speedKit)))
     .catch((error) => {
      db.log.error(`Error while fetching ${url} in analyzeURL: ${error.stack}`);
      return null;
