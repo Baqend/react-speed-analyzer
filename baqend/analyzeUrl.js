@@ -110,8 +110,8 @@ function fetchUrl(url, mobile, db, redirectsPerformed = 0) {
       }
       const location = response.headers.get('location');
 
-      // Redirect if location header found
-      if (location) {
+      // Redirect if location header found and redirect url is not equal origin url.
+      if (location && location !== url) {
         if (redirectsPerformed > 20) {
           throw new Abort('The URL resolves in too many redirects.');
         }
