@@ -62,26 +62,54 @@ function analyzeType(response) {
 }
 
 /**
- * @param {string} url
+ *
+ * @param {string} swUrl
  * @return {Promise}
  */
-function testForSpeedKit(url) {
-  const parsedUrl = parse(url);
-  const swUrl = format(Object.assign({}, parsedUrl, { pathname: '/sw.js' }));
-  const error = { enabled: false, speedKitVersion: null };
-
+function fetchServiceWorkerUrl(swUrl) {
+  const error = { enabled: false, speedKitVersion: null, swUrl: null };
   return fetch(swUrl).then((res) => {
-    if (!res.ok) { return error; }
+    if (!res.ok) {
+      return error;
+    }
 
     return res.text().then((text) => {
       const matches = /\/\* ! speed-kit ([\d.]+) \|/.exec(text);
       if (matches) {
         const [, speedKitVersion] = matches;
-        return { enabled: true, speedKitVersion };
+        return { enabled: true, speedKitVersion, swUrl };
       }
       return error;
     });
   }).catch(() => (error));
+}
+
+/**
+ * @param {string} url
+ * @return {Promise}
+ */
+function testForSpeedKit(db, url) {
+  const parsedUrl = parse(url);
+  const paths = parsedUrl.path.split('/').filter(path => path);
+  paths.unshift(parsedUrl.host);
+
+  const promises = paths.map((path, index) => {
+    const subPath = paths.slice(0, index + 1).join('/');
+    const swUrl = parsedUrl.protocol + '//' + subPath + '/sw.js';
+
+    return fetchServiceWorkerUrl(swUrl);
+  })
+
+  return Promise.all(promises).then((speedKitData) => {
+    const enabledUrls = speedKitData.filter(speedKit => speedKit.enabled);
+    if (enabledUrls.length > 0) {
+      db.log.info(`Speed Kit found on URL ${enabledUrls[0].swUrl} with version ${enabledUrls[0].speedKitVersion}`);
+      return enabledUrls[0];
+    }
+
+    db.log.info(`No Speed Kit found for URL ${url}`)
+    return { enabled: false, speedKitVersion: null, swUrl: null }
+  });
 }
 
 /**
@@ -126,7 +154,7 @@ function fetchUrl(url, mobile, db, redirectsPerformed = 0) {
       return analyzeType(response).then(type => ({ url, displayUrl, type, secured, mobile }));
     })
     .then(opts => Object.assign(opts, { supported: opts.enabled || opts.type === 'wordpress' }))
-    .then(opts => testForSpeedKit(url).then(speedKit => Object.assign(opts, speedKit)))
+    .then(opts => testForSpeedKit(db, url).then(speedKit => Object.assign(opts, speedKit)))
     .catch((error) => {
      db.log.error(`Error while fetching ${url} in analyzeURL: ${error.stack}`);
      return null;
