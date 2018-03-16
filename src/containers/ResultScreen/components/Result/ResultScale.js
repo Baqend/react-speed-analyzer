@@ -40,7 +40,7 @@ const Bobbel = ({ description, time, style, upsideDown, absolute, mobile, order,
     style={style}>
     <div className={`relative flex justify-center ${mobile ? '' : 'flex-column'} ${order && delta < 250 ? ((order === 1 && 'items-end') || 'items-start') : 'items-center'}`}>
       <div style={{
-        left: (mobile && offset < 60) ? 54 : -85,
+        left: (mobile && offset < 60) ? 54 : (upsideDown ? -88 : -80),
         top: upsideDown ? 14 : 8,
         whiteSpace: 'nowrap',
         position: mobile ? 'absolute' : 'initial',
