@@ -90,7 +90,7 @@
     "react-tooltip": "^3.4.0",
     "react-transition-group": "^2.2.1",
     "redux": "^3.7.2",
-    "redux-baqend": "git://github.com/Baqend/redux-baqend.git#thunk",
+    "redux-baqend": "^1.1.0",
     "redux-logger": "^3.0.6",
     "slick-carousel": "^1.8.1",
     "style-loader": "0.20.2",
