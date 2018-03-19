@@ -22,9 +22,10 @@ class ComparisonWorker {
 
   next(testOverviewId) {
     this.db.log.info("ComparisonWorker next", testOverviewId)
-    const { competitorTestResult, speedKitTestResult } = testOverview;
 
     this.db.TestOverview.load(testOverviewId, {depth: 1}).then((testOverview) => {
+      const { competitorTestResult, speedKitTestResult } = testOverview;
+
       if (this.shouldStartPageSpeedInsights(testOverview)) {
         this.setPsiMetrics(testOverview);
         testOverview.tasks.push(new this.db.Task({

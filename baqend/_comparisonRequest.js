@@ -70,7 +70,6 @@ class ComparisonRequest {
         if (uniqueId) {
           attributes.id = uniqueId + tld.substring(0, tld.length - 1);
         }
-
         const testOverview = new this.db.TestOverview(attributes);
         return testOverview.save();
       })
