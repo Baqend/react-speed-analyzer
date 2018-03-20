@@ -34,13 +34,13 @@ const Marker = ({ style }) => (
   </svg>
 )
 
-const Bobbel = ({ description, time, style, upsideDown, absolute, mobile, order, delta }) => (
+const Bobbel = ({ description, time, style, upsideDown, absolute, mobile, order, delta, offset }) => (
   <div
     className={`flex justify-center items-center ${absolute ? 'absolute' : ''}`}
     style={style}>
     <div className={`relative flex justify-center ${mobile ? '' : 'flex-column'} ${order && delta < 250 ? ((order === 1 && 'items-end') || 'items-start') : 'items-center'}`}>
       <div style={{
-        left: 54,
+        left: (mobile && offset < 60) ? 54 : (upsideDown ? -88 : -80),
         top: upsideDown ? 14 : 8,
         whiteSpace: 'nowrap',
         position: mobile ? 'absolute' : 'initial',
@@ -148,6 +148,7 @@ class ResultScaleComponent extends Component {
               description="Your Website"
               time={`${Math.round(competitorTime / 100) / 10}s`}
               style={{ left: `${competitorOffset}%`, top: -8, marginLeft: -22.5 }}
+              offset={competitorOffset}
               absolute
               mobile
             />
@@ -157,6 +158,7 @@ class ResultScaleComponent extends Component {
               description="With Speed Kit"
               time={`${Math.round(speedKitTime / 100) / 10}s`}
               style={{ left: `${speedKitOffset}%`, top: 64, marginLeft: -22.5 }}
+              offset={speedKitOffset}
               absolute
               mobile
               upsideDown

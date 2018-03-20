@@ -31,14 +31,14 @@ class SpeedKitBanner extends Component {
       <div className="pt0-ns">
         <div className="pv2 pv4-ns flex flex-wrap flex-nowrap-ns items-center" style={{ margin: -8 }}>
           <div className="w-100 pa1 w-60-ns tc tl-ns mb4 mb0-ns">
-            <h1 className="mt0">Speed Kit Explained.</h1>
+            <h2 className="mt0">Speed Kit Explained.</h2>
             <p className="faded" style={{ maxWidth: 500 }}>
               Watch this short video, to learn how Speed Kit can help you make fast page loads your competitive advantage.
             </p>
           </div>
           <div className="w-100 pa1 w-40-ns">
             <div className="video__wrapper auto">
-              <img src={speedKitVideo} alt="Speed Kit Video" width="100%" style={{ borderRadius: 2 }}/>
+              <img className="db" src={speedKitVideo} alt="Speed Kit Video" width="100%" style={{ borderRadius: 2 }}/>
               <div className="video__wrapper-play" onClick={this.openModal}>►</div>
             </div>
           </div>

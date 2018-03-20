@@ -57,9 +57,11 @@ class StartingScreen extends Component {
     const params = this.parseQueryString(this.props.location.search)
     if (params.url) {
       const { history } = this.props
+      const url = decodeURIComponent(params.url)
+
       history.push('/')
-      this.props.actions.handleUrlInput(params.url)
-      this.startTest(params.url)
+      this.props.actions.handleUrlInput(url)
+      this.startTest(url)
     }
     if (params.advanced) {
       this.setState({ showAdvancedConfig: true })

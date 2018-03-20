@@ -58,25 +58,12 @@ class ResultScreenComponent extends Component {
             onSubmit={this.props.onSubmit}
           />
         </div>
-        {/*!this.state.showConfig &&
-          <div className="toggleSettings text-right">
-            <span><a onClick={this.toggleConfig}>Show Settings</a></span>
-          </div>
-        */}
       </div>
     )
   }
 
   renderResults() {
-    // const competitorData = this.props.competitorTest.firstView
-    // const speedKitData = this.props.speedKitTest.firstView
     const { competitorError, speedKitError} = this.props.result
-    // const speedKitError = this.props.speedKitError
-    // console.log(this.props.competitorTest)
-    // const competitorData = null
-    // const speedKitData = null
-    // const competitorError = true
-    // const speedKitError = true
 
     return (
       <div className="flex-grow-1 results animated slideInUp" style={{ animationDuration: '0.5s' }}>
