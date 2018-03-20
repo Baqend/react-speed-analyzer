@@ -74,12 +74,9 @@ export const startTest = (urlInfo = {}) => ({
       if (mobile && speedKitConfig) {
         // eslint-disable-next-line no-eval
         const speedKitConfigObj = eval(`(${speedKitConfig})`)
-        if (!speedKitConfigObj.userAgentDetection)  {
-          speedKitConfigObj.userAgentDetection = true
-        }
+        speedKitConfigObj.userAgentDetection = true
         speedKitConfig = stringifyObject(speedKitConfigObj, { indent: '  ' })
       }
-
 
       const testOverview = await db.modules.post('runComparison', {
         url,
