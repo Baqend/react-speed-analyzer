@@ -47,7 +47,7 @@ class TestWorker {
         } else {
           if (testResult.isClone) {
             if (this.shouldStartPreparationTests(testResult)) {
-              !testResult.speedKitConfig && this.startConfigGenerationWebPagetest(testResult)
+              !testResult.speedKitConfig && this.startConfigGeneration(testResult)
               this.startPrewarmWebPagetest(testResult)
             } else if (this.shouldStartPerformanceTests(testResult)) {
               this.db.log.info(`startPerformanceTest`, { testResult })
@@ -122,8 +122,8 @@ class TestWorker {
     }).catch(error => this.db.log(`Error while starting WPT test`,{ testResult: testResult.id, error:error.stack }))
   }
 
-  startConfigGenerationWebPagetest(testResult) {
-    const { speedKitConfig, testInfo } = testResult
+  startConfigGeneration(testResult) {
+    const { testInfo } = testResult
     const { testOptions } = testInfo;
     const configTestScript = this.getTestScriptWithMinimalWhitelist(testInfo);
     const configTestOptions = Object.assign({ pingback: PING_BACK_URL }, testOptions, prewarmOptions, { runs: 1 });

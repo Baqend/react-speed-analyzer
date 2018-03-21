@@ -25,11 +25,6 @@ export const prepareTest = (url = null) => ({
       if (!isURL(url)) {
         throw new Error("Input is not a valid url")
       }
-      // const rateLimitResult = await db.modules.get('rateLimiter')
-      // dispatch({
-      //   type: RATE_LIMITER_GET,
-      //   payload: rateLimitResult.isRateLimited,
-      // })
       const { mobile } = getState().config
       const urlInfo = await db.modules.post('normalizeUrl', { urls: url, mobile: mobile })
       if (!urlInfo[0]) {
@@ -77,7 +72,6 @@ export const startTest = (urlInfo = {}) => ({
         speedKitConfigObj.userAgentDetection = true
         speedKitConfig = stringifyObject(speedKitConfigObj, { indent: '  ' })
       }
-
 
       // const testOverview = await db.modules.post('runComparison', {
       const testOverview = await db.modules.post('_comparisonRequest', {
