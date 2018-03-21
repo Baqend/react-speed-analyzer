@@ -54,11 +54,11 @@ class Footer extends Component {
             </div>
           </div>
         </div>
-        <div style={{ background: '#12212e' }}>
+        {/*<div style={{ background: '#12212e' }}>
           <div className="container ph2 pv1">
             <small style={{ whiteSpace: 'nowrap' }}>© 2018 Baqend</small>
           </div>
-        </div>
+        </div>*/}
       </footer>
     )
   }

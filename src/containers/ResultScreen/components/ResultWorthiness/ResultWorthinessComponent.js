@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import './ResultWorthiness.css'
 
-import { calculateAbsolute, calculateServedRequests } from 'helper/resultHelper'
+import { calculateFactor } from 'helper/resultHelper'
 
 import doubleClickLogo from 'assets/doubleClick.png'
 import amazonLogo from 'assets/amazon.png'
@@ -11,8 +11,7 @@ class ResultWorthinessComponent extends Component {
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
 
-    const absolute = calculateAbsolute(competitorData[this.props.mainMetric], speedKitData[this.props.mainMetric])
-    const servedRate = calculateServedRequests(speedKitData)
+    const factor = calculateFactor(competitorData[this.props.mainMetric], speedKitData[this.props.mainMetric])
 
     const publisherRevenue =
       Math.round(((competitorData[this.props.mainMetric] - speedKitData[this.props.mainMetric]) / (19000 - 5000)) * 100)
@@ -24,13 +23,12 @@ class ResultWorthinessComponent extends Component {
       <div>
         <div className="flex">
           <div className="w-100 text-center mb4 mt4 animated slideInUp">
-            <h1 className="dn db-ns" style={{ maxWidth: 768, margin: '0 auto' }}>
-              Speed Kit made your site <span style={{ color: '#F27354' }}>{absolute}</span> faster by serving {servedRate}% of all requests.
-            </h1>
-            <h3 className="dn-ns" style={{ maxWidth: 768, margin: '0 auto' }}>
-              Speed Kit made your site <span style={{ color: '#F27354' }}>{absolute}</span> faster by serving {servedRate}% of all requests.
+            <h2 className="dn db-ns mt0" style={{ maxWidth: 768, marginLeft: 'auto', marginRight: 'auto' }}>
+              How much is the <span style={{ color: '#F27354' }}>{factor}x</span> performance boost worth?
+            </h2>
+            <h3 className="dn-ns mt0" style={{ maxWidth: 768, marginLeft: 'auto', marginRight: 'auto' }}>
+              How much is the <span style={{ color: '#F27354' }}>{factor}x</span> performance boost worth?
             </h3>
-            <br />
             <h4 className="faded" style={{ maxWidth: 530, margin: '0 auto' }}>
               Here is the impact Google and Amazon research predicts for this uplift.
             </h4>

@@ -157,7 +157,7 @@ function createRun(db, data, testId, runIndex) {
 
   // Copy fields
   for (const field of ['loadTime', 'fullyLoaded', 'firstPaint', 'lastVisualChange', 'domElements']) {
-    run[field] = data[field];
+    run[field] =  Math.round(data[field]);
   }
 
   // Set TTFB

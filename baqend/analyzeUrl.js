@@ -62,26 +62,55 @@ function analyzeType(response) {
 }
 
 /**
- * @param {string} url
+ *
+ * @param {string} swUrl
  * @return {Promise}
  */
-function testForSpeedKit(url) {
-  const parsedUrl = parse(url);
-  const swUrl = format(Object.assign({}, parsedUrl, { pathname: '/sw.js' }));
-  const error = { enabled: false, speedKitVersion: null };
-
+function fetchServiceWorkerUrl(swUrl) {
+  const error = { enabled: false, speedKitVersion: null, swUrl: null };
   return fetch(swUrl).then((res) => {
-    if (!res.ok) { return error; }
+    if (!res.ok) {
+      return error;
+    }
 
     return res.text().then((text) => {
       const matches = /\/\* ! speed-kit ([\d.]+) \|/.exec(text);
       if (matches) {
         const [, speedKitVersion] = matches;
-        return { enabled: true, speedKitVersion };
+        return { enabled: true, speedKitVersion, swUrl };
       }
       return error;
     });
   }).catch(() => (error));
+}
+
+/**
+ * @param {string} url
+ * @param {boolean} isWordPress
+ * @return {Promise}
+ */
+function testForSpeedKit(db, url, isWordPress) {
+  const parsedUrl = parse(url);
+  const paths = isWordPress ? parsedUrl.path.split('/').filter(path => path) : [];
+  paths.unshift(parsedUrl.host);
+
+  const promises = paths.map((path, index) => {
+    const subPath = paths.slice(0, index + 1).join('/');
+    const swUrl = parsedUrl.protocol + '//' + subPath + '/sw.js';
+
+    return fetchServiceWorkerUrl(swUrl);
+  })
+
+  return Promise.all(promises).then((speedKitData) => {
+    const enabledUrls = speedKitData.filter(speedKit => speedKit.enabled);
+    if (enabledUrls.length > 0) {
+      db.log.info(`Speed Kit found on URL ${enabledUrls[0].swUrl} with version ${enabledUrls[0].speedKitVersion}`);
+      return enabledUrls[0];
+    }
+
+    db.log.info(`No Speed Kit found for URL ${url}`)
+    return { enabled: false, speedKitVersion: null, swUrl: null }
+  });
 }
 
 /**
@@ -98,20 +127,21 @@ function urlToUnicode(url) {
  * @param {string} url
  * @param {boolean} mobile Whether to fetch the mobile variant of the site.
  * @param {number} redirectsPerformed The count of redirects performed so far.
+ * @param {boolean} isRetry
  * @return {Promise<*>}
  */
-function fetchUrl(url, mobile, db, redirectsPerformed = 0) {
+function fetchUrl(url, mobile, db, redirectsPerformed = 0, isRetry = false) {
   db.log.info(`Analyzing ${url}`, { mobile, redirectsPerformed, url });
   const userAgent = mobile ? MOBILE_USER_AGENT : undefined;
   return fetch(url, { redirect: 'manual', headers: { 'User-Agent': userAgent }, timeout: 12000 })
     .then((response) => {
       if (response.status >= 400) {
-        throw new Error('Status Code of Response is 400 or higher.');
+        throw new Error(`Status Code of Response is ${response.status} or higher.`);
       }
       const location = response.headers.get('location');
 
-      // Redirect if location header found
-      if (location) {
+      // Redirect if location header found and redirect url is not equal origin url.
+      if (location && location !== url) {
         if (redirectsPerformed > 20) {
           throw new Abort('The URL resolves in too many redirects.');
         }
@@ -125,10 +155,16 @@ function fetchUrl(url, mobile, db, redirectsPerformed = 0) {
       const displayUrl = urlToUnicode(url);
       return analyzeType(response).then(type => ({ url, displayUrl, type, secured, mobile }));
     })
-    .then(opts => Object.assign(opts, { supported: opts.enabled || opts.type === 'wordpress' }))
-    .then(opts => testForSpeedKit(url).then(speedKit => Object.assign(opts, speedKit)))
+    .then(opts => opts ? testForSpeedKit(db, url, opts.type === 'wordpress').then(speedKit => Object.assign(opts, speedKit)) : null )
     .catch((error) => {
-     db.log.error(`Error while fetching ${url} in analyzeURL: ${error.stack}`);
+      const hasWWW = url.indexOf('www') !== -1;
+      if (!hasWWW && !isRetry) {
+        db.log.info(`Start fetching retry with www for url ${url} in analyzeURL.`);
+        const editUrl = url.replace('://', '://www.');
+        return fetchUrl(editUrl, mobile, db, redirectsPerformed, true);
+      }
+
+     db.log.warn(`Error while fetching ${url} in analyzeURL: ${error.stack}`);
      return null;
     });
 }
