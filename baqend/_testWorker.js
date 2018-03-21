@@ -47,7 +47,7 @@ class TestWorker {
         } else {
           if (testResult.isClone) {
             if (this.shouldStartPreparationTests(testResult)) {
-              !testResult.speedKitConfig && this.startConfigGeneration(testResult)
+              !testResult.speedKitConfig && this.startConfigGenerationTest(testResult)
               this.startPrewarmWebPagetest(testResult)
             } else if (this.shouldStartPerformanceTests(testResult)) {
               this.db.log.info(`startPerformanceTest`, { testResult })
@@ -122,7 +122,7 @@ class TestWorker {
     }).catch(error => this.db.log(`Error while starting WPT test`,{ testResult: testResult.id, error:error.stack }))
   }
 
-  startConfigGeneration(testResult) {
+  startConfigGenerationTest(testResult) {
     const { testInfo } = testResult
     const { testOptions } = testInfo;
     const configTestScript = this.getTestScriptWithMinimalWhitelist(testInfo);
