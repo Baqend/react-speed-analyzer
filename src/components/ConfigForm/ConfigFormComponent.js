@@ -164,7 +164,7 @@ class ConfigFormComponent extends Component {
             <span className="flex-auto w-100 text-right">Desktop</span>
             <Toggle
               className="mh1"
-              defaultChecked={this.props.config.mobile}
+              checked={this.props.config.mobile}
               icons={false}
               onChange={this.handleMobileSwitch}
             />
@@ -176,7 +176,7 @@ class ConfigFormComponent extends Component {
             <span className="flex-auto w-100 text-right">EU</span>
             <Toggle
               className="mh1"
-              defaultChecked={this.props.config.location === 'us-east-1:Chrome.Native'}
+              checked={this.props.config.location === 'us-east-1:Chrome.Native'}
               icons={false}
               value={this.props.config.location === 'us-east-1:Chrome.Native' ? 'EU' : 'US'}
               onChange={this.handleLocationChange}
