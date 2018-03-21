@@ -34,6 +34,23 @@ class ComparisonRequest {
     })
   }
 
+  getCachedSpeedKitConfig() {
+    const date = new Date()
+    const { url, mobile } = this.params
+    return this.db.CachedConfig.find()
+      .equal('url', url)
+      .equal('mobile', mobile)
+      .greaterThanOrEqualTo('updatedAt', new Date(date.getTime() - 1000 * 60 * 60))
+      .singleResult()
+      .then(cachedConfig => {
+        if (cachedConfig && cachedConfig.config) {
+          this.db.log.info(`Use cached config`, { url, cachedConfig });
+          return cachedConfig.config
+        }
+        return null
+      })
+  }
+
   getExistingSpeedKitConfigForUrl() {
     const { url, isSpeedKitComparison } = this.params
     if (isSpeedKitComparison) {
@@ -45,8 +62,10 @@ class ComparisonRequest {
           return null
         });
     }
-    return Promise.resolve(null);
+    // return Promise.resolve(null);
+    return this.getCachedSpeedKitConfig()
   }
+
 
   createTestOverview([competitorTest, speedKitTest]) {
     const attributes = {
@@ -84,7 +103,7 @@ class ComparisonRequest {
       mobile: this.params.mobile,
       activityTimeout: this.params.activityTimeout,
       isSpeedKitComparison: this.params.isSpeedKitComparison,
-      speedKitConfig: this.existingSpeedKitConfig,
+      speedKitConfig: this.params.isSpeedKitComparison ? this.existingSpeedKitConfig : null,
       priority: this.params.priority,
     }
     const competitorTest = new TestRequest(this.db, params)

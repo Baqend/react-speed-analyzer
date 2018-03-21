@@ -34,14 +34,21 @@ class WebPagetestResultHandler {
       .then(result => {
         const domains = result.data;
         this.db.log.info(`Generating Smart Config`, {url: testInfo.url});
-        return createSmartConfig(testInfo.url, domains, testInfo.isMobile, db);
+        return createSmartConfig(testInfo.url, domains, testInfo.isMobile, this.db).then(config => {
+          const cachedConfig = new this.db.CachedConfig({
+            url: testInfo.url,
+            mobile: testInfo.testOptions.mobile,
+            config: config
+          })
+          return cachedConfig.save().then(() => config)
+        })
       })
       .then(config => {
         this.db.log.info(`Smart Config generated`, {url: testInfo.url, config});
         return config;
       })
       .catch(error => {
-        this.db.log.warn(`Smart generation failed`, {url: testInfo.url, error});
+        this.db.log.warn(`Smart generation failed`, {url: testInfo.url, error: error.stack});
         return getFallbackConfig(this.db, testInfo.url);
       });
   }
