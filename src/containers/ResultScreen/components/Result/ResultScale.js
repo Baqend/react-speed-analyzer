@@ -142,7 +142,7 @@ class ResultScaleComponent extends Component {
           this.updateWidths()
         }
       }}>
-        <div className={`relative pt4 pt5-ns mt1 ${(speedKitTime && 'pb3') || 'pb1'}`}>
+        <div className={`relative pt4 pt5-ns mt1 ${(speedKitTime && 'pb4 mb1 pb3-ns mb0-ns') || 'pb1'}`}>
           {competitorTime && this.state.windowWidth < 480 && (
             <Bobbel
               description="Your Website"
