@@ -9,6 +9,8 @@ import { getObjectKey } from 'helper/utils'
 import { calculateAbsolute, calculateServedRequests } from 'helper/resultHelper'
 
 import WordPressLogo from 'assets/wordpress.png'
+import error from 'assets/error.svg'
+import success from 'assets/success.svg'
 
 class ResultAction extends Component {
 
@@ -76,13 +78,59 @@ class ResultAction extends Component {
     )
   }
 
-  // Speedkit failed or we are not faster
-  renderIsSpeedKitCta(speedKitVersion) {
+  renderIsSpeedKitCta(speedKitVersion, configAnalysis) {
+    const { configMissing, isSecured, isDisabled, swPath, swPathMatches } = configAnalysis
     return (
-      <div>
-        <div className="text-center pb2 pt2" style={{ maxWidth: 768, margin: '0 auto' }}>
+      <div style={{ maxWidth: 768, margin: '0 auto' }}>
+        <div className="text-center pb2 pt2">
           <h2>Thank you for using Speed Kit</h2>
-          <span className="faded">You are running on Speed Kit {speedKitVersion}. The test therefore compared your website with Speed Kit to a version where Speed Kit is deactivated.</span>
+          <span className="faded">
+            The Analyzer detected Speed Kit version {speedKitVersion}. The test therefore compared your website with Speed Kit to
+            a version where Speed Kit is not installed. To help you integrating Speed Kit on your website, you can find the status of your installation below.
+          </span>
+        </div>
+        <div className="flex flex-wrap pb2">
+          <div className="flex mt2">
+            <div className="w-90">
+              <h3 className="mt0 mb0">Secure your website with <strong>SSL</strong></h3>
+              <h4 className="faded mt0 mb0">
+                Since Speed Kit is built on Service Workers, it is only available when SSL is turned on.
+                Thereby a encrypted communication for your website is enabled.
+              </h4>
+            </div>
+            <div className="w-10 text-center">
+              <img src={isSecured ? success : error} alt="secure status" style={{ height: 30}} />
+            </div>
+          </div>
+          <div className="flex mt2">
+            <div className="w-90">
+              <h3 className="mt0 mb0">Host the <strong>Service Worker</strong> script in the correct scope</h3>
+              <h4 className="faded mt0 mb0">
+                The path of the Service Worker script specified in your Speed Kit config has to match the path found by the Analyzer.&nbsp;
+                {!swPath && <span>There was no Service Worker found by the Analyzer.</span>}
+                {(!swPathMatches && swPath) &&
+                  <span>The detected Service Worker path at <strong>{swPath}</strong> does not match the specified path.</span>
+                }
+              </h4>
+            </div>
+            <div className="w-10 text-center">
+              <img src={swPathMatches ? success : error} alt="service worker status" style={{ height: 30}} />
+            </div>
+          </div>
+          <div className="flex mt2">
+            <div className="w-90">
+              <h3 className="mt0 mb0">Provide an enabled <strong>Speed Kit config</strong> on your website</h3>
+              <h4 className="faded mt0 mb0">
+                Use the config in your website to enable and configure Speed Kit. It needs to be included into your page.&nbsp;
+                {configMissing && <span>Unfortunately, there was no Speed Kit config found on your page.</span>}
+                {(!configMissing && isDisabled) &&
+                <span>The Speed Kit config found on your page is disabled. Set attribute "disabled" to false to fix this issue.</span>}
+              </h4>
+            </div>
+            <div className="w-10 text-center">
+              <img src={!configMissing && !isDisabled ? success : error} alt="config status" style={{ height: 30}} />
+            </div>
+          </div>
         </div>
         <div className="text-center">
           <a className="btn btn-orange btn-ghost ma1" onClick={this.props.toggleModal}>Contact Us</a>
@@ -129,7 +177,7 @@ class ResultAction extends Component {
     const { competitorError, speedKitError, competitorTest, testOverview } = this.props.result
     // const speedKitError = this.props.speedKitError
     const isWordPress = competitorTest.isWordPress
-    const { isSpeedKitComparison, speedKitVersion } = testOverview
+    const { isSpeedKitComparison, speedKitVersion, configAnalysis } = testOverview
 
     if (competitorError) {
       return this.renderAllTestsFailed()
@@ -137,7 +185,7 @@ class ResultAction extends Component {
       return this.renderSpeedKitFailed()
     } else {
       if (isSpeedKitComparison) {
-        return this.renderIsSpeedKitCta(speedKitVersion)
+        return this.renderIsSpeedKitCta(speedKitVersion, configAnalysis)
       } else if (isWordPress) {
         return this.renderWordpressCta()
       }

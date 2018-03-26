@@ -1,9 +1,10 @@
 /* eslint-disable comma-dangle, function-paren-newline */
 /* eslint-disable no-restricted-syntax, no-param-reassign */
 const { isRateLimited } = require('./rateLimiter');
-const { getTLD } = require('./getSpeedKitUrl');
+const { getTLD, getRootPath } = require('./getSpeedKitUrl');
 const { generateUniqueId } = require('./generateUniqueId');
 const { analyzeSpeedKit } = require('./analyzeSpeedKit');
+const { sleep } = require('./sleep');
 const stringifyObject = require('stringify-object');
 
 const { TestRequest } = require('./_testRequest')
@@ -19,11 +20,15 @@ class ComparisonRequest {
     this.db = db
     this.params = params
     this.existingSpeedKitConfig = null
+    this.configAnalysis = null
   }
 
   create() {
     return this.getExistingSpeedKitConfigForUrl().then(existingSpeedKitConfig => {
       this.existingSpeedKitConfig = existingSpeedKitConfig
+      if (this.params.isSpeedKitComparison) {
+        this.configAnalysis = this.getConfigAnalysis(this.params.speedKitConfig || existingSpeedKitConfig)
+      }
 
       const competitorTest = this.createCompetitorTest()
       const speedKitTest = this.createSpeedKitTest()
@@ -32,6 +37,25 @@ class ComparisonRequest {
         return this.createTestOverview(tests)
       })
     })
+  }
+
+  getConfigAnalysis(config){
+    const configAnalysis = new this.db.ConfigAnalysis()
+    configAnalysis.isSecured = this.params.isSecured === true
+    configAnalysis.swPath = this.params.swUrl
+
+    if (!config) {
+      configAnalysis.configMissing = true
+      return configAnalysis
+    }
+
+    const configObj = eval(`(${config})`)
+    const rootPath = getRootPath(this.db, this.params.url)
+
+    configAnalysis.swPathMatches = configObj.sw || rootPath + '/sw.js' === this.params.swUrl
+    configAnalysis.isDisabled = configObj.disabled === true
+
+    return configAnalysis
   }
 
   getCachedSpeedKitConfig() {
@@ -55,12 +79,14 @@ class ComparisonRequest {
     const { url, isSpeedKitComparison } = this.params
     if (isSpeedKitComparison) {
       this.db.log.info(`Extracting config from Website: ${url}`, {url, isSpeedKitComparison});
-      return analyzeSpeedKit(url, this.db)
-        .then(it => stringifyObject(it.config))
+      const analyze = analyzeSpeedKit(url, this.db).then(it => stringifyObject(it.config))
         .catch(error => {
           this.db.log.warn(`Could not analyze speed kit config`, {url, error: error.stack});
           return null
         });
+
+      const timeout = sleep(5000, null);
+      return Promise.race([ analyze, timeout ]);
     }
     // return Promise.resolve(null);
     return this.getCachedSpeedKitConfig()
@@ -77,6 +103,7 @@ class ComparisonRequest {
       isSpeedKitComparison: this.params.isSpeedKitComparison,
       speedKitVersion: this.params.speedKitVersion,
       speedKitConfig: null,
+      configAnalysis: this.configAnalysis,
       hasFinished: false,
       competitorTestResult: competitorTest,
       speedKitTestResult: speedKitTest,
@@ -85,8 +112,8 @@ class ComparisonRequest {
 
     return generateUniqueId(this.db, 'TestOverview')
       .then(uniqueId => {
-        const tld = getTLD(this.db, this.params.url);
         if (uniqueId) {
+          const tld = getTLD(this.db, this.params.url);
           attributes.id = uniqueId + tld.substring(0, tld.length - 1);
         }
         const testOverview = new this.db.TestOverview(attributes);

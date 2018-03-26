@@ -54,7 +54,7 @@ export const prepareTest = (url = null) => ({
 /**
  * Triggers the start of a new test.
  */
-export const startTest = (urlInfo = {}) => ({
+export const startTest = (urlInfo = {}, useAdvancedConfig = false) => ({
   'BAQEND': async ({ dispatch, getState, db }) => {
     dispatch({
       type: RESET_TEST_RESULT
@@ -63,9 +63,11 @@ export const startTest = (urlInfo = {}) => ({
       dispatch({
         type: START_TEST,
       })
-      let { url, location, caching, mobile, speedKitConfig, activityTimeout } = getState().config
-      let { speedkit, speedkitVersion } = urlInfo
+      const { url, location, caching, mobile, activityTimeout } = getState().config
+      const { speedkit, speedkitVersion, swUrl, isSecured } = urlInfo
+      let speedKitConfig = !speedkit || (speedkit && useAdvancedConfig) ? getState().config.speedKitConfig : null
 
+      console.log(speedKitConfig)
       if (mobile && speedKitConfig) {
         // eslint-disable-next-line no-eval
         const speedKitConfigObj = eval(`(${speedKitConfig})`)
@@ -81,6 +83,8 @@ export const startTest = (urlInfo = {}) => ({
         mobile,
         speedKitConfig,
         activityTimeout,
+        swUrl,
+        isSecured,
         isSpeedKitComparison: speedkit,
         speedKitVersion: speedkitVersion,
       })

@@ -25,6 +25,23 @@ function getTLD(db, url) {
 }
 
 /**
+ * Extracts the root path of a given full path.
+ *
+ * @param db The Baqend instance.
+ * @param fullPath The path to extract the root path from.
+ * @return {string} The extracted root path.
+ */
+function getRootPath(db, fullPath) {
+  try {
+    const { protocol, hostname } = URL.parse(fullPath);
+    return protocol + '//' + hostname;
+  } catch (e) {
+    db.log.warn(`Get root path for url ${fullPath} failed.`);
+    return '';
+  }
+}
+
+/**
  * Escapes a regular expression.
  *
  * @param {string} str
@@ -94,4 +111,5 @@ function generateSpeedKitConfig(db, originalUrl, whitelistStr, enableUserAgentDe
 
 exports.generateSpeedKitConfig = generateSpeedKitConfig;
 exports.getTLD = getTLD;
+exports.getRootPath = getRootPath;
 exports.getDefaultConfig = getDefaultConfig;

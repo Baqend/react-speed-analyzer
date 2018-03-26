@@ -55,6 +55,7 @@ class ResultScreenComponent extends Component {
             config={this.props.config}
             showConfig={this.state.showConfig}
             showAdvancedConfig={this.state.showAdvancedConfig}
+            onToggleAdvancedConfig={this.props.onToggleAdvancedConfig}
             onSubmit={this.props.onSubmit}
           />
         </div>
@@ -145,6 +146,7 @@ class ResultScreenComponent extends Component {
 ResultScreenComponent.propTypes = {
   // mainMetric: PropTypes.string,
   // speedKitError: PropTypes.bool.isRequired,
+  onToggleAdvancedConfig: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
 }
 
