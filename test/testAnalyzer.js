@@ -182,7 +182,7 @@ async function execSpeedKit() {
     isBaqendApp: false,
     isSecured: true,
     speedkit: true,
-    speedkitVersion: "1.1.4",
+    speedkitVersion: "1.3.1",
     type: null
   }];
 
