@@ -32,11 +32,12 @@ export function splitUrl(url) {
   }
 }
 
-export const getDefaultSpeedKitConfig = (url = '') => ({
+export const getDefaultSpeedKitConfig = (url = '', userAgentDetection = false) => ({
   appName: "makefast",
   whitelist: [
     { host: [ `${getTLD(url)}` ] }
-  ]
+  ],
+  userAgentDetection,
 })
 
 class ConfigFormComponent extends Component {
@@ -45,13 +46,13 @@ class ConfigFormComponent extends Component {
     this.state = {
       showConfig: props.showConfig,
       showAdvancedConfig: props.showAdvancedConfig,
-      speedKitConfig: props.showAdvancedConfig ? stringifyObject(getDefaultSpeedKitConfig(this.props.config.url), { indent: '  ' }) : null,
+      speedKitConfig: props.showAdvancedConfig ? stringifyObject(getDefaultSpeedKitConfig(this.props.config.url, this.props.config.mobile), { indent: '  ' }) : null,
       whiteListCandidates: [],
     }
   }
 
   isDefaultConfig = (speedKitConfig) => {
-    return speedKitConfig === stringifyObject(getDefaultSpeedKitConfig(this.props.config.url), { indent: '  ' })
+    return speedKitConfig === stringifyObject(getDefaultSpeedKitConfig(this.props.config.url, this.props.config.mobile), { indent: '  ' })
   }
 
   handleUrlChange = (changeEvent) => {
@@ -60,7 +61,7 @@ class ConfigFormComponent extends Component {
     // if(splitUrl(this.props.config.url)[1] !== splitUrl(changeEvent.target.value)[1]) {
     let speedKitConfig
     if (this.state.showAdvancedConfig) {
-      speedKitConfig = stringifyObject(getDefaultSpeedKitConfig(changeEvent.target.value), { indent: '  ' })
+      speedKitConfig = stringifyObject(getDefaultSpeedKitConfig(changeEvent.target.value, this.props.config.mobile), { indent: '  ' })
     } else {
       speedKitConfig = null
     }
@@ -96,7 +97,7 @@ class ConfigFormComponent extends Component {
     if (showAdvancedConfig) {
       let speedKitConfig
       if (!this.state.speedKitConfig) {
-        speedKitConfig = stringifyObject(getDefaultSpeedKitConfig(this.props.config.url), { indent: '  ' })
+        speedKitConfig = stringifyObject(getDefaultSpeedKitConfig(this.props.config.url, this.props.config.mobile), { indent: '  ' })
       } else {
         speedKitConfig = this.state.speedKitConfig
       }
