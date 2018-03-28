@@ -14,7 +14,7 @@ function getTestStatus(db, baqendId) {
   return db.TestResult.load(baqendId)
     .then((result) => {
       if (!result) {
-          throw new Abort('Object not found');
+        throw new Abort('Object not found');
       }
       if (result.testId) {
         return API.getTestStatus(result.testId);

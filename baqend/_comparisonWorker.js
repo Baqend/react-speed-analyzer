@@ -1,6 +1,5 @@
 // /* eslint-disable comma-dangle, function-paren-newline */
 // /* eslint-disable no-restricted-syntax, no-param-reassign */
-const { TestWorker } = require('./_testWorker')
 const { factorize } = require('./updateBulkComparison');
 const { callPageSpeed } = require('./callPageSpeed');
 
@@ -17,7 +16,6 @@ const PSI_TYPE = 'psi';
 class ComparisonWorker {
   constructor(db) {
     this.db = db
-    this.testWorker = new TestWorker(db, this)
   }
 
   next(testOverviewId) {
@@ -39,9 +37,9 @@ class ComparisonWorker {
         testOverview.speedKitConfig = speedKitTestResult.speedKitConfig;
         testOverview.factors = this.calculateFactors(competitorTestResult, speedKitTestResult);
         testOverview.hasFinished = true;
-      }
 
-      testOverview.ready().then(() => testOverview.save());
+        testOverview.ready().then(() => testOverview.save());
+      }
     })
   }
 
@@ -112,12 +110,11 @@ exports.ComparisonWorker = ComparisonWorker
 //   ComparisonWorker.next(testResultId)
 // }
 
-function runTestWorker(db, jobsStatus, jobsDefinition) {
+function runComparisonWorker(db, jobsStatus, jobsDefinition) {
   const comparisonWorker = new ComparisonWorker(db)
-
   const date = new Date()
 
-  db.TestResult.find()
+  db.TestOverview.find()
     .equal('hasFinished', false)
     .lessThanOrEqualTo('updatedAt', new Date(date.getTime() - 1000 * 60))
     .greaterThanOrEqualTo('updatedAt', new Date(date.getTime() - 1000 * 60 * 60))
@@ -133,4 +130,4 @@ function runTestWorker(db, jobsStatus, jobsDefinition) {
 }
 
 // exports.callComparisonWorker = callComparisonWorker;
-exports.run = runTestWorker;
+exports.run = runComparisonWorker;

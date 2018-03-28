@@ -1,15 +1,15 @@
 /* eslint-disable comma-dangle, function-paren-newline */
 /* eslint-disable no-restricted-syntax, no-param-reassign */
-const { isRateLimited } = require('./rateLimiter');
-const { getTLD, getRootPath } = require('./getSpeedKitUrl');
-const { generateUniqueId } = require('./generateUniqueId');
-const { analyzeSpeedKit } = require('./analyzeSpeedKit');
-const { sleep } = require('./sleep');
-const stringifyObject = require('stringify-object');
+const { isRateLimited } = require('./rateLimiter')
+const { getTLD, getRootPath } = require('./getSpeedKitUrl')
+const { generateUniqueId } = require('./generateUniqueId')
+const { analyzeSpeedKit } = require('./analyzeSpeedKit')
+const { sleep } = require('./sleep')
+const stringifyObject = require('stringify-object')
 
 const { TestRequest } = require('./_testRequest')
 
-const DEFAULT_ACTIVITY_TIMEOUT = 75;
+const DEFAULT_ACTIVITY_TIMEOUT = 75
 
 /**
  * Creates a TestOverview object and the TestResult objects that are processed by the ComparisonWorker
@@ -68,7 +68,7 @@ class ComparisonRequest {
       .singleResult()
       .then(cachedConfig => {
         if (cachedConfig && cachedConfig.config) {
-          this.db.log.info(`Use cached config`, { url, cachedConfig });
+          this.db.log.info(`Use cached config`, { url, cachedConfig })
           return cachedConfig.config
         }
         return null
@@ -78,17 +78,17 @@ class ComparisonRequest {
   getExistingSpeedKitConfigForUrl() {
     const { url, isSpeedKitComparison } = this.params
     if (isSpeedKitComparison) {
-      this.db.log.info(`Extracting config from Website: ${url}`, {url, isSpeedKitComparison});
+      this.db.log.info(`Extracting config from Website: ${url}`, {url, isSpeedKitComparison})
       const analyze = analyzeSpeedKit(url, this.db).then(it => stringifyObject(it.config))
         .catch(error => {
-          this.db.log.warn(`Could not analyze speed kit config`, {url, error: error.stack});
+          this.db.log.warn(`Could not analyze speed kit config`, {url, error: error.stack})
           return null
-        });
+        })
 
-      const timeout = sleep(5000, null);
-      return Promise.race([ analyze, timeout ]);
+      const timeout = sleep(5000, null)
+      return Promise.race([ analyze, timeout ])
     }
-    // return Promise.resolve(null);
+    // return Promise.resolve(null)
     return this.getCachedSpeedKitConfig()
   }
 
@@ -113,11 +113,11 @@ class ComparisonRequest {
     return generateUniqueId(this.db, 'TestOverview')
       .then(uniqueId => {
         if (uniqueId) {
-          const tld = getTLD(this.db, this.params.url);
-          attributes.id = uniqueId + tld.substring(0, tld.length - 1);
+          const tld = getTLD(this.db, this.params.url)
+          attributes.id = uniqueId + tld.substring(0, tld.length - 1)
         }
-        const testOverview = new this.db.TestOverview(attributes);
-        return testOverview.save();
+        const testOverview = new this.db.TestOverview(attributes)
+        return testOverview.save()
       })
   }
 
@@ -157,13 +157,14 @@ class ComparisonRequest {
 
 exports.ComparisonRequest = ComparisonRequest
 
-const { ComparisonWorker } = require('./_comparisonWorker');
+const { ComparisonWorker } = require('./_comparisonWorker')
+const { TestWorker } = require('./_testWorker')
 
 exports.call = function(db, data, req) {
   const params = data
 
   const comparisonWorker = new ComparisonWorker(db)
-  const { testWorker } = comparisonWorker
+  const testWorker = new TestWorker(db, comparisonWorker)
 
   const comparisonRequest = new ComparisonRequest(db, params)
 
@@ -173,4 +174,4 @@ exports.call = function(db, data, req) {
     testWorker.next(testOverview.speedKitTestResult.id)
     return testOverview
   })
-};
+}

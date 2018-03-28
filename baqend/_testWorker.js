@@ -6,7 +6,7 @@ const { getMinimalConfig, getFallbackConfig } = require('./configGeneration');
 const { createTestScript } = require('./createTestScript');
 
 const credentials = require('./credentials');
-const PING_BACK_URL = `https://${credentials.app}.app.baqend.com/v1/code/__handleTestResult`;
+const PING_BACK_URL = `https://${credentials.app}.app.baqend.com/v1/code/_testResultPingback`;
 
 const prewarmOptions = {
   runs: 2,
@@ -91,19 +91,20 @@ class TestWorker {
 
   checkWebPagetestsStatus(testResult) {
     this.db.log.info("checkWebPagetestsStatus next", { testResult })
-    const checkWebPagetestStatus = (testId) => {
-      return API.getTestStatus(testId).then(test => {
-        if (test.statusCode === 200) {
-          return Promise.resolve(
-            this.testResultHandler.handleResult(testId)
-              .catch(error => this.db.log.warn(`Could not find testResult`, {id: testResultId, error: error.stack}))
-          )
-        }
-        return Promise.reject(false)
-      })
-    }
-    const checks = testResult.webPagetests.filter(wpt => !wpt.hasFinished).map(wpt => checkWebPagetestStatus(wpt.testId))
+    const checks = testResult.webPagetests.filter(wpt => !wpt.hasFinished).map(wpt => this.getStatusFromAPI(wpt.testId))
     Promise.all(checks).then(() => this.next(testResult.id));
+  }
+
+  getStatusFromAPI(testId) {
+    return API.getTestStatus(testId).then(test => {
+      if (test.statusCode === 200) {
+        return Promise.resolve(
+          this.testResultHandler.handleResult(testId)
+            .catch(error => this.db.log.warn(`Could not find testResult`, {id: testResultId, error: error.stack}))
+        )
+      }
+      return Promise.reject(false)
+    })
   }
 
   startPrewarmWebPagetest(testResult) {
