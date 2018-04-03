@@ -2,7 +2,7 @@ import { baqend } from 'baqend'
 import { ComparisonWorker } from './ComparisonWorker'
 import { TestWorker } from './TestWorker'
 
-export function call(db: baqend, data) {
+export function call(db: baqend, data: any) {
   db.log.info('Pingback for test ', { data })
   const comparisonWorker = new ComparisonWorker(db)
   const testWorker = new TestWorker(db, comparisonWorker)

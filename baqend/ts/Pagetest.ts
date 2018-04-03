@@ -1,5 +1,7 @@
-import WebPageTest from 'webpagetest';
-import credentials from './credentials';
+import WebPageTest from 'webpagetest'
+import credentials from './credentials'
+import { baqend } from 'baqend'
+
 const { sleep } = require('./sleep');
 
 const PING_BACK_URL = `https://${credentials.app}.app.baqend.com/v1/code/testPingback`;
@@ -26,6 +28,10 @@ export interface WptView {
   TTFB: number
   domContentLoadedEventStart: number
   loadEventStart: number
+  loadTime: number
+  fullyLoaded: number
+  firstPaint: number
+  domElements: number
   render: number
   SpeedIndex: number
   requests: WptRequest[]
@@ -51,6 +57,13 @@ export interface WptTestResult {
   location: string
   testUrl: string
   summary: string
+}
+
+export interface WptTestResultOptions {
+  requests: boolean
+  breakdown: boolean
+  domains: boolean
+  pageSpeed: boolean
 }
 
 class Pagetest {
@@ -93,7 +106,7 @@ class Pagetest {
    * @param db Baqend database instance
    * @returns {Promise<TestResult>} A promise of the test
    */
-  runTest(testScriptOrUrl: string, options: any, db) {
+  runTest(testScriptOrUrl: string, options: any, db: baqend) {
     return this.runTestWithoutWait(testScriptOrUrl, options)
       .then(testId => this.waitOnTest(testId, db));
   }
@@ -138,27 +151,27 @@ class Pagetest {
    * @param db
    * @return {Promise<string>} A promise resolving with the test ID when the test is finished.
    */
-  waitOnTest(testId: string, db): Promise<string> {
-    this.pingFallback(testId, db);
+  waitOnTest(testId: string, db: baqend): Promise<string> {
+    this.pingFallback(testId, db)
 
-    const result = this.waitPromises.get(testId);
-    this.waitPromises.delete(testId);
+    const result = this.waitPromises.get(testId)!
+    this.waitPromises.delete(testId)
 
-    return result;
+    return result
   }
 
   /**
    * @param db
    * @param {string} testId The ID of the test to resolve.
    */
-  resolveTest(db, testId: string) {
+  resolveTest(db: baqend, testId: string) {
     if (this.testResolver.has(testId)) {
-      db.log.info(`Resolver found for test: ${testId}`);
-      this.testResolver.get(testId).call(null, testId);
-      this.testResolver.delete(testId);
-      this.testRejecter.delete(testId);
+      db.log.info(`Resolver found for test: ${testId}`)
+      this.testResolver.get(testId)!.call(null, testId)
+      this.testResolver.delete(testId)
+      this.testRejecter.delete(testId)
     } else {
-      db.log.info(`No resolver for test: ${testId}`);
+      db.log.info(`No resolver for test: ${testId}`)
     }
   }
 
@@ -168,9 +181,9 @@ class Pagetest {
    */
   rejectTest(testId: string) {
     if (this.testRejecter.has(testId)) {
-      this.testRejecter.get(testId).call(null, new Error(`Test rejected for testId: ${testId}`));
-      this.testResolver.delete(testId);
-      this.testRejecter.delete(testId);
+      this.testRejecter.get(testId)!.call(null, new Error(`Test rejected for testId: ${testId}`))
+      this.testResolver.delete(testId)
+      this.testRejecter.delete(testId)
     }
   }
 
@@ -179,7 +192,7 @@ class Pagetest {
    * @param db
    * @private
    */
-  pingFallback(testId: string, db) {
+  pingFallback(testId: string, db: baqend) {
     let executionCount = 0
     const interval = setInterval(() => {
       if (executionCount >= 10) {
@@ -232,24 +245,24 @@ class Pagetest {
   /**
    * Returns the result of a completed test. Precondition: the test must be completed
    *
-   * @param {string} testId The ID of the test.
+   * @param testId The ID of the test.
    * @param options The options on what results to return.
-   * @returns {Promise} The result of the test.
+   * @returns The result of the test.
    */
-  getTestResults(testId: string, options: any): Promise<WptResult<WptTestResult>> {
+  async getTestResults(testId: string, options: Partial<WptTestResultOptions>): Promise<WptResult<WptTestResult>> {
     // Make the result call more reliable
+    const result = await this.wptGetTestResults(testId, options)
+    const run = result.data.runs['1']
+    const firstMissing = run.firstView.lastVisualChange <= 0;
+    const secondMissing = run.repeatView && run.repeatView.lastVisualChange <= 0;
+
+    if (!firstMissing && !secondMissing) {
+      return result;
+    }
+
+    // Retry after 500 milliseconds
+    await sleep(500)
     return this.wptGetTestResults(testId, options)
-      .then((result) => {
-        const firstMissing = result.data.runs['1'].firstView.lastVisualChange <= 0;
-        const secondMissing = result.data.runs['1'].repeatView && result.data.runs['1'].repeatView.lastVisualChange <= 0;
-
-        if (!firstMissing && !secondMissing) {
-          return result;
-        }
-
-        // Retry after 500 milliseconds
-        return sleep(500).then(() => this.wptGetTestResults(testId, options));
-      });
   }
 
   /**
@@ -259,16 +272,16 @@ class Pagetest {
    * @param {*} options
    * @private
    */
-  private wptGetTestResults(testId: string, options: any = {}): Promise<WptResult<WptTestResult>> {
+  private wptGetTestResults(testId: string, options: Partial<WptTestResultOptions> = {}): Promise<WptResult<WptTestResult>> {
     return new Promise((resolve, reject) => {
       this.wpt.getTestResults(testId, options, (err, result) => {
         if (err) {
-          reject(err);
+          reject(err)
         } else {
-          resolve(result);
+          resolve(result)
         }
-      });
-    });
+      })
+    })
   }
 
   /**
@@ -279,17 +292,17 @@ class Pagetest {
    * @param view The index of the view.
    * @returns Return the video ID or null, if it not exists.
    */
-  createVideo(testId: string, run: string, view: number): Promise<string | null> {
-    const video = `${testId}-r:${run}-c:${view}`;
+  createVideo(testId: string, run: string, view: number): Promise<string> {
+    const video = `${testId}-r:${run}-c:${view}`
     return new Promise((resolve, reject) => {
       this.wpt.createVideo(video, {}, (err, result) => {
-        if (err) {
-          reject(err);
+        if (err || !result.data || !result.data.videoId) {
+          reject(err)
         } else {
-          resolve(result.data && result.data.videoId || null);
+          resolve(result.data.videoId)
         }
-      });
-    });
+      })
+    })
   }
 
   /**
@@ -297,19 +310,19 @@ class Pagetest {
    *
    * TODO: This method seems not be used anywhere.
    *
-   * @param {string} videoId The video to get the embed for.
-   * @returns {Promise}
+   * @param videoId The video to get the embed for.
+   * @returns The video player to embed.
    */
-  getEmbedVideoPlayer(videoId) {
+  getEmbedVideoPlayer(videoId: string): Promise<any> {
     return new Promise((resolve, reject) => {
       this.wpt.getEmbedVideoPlayer(videoId, {}, (err, result) => {
         if (err) {
-          reject(err);
+          reject(err)
         } else {
-          resolve(result);
+          resolve(result)
         }
-      });
-    });
+      })
+    })
   }
 }
 

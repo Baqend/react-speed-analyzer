@@ -11,7 +11,7 @@ const CDN_LOCAL_URL = 'https://makefast.app.baqend.com/v1/file/www/selfMaintaine
 /**
  * Returns the default Speed Kit config for the given url.
  */
-export function getMinimalConfig(db, url: string, mobile: boolean) {
+export function getMinimalConfig(db: baqend, url: string, mobile: boolean) {
   const tld = getTLD(db, url);
   const domainRegex = `/^(?:[\\w-]*\\.){0,3}(?:${escapeRegExp(tld)})/`;
 
@@ -22,7 +22,7 @@ export function getMinimalConfig(db, url: string, mobile: boolean) {
   }`;
 }
 
-export function getCacheWarmingConfig(mobile) {
+export function getCacheWarmingConfig(mobile: boolean) {
   return `{
     appName: "${credentials.app}",
     userAgentDetection: ${mobile}
@@ -32,7 +32,7 @@ export function getCacheWarmingConfig(mobile) {
 /**
  * Returns the fallback config for a URL.
  */
-export function getFallbackConfig(db, url: string, mobile: boolean = false): string {
+export function getFallbackConfig(db: baqend, url: string, mobile: boolean = false): string {
   const tld = getTLD(db, url);
   const domainRegex = `/^(?:[\\w-]*\\.){0,3}(?:${escapeRegExp(tld)})/`;
 

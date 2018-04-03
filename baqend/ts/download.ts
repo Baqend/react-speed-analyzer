@@ -1,4 +1,4 @@
-import http from 'http'
+import http, { IncomingMessage } from 'http'
 import { baqend, binding } from 'baqend'
 
 /**
@@ -16,13 +16,13 @@ import { baqend, binding } from 'baqend'
  */
 export function toFile(db: baqend, url: string, target: string, maxRetries: number = 10): Promise<binding.File> {
   return new Promise((resolve, reject) => {
-    http.get(url, (res) => {
+    http.get(url, (res: IncomingMessage) => {
       const file = new db.File({ path: target })
       const size = res.headers['content-length']
       const mimeType = res.headers['content-type']
 
       // Retry on error
-      if (res.statusCode >= 400 && res.statusCode < 600) {
+      if (!res.statusCode || (res.statusCode >= 400 && res.statusCode < 600)) {
         if (maxRetries <= 0) {
           reject(new Error('Maximum number of retries reached without success'))
         } else {
@@ -38,7 +38,7 @@ export function toFile(db: baqend, url: string, target: string, maxRetries: numb
       }
 
       // Or chunked encoding
-      const chunks = []
+      const chunks: Buffer[] = []
       res.on('data', chunks.push.bind(chunks))
       res.on('end', () => {
         const buf = Buffer.concat(chunks)

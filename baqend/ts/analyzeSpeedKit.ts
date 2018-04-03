@@ -1,10 +1,11 @@
 import fetch from 'node-fetch'
 import URL from 'url'
+import { baqend } from 'baqend'
 import credentials from './credentials'
 
 const ORIGIN = credentials.makefast_ip
 
-export async function analyzeSpeedKit(urlToTest, db) {
+export async function analyzeSpeedKit(urlToTest: string, db: baqend) {
   const url = {
     protocol: 'http',
     host: ORIGIN,

@@ -3,7 +3,7 @@ import { baqend, model } from 'baqend'
 import { getTLD, getRootPath } from './getSpeedKitUrl'
 import { generateUniqueId } from './generateUniqueId'
 import { analyzeSpeedKit } from './analyzeSpeedKit'
-import { sleep } from './sleep'
+import { sleep, timeout } from './sleep'
 import { TestRequest } from './TestRequest'
 
 const DEFAULT_ACTIVITY_TIMEOUT = 75
@@ -83,8 +83,7 @@ export class ComparisonRequest {
           return null
         })
 
-      const timeout = sleep(5000, null)
-      return Promise.race([ analyze, timeout ])
+      return timeout(5000, analyze, null)
     }
     // return Promise.resolve(null)
     return this.getCachedSpeedKitConfig()

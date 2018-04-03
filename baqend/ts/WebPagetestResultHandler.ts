@@ -1,4 +1,4 @@
-import { API } from './Pagetest';
+import { API, WptTestResultOptions } from './Pagetest'
 import { baqend } from 'baqend'
 import { generateTestResult } from './resultGeneration';
 import { createSmartConfig, getFallbackConfig } from './configGeneration';
@@ -22,8 +22,8 @@ export class WebPagetestResultHandler {
    * @param {object} testInfo The info of the corresponding test.
    * @return {string} The generated config as string formatted json.
    */
-  getSmartConfig(testId, testInfo) {
-    const options = {
+  getSmartConfig(testId: string, testInfo) {
+    const options: WptTestResultOptions = {
       requests: true,
       breakdown: false,
       domains: true,

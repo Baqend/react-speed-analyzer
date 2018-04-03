@@ -15,7 +15,7 @@ export function getTLD(db: baqend, url: string): string {
   try {
     const { hostname } = URL.parse(url)
     const domainFilter = /^(?:[\w-]*\.){0,3}([\w-]*\.)[\w]*$/
-    const [, domain] = domainFilter.exec(hostname)
+    const [, domain] = domainFilter.exec(hostname!)!
 
     return domain
   } catch (e) {

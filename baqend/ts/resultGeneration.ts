@@ -2,7 +2,7 @@ import { toFile } from './download'
 import { getAdSet } from './adBlocker'
 import credentials from './credentials'
 import { timeout } from './sleep'
-import { API, WptRun, WptTestResult, WptView } from './Pagetest'
+import { API, WptRun, WptTestResult, WptTestResultOptions, WptView } from './Pagetest'
 import { countHits } from './countHits'
 import fetch from 'node-fetch'
 import { getFMP } from './calculateFMP'
@@ -17,7 +17,7 @@ import { Domain } from './baqend-model'
  * @param db The Baqend instance.
  * @return The updated test object containing the test result.
  */
-export async function generateTestResult(testId: string, pendingTest: model.TestResult, db): Promise<model.TestResult> {
+export async function generateTestResult(testId: string, pendingTest: model.TestResult, db: baqend): Promise<model.TestResult> {
   db.log.info(`Generating test result: ${testId}`, { testResult: pendingTest.id, testId })
 
   if (pendingTest.hasFinished) {
@@ -63,7 +63,7 @@ export async function generateTestResult(testId: string, pendingTest: model.Test
 }
 
 function getResultRawData(testId: string): Promise<WptTestResult> {
-  const options = {
+  const options: WptTestResultOptions = {
     requests: true,
     breakdown: false,
     domains: false,
@@ -158,8 +158,9 @@ async function createRun(db: baqend, data: WptView | undefined, testId: string, 
   const run = new db.Run()
 
   // Copy fields
-  for (const field of ['loadTime', 'fullyLoaded', 'firstPaint', 'lastVisualChange', 'domElements']) {
-    run[field] = Math.round(data[field])
+  const fields: Array<keyof WptView> = ['loadTime', 'fullyLoaded', 'firstPaint', 'lastVisualChange', 'domElements']
+  for (const field of fields) {
+    run[field] = Math.round(data[field] as number)
   }
 
   // Set TTFB

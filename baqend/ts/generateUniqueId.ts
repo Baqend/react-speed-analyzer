@@ -1,32 +1,37 @@
-import { EntityManager } from 'baqend'
+import { baqend } from 'baqend'
 
 /**
- * @param db The Baqend instance.
- * @param entityClass
- * @param length (optional)
- * @return {Promise<string>}
+ * @param db          The Baqend instance.
+ * @param entityClass The class to generate an ID for.
+ * @param length      The ID's length (optional).
+ * @return The generated unique ID.
  */
-export function generateUniqueId(db: EntityManager, entityClass: string, length: number = 5): Promise<string> {
-  const charSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-  let uniqueId = charSet.charAt(Math.floor(Math.random() * (charSet.length - 10)));
+export async function generateUniqueId(db: baqend, entityClass: string, length: number = 5): Promise<string> {
+  const charSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  let uniqueId = charSet.charAt(Math.floor(Math.random() * (charSet.length - 10)))
 
   for (let i = 0; i < length; i += 1) {
-    uniqueId += charSet.charAt(Math.floor(Math.random() * charSet.length));
+    uniqueId += charSet.charAt(Math.floor(Math.random() * charSet.length))
   }
 
-  return db[entityClass].find().eq('id', `/db/${entityClass}/${uniqueId}`).count((count) => {
+  try {
+    const count = await db[entityClass].find().eq('id', `/db/${entityClass}/${uniqueId}`).count()
     if (count > 0) {
-      return generateUniqueId(db, entityClass, length);
+      return generateUniqueId(db, entityClass, length)
     }
 
-    return uniqueId;
-  }).catch((error) => {
-    db.log.warn(`Could not generateUniqueId with error ${error.stack}.`);
-    return null;
-  });
+    return uniqueId
+  } catch (error) {
+    db.log.warn(`Could not generateUniqueId with error ${error.stack}.`)
+    throw new Error(`Could not generateUniqueId with error: ${error.message}`)
+  }
 }
 
-export function call(db, data) {
-  return generateUniqueId(db, data.entityClass, data.length);
+/**
+ * Baqend code API call.
+ */
+export function call(db: baqend, data: { entityClass: string, length: number}): Promise<string> {
+  const { entityClass, length = 5 } = data
+
+  return generateUniqueId(db, entityClass, length)
 }

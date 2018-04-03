@@ -3,7 +3,7 @@ import { aggregateFields } from './helpers'
 
 type TestResultFieldPrefix = 'competitor' | 'speedKit'
 
-const fields = ['speedIndex', 'firstMeaningfulPaint', 'ttfb', 'domLoaded', 'fullyLoaded', 'lastVisualChange']
+const fields: Array<keyof model.Mean> = ['speedIndex', 'firstMeaningfulPaint', 'ttfb', 'domLoaded', 'fullyLoaded', 'lastVisualChange']
 
 /**
  * Calculates the factors of two mean test result values.
@@ -16,7 +16,10 @@ const fields = ['speedIndex', 'firstMeaningfulPaint', 'ttfb', 'domLoaded', 'full
 export function factorize(db: baqend, competitor: model.Mean, speedKit: model.Mean): model.Mean {
   const result = new db.Mean()
   for (const field of fields) {
-    result[field] = competitor[field] / speedKit[field]
+    const competitorElement = competitor[field] as number
+    const speedKitElement = speedKit[field] as number
+
+    result[field] = competitorElement / speedKitElement
   }
 
   return result
@@ -119,9 +122,12 @@ function hasBulkTestFinished(bulkTest: model.BulkTest): boolean {
 /**
  * Picks the test results with a given name from a bulk test.
  */
-function pickResults(bulkTest: model.BulkTest, prefix: TestResultFieldPrefix) {
-  const field = `${prefix}TestResult`
-  return bulkTest.testOverviews.map(overview => overview[field] && overview[field].firstView).filter(it => !!it)
+function pickResults(bulkTest: model.BulkTest, prefix: TestResultFieldPrefix): model.Run[] {
+  const field = `${prefix}TestResult` as keyof model.TestOverview
+
+  return bulkTest.testOverviews
+    .map(overview => overview[field] && (overview[field] as model.TestResult).firstView)
+    .filter(it => !!it) as model.Run[]
 }
 
 /**

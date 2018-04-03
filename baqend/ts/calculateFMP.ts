@@ -1,5 +1,6 @@
 import fetch from 'node-fetch'
 import credentials from './credentials'
+import { baqend } from 'baqend'
 
 /**
  * Get the raw visual progress data of a given html string.
@@ -79,8 +80,8 @@ export async function getFMP(testId: string, runIndex: string): Promise<number> 
 /**
  * Baqend code API call.
  */
-export function call(db, data) {
-  const { testId, runIndex = 0 } = data
+export async function call(db: baqend, data: { testId: string, runIndex: string }): Promise<{ fmp: number }> {
+  const { testId, runIndex = '0' } = data
 
-  return getFMP(testId, runIndex)
+  return { fmp: await getFMP(testId, runIndex) }
 }

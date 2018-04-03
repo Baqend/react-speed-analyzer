@@ -27,7 +27,7 @@ export function mergeConcat<T>(objects: Array<{ [key: string]: T }>): { [key: st
     return mapValues(objects[0], a => [a])
   }
 
-  return (mergeWith as any)(...objects, (a, b) => concat(a, b))
+  return (mergeWith as any)(...objects, (a: any, b: any) => concat(a, b))
 }
 
 
@@ -38,8 +38,8 @@ export function mergeConcat<T>(objects: Array<{ [key: string]: T }>): { [key: st
  * @param fields
  * @return A mean containing the aggregated values.
  */
-export function aggregateFields(runs, fields) {
-  const means = map(runs, run => pick(run, fields))
+export function aggregateFields<U>(runs: U[], fields: Array<keyof U>) {
+  const means = map(runs, run => pick(run, fields)) as Array<{ [key: string]: any }>
   return mapValues(mergeConcat(means), values => meanValue(finites(values)))
 }
 

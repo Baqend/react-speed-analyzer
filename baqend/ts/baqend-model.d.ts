@@ -97,8 +97,8 @@ declare module 'baqend' {
     interface TestResult extends binding.Entity {
       testId: string;
       location: string;
-      firstView: Run;
-      repeatView: Run;
+      firstView: Run | null;
+      repeatView: Run | null;
       url: string;
       summaryUrl: string;
       publishedSummaryUrl: string;
