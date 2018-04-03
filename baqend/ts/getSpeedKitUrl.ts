@@ -1,26 +1,26 @@
-import credentials from './credentials';
-import fetch from 'node-fetch';
-import URL from 'url';
-
-const CDN_LOCAL_URL = 'https://makefast.app.baqend.com/v1/file/www/selfMaintainedCDNList';
+import URL from 'url'
+import { baqend } from 'baqend'
+import { escapeRegExp } from './helpers'
+import { getCdnRegExps } from './configGeneration'
+import credentials from './credentials'
 
 /**
  * Extracts the first level domain of a URL.
  *
  * @param db The Baqend instance.
- * @param {string} url The URL to extract the hostname of.
- * @return {string} The extracted hostname.
+ * @param url The URL to extract the hostname of.
+ * @return The extracted hostname.
  */
-export function getTLD(db, url: string) {
+export function getTLD(db: baqend, url: string): string {
   try {
-    const { hostname } = URL.parse(url);
-    const domainFilter = /^(?:[\w-]*\.){0,3}([\w-]*\.)[\w]*$/;
-    const [, domain] = domainFilter.exec(hostname);
+    const { hostname } = URL.parse(url)
+    const domainFilter = /^(?:[\w-]*\.){0,3}([\w-]*\.)[\w]*$/
+    const [, domain] = domainFilter.exec(hostname)
 
     return domain
   } catch (e) {
-    db.log.warn(`Get TLD for url ${url} failed.`);
-    return '';
+    db.log.warn(`Get TLD for url ${url} failed.`)
+    return ''
   }
 }
 
@@ -29,29 +29,19 @@ export function getTLD(db, url: string) {
  *
  * @param db The Baqend instance.
  * @param fullPath The path to extract the root path from.
- * @return {string} The extracted root path.
+ * @return The extracted root path.
  */
-export function getRootPath(db, fullPath: string) {
+export function getRootPath(db: baqend, fullPath: string): string {
   try {
-    const { protocol, hostname } = URL.parse(fullPath);
-    return protocol + '//' + hostname;
+    const { protocol, hostname } = URL.parse(fullPath)
+    return `${protocol}//${hostname}`
   } catch (e) {
-    db.log.warn(`Get root path for url ${fullPath} failed.`);
-    return '';
+    db.log.warn(`Get root path for url ${fullPath} failed.`)
+    return ''
   }
 }
 
-/**
- * Escapes a regular expression.
- *
- * @param {string} str
- * @return {string}
- */
-function escapeRegExp(str: string): string {
-  return str.replace(/[[\]/{}()*+?.\\^$|-]/g, '\\$&');
-}
-
-export function getDefaultConfig(db, url: string): string {
+export function getDefaultConfig(db: baqend, url: string): string {
   const tld = getTLD(db, url);
   const domainRegex = `/^(?:[\\w-]*\\.){0,3}(?:${escapeRegExp(tld)})/`;
 
@@ -70,41 +60,43 @@ export function getDefaultConfig(db, url: string): string {
  * @param {string[]} whitelist An array of whitelist domains.
  * @return {string} A regexp string representing the white listed domains
  */
-function generateRules(db, originalUrl: string, whitelist: string[]): string {
+function generateRules(db: baqend, originalUrl: string, whitelist: string[]): string {
   const domain = getTLD(db, originalUrl);
 
   // Create parts for the regexp
   return `/^(?:[\\w-]*\\.){0,3}(?:${[domain, ...whitelist].map(item => escapeRegExp(item)).join('|')})/`;
 }
 
-function generateCDNRegex(): Promise<string> {
-  return fetch(CDN_LOCAL_URL)
-    .then(resp => resp.text())
-    .then((text) => {
-      const lines = text.trim().split('\n');
-      return `/${lines.map(line => line.replace(/\./g, '\\.')).join('|')}/`;
-    });
+/**
+ * Generate one regular expression to match all CDN domains.
+ */
+async function generateCdnDomainRegExp(): Promise<string> {
+  const regExps = await getCdnRegExps()
+
+  return `/${regExps.join('|')}/`
 }
 
 /**
  * Returns the URL to send to Speed Kit.
  *
  * @param db The Baqend instance.
- * @param {string} originalUrl The URL to make fast. ;-)
- * @param {string} whitelistStr The whitelist string with comma-separated values.
- * @param {boolean} enableUserAgentDetection Enables the user agent detection in makefast
- * @return {string} A URL to send to Speed Kit.
+ * @param originalUrl The URL to make fast. ;-)
+ * @param whitelistStr The whitelist string with comma-separated values.
+ * @param enableUserAgentDetection Enables the user agent detection in makefast
+ * @return A URL to send to Speed Kit.
  */
-export function generateSpeedKitConfig(db, originalUrl, whitelistStr, enableUserAgentDetection): Promise<string> {
+export async function generateSpeedKitConfig(db: baqend, originalUrl: string, whitelistStr: string, enableUserAgentDetection: boolean): Promise<string> {
   const whitelistDomains = (whitelistStr || '')
     .split(',')
     .map(item => item.trim())
     .filter(item => !!item);
 
   const whitelist = generateRules(db, originalUrl, whitelistDomains);
-  return generateCDNRegex().then(cdnRegex => `{
+  const cdnRegExp = await generateCdnDomainRegExp()
+
+  return `{
     appName: "${credentials.app}",
-    whitelist: [{ host: [ ${whitelist}, ${cdnRegex}] }],
+    whitelist: [{ host: [ ${whitelist}, ${cdnRegExp}] }],
     userAgentDetection: ${enableUserAgentDetection},
-    }`);
+  }`
 }

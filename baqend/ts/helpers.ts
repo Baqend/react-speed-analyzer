@@ -42,3 +42,20 @@ export function aggregateFields(runs, fields) {
   const means = map(runs, run => pick(run, fields))
   return mapValues(mergeConcat(means), values => meanValue(finites(values)))
 }
+
+/**
+ * Escapes a regular expression.
+ *
+ * @param str The string to escape.
+ * @return The escaped string.
+ */
+export function escapeRegExp(str: string): string {
+  return str.replace(/[[\]/{}()*+?.\\^$|-]/g, '\\$&')
+}
+
+/**
+ * Turns a string into a matchable regular expression.
+ */
+export function toRegExp(str: string): RegExp {
+  return new RegExp(escapeRegExp(str))
+}

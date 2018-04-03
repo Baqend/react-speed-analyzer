@@ -1,8 +1,5 @@
-/* eslint-disable comma-dangle, function-paren-newline */
-/* eslint-disable no-restricted-syntax, no-param-reassign */
 import stringifyObject from 'stringify-object'
-import { EntityManager, model } from 'baqend'
-import { isRateLimited } from './rateLimiter'
+import { baqend, model } from 'baqend'
 import { getTLD, getRootPath } from './getSpeedKitUrl'
 import { generateUniqueId } from './generateUniqueId'
 import { analyzeSpeedKit } from './analyzeSpeedKit'
@@ -19,7 +16,7 @@ export class ComparisonRequest {
   private existingSpeedKitConfig: null
   private configAnalysis: model.ConfigAnalysis | null
 
-  constructor(private db: EntityManager, private params: any) {
+  constructor(private db: baqend, private params: any) {
     this.existingSpeedKitConfig = null
     this.configAnalysis = null
   }
@@ -59,7 +56,7 @@ export class ComparisonRequest {
     return configAnalysis
   }
 
-  getCachedSpeedKitConfig(): Promise<object | null> {
+  getCachedSpeedKitConfig(): Promise<string | null> {
     const date = new Date()
     const { url, mobile } = this.params
     return this.db.CachedConfig.find()

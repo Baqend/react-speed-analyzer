@@ -1,7 +1,10 @@
-import fetch from 'node-fetch';
-const { getAdSet } = require('./adBlocker');
-const { getTLD } = require('./getSpeedKitUrl')
-import credentials from './credentials';
+import fetch from 'node-fetch'
+import { baqend } from 'baqend'
+import { getAdSet } from './adBlocker'
+import { getTLD } from './getSpeedKitUrl'
+import credentials from './credentials'
+import { escapeRegExp, toRegExp } from './helpers'
+import { WptTestResult } from './Pagetest'
 
 const CDN_LOCAL_URL = 'https://makefast.app.baqend.com/v1/file/www/selfMaintainedCDNList';
 
@@ -10,7 +13,7 @@ const CDN_LOCAL_URL = 'https://makefast.app.baqend.com/v1/file/www/selfMaintaine
  */
 export function getMinimalConfig(db, url: string, mobile: boolean) {
   const tld = getTLD(db, url);
-  const domainRegex = `/^(?:[\\w-]*\\.){0,3}(?:${escapeForRegex(tld)})/`;
+  const domainRegex = `/^(?:[\\w-]*\\.){0,3}(?:${escapeRegExp(tld)})/`;
 
   return `{
     appName: "${credentials.app}",
@@ -26,9 +29,12 @@ export function getCacheWarmingConfig(mobile) {
   }`;
 }
 
-export function getFallbackConfig(db, url, mobile) {
+/**
+ * Returns the fallback config for a URL.
+ */
+export function getFallbackConfig(db, url: string, mobile: boolean = false): string {
   const tld = getTLD(db, url);
-  const domainRegex = `/^(?:[\\w-]*\\.){0,3}(?:${escapeForRegex(tld)})/`;
+  const domainRegex = `/^(?:[\\w-]*\\.){0,3}(?:${escapeRegExp(tld)})/`;
 
   return `{
     appName: "${credentials.app}",
@@ -40,79 +46,80 @@ export function getFallbackConfig(db, url, mobile) {
 /**
  * Analyzes the given domains and creates a Speed Kit config with a suggested whitelist.
  *
- * @param testResult The result data of the prewarm run with Speed Kit
+ * @param db The Baqend instance.
+ * @param url The tested URL.
+ * @param testResult The result data of the prewarm run with Speed Kit.
+ * @param mobile Whether the test was performed against mobile.
  * @param whitelist Whitelisted domains as string.
  * @return
  */
-export function createSmartConfig(url, testResult, mobile, db, whitelist = '') {
-  const domains = getDomains(testResult, db);
+export async function createSmartConfig(db: baqend, url: string, testResult: WptTestResult, mobile: boolean, whitelist: string = ''): Promise<string> {
+  const domains = getDomains(testResult, db)
+  db.log.info(`Analyzing domains: ${url}`, { domains })
 
-  db.log.info(`Analyzing domains: ${url}`, {domains});
-  return filterCDNs(domains, db)
-    .then((cdnsWithAds) => {
-      db.log.info(`CDN domains`, {cdnsWithAds});
-      return filterAds(cdnsWithAds, db);
-    })
-    .then((cdnsWithoutAds) => {
-      db.log.info(`Domains without ads`, {cdnsWithoutAds});
-      return cdnsWithoutAds.map(toRegex).join(', ');
-    })
-    .then((cdnRegexs) => {
-      const whitelistedHosts = whitelist.length? `${cdnRegexs}, ${whitelist}` : cdnRegexs;
+  const cdnDomainsWithAds = await selectCdnDomains(domains)
+  db.log.info(`CDN domains`, { cdnDomainsWithAds })
 
-      const tld = getTLD(db, url);
-      const domainRegex = `/^(?:[\\w-]*\\.){0,3}(?:${escapeForRegex(tld)})/`;
+  const cdnDomainsWithoutAds = await filterOutAdDomains(cdnDomainsWithAds)
+  db.log.info(`Domains without ads`, { cdnDomainsWithoutAds })
 
-      return `{
-        appName: "${credentials.app}",
-        whitelist: [{ host: [ ${domainRegex}, ${whitelistedHosts} ] }],
-        userAgentDetection: ${mobile}
-      }`;
-    });
+  const cdnRegexps = cdnDomainsWithoutAds.map(toRegExp).join(', ')
+  const whitelistedHosts = whitelist ? `${cdnRegexps}, ${whitelist}` : cdnRegexps
+
+  const tld = getTLD(db, url)
+  const domainRegex = `/^(?:[\\w-]*\\.){0,3}(?:${escapeRegExp(tld)})/`
+
+  return `{
+    appName: "${credentials.app}",
+    whitelist: [{ host: [ ${domainRegex}, ${whitelistedHosts} ] }],
+    userAgentDetection: ${mobile}
+  }`
 }
 
-function filterCDNs(domains, db) {
-  return fetch(CDN_LOCAL_URL)
-    .then(resp => resp.text())
-    .then((text) => {
-      return text.trim().split('\n').map(toRegex)
-    })
-    .then((regExs) => {
-      return domains.filter((domain) => regExs.some((regEx) => regEx.test(domain)))
-    });
+/**
+ * Gets an array of regular expressions which match CDN domains.
+ */
+export async function getCdnRegExps(): Promise<RegExp[]> {
+  const resp = await fetch(CDN_LOCAL_URL)
+  const text = await resp.text()
+
+  return text.trim().split('\n').map(toRegExp)
 }
 
-function filterAds(domains, db) {
-  return getAdSet()
-    .then(ads => [...ads].filter(it => !!it.length).map(toRegex))
-    .then((regExs) => {
-      return domains.filter((domain) => !regExs.some((regEx) => regEx.test(domain)))
-    });
+/**
+ * Selects only all CDN domains.
+ */
+async function selectCdnDomains(domains: string[]): Promise<string[]> {
+  const regExps = await getCdnRegExps()
+
+  return domains.filter(domain => regExps.some(regExp => regExp.test(domain)))
 }
 
-function toRegex(str) {
-  return new RegExp(escapeForRegex(str));
+/**
+ * Filters out all advertisement domains.
+ */
+async function filterOutAdDomains(domains: string[]): Promise<string[]> {
+  const ads = await getAdSet()
+  const regExps = [...ads].filter(it => !!it.length).map(toRegExp)
+
+  return domains.filter(domain => !regExps.some(regExp => regExp.test(domain)))
 }
 
-function escapeForRegex(str) {
-  return str.replace(/[[\]/{}()*+?.\\^$|-]/g, '\\$&');
-}
-
-function getDomains(testResult, db) {
+function getDomains(testResult: WptTestResult, db: baqend): string[] {
   if (!testResult || !testResult.runs || !testResult.runs['1'] || !testResult.runs['1'].firstView || !testResult.runs['1'].firstView.domains) {
-    throw new Error(`No testdata to analyze domains ${testResult.url}`);
+    throw new Error(`No testdata to analyze domains ${testResult.url}`)
   }
 
-  const domains = Object.keys(testResult.runs['1'].firstView.domains);
-  if (!domains.length || domains.length < 1) {
-    db.log.warn(`Analyzed domains empty.`, { testResult });
-    throw new Error(`No testdata to analyze domains ${testResult.url}`);
+  const domains = Object.keys(testResult.runs['1'].firstView.domains)
+  if (domains.length < 1) {
+    db.log.warn(`Analyzed domains empty.`, { testResult })
+    throw new Error(`No testdata to analyze domains ${testResult.url}`)
   }
 
   if (domains.length === 1) {
-    db.log.warn(`Analyzed domains limited.`, { testResult });
-    throw new Error(`Only one domain to analyse ${testResult.url}`);
+    db.log.warn(`Analyzed domains limited.`, { testResult })
+    throw new Error(`Only one domain to analyse ${testResult.url}`)
   }
 
-  return domains;
+  return domains
 }

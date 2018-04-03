@@ -104,9 +104,9 @@ declare module 'baqend' {
       publishedSummaryUrl: string;
       videoIdFirstView: string;
       videoIdRepeatedView: string;
-      videoFileFirstView: undefined;
+      videoFileFirstView: binding.File | null;
       testDataMissing: boolean;
-      videoFileRepeatView: undefined;
+      videoFileRepeatView: binding.File | null;
       hasFinished: boolean;
       retryRequired: boolean;
       isWordPress: boolean;

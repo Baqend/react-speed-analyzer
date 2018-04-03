@@ -1,5 +1,5 @@
+import { baqend } from 'baqend'
 import { TestWorker } from './TestWorker'
-import { EntityManager } from 'baqend'
 
 export const DEFAULT_LOCATION = 'eu-central-1:Chrome.Native'
 export const DEFAULT_ACTIVITY_TIMEOUT = 75;
@@ -43,7 +43,7 @@ const defaultTestOptions = {
  * @return {Promise<TestResult>} A promise resolving when the test has been created.
  */
 export class TestRequest {
-  constructor(private db: EntityManager, private params: any) {
+  constructor(private db: baqend, private params: any) {
   }
 
   create() {
@@ -100,7 +100,7 @@ export class TestRequest {
   }
 }
 
-export function call(db: EntityManager, data, req) {
+export function call(db: baqend, data, req) {
   const params = data
   const testWorker = new TestWorker(db)
   const testRequest = new TestRequest(db, params)

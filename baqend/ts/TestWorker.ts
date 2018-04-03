@@ -1,4 +1,4 @@
-import { EntityManager } from 'baqend'
+import { baqend } from 'baqend'
 import { API } from './Pagetest';
 import { WebPagetestResultHandler } from './WebPagetestResultHandler'
 import { getMinimalConfig, getFallbackConfig } from './configGeneration';
@@ -28,7 +28,7 @@ const prewarmOptions = {
 export class TestWorker {
   private testResultHandler: WebPagetestResultHandler
 
-  constructor(private db: EntityManager, private comparisonWorker?: ComparisonWorker) {
+  constructor(private db: baqend, private comparisonWorker?: ComparisonWorker) {
     this.db = db
     this.comparisonWorker = comparisonWorker
     this.testResultHandler = new WebPagetestResultHandler(db)

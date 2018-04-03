@@ -1,7 +1,7 @@
 import { API } from './Pagetest';
-import { EntityManager } from 'baqend'
-const { generateTestResult } = require('./resultGeneration');
-const { createSmartConfig, getFallbackConfig } = require('./configGeneration');
+import { baqend } from 'baqend'
+import { generateTestResult } from './resultGeneration';
+import { createSmartConfig, getFallbackConfig } from './configGeneration';
 
 const CONFIG_TYPE = 'config';
 const PERFORMANCE_TYPE = 'performance';
@@ -12,7 +12,7 @@ const PERFORMANCE_TYPE = 'performance';
  * @return {WebPagetestResultHandler}
  */
 export class WebPagetestResultHandler {
-  constructor(private db: EntityManager) {
+  constructor(private db: baqend) {
   }
 
   /**
@@ -34,7 +34,7 @@ export class WebPagetestResultHandler {
       .then(result => {
         const domains = result.data;
         this.db.log.info(`Generating Smart Config`, {url: testInfo.url});
-        return createSmartConfig(testInfo.url, domains, testInfo.isMobile, this.db).then(config => {
+        return createSmartConfig(this.db, testInfo.url, domains, testInfo.isMobile).then(config => {
           const cachedConfig = new this.db.CachedConfig({
             url: testInfo.url,
             mobile: testInfo.testOptions.mobile,

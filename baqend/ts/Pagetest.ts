@@ -8,8 +8,35 @@ export interface WptResult<T> {
   data: T
 }
 
+export interface WptRequest {
+  responseCode: number
+  headers: { response: string[] }
+}
+
+export interface WptDomain {
+  bytes: number
+  requests: number
+  cdn_provider: string
+  connections: number
+}
+
 export interface WptView {
+  domains: { [domainName: string]: WptDomain }
   lastVisualChange: number
+  TTFB: number
+  domContentLoadedEventStart: number
+  loadEventStart: number
+  render: number
+  SpeedIndex: number
+  requests: WptRequest[]
+  bytesIn: number
+  base_page_cdn: string
+  visualComplete85: number
+  visualComplete90: number
+  visualComplete95: number
+  visualComplete99: number
+  visualComplete: number
+  chromeUserTiming?: Array<{ name: string, time: number }>
 }
 
 export interface WptRun {
@@ -18,6 +45,8 @@ export interface WptRun {
 }
 
 export interface WptTestResult {
+  url: string
+  id: string
   runs: { [id: string]: WptRun }
   location: string
   testUrl: string
@@ -245,12 +274,12 @@ class Pagetest {
   /**
    * Creates a video and returns the ID.
    *
-   * @param {string} testId The ID of the test.
-   * @param {number} run The index of the run.
-   * @param {number} view The index of the view.
-   * @returns {Promise<string|null>} Return the video ID or null, if it not exists.
+   * @param testId The ID of the test.
+   * @param run The index of the run.
+   * @param view The index of the view.
+   * @returns Return the video ID or null, if it not exists.
    */
-  createVideo(testId: string, run: number, view: number): Promise<string | null> {
+  createVideo(testId: string, run: string, view: number): Promise<string | null> {
     const video = `${testId}-r:${run}-c:${view}`;
     return new Promise((resolve, reject) => {
       this.wpt.createVideo(video, {}, (err, result) => {
