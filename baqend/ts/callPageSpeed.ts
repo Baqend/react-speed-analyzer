@@ -1,45 +1,64 @@
-import fetch from 'node-fetch';
-// eslint-disable-next-line import/no-unresolved
-import credentials from './credentials';
+import fetch from 'node-fetch'
+import { Request, Response } from 'express'
+import { baqend } from 'baqend'
+import credentials from './credentials'
 
 const API_KEY = credentials.google_api_key;
 const API_URL = 'https://www.googleapis.com/pagespeedonline/v1/runPagespeed?';
 
+export interface PageSpeedScreenshot {
+  data: string
+  height: number
+  mime_type: string
+  width: number
+}
+
+export interface PageSpeedResult {
+  url: string
+  mobile: boolean
+  domains: number
+  requests: number
+  bytes: number
+  screenshot: PageSpeedScreenshot
+}
+
 /**
- * @param {string} url The URL to run the Page Speed tests on.
- * @param {boolean} mobile Run the test as a mobile client.
- * @return {Promise<{ domains: number | null, requests: number | null, bytes: number | null, screenshot: string | null }>}
+ * @param url The URL to run the Page Speed tests on.
+ * @param mobile Run the test as a mobile client.
+ * @return
  */
-function callPageSpeed(url, mobile) {
-  const query = [`url=${encodeURIComponent(url)}`,
+export async function callPageSpeed(url: string, mobile: boolean): Promise<PageSpeedResult> {
+  const query = [
+    `url=${encodeURIComponent(url)}`,
     'screenshot=true',
     `strategy=${mobile ? 'mobile' : 'desktop'}`,
     `key=${API_KEY}`,
-  ].join('&');
+  ].join('&')
 
-  return fetch(API_URL + query, { method: 'get' }).then(response => Promise.all([response.ok, response.json()])).then(([ok, data]) => {
-    if (!ok) {
-      throw new Error(data.error.errors[0].message);
-    }
-    return data;
-  }).then(({ pageStats, screenshot }) => {
-    const domains = pageStats.numberHosts || 0;
-    const requests = pageStats.numberResources || 0;
+  const response = await fetch(API_URL + query, { method: 'get' })
+  const [ok, data] = await Promise.all([response.ok, response.json()])
+  if (!ok) {
+    throw new Error(data.error.errors[0].message)
+  }
 
-    let bytes = parseInt(pageStats.htmlResponseBytes, 10) || 0;
-    bytes += parseInt(pageStats.cssResponseBytes, 10) || 0;
-    bytes += parseInt(pageStats.imageResponseBytes, 10) || 0;
-    bytes += parseInt(pageStats.javascriptResponseBytes, 10) || 0;
-    bytes += parseInt(pageStats.otherResponseBytes, 10) || 0;
+  const { pageStats, screenshot } = data
+  const domains = pageStats.numberHosts || 0
+  const requests = pageStats.numberResources || 0
 
-    return {
-      domains, requests, bytes, screenshot,
-    };
-  });
+  let bytes = parseInt(pageStats.htmlResponseBytes, 10) || 0
+  bytes += parseInt(pageStats.cssResponseBytes, 10) || 0
+  bytes += parseInt(pageStats.imageResponseBytes, 10) || 0
+  bytes += parseInt(pageStats.javascriptResponseBytes, 10) || 0
+  bytes += parseInt(pageStats.otherResponseBytes, 10) || 0
+
+  return { url, mobile, domains, requests, bytes, screenshot }
 }
 
-exports.get = function get(db, req, res) {
-  return callPageSpeed(req.query.url, req.query.mobile === 'true').then(results => res.send(results));
-};
+/**
+ * Baqend code API call.
+ */
+export async function get(db: baqend, req: Request, res: Response): Promise<void> {
+  const results = await callPageSpeed(req.query.url, req.query.mobile === 'true')
 
-exports.callPageSpeed = callPageSpeed;
+  res.send(results)
+}
