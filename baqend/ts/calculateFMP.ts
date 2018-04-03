@@ -1,81 +1,86 @@
-const request = require('request-promise');
-import credentials from './credentials';
+import fetch from 'node-fetch'
+import credentials from './credentials'
 
 /**
  * Get the raw visual progress data of a given html string.
  *
- * @param {string} htmlString The html string to get the data from.
- * @return {array} An array of the raw visual progress data.
+ * @param htmlString The html string to get the data from.
+ * @return An array of the raw visual progress data.
  */
-function getDataFromHtml(htmlString) {
-  const regex = /google\.visualization\.arrayToDataTable(((.|\n)*?));/gm;
-  const matchArray = regex.exec(htmlString);
+function getDataFromHtml(htmlString: string): Array<[number, number]> {
+  const regex = /google\.visualization\.arrayToDataTable\((\[(.|\n)*])\);/gm
+  const matchArray = regex.exec(htmlString)
 
-  if (!matchArray && matchArray[1]) {
-    return null;
+  if (!matchArray || !matchArray[1]) {
+    throw new Error('Could not find data table in HTML.')
   }
 
-  const data = eval(matchArray[1]);
-  if (!data) {
-    return null;
-  }
+  const data = JSON.parse(matchArray[1]) as Array<[string, number]>
 
   // Remove the first item of the data array because it has irrelevant data like "Time (ms)"
-  data.shift();
-  return data;
+  data.shift()
+
+  return data.map(row => [parseFloat(row[0]), row[1]] as [number, number])
 }
 
 /**
  * Calculate first meaningful paint based on the given data.
  *
- * @param {array} data An Array of visual progress raw data.
+ * @param data An Array of visual progress raw data.
  * @return {number} The first meaningful paint value.
  */
-function calculateFMP(data) {
-  let firstMeaningfulPaint = 0;
-  let highestDiff = 0;
-
-  if (!data) {
-    return firstMeaningfulPaint;
-  }
+function calculateFMP(data: Array<[number, number]>): number {
+  let firstMeaningfulPaint = 0
+  let highestDiff = 0
 
   if (data.length === 1) {
-    return data[0][0];
+    return data[0][0] * 1000
   }
 
   for (let i = 1; i < data.length; i += 1) {
-    const diff = data[i][1] - data[i - 1][1];
+    const [time, visualProgress] = data[i]
+    const diff = visualProgress - data[i - 1][1]
 
     // stop loop if the visual progress is negative => FMP is last highest diff
-    if(diff < 0) {
-      break;
+    if (diff < 0) {
+      break
     }
 
     // The current diff is the highest and the visual progress is at least 50%
-    if (diff > highestDiff && data[i][1] >= 50) {
-      highestDiff = diff;
-      [firstMeaningfulPaint] = data[i];
-      break;
+    if (diff > highestDiff) {
+      highestDiff = diff
+      firstMeaningfulPaint = time
+    }
+
+    if (highestDiff >= 50) {
+      break
     }
   }
 
-  return `${firstMeaningfulPaint * 1000}`;
+  return firstMeaningfulPaint * 1000
 }
 
-export function getFMP(testId, runIndex) {
-  const url = `http://${credentials.wpt_dns}/video/compare.php?tests=${testId}-r:${runIndex}-c:0`;
-  return request(url)
-    .then((htmlString) => {
-      const dataArray = getDataFromHtml(htmlString);
+/**
+ * Gets the first meaningful paint for a given test run.
+ */
+export async function getFMP(testId: string, runIndex: string): Promise<number> {
+  try {
+    const url = `http://${credentials.wpt_dns}/video/compare.php?tests=${testId}-r:${runIndex}-c:0`
+    const response = await fetch(url)
+    const htmlString = await response.text()
+    const data = getDataFromHtml(htmlString)
 
-      return calculateFMP(dataArray);
-    })
-    .catch((err) => {
-      throw new Abort(err.mesage);
-    });
+    return calculateFMP(data)
+  } catch (err) {
+    throw new Abort(err.mesage)
+  }
 }
 
-exports.call = (db, data) => {
-  const { testId, runIndex = 0 } = data;
-  return getFMP(testId, runIndex);
-};
+/**
+ * Baqend code API call.
+ */
+export function call(db, data) {
+  const { testId, runIndex = 0 } = data
+
+  return getFMP(testId, runIndex)
+}

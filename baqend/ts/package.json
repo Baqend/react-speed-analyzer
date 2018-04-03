@@ -12,7 +12,6 @@
     "@types/node": "^9.6.1",
     "@types/node-cache": "^4.1.1",
     "@types/node-fetch": "^1.6.7",
-    "@types/request-promise": "^4.1.41",
     "@types/stringify-object": "^3.2.0",
     "baqend": "^2.10.0",
     "typescript": "^2.8.1"
