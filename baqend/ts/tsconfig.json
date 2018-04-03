@@ -1,9 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "lib": ["es5", "dom", "es2015.promise", "es2015.core", "es2015.collection"],
+    "target": "es6",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "lib": ["es5", "dom", "es2015.promise", "es2015.core", "es2015.collection", "es2015.iterable", "es2015.generator"],
     "outDir": "out",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "downlevelIteration": true
   },
   "include": [
     "."
