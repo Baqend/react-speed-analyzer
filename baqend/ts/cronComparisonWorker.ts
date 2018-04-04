@@ -1,7 +1,10 @@
 import { ComparisonWorker } from './ComparisonWorker'
+import { TestWorker } from './TestWorker'
+import { baqend, model } from 'baqend'
 
-export function call(db, jobsStatus, jobsDefinition) {
-  const comparisonWorker = new ComparisonWorker(db)
+export function run(db: baqend, jobsStatus: model.JobStatus, jobsDefinition: model.JobDefinition) {
+  const testWorker = new TestWorker(db)
+  const comparisonWorker = new ComparisonWorker(db, testWorker)
   const date = new Date()
 
   db.TestOverview.find()

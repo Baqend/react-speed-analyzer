@@ -1,10 +1,9 @@
-import { baqend } from 'baqend'
-import { API } from './Pagetest';
+import { baqend, model } from 'baqend'
+import { API } from './Pagetest'
 import { WebPagetestResultHandler } from './WebPagetestResultHandler'
-import { getMinimalConfig, getFallbackConfig } from './configGeneration';
-import { createTestScript } from './createTestScript';
-import { ComparisonWorker } from './ComparisonWorker'
-import credentials from './credentials';
+import { getFallbackConfig, getMinimalConfig } from './configGeneration'
+import { createTestScript, SpeedKitConfigArgument } from './createTestScript'
+import credentials from './credentials'
 
 const PING_BACK_URL = `https://${credentials.app}.app.baqend.com/v1/code/_testResultPingback`;
 
@@ -16,56 +15,78 @@ const prewarmOptions = {
   minimalResults: true
 }
 
+export interface TestListener {
+  handleTestFinished(test: model.TestResult): any
+}
+
+export interface TestParams {
+  url: string
+  isTestWithSpeedKit: boolean
+  isSpeedKitComparison: boolean
+  activityTimeout: number
+  testOptions: {
+    mobile: boolean
+  }
+}
+
 /**
  * The TestWorker takes care of finishing the tests that are running for a comparison. It can
  * be either called manually or via cronjob by passing a testResultId into the testWorker instances
  * next method. The worker will load the testResult and check what to do next in order to finish the task.
  *
  * Takes care of starting the right webPagetests at the right time
- *
- * @return {TestWorker}
  */
 export class TestWorker {
   private testResultHandler: WebPagetestResultHandler
 
-  constructor(private db: baqend, private comparisonWorker?: ComparisonWorker) {
+  constructor(private db: baqend, private listener?: TestListener) {
     this.db = db
-    this.comparisonWorker = comparisonWorker
+    this.listener = listener
     this.testResultHandler = new WebPagetestResultHandler(db)
   }
 
-  /* public */
-  next(testResultId) {
-    this.db.log.info("testWorker next", testResultId)
-    this.db.TestResult.load(testResultId, { refresh: true })
-      .then(testResult => testResult.ready().then(() => {
-        if (testResult.hasFinished) {
-          this.db.log.info(`TestResult is finished`, { testResult })
-          this.comparisonWorker && this.comparisonWorker.handleTestResult(testResult.id)
-        }
-        if (this.hasNotFinishedWebPagetests(testResult)) {
-          this.db.log.info(`checkWebPagetestStatus`, { testResult })
-          this.checkWebPagetestsStatus(testResult)
-        } else {
-          if (testResult.isClone) {
-            if (this.shouldStartPreparationTests(testResult)) {
-              !testResult.speedKitConfig && this.startConfigGenerationTest(testResult)
-              this.startPrewarmWebPagetest(testResult)
-            } else if (this.shouldStartPerformanceTests(testResult)) {
-              this.db.log.info(`startPerformanceTest`, { testResult })
-              this.startPerformanceWebPagetest(testResult)
-            }
-          } else {
-            if (this.shouldStartPerformanceTests(testResult)) {
-              this.startPerformanceWebPagetest(testResult)
-            }
-          }
-        }
-      }))
-      .catch(error => this.db.log.warn(`Error while next iteration`, {id: testResultId, error: error.stack}))
+  setListener(value: TestListener) {
+    this.listener = value
   }
 
-  handleWebPagetestResult(testId) {
+  /* public */
+  async next(testResultId: string) {
+    this.db.log.info("testWorker next", testResultId)
+    try {
+      const testResult = await this.db.TestResult.load(testResultId, { refresh: true })
+      await testResult.ready()
+
+      if (testResult.hasFinished) {
+        this.db.log.info(`TestResult is finished`, { testResult })
+        this.listener && this.listener.handleTestFinished(testResult)
+      }
+
+      if (this.hasNotFinishedWebPagetests(testResult)) {
+        this.db.log.info(`checkWebPagetestStatus`, { testResult })
+        this.checkWebPagetestsStatus(testResult)
+
+        return
+      }
+
+      if (testResult.isClone) {
+        if (this.shouldStartPreparationTests(testResult)) {
+          !testResult.speedKitConfig && this.startConfigGenerationTest(testResult)
+          this.startPrewarmWebPagetest(testResult)
+        } else if (this.shouldStartPerformanceTests(testResult)) {
+          this.db.log.info(`startPerformanceTest`, { testResult })
+          this.startPerformanceWebPagetest(testResult)
+        }
+      } else {
+        if (this.shouldStartPerformanceTests(testResult)) {
+          this.startPerformanceWebPagetest(testResult)
+        }
+      }
+    } catch(error) {
+      this.db.log.warn(`Error while next iteration`, {id: testResultId, error: error.stack})
+    }
+  }
+
+  handleWebPagetestResult(testId: string) {
     return this.testResultHandler.handleResult(testId)
       .then(testResult => {
         this.db.log.info("handleTestResult next", { testId })
@@ -75,29 +96,28 @@ export class TestWorker {
       .catch(error => this.db.log.error(`Error while handling WPT result`, {testId, error: error.stack}))
   }
 
-  /* private */
-  shouldStartPreparationTests(testResult) {
-    if (testResult.skipPrewarm) {
+  private shouldStartPreparationTests(testResult: model.TestResult) {
+    if (testResult.testInfo.skipPrewarm) {
       return false
     }
     return !testResult.webPagetests || !testResult.webPagetests.length
   }
 
-  shouldStartPerformanceTests(testResult) {
+  private shouldStartPerformanceTests(testResult: model.TestResult) {
     return testResult.webPagetests.map(wpt => wpt.testType).indexOf('performance') === -1
   }
 
-  hasNotFinishedWebPagetests(testResult) {
+  private hasNotFinishedWebPagetests(testResult: model.TestResult) {
     return testResult.webPagetests.filter(wpt => !wpt.hasFinished).length > 0
   }
 
-  checkWebPagetestsStatus(testResult) {
+  private checkWebPagetestsStatus(testResult: model.TestResult) {
     this.db.log.info("checkWebPagetestsStatus next", { testResult })
     const checks = testResult.webPagetests.filter(wpt => !wpt.hasFinished).map(wpt => this.getStatusFromAPI(wpt.testId))
     Promise.all(checks).then(() => this.next(testResult.id));
   }
 
-  getStatusFromAPI(testId) {
+  private getStatusFromAPI(testId: string) {
     return API.getTestStatus(testId).then(test => {
       if (test.statusCode === 200) {
         return Promise.resolve(
@@ -109,7 +129,7 @@ export class TestWorker {
     })
   }
 
-  startPrewarmWebPagetest(testResult) {
+  private startPrewarmWebPagetest(testResult: model.TestResult) {
     const { speedKitConfig, testInfo } = testResult
     const { testOptions } = testInfo
     const prewarmTestScript = this.getScriptForConfig(speedKitConfig, testInfo);
@@ -125,7 +145,7 @@ export class TestWorker {
     }).catch(error => this.db.log.error(`Error while starting WPT test`,{ testResult: testResult.id, error:error.stack }))
   }
 
-  startConfigGenerationTest(testResult) {
+  private startConfigGenerationTest(testResult: model.TestResult) {
     const { testInfo } = testResult
     const { testOptions } = testInfo;
     const configTestScript = this.getTestScriptWithMinimalWhitelist(testInfo);
@@ -141,7 +161,7 @@ export class TestWorker {
     }).catch(error => this.db.log.error(`Error while starting WPT test`,{ testResult: testResult.id, error:error.stack }))
   }
 
-  startPerformanceWebPagetest(testResult) {
+  private startPerformanceWebPagetest(testResult: model.TestResult): Promise<model.TestResult> {
     const { speedKitConfig, testInfo } = testResult
     const { testOptions } = testInfo
     const performanceTestScript = this.getScriptForConfig(speedKitConfig, testInfo)
@@ -157,21 +177,21 @@ export class TestWorker {
     }).catch(error => this.db.log.error(`Error while starting WPT test`,{ testResult: testResult.id, error:error.stack }))
   }
 
-  pushWebPagetestToTestResult(testResult, WebPagetest) {
-    testResult.webPagetests.push(WebPagetest)
-    if (testResult._metadata.isReady) {
-      return testResult.save()
-    }
+  private pushWebPagetestToTestResult(testResult: model.TestResult, webPagetest: model.WebPagetest): Promise<model.TestResult> {
+    testResult.webPagetests.push(webPagetest)
+
     return testResult.ready().then(() => testResult.save())
   }
 
-  getScriptForConfig(config, { url, isSpeedKitComparison, isTestWithSpeedKit, activityTimeout, testOptions }) {
-    config = config || getFallbackConfig(this.db, url, testOptions.mobile);
-    return createTestScript(url, isTestWithSpeedKit, isSpeedKitComparison, config, activityTimeout);
+  private getScriptForConfig(config: SpeedKitConfigArgument, { url, isSpeedKitComparison, isTestWithSpeedKit, activityTimeout, testOptions }: TestParams) {
+    config = config || getFallbackConfig(this.db, url, testOptions.mobile)
+
+    return createTestScript(url, isTestWithSpeedKit, isSpeedKitComparison, config, activityTimeout)
   }
 
-  getTestScriptWithMinimalWhitelist({ url, isTestWithSpeedKit, isSpeedKitComparison, activityTimeout, testOptions }) {
+  private getTestScriptWithMinimalWhitelist({ url, isTestWithSpeedKit, isSpeedKitComparison, activityTimeout, testOptions }: TestParams) {
     const config = getMinimalConfig(this.db, url, testOptions.mobile);
+
     return createTestScript(url, isTestWithSpeedKit, isSpeedKitComparison, config, activityTimeout);
   }
 }

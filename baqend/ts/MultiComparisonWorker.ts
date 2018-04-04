@@ -1,11 +1,24 @@
-import { BulkComparisonWorker } from './BulkComparisonWorker'
-import { startComparison } from './startComparison'
+import { baqend, model } from 'baqend'
+import { ComparisonListener, ComparisonWorker } from './ComparisonWorker'
 
-export class MultiComparisonWorker {
-  constructor(private db, private bulkComparisonWorker: BulkComparisonWorker) {
+export interface MultiComparisonListener {
+  handleMultiComparisonFinished(multiComparison: model.BulkTest): any
+}
+
+export class MultiComparisonWorker implements ComparisonListener {
+  constructor(
+    private db: baqend,
+    private comparisonWorker: ComparisonWorker,
+    private listener?: MultiComparisonListener,
+  ) {
+    this.comparisonWorker.setListener(this)
   }
 
-  next(multiComparisonId) {
+  setListener(value: MultiComparisonListener) {
+    this.listener = value
+  }
+
+  next(multiComparisonId: string) {
     this.db.log.info("MultiComparisonWorker next", multiComparisonId)
     this.db.BulkTest.load(multiComparisonId, {depth: 1})
       .then(multiComparison => multiComparison.ready().then(() => {
@@ -16,25 +29,19 @@ export class MultiComparisonWorker {
             multiComparison.hasFinished = true
             multiComparison.ready().then(() => multiComparison.save())
 
-            this.getBulkComparisonId(multiComparison.id).then(bulkComparisonId => {
-              if (bulkComparisonId) {
-                this.bulkComparisonWorker.next(bulkComparisonId)
-              }
-            })
+            this.listener && this.listener.handleMultiComparisonFinished(multiComparison)
           } else {
-            startComparison(this.db, multiComparison.params).then(testOverview => {
-              multiComparison.testOverviews.push(testOverview)
-              multiComparison.ready().then(() => multiComparison.save())
-            })
+            this.comparisonWorker.next(currentTestOverview.id)
           }
         }
       }))
       .catch(error => this.db.log.warn(`Error while next iteration`, {id: multiComparisonId, error: error.stack}))
   }
 
-  getBulkComparisonId(multiComparisonId) {
-    return this.db.BulkComparison.find().in('multiComparisons', multiComparisonId).singleResult(bulkComparison => {
-      return !bulkComparison ? null : bulkComparison.id
-    })
+  async handleComparisonFinished(comparison: model.TestOverview): Promise<void> {
+    const multiComparison = await this.db.BulkTest.find().in('testOverviews', comparison.id).singleResult()
+    if (multiComparison) {
+      this.next(multiComparison.id)
+    }
   }
 }

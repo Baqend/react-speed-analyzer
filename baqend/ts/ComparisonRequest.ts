@@ -1,19 +1,18 @@
 import stringifyObject from 'stringify-object'
 import { baqend, model } from 'baqend'
-import { getTLD, getRootPath } from './getSpeedKitUrl'
+import { getRootPath, getTLD } from './getSpeedKitUrl'
 import { generateUniqueId } from './generateUniqueId'
 import { analyzeSpeedKit } from './analyzeSpeedKit'
-import { sleep, timeout } from './sleep'
-import { TestRequest } from './TestRequest'
-
-const DEFAULT_ACTIVITY_TIMEOUT = 75
+import { timeout } from './sleep'
+import { DEFAULT_ACTIVITY_TIMEOUT, TestRequest } from './TestRequest'
+import { AnalyzerRequest } from './AnalyzerRequest'
 
 /**
- * Creates a TestOverview object and the TestResult objects that are processed by the ComparisonWorker
- * and the TestWorker
+ * Request which creates a TestOverview object and the TestResult objects that are processed
+ * by the {@link ComparisonWorker} and the {@link TestWorker}.
  */
-export class ComparisonRequest {
-  private existingSpeedKitConfig: null
+export class ComparisonRequest implements AnalyzerRequest<model.TestOverview> {
+  private existingSpeedKitConfig: string | null
   private configAnalysis: model.ConfigAnalysis | null
 
   constructor(private db: baqend, private params: any) {
@@ -21,23 +20,38 @@ export class ComparisonRequest {
     this.configAnalysis = null
   }
 
-  create() {
-    return this.getExistingSpeedKitConfigForUrl().then(existingSpeedKitConfig => {
-      this.existingSpeedKitConfig = existingSpeedKitConfig
-      if (this.params.isSpeedKitComparison) {
-        this.configAnalysis = this.getConfigAnalysis(this.params.speedKitConfig || existingSpeedKitConfig)
-      }
+  async create(): Promise<model.TestOverview> {
+    const existingSpeedKitConfig = await this.getExistingSpeedKitConfigForUrl()
+    this.existingSpeedKitConfig = existingSpeedKitConfig
+    if (this.params.isSpeedKitComparison) {
+      this.configAnalysis = this.getConfigAnalysis(this.params.speedKitConfig || existingSpeedKitConfig)
+    }
 
-      const competitorTest = this.createCompetitorTest()
-      const speedKitTest = this.createSpeedKitTest()
+    const competitorTest = this.createCompetitorTest()
+    const speedKitTest = this.createSpeedKitTest()
 
-      return Promise.all([competitorTest, speedKitTest]).then(tests => {
-        return this.createTestOverview(tests)
-      })
-    })
+    const [competitorTestResult, speedKitTestResult] = await Promise.all([competitorTest, speedKitTest])
+
+    return this.createTestOverview(competitorTestResult, speedKitTestResult)
   }
 
-  getConfigAnalysis(config): model.ConfigAnalysis {
+  private getExistingSpeedKitConfigForUrl(): Promise<string | null> {
+    const { url, isSpeedKitComparison } = this.params
+    if (isSpeedKitComparison) {
+      this.db.log.info(`Extracting config from Website: ${url}`, { url, isSpeedKitComparison })
+      const analyze = analyzeSpeedKit(url, this.db).then(it => stringifyObject(it.config))
+        .catch(error => {
+          this.db.log.warn(`Could not analyze speed kit config`, { url, error: error.stack })
+          return null
+        })
+
+      return timeout(5000, analyze, null)
+    }
+    // return Promise.resolve(null)
+    return this.getCachedSpeedKitConfig()
+  }
+
+  private getConfigAnalysis(config: string | null): model.ConfigAnalysis {
     const configAnalysis = new this.db.ConfigAnalysis()
     configAnalysis.isSecured = this.params.isSecured === true
     configAnalysis.swPath = this.params.swUrl
@@ -47,6 +61,7 @@ export class ComparisonRequest {
       return configAnalysis
     }
 
+    // FIXME: Do we really need to use `eval` here?
     const configObj = eval(`(${config})`)
     const rootPath = getRootPath(this.db, this.params.url)
 
@@ -56,7 +71,7 @@ export class ComparisonRequest {
     return configAnalysis
   }
 
-  getCachedSpeedKitConfig(): Promise<string | null> {
+  private getCachedSpeedKitConfig(): Promise<string | null> {
     const date = new Date()
     const { url, mobile } = this.params
     return this.db.CachedConfig.find()
@@ -73,25 +88,8 @@ export class ComparisonRequest {
       })
   }
 
-  getExistingSpeedKitConfigForUrl() {
-    const { url, isSpeedKitComparison } = this.params
-    if (isSpeedKitComparison) {
-      this.db.log.info(`Extracting config from Website: ${url}`, {url, isSpeedKitComparison})
-      const analyze = analyzeSpeedKit(url, this.db).then(it => stringifyObject(it.config))
-        .catch(error => {
-          this.db.log.warn(`Could not analyze speed kit config`, {url, error: error.stack})
-          return null
-        })
-
-      return timeout(5000, analyze, null)
-    }
-    // return Promise.resolve(null)
-    return this.getCachedSpeedKitConfig()
-  }
-
-
-  createTestOverview([competitorTest, speedKitTest]) {
-    const attributes = {
+  private async createTestOverview(competitorTest: model.TestResult, speedKitTest: model.TestResult): Promise<model.TestOverview> {
+    const attributes: Partial<model.TestOverview> = {
       url: this.params.url,
       caching: this.params.caching,
       location: this.params.location,
@@ -105,21 +103,18 @@ export class ComparisonRequest {
       competitorTestResult: competitorTest,
       speedKitTestResult: speedKitTest,
       tasks: [],
-      id: null
     }
 
-    return generateUniqueId(this.db, 'TestOverview')
-      .then(uniqueId => {
-        if (uniqueId) {
-          const tld = getTLD(this.db, this.params.url)
-          attributes.id = uniqueId + tld.substring(0, tld.length - 1)
-        }
-        const testOverview = new this.db.TestOverview(attributes)
-        return testOverview.save()
-      })
+    const uniqueId = await generateUniqueId(this.db, 'TestOverview')
+    const tld = getTLD(this.db, this.params.url)
+    attributes.id = uniqueId + tld.substring(0, tld.length - 1)
+
+    const testOverview = new this.db.TestOverview(attributes)
+
+    return testOverview.save()
   }
 
-  createCompetitorTest() {
+  private createCompetitorTest(): Promise<model.TestResult> {
     const params = {
       isClone: false,
       url: this.params.url,
@@ -135,7 +130,7 @@ export class ComparisonRequest {
     return competitorTest.create()
   }
 
-  createSpeedKitTest() {
+  private createSpeedKitTest(): Promise<model.TestResult> {
     const params = {
       isClone: true,
       url: this.params.url,

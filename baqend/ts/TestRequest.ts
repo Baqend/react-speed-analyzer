@@ -1,5 +1,7 @@
-import { baqend } from 'baqend'
+import { baqend, model } from 'baqend'
+import { Request } from 'express'
 import { TestWorker } from './TestWorker'
+import { AnalyzerRequest } from './AnalyzerRequest'
 
 export const DEFAULT_LOCATION = 'eu-central-1:Chrome.Native'
 export const DEFAULT_ACTIVITY_TIMEOUT = 75;
@@ -42,11 +44,11 @@ const defaultTestOptions = {
  * @param {number} [priority=0] Defines the test's priority, from 0 (highest) to 9 (lowest).
  * @return {Promise<TestResult>} A promise resolving when the test has been created.
  */
-export class TestRequest {
+export class TestRequest implements AnalyzerRequest<model.TestResult> {
   constructor(private db: baqend, private params: any) {
   }
 
-  create() {
+  create(): Promise<model.TestResult> {
     const params = this.params
     const commandLine = this.createCommandLineFlags(params.url, params.isClone);
     if (commandLine) {
@@ -84,23 +86,24 @@ export class TestRequest {
   }
 
   /**
-   * Creates a string that is used to execute the wpt with some custom commands. If the
-   * url is http only it adds an extra flag to inject speedkit into non secure websites
-   * @return {string}
+   * Creates a string that is used to execute the WebPageTest with some custom commands.
+   * If the URL is http only, it adds an extra flag to inject SpeedKit into non secure websites.
    */
-  createCommandLineFlags(testUrl, isClone) {
+  private createCommandLineFlags(testUrl: string, isClone: boolean): string {
     const http = 'http://';
     if (isClone && testUrl.startsWith(http)) {
       // origin should looks like http://example.com - without any path components
       const end = testUrl.indexOf('/', http.length);
       const origin = testUrl.substring(0, end === -1 ? testUrl.length : end);
+
       return `--unsafely-treat-insecure-origin-as-secure="${origin}"`;
     }
+
     return '';
   }
 }
 
-export function call(db: baqend, data, req) {
+export function call(db: baqend, data: any, req: Request) {
   const params = data
   const testWorker = new TestWorker(db)
   const testRequest = new TestRequest(db, params)

@@ -13,13 +13,13 @@ const cache = new NodeCache({ stdTTL: 600, checkperiod: 600, useClones: false })
  * @returns True, if the user is rate limited.
  */
 export function isRateLimited(req: Request, reqPerMinute: number = 8): boolean {
-  const ip = req.get('X-Forwarded-For')
+  const ip = req.get('X-Forwarded-For')!
   // Do not block Baqend
   if (ip.includes('134.100.11.49')) {
     return false
   }
 
-  let limiter: RateLimiter = cache.get(ip)
+  let limiter: RateLimiter | undefined = cache.get(ip)
   if (limiter === undefined) {
     limiter = new RateLimiter(reqPerMinute, 'minute', true)
     cache.set(ip, limiter)

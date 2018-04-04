@@ -7,7 +7,6 @@ import { countHits } from './countHits'
 import fetch from 'node-fetch'
 import { getFMP } from './calculateFMP'
 import { baqend, binding, model } from 'baqend'
-import { Domain } from './baqend-model'
 
 /**
  * Generates a test result from the given test and returns the updated test database object.
@@ -247,16 +246,16 @@ function countFailedRequests(data: WptView): number {
 /**
  * Creates an array of domains being found in a WPT view.
  */
-async function createDomainList(data: WptView): Promise<Domain[]> {
+async function createDomainList(data: WptView): Promise<model.Domain[]> {
   try {
     const adSet = await getAdSet()
-    const domains: Domain[] = []
+    const domains: model.Domain[] = []
     for (const domainName in data.domains) {
-      const domainObject: Partial<Domain> = data.domains[domainName]
+      const domainObject: Partial<model.Domain> = data.domains[domainName]
       domainObject.isAdDomain = isAdDomain(domainName, adSet)
       domainObject.url = domainName
 
-      domains.push(domainObject as Domain)
+      domains.push(domainObject as model.Domain)
     }
 
     return domains

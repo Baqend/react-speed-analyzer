@@ -1,12 +1,15 @@
-import { BulkComparisonWorker } from './BulkComparisonWorker'
 import { baqend, model } from 'baqend'
+import { AnalyzerRequest } from './AnalyzerRequest'
 
-export class BulkComparisonRequest {
-  constructor(private db: baqend, private createdBy: string, private tests) {
+/**
+ * A request to start a bulk comparison.
+ */
+export class BulkComparisonRequest implements AnalyzerRequest<model.BulkComparison> {
+  constructor(private db: baqend, private createdBy: string, private tests: model.ComparisonInfo[]) {
   }
 
-  create() {
-    const bulkComparison = new this.db.BulkComparison()
+  create(): Promise<model.BulkComparison> {
+    const bulkComparison: model.BulkComparison = new this.db.BulkComparison()
     bulkComparison.comparisonsToStart = this.tests
     bulkComparison.createdBy = this.createdBy
     bulkComparison.multiComparisons = []
@@ -14,21 +17,4 @@ export class BulkComparisonRequest {
 
     return bulkComparison.save()
   }
-}
-
-export function call(db, data, req) {
-  const { body } = req
-  const { createdBy = null } = body
-  let { tests } = body
-  if (body instanceof Array) {
-    tests = body
-  }
-
-  const bulkComparisonRequest = new BulkComparisonRequest(db, createdBy, tests)
-  const bulkComparisonWorker = new BulkComparisonWorker(db)
-
-  return bulkComparisonRequest.create().then(bulkComparison => {
-    bulkComparisonWorker.next(bulkComparison.id)
-    return bulkComparison
-  })
 }

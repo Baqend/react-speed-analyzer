@@ -1,21 +1,5 @@
 import { binding } from 'baqend'
 
-declare interface UrlAware {
-  url: string
-}
-
-declare interface ComparisonInfo extends UrlAware {
-  runs: number
-}
-
-declare interface Domain extends UrlAware {
-  bytes: number
-  requests: number
-  cdn_provider: string
-  connections: number
-  isAdDomain: boolean
-}
-
 declare module 'baqend' {
 
   interface baqend {
@@ -41,6 +25,22 @@ declare module 'baqend' {
   }
 
   namespace model {
+    interface UrlAware {
+      url: string
+    }
+
+    interface ComparisonInfo extends UrlAware {
+      runs: number
+    }
+
+    interface Domain extends UrlAware {
+      bytes: number
+      requests: number
+      cdn_provider: string
+      connections: number
+      isAdDomain: boolean
+    }
+
     interface BulkComparison extends binding.Entity {
       comparisonsToStart: Array<ComparisonInfo>;
       createdBy: string;
@@ -113,7 +113,7 @@ declare module 'baqend' {
       isClone: boolean;
       priority: number;
       speedKitConfig: string;
-      testInfo: {};
+      testInfo: any;
       webPagetests: Array<WebPagetest>;
       retries: number;
       checked: Date;
@@ -142,13 +142,13 @@ declare module 'baqend' {
       speedKitTestResult: TestResult;
       whitelist: string;
       hasFinished: boolean;
-      factors: Mean;
+      factors: Mean | null;
       isSpeedKitComparison: boolean;
       speedKitVersion: string;
       activityTimeout: number;
-      speedKitConfig: string;
+      speedKitConfig: string | null;
       tasks: Array<Task>;
-      configAnalysis: ConfigAnalysis;
+      configAnalysis: ConfigAnalysis | null;
     }
 
     interface Hits extends binding.Managed {
@@ -237,6 +237,21 @@ declare module 'baqend' {
     }
 
     interface Means extends binding.Managed {
+    }
+
+    interface JobStatus {
+      cronjob: JobDefinition
+      executedAt: Date
+      status: string
+      error: string
+    }
+
+    interface JobDefinition {
+      module: string
+      cronpattern: string
+      startsAt: Date
+      expiresAt: Date
+      nextExecution: Date
     }
 
   }

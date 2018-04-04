@@ -1,21 +1,17 @@
+import { baqend } from 'baqend'
+import { Request } from 'express'
 import { ComparisonRequest } from './ComparisonRequest'
 import { ComparisonWorker } from './ComparisonWorker'
 import { TestWorker } from './TestWorker'
 
-export function startComparison(db, params) {
-  const comparisonWorker = new ComparisonWorker(db)
-  const testWorker = new TestWorker(db, comparisonWorker)
+export async function call(db: baqend, data: any, req: Request) {
+  const testWorker = new TestWorker(db)
+  const comparisonWorker = new ComparisonWorker(db, testWorker)
 
-  const comparisonRequest = new ComparisonRequest(db, params)
+  const comparisonRequest = new ComparisonRequest(db, data)
 
-  return comparisonRequest.create().then(testOverview => {
-    comparisonWorker.next(testOverview.id)
-    testWorker.next(testOverview.competitorTestResult.id)
-    testWorker.next(testOverview.speedKitTestResult.id)
-    return testOverview
-  })
-}
+  const testOverview = await comparisonRequest.create()
+  comparisonWorker.next(testOverview.id).catch(db.log.error)
 
-export function call(db, data, req) {
-  return startComparison(db, data)
+  return testOverview
 }
