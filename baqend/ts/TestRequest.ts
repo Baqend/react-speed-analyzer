@@ -4,8 +4,8 @@ import { TestWorker } from './TestWorker'
 import { AnalyzerRequest } from './AnalyzerRequest'
 
 export const DEFAULT_LOCATION = 'eu-central-1:Chrome.Native'
-export const DEFAULT_ACTIVITY_TIMEOUT = 75;
-export const DEFAULT_TIMEOUT = 30;
+export const DEFAULT_ACTIVITY_TIMEOUT = 75
+export const DEFAULT_TIMEOUT = 30
 
 const defaultTestOptions = {
   video: true,
@@ -50,27 +50,12 @@ export class TestRequest implements AnalyzerRequest<model.TestResult> {
 
   create(): Promise<model.TestResult> {
     const params = this.params
-    const commandLine = this.createCommandLineFlags(params.url, params.isClone);
+    const commandLine = this.createCommandLineFlags(params.url, params.isClone)
     if (commandLine) {
-      this.db.log.info('flags: %s', commandLine);
+      this.db.log.info('flags: %s', commandLine)
     }
 
-    const testInfo = {
-      url: params.url,
-      isTestWithSpeedKit: params.isClone,
-      isSpeedKitComparison: params.isSpeedKitComparison,
-      activityTimeout: params.activityTimeout,
-      skipPrewarm: params.skipPrewarm,
-      testOptions: Object.assign({}, defaultTestOptions, {
-        runs: 2,
-        firstViewOnly: !params.caching,
-        commandLine: commandLine,
-        priority: params.priority || 0,
-        location: params.location ? params.location : DEFAULT_LOCATION,
-        mobile: params.mobile,
-        device: params.mobile ? 'iPhone6' : '',
-      }),
-    };
+    const testInfo = this.getTestInfo()
 
     const testResult = new this.db.TestResult({
       url: params.url,
@@ -90,16 +75,41 @@ export class TestRequest implements AnalyzerRequest<model.TestResult> {
    * If the URL is http only, it adds an extra flag to inject SpeedKit into non secure websites.
    */
   private createCommandLineFlags(testUrl: string, isClone: boolean): string {
-    const http = 'http://';
+    const http = 'http://'
     if (isClone && testUrl.startsWith(http)) {
       // origin should looks like http://example.com - without any path components
-      const end = testUrl.indexOf('/', http.length);
-      const origin = testUrl.substring(0, end === -1 ? testUrl.length : end);
+      const end = testUrl.indexOf('/', http.length)
+      const origin = testUrl.substring(0, end === -1 ? testUrl.length : end)
 
-      return `--unsafely-treat-insecure-origin-as-secure="${origin}"`;
+      return `--unsafely-treat-insecure-origin-as-secure="${origin}"`
     }
 
-    return '';
+    return ''
+  }
+
+  getTestInfo(): any {
+    const params = this.params
+    const commandLine = this.createCommandLineFlags(params.url, params.isClone)
+    if (commandLine) {
+      this.db.log.info('flags: %s', commandLine)
+    }
+
+    return {
+      url: params.url,
+      isTestWithSpeedKit: params.isClone,
+      isSpeedKitComparison: params.isSpeedKitComparison,
+      activityTimeout: params.activityTimeout,
+      skipPrewarm: params.skipPrewarm,
+      testOptions: Object.assign({}, defaultTestOptions, {
+        runs: 2,
+        firstViewOnly: !params.caching,
+        commandLine: commandLine,
+        priority: params.priority || 0,
+        location: params.location ? params.location : DEFAULT_LOCATION,
+        mobile: params.mobile ? params.mobile : false,
+        device: params.mobile ? 'iPhone6' : '',
+      }),
+    }
   }
 }
 

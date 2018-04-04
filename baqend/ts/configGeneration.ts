@@ -53,7 +53,13 @@ export function getFallbackConfig(db: baqend, url: string, mobile: boolean = fal
  * @param whitelist Whitelisted domains as string.
  * @return
  */
-export async function createSmartConfig(db: baqend, url: string, testResult: WptTestResult, mobile: boolean, whitelist: string = ''): Promise<string> {
+export async function createSmartConfig(
+  db: baqend,
+  url: string,
+  testResult: WptTestResult,
+  mobile: boolean = false,
+  whitelist: string = ''
+): Promise<string> {
   const domains = getDomains(testResult, db)
   db.log.info(`Analyzing domains: ${url}`, { domains })
 

@@ -1,5 +1,6 @@
 import stringifyObject from 'stringify-object'
 import { baqend, model } from 'baqend'
+import { getCachedSpeedKitConfig } from './configCaching'
 import { getRootPath, getTLD } from './getSpeedKitUrl'
 import { generateUniqueId } from './generateUniqueId'
 import { analyzeSpeedKit } from './analyzeSpeedKit'
@@ -36,7 +37,7 @@ export class ComparisonRequest implements AnalyzerRequest<model.TestOverview> {
   }
 
   private getExistingSpeedKitConfigForUrl(): Promise<string | null> {
-    const { url, isSpeedKitComparison } = this.params
+    const { url, mobile, isSpeedKitComparison } = this.params
     if (isSpeedKitComparison) {
       this.db.log.info(`Extracting config from Website: ${url}`, { url, isSpeedKitComparison })
       const analyze = analyzeSpeedKit(url, this.db).then(it => stringifyObject(it.config))
@@ -48,7 +49,7 @@ export class ComparisonRequest implements AnalyzerRequest<model.TestOverview> {
       return timeout(5000, analyze, null)
     }
     // return Promise.resolve(null)
-    return this.getCachedSpeedKitConfig()
+    return getCachedSpeedKitConfig(this.db, url, mobile)
   }
 
   private getConfigAnalysis(config: string | null): model.ConfigAnalysis {
@@ -69,23 +70,6 @@ export class ComparisonRequest implements AnalyzerRequest<model.TestOverview> {
     configAnalysis.isDisabled = configObj.disabled === true
 
     return configAnalysis
-  }
-
-  private getCachedSpeedKitConfig(): Promise<string | null> {
-    const date = new Date()
-    const { url, mobile } = this.params
-    return this.db.CachedConfig.find()
-      .equal('url', url)
-      .equal('mobile', mobile)
-      .greaterThanOrEqualTo('updatedAt', new Date(date.getTime() - 1000 * 60 * 60))
-      .singleResult()
-      .then(cachedConfig => {
-        if (cachedConfig && cachedConfig.config) {
-          this.db.log.info(`Use cached config`, { url, cachedConfig })
-          return cachedConfig.config
-        }
-        return null
-      })
   }
 
   private async createTestOverview(competitorTest: model.TestResult, speedKitTest: model.TestResult): Promise<model.TestOverview> {

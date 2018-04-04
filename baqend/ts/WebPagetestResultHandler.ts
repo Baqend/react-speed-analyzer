@@ -1,6 +1,7 @@
 import { baqend, model } from 'baqend'
 import { API, WptTestResultOptions } from './Pagetest'
 import { generateTestResult } from './resultGeneration'
+import { cacheSpeedKitConfig } from './configCaching'
 import { createSmartConfig, getFallbackConfig } from './configGeneration'
 
 const CONFIG_TYPE = 'config';
@@ -62,7 +63,7 @@ export class WebPagetestResultHandler {
    * @param testInfo  The info of the corresponding test.
    * @return          The generated config as string formatted json.
    */
-  private async getSmartConfig(testId: string, testInfo: any): Promise<string> {
+  async getSmartConfig(testId: string, testInfo: any): Promise<string> {
     const options: WptTestResultOptions = {
       requests: true,
       breakdown: false,
@@ -77,16 +78,7 @@ export class WebPagetestResultHandler {
       const config = await createSmartConfig(this.db, testInfo.url, domains, testInfo.isMobile)
 
       // Save cached config
-      const cachedConfig: model.CachedConfig = new this.db.CachedConfig({
-        url: testInfo.url,
-        mobile: testInfo.testOptions.mobile,
-        config: config,
-      })
-      await cachedConfig.save()
-
-      this.db.log.info('Smart Config generated', { url: testInfo.url, config })
-
-      return config
+      return await cacheSpeedKitConfig(this.db, testInfo.url, testInfo.testOptions.mobile, config)
     } catch (error) {
       this.db.log.warn('Smart generation failed', { url: testInfo.url, error: error.stack })
 
