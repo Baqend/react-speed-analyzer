@@ -6,7 +6,7 @@ import Toggle from 'react-toggle'
 import stringifyObject from 'lib/stringify-object'
 import { Controlled as CodeMirror } from 'react-codemirror2'
 
-import { getTLD } from '../../helper/configHelper'
+import { generateDefaultConfig } from '../../helper/configHelper'
 import Spinner from 'components/Spinner'
 
 import arrow from '../../assets/arrow_right.svg'
@@ -32,13 +32,10 @@ export function splitUrl(url) {
   }
 }
 
-export const getDefaultSpeedKitConfig = (url = '', userAgentDetection = false) => ({
-  appName: "makefast",
-  whitelist: [
-    { host: [ `${getTLD(url)}` ] }
-  ],
-  userAgentDetection,
-})
+export const getDefaultSpeedKitConfig = (url = '', userAgentDetection = false) => (
+  // eslint-disable-next-line no-eval
+  eval(`(${generateDefaultConfig(url, userAgentDetection)})`)
+)
 
 class ConfigFormComponent extends Component {
   constructor(props) {
