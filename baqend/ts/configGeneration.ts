@@ -87,8 +87,9 @@ export async function createSmartConfig(
  */
 export async function getCdnRegExps(): Promise<RegExp[]> {
   const resp = await fetch(CDN_LOCAL_URL)
-  const text = await resp.text()
+  let text = await resp.text()
 
+  text = text.replace(/\\r\\n/g, '\n')
   return text.trim().split('\n').map(toRegExp)
 }
 
