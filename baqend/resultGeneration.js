@@ -213,23 +213,6 @@ function chooseFMP(db, data, testId, runIndex) {
     });
 }
 
-/**
- * Method to check whether the website with the given url is based on WordPress
- *
- * @param db The Baqend instance.
- * @param url
- * @return {boolean}
- */
-function iskWordPress(db, url) {
-  const analyzeSite = fetch(url).then(res => res.text().then(text => text.indexOf('wp-content') !== -1))
-    .catch(error => {
-      db.log.warn(`Cannot analyze whether site is WordPress`, { url, errror: error.stack});
-      return false;
-    });
-  const timneout = sleep(10000, false);
-  return Promise.race([ analyzeSite, timneout ]);
-}
-
 function createFailedRequestsCount(data) {
   let failedRequests = 0;
   data.requests.forEach((request) => {
