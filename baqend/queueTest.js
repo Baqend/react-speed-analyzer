@@ -46,6 +46,7 @@ function queueTest({
   speedKitConfig = null,
   mobile = false,
   priority = 0,
+  type = null,
   skipPrewarm = false,
   finish = null,
 }) {
@@ -99,6 +100,7 @@ function queueTest({
   pendingTest.hasFinished = false;
   pendingTest.url = url;
   pendingTest.priority = priority;
+  pendingTest.isWordPress = type === 'wordpress';
 
   executePrewarm(testInfo, db)
     .then(([testScript, config]) => {
