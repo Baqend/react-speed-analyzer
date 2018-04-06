@@ -48,29 +48,7 @@ class TestRequest {
   }
 
   create() {
-    const params = this.params
-    const commandLine = this.createCommandLineFlags(params.url, params.isClone);
-    if (commandLine) {
-      this.db.log.info('flags: %s', commandLine);
-    }
-
-    const testInfo = {
-      url: params.url,
-      isTestWithSpeedKit: params.isClone,
-      isSpeedKitComparison: params.isSpeedKitComparison,
-      activityTimeout: params.activityTimeout,
-      skipPrewarm: params.skipPrewarm,
-      testOptions: Object.assign({}, defaultTestOptions, {
-        runs: 2,
-        firstViewOnly: !params.caching,
-        commandLine: commandLine,
-        priority: params.priority || 0,
-        location: params.location ? params.location : DEFAULT_LOCATION,
-        mobile: params.mobile,
-        device: params.mobile ? 'iPhone6' : '',
-      }),
-    };
-
+    const testInfo = this.getTestInfo();
     const testResult = new this.db.TestResult({
       url: params.url,
       isClone: params.isClone,
@@ -98,6 +76,31 @@ class TestRequest {
       return `--unsafely-treat-insecure-origin-as-secure="${origin}"`;
     }
     return '';
+  }
+
+  getTestInfo() {
+    const params = this.params
+    const commandLine = this.createCommandLineFlags(params.url, params.isClone);
+    if (commandLine) {
+      this.db.log.info('flags: %s', commandLine);
+    }
+
+    return {
+      url: params.url,
+      isTestWithSpeedKit: params.isClone,
+      isSpeedKitComparison: params.isSpeedKitComparison,
+      activityTimeout: params.activityTimeout,
+      skipPrewarm: params.skipPrewarm,
+      testOptions: Object.assign({}, defaultTestOptions, {
+        runs: 2,
+        firstViewOnly: !params.caching,
+        commandLine: commandLine,
+        priority: params.priority || 0,
+        location: params.location ? params.location : DEFAULT_LOCATION,
+        mobile: params.mobile ? params.mobile : false,
+        device: params.mobile ? 'iPhone6' : '',
+      }),
+    };
   }
 }
 

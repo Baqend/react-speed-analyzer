@@ -1,5 +1,7 @@
 const API = require('./Pagetest');
 const { generateTestResult } = require('./resultGeneration');
+
+const { cacheSpeedKitConfig } = require('./configCaching')
 const { createSmartConfig, getFallbackConfig } = require('./configGeneration');
 
 const CONFIG_TYPE = 'config';
@@ -35,12 +37,7 @@ class WebPagetestResultHandler {
         const domains = result.data;
         this.db.log.info(`Generating Smart Config`, {url: testInfo.url});
         return createSmartConfig(testInfo.url, domains, testInfo.isMobile, this.db).then(config => {
-          const cachedConfig = new this.db.CachedConfig({
-            url: testInfo.url,
-            mobile: testInfo.testOptions.mobile,
-            config: config
-          })
-          return cachedConfig.save().then(() => config)
+          return cacheSpeedKitConfig(this.db, testInfo.url, testInfo.testOptions.mobile, config)
         })
       })
       .then(config => {

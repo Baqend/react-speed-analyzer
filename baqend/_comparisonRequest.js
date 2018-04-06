@@ -1,6 +1,6 @@
 /* eslint-disable comma-dangle, function-paren-newline */
 /* eslint-disable no-restricted-syntax, no-param-reassign */
-const { isRateLimited } = require('./rateLimiter')
+const { getCachedSpeedKitConfig } = require('./configCaching')
 const { getTLD, getRootPath } = require('./getSpeedKitUrl')
 const { generateUniqueId } = require('./generateUniqueId')
 const { analyzeSpeedKit } = require('./analyzeSpeedKit')
@@ -58,25 +58,8 @@ class ComparisonRequest {
     return configAnalysis
   }
 
-  getCachedSpeedKitConfig() {
-    const date = new Date()
-    const { url, mobile } = this.params
-    return this.db.CachedConfig.find()
-      .equal('url', url)
-      .equal('mobile', mobile)
-      .greaterThanOrEqualTo('updatedAt', new Date(date.getTime() - 1000 * 60 * 60))
-      .singleResult()
-      .then(cachedConfig => {
-        if (cachedConfig && cachedConfig.config) {
-          this.db.log.info(`Use cached config`, { url, cachedConfig })
-          return cachedConfig.config
-        }
-        return null
-      })
-  }
-
   getExistingSpeedKitConfigForUrl() {
-    const { url, isSpeedKitComparison } = this.params
+    const { url, mobile, isSpeedKitComparison } = this.params
     if (isSpeedKitComparison) {
       this.db.log.info(`Extracting config from Website: ${url}`, {url, isSpeedKitComparison})
       const analyze = analyzeSpeedKit(url, this.db).then(it => stringifyObject(it.config))
@@ -89,7 +72,7 @@ class ComparisonRequest {
       return Promise.race([ analyze, timeout ])
     }
     // return Promise.resolve(null)
-    return this.getCachedSpeedKitConfig()
+    return getCachedSpeedKitConfig(this.db, url, mobile)
   }
 
 

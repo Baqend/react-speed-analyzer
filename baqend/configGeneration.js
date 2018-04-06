@@ -44,7 +44,7 @@ function getFallbackConfig(db, url, mobile) {
  * @param whitelist Whitelisted domains as string.
  * @return
  */
-function createSmartConfig(url, testResult, mobile, db, whitelist = '') {
+function createSmartConfig(url, testResult, mobile = false, db, whitelist = '') {
   const domains = getDomains(testResult, db);
 
   db.log.info(`Analyzing domains: ${url}`, {domains});
