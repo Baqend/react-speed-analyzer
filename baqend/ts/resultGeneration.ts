@@ -37,12 +37,11 @@ export async function generateTestResult(testId: string, pendingTest: model.Test
       createVideos(db, testId, runIndex),
     ])
 
-    const [firstView, repeatView, isWordPress] = testResult
+    const [firstView, repeatView] = testResult
     const [videoFirstView, videoRepeatView] = videos
 
     pendingTest.firstView = firstView
     pendingTest.repeatView = repeatView
-    pendingTest.isWordPress = isWordPress
 
     db.log.info(`Videos created: ${testId}`)
     pendingTest.videoFileFirstView = videoFirstView
@@ -113,15 +112,14 @@ function constructVideoLink(testId: string, videoId: string): string {
  * @param wptData The data from the WPT test.
  * @param testId The id of the test to create the result for.
  * @param {string} runIndex The index of the run to create the result for.
- * @return {Promise} The test result with its views and a WordPress flag.
+ * @return {Promise} The test result with its views.
  */
-function createTestResult(db: baqend, wptData: WptTestResult, testId: string, runIndex: string): Promise<[model.Run | null, model.Run | null, boolean]> {
+function createTestResult(db: baqend, wptData: WptTestResult, testId: string, runIndex: string): Promise<[model.Run | null, model.Run | null]> {
   const resultRun = wptData.runs[runIndex]
 
   return Promise.all([
     createRun(db, resultRun.firstView, testId, runIndex),
-    createRun(db, resultRun.repeatView, testId, runIndex),
-    isWordPress(db, wptData.testUrl),
+    createRun(db, resultRun.repeatView, testId, runIndex)
   ])
 }
 
@@ -213,27 +211,6 @@ async function chooseFMP(db: baqend, data: WptView, testId: string, runIndex: st
 
     return firstMeaningfulPaintObject ? firstMeaningfulPaintObject.time : 0
   }
-}
-
-/**
- * Method to check whether the website with the given url is based on WordPress
- *
- * @param db The Baqend instance.
- * @param url
- * @return {Promise<boolean>}
- */
-function isWordPress(db: baqend, url: string): Promise<boolean> {
-  return timeout(
-    10000,
-    fetch(url)
-      .then(res => res.text())
-      .then(text => text.indexOf('wp-content') !== -1)
-      .catch((error) => {
-        db.log.warn(`Cannot analyze whether site is WordPress`, { url, error: error.stack })
-        return false
-      }),
-    false,
-  )
 }
 
 /**

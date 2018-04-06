@@ -37,12 +37,11 @@ function generateTestResult(testId, pendingTest, db) {
       ]);
     })
     .then(([testResult, videos]) => {
-      const [firstView, repeatView, isWordPress] = testResult;
+      const [firstView, repeatView] = testResult;
       const [videoFirstView, videoRepeatView] = videos;
 
       pendingTest.firstView = firstView;
       pendingTest.repeatView = repeatView;
-      pendingTest.isWordPress = isWordPress;
 
       db.log.info(`Videos created: ${testId}`);
       pendingTest.videoFileFirstView = videoFirstView;
@@ -113,14 +112,13 @@ function constructVideoLink(testId, videoId) {
  * @param wptData The data from the WPT test.
  * @param testId The id of the test to create the result for.
  * @param {string} runIndex The index of the run to create the result for.
- * @return {Promise} The test result with its views and a WordPress flag.
+ * @return {Promise} The test result with its views.
  */
 function createTestResult(db, wptData, testId, runIndex) {
   const resultRun = wptData.runs[runIndex];
   return Promise.all([
     createRun(db, resultRun.firstView, testId, runIndex),
-    createRun(db, resultRun.repeatView, testId, runIndex),
-    iskWordPress(db, wptData.testUrl)
+    createRun(db, resultRun.repeatView, testId, runIndex)
   ])
 }
 

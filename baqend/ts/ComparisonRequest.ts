@@ -109,6 +109,7 @@ export class ComparisonRequest implements AnalyzerRequest<model.TestOverview> {
       isSpeedKitComparison: this.params.isSpeedKitComparison,
       speedKitConfig: this.params.isSpeedKitComparison ? this.existingSpeedKitConfig : null,
       priority: this.params.priority,
+      isWordPress: this.params.type === 'wordpress',
     }
     const competitorTest = new TestRequest(this.db, params)
     return competitorTest.create()
@@ -126,6 +127,7 @@ export class ComparisonRequest implements AnalyzerRequest<model.TestOverview> {
       speedKitConfig: this.params.speedKitConfig || this.existingSpeedKitConfig,
       priority: this.params.priority,
       skipPrewarm: false,
+      isWordPress: this.params.type === 'wordpress',
     }
     const speedKitTest = new TestRequest(this.db, params)
     return speedKitTest.create()
