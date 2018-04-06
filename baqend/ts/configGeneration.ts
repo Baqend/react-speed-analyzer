@@ -86,11 +86,10 @@ export async function createSmartConfig(
  * Gets an array of regular expressions which match CDN domains.
  */
 export async function getCdnRegExps(): Promise<RegExp[]> {
-  const resp = await fetch(CDN_LOCAL_URL)
-  let text = await resp.text()
+  const response = await fetch(CDN_LOCAL_URL)
+  const text = await response.text()
 
-  text = text.replace(/\\r\\n/g, '\n')
-  return text.trim().split('\n').map(toRegExp)
+  return text.trim().split(/\s*(?:\r\n|[\r\n])\s*/).map(toRegExp)
 }
 
 /**

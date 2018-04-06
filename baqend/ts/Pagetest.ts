@@ -1,4 +1,4 @@
-import WebPageTest from 'webpagetest'
+import WebPageTest, { TestStatus } from 'webpagetest'
 import credentials from './credentials'
 import { baqend } from 'baqend'
 
@@ -230,7 +230,7 @@ class Pagetest {
    * 100 for running
    * 200 for completed
    */
-  getTestStatus(testId: string): Promise<{ statusCode: number }> {
+  getTestStatus(testId: string): Promise<TestStatus> {
     return new Promise((resolve, reject) => {
       this.wpt.getTestStatus(testId, {}, (err, result) => {
         if (err) {
@@ -296,11 +296,11 @@ class Pagetest {
     const video = `${testId}-r:${run}-c:${view}`
     return new Promise((resolve, reject) => {
       this.wpt.createVideo(video, {}, (err, result) => {
-        if (err || !result.data || !result.data.videoId) {
-          reject(err)
-        } else {
-          resolve(result.data.videoId)
+        if (err) {
+          return reject(err)
         }
+
+        resolve(result.data && result.data.videoId || '')
       })
     })
   }

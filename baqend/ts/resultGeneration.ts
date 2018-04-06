@@ -51,8 +51,7 @@ export async function generateTestResult(testId: string, pendingTest: model.Test
     await pendingTest.ready()
     return pendingTest.save()
   } catch (error) {
-    db.log.error(`Generating test result failed: ${testId}`,
-      { testResult: pendingTest.id, testId, error: error.stack })
+    db.log.error(`Generating test result failed: ${testId}`, { testResult: pendingTest.id, testId, error })
     pendingTest.testDataMissing = true
     pendingTest.hasFinished = true
 
@@ -79,15 +78,15 @@ function getResultRawData(testId: string): Promise<WptTestResult> {
 async function createVideos(db: baqend, testId: string, runIndex: string): Promise<[binding.File, binding.File | null]> {
   db.log.info(`Creating video: ${testId}`)
 
-  const videoFirst = API.createVideo(testId, runIndex, 0)
-  const videoRepeat = API.createVideo(testId, runIndex, 1)
-
-  const [firstVideoResult, repeatedVideoResult] = await Promise.all([videoFirst, videoRepeat])
-  const videoFirstViewPromise = toFile(db, constructVideoLink(testId, firstVideoResult), `/www/videoFirstView/${testId}.mp4`)
+  const [firstVideo, repeatedVideo] = await Promise.all([
+    API.createVideo(testId, runIndex, 0),
+    API.createVideo(testId, runIndex, 1),
+  ])
+  const videoFirstViewPromise = toFile(db, constructVideoLink(testId, firstVideo), `/www/videoFirstView/${testId}.mp4`)
 
   let videoRepeatViewPromise: Promise<binding.File | null> = Promise.resolve(null)
-  if (repeatedVideoResult) {
-    videoRepeatViewPromise = toFile(db, constructVideoLink(testId, repeatedVideoResult), `/www/videoRepeatView/${testId}.mp4`)
+  if (repeatedVideo) {
+    videoRepeatViewPromise = toFile(db, constructVideoLink(testId, repeatedVideo), `/www/videoRepeatView/${testId}.mp4`)
   }
 
   return Promise.all([videoFirstViewPromise, videoRepeatViewPromise])

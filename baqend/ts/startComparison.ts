@@ -11,7 +11,7 @@ export async function call(db: baqend, data: any, req: Request) {
   const comparisonRequest = new ComparisonRequest(db, data)
 
   const testOverview = await comparisonRequest.create()
-  comparisonWorker.next(testOverview.id).catch(db.log.error)
+  comparisonWorker.next(testOverview).catch(db.log.error)
 
   return testOverview
 }

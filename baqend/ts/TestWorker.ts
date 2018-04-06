@@ -5,7 +5,7 @@ import { getFallbackConfig, getMinimalConfig } from './configGeneration'
 import { createTestScript, SpeedKitConfigArgument } from './createTestScript'
 import credentials from './credentials'
 
-const PING_BACK_URL = `https://${credentials.app}.app.baqend.com/v1/code/_testResultPingback`;
+const PING_BACK_URL = `https://${credentials.app}.app.baqend.com/v1/code/testResultPingback`;
 
 const prewarmOptions = {
   runs: 2,
@@ -51,34 +51,37 @@ export class TestWorker {
 
   /* public */
   async next(testResultId: string) {
-    this.db.log.info("testWorker next", testResultId)
+    this.db.log.info(`TestWorker.next("${testResultId}")`)
     try {
-      const testResult = await this.db.TestResult.load(testResultId, { refresh: true })
-      await testResult.ready()
+      const test = await this.db.TestResult.load(testResultId, { refresh: true })
 
-      if (testResult.hasFinished) {
-        this.db.log.info(`TestResult is finished`, { testResult })
-        this.listener && this.listener.handleTestFinished(testResult)
-      }
-
-      if (this.hasNotFinishedWebPagetests(testResult)) {
-        this.db.log.info(`checkWebPagetestStatus`, { testResult })
-        this.checkWebPagetestsStatus(testResult)
+      // Is the test finished?
+      if (test.hasFinished) {
+        this.db.log.info(`Test ${test.key} is finished.`, { test })
+        this.listener && this.listener.handleTestFinished(test)
 
         return
       }
 
-      if (testResult.isClone) {
-        if (this.shouldStartPreparationTests(testResult)) {
-          !testResult.speedKitConfig && this.startConfigGenerationTest(testResult)
-          this.startPrewarmWebPagetest(testResult)
-        } else if (this.shouldStartPerformanceTests(testResult)) {
-          this.db.log.info(`startPerformanceTest`, { testResult })
-          this.startPerformanceWebPagetest(testResult)
+      await test.ready()
+      if (this.hasNotFinishedWebPagetests(test)) {
+        this.db.log.info(`checkWebPagetestStatus`, { test })
+        this.checkWebPagetestsStatus(test)
+
+        return
+      }
+
+      if (test.isClone) {
+        if (this.shouldStartPreparationTests(test)) {
+          !test.speedKitConfig && this.startConfigGenerationTest(test)
+          this.startPrewarmWebPagetest(test)
+        } else if (this.shouldStartPerformanceTests(test)) {
+          this.db.log.info(`startPerformanceTest`, { test })
+          this.startPerformanceWebPagetest(test)
         }
       } else {
-        if (this.shouldStartPerformanceTests(testResult)) {
-          this.startPerformanceWebPagetest(testResult)
+        if (this.shouldStartPerformanceTests(test)) {
+          this.startPerformanceWebPagetest(test)
         }
       }
     } catch(error) {
@@ -86,14 +89,14 @@ export class TestWorker {
     }
   }
 
-  handleWebPagetestResult(testId: string) {
-    return this.testResultHandler.handleResult(testId)
-      .then(testResult => {
-        this.db.log.info("handleTestResult next", { testId })
-        this.next(testResult.id)
-        return testResult
-      })
-      .catch(error => this.db.log.error(`Error while handling WPT result`, {testId, error: error.stack}))
+  async handleWebPagetestResult(testId: string): Promise<void> {
+    try {
+      const testResult = await this.testResultHandler.handleResult(testId)
+      this.db.log.info('handleTestResult next', { testId })
+      this.next(testResult.id).catch((err) => this.db.log.error(err.message, err))
+    } catch (error) {
+      this.db.log.error('Error while handling WPT result', { testId, error: error.stack })
+    }
   }
 
   private shouldStartPreparationTests(testResult: model.TestResult) {

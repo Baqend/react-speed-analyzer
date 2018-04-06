@@ -26,44 +26,50 @@ export class ComparisonWorker implements TestListener {
     this.listener = value
   }
 
-  async next(testOverviewId: string) {
-    this.db.log.info('ComparisonWorker next', testOverviewId)
+  async next(comparison: model.TestOverview) {
+    this.db.log.info(`ComparisonWorker.next("${comparison.key}")`)
+    const { competitorTestResult: competitor, speedKitTestResult: speedKit } = comparison
 
-    const testOverview: model.TestOverview = await this.db.TestOverview.load(testOverviewId, { depth: 1 })
-    const { competitorTestResult, speedKitTestResult } = testOverview
-
-    this.testWorker.next(competitorTestResult.id).catch(this.db.log.error)
-    this.testWorker.next(speedKitTestResult.id).catch(this.db.log.error)
-
-    if (this.shouldStartPageSpeedInsights(testOverview)) {
-      this.setPsiMetrics(testOverview)
-      testOverview.tasks.push(new this.db.Task({
+    // Handle PageSpeed Insights
+    if (this.shouldStartPageSpeedInsights(comparison)) {
+      this.setPsiMetrics(comparison)
+      comparison.tasks.push(new this.db.Task({
         taskType: PSI_TYPE,
         lastExecution: new Date(),
       }))
     }
 
-    // Finish testOverview
-    if (competitorTestResult.hasFinished && speedKitTestResult.hasFinished) {
-      testOverview.speedKitConfig = speedKitTestResult.speedKitConfig
-      testOverview.factors = this.calculateFactors(competitorTestResult, speedKitTestResult)
-      testOverview.hasFinished = true
+    // Is TestOverview finished?
+    if (competitor.hasFinished && speedKit.hasFinished) {
+      this.db.log.info(`Comparison ${comparison.key} is finished.`, { comparison })
+      if (comparison.hasFinished) {
+        this.db.log.warn(`Comparison ${comparison.key} was already finished.`, { comparison })
+        return
+      }
 
-      testOverview.ready().then(() => testOverview.save())
+      await comparison.optimisticSave((testOverview: model.TestOverview) => {
+        testOverview.speedKitConfig = speedKit.speedKitConfig
+        testOverview.factors = this.calculateFactors(competitor, speedKit)
+        testOverview.hasFinished = true
+      })
 
-      this.listener && this.listener.handleComparisonFinished(testOverview)
+      this.listener && this.listener.handleComparisonFinished(comparison)
+      return
     }
+
+    // Start competitor and speed kit tests
+    this.testWorker.next(competitor.id).catch((err) => this.db.log.error(err.message, err))
+    this.testWorker.next(speedKit.id).catch((err) => this.db.log.error(err.message, err))
   }
 
   async handleTestFinished(test: model.TestResult): Promise<void> {
-    const testResultId = test.id
     try {
-      this.db.log.info('Handle comparison result', testResultId)
-      const testOverview = await this.loadTestOverview(testResultId)
+      const comparison = await this.findComparisonByTest(test)
 
-      this.next(testOverview.id).catch(this.db.log.error)
+      this.db.log.info(`Test finished: ${test.id}`)
+      this.next(comparison).catch((err) => this.db.log.error(err.message, err))
     } catch (error) {
-      this.db.log.error('Error while handling test result', { id: testResultId, error: error.stack })
+      this.db.log.error('Error while handling test result', { id: test.id, error: error.stack })
     }
   }
 
@@ -80,19 +86,25 @@ export class ComparisonWorker implements TestListener {
     }
   }
 
-  private setPsiMetrics(testOverview: model.TestOverview) {
+  /**
+   * Sets the PageSpeed Insight metrics on a test overview.
+   *
+   * @param testOverview The test overview to get the insights for.
+   * @return
+   */
+  private async setPsiMetrics(testOverview: model.TestOverview): Promise<void> {
     const { url, mobile } = testOverview
-    callPageSpeed(url, mobile)
-      .then(pageSpeedInsights => {
-        testOverview.psiDomains = pageSpeedInsights.domains
-        testOverview.psiRequests = pageSpeedInsights.requests
-        testOverview.psiResponseSize = `${pageSpeedInsights.bytes}`
-        testOverview.psiScreenshot = pageSpeedInsights.screenshot
+    try {
+      const pageSpeedInsights = await callPageSpeed(url, mobile)
+      await testOverview.optimisticSave((test: model.TestOverview) => {
+        test.psiDomains = pageSpeedInsights.domains
+        test.psiRequests = pageSpeedInsights.requests
+        test.psiResponseSize = `${pageSpeedInsights.bytes}`
+        test.psiScreenshot = pageSpeedInsights.screenshot
       })
-      .then(() => testOverview.ready().then(() => testOverview.save()))
-      .catch(error => {
-        this.db.log.warn('Could not call page speed insights', { url, mobile, error: error.stack })
-      })
+    } catch (error) {
+      this.db.log.warn('Could not call page speed insights', { url, mobile, error: error.stack })
+    }
   }
 
   shouldStartPageSpeedInsights(testOverview: model.TestOverview): boolean {
@@ -103,16 +115,17 @@ export class ComparisonWorker implements TestListener {
   }
 
 
-  private async loadTestOverview(testResultId: string): Promise<model.TestOverview> {
-    const testOverview = await this.db.TestOverview.find()
+  private async findComparisonByTest(test: model.TestResult): Promise<model.TestOverview> {
+    const testId = test.id
+    const comparison = await this.db.TestOverview.find()
       .where({
         '$or': [
-          { 'competitorTestResult': { '$eq': testResultId } },
-          { 'speedKitTestResult': { '$eq': testResultId } },
+          { 'competitorTestResult': { '$eq': testId } },
+          { 'speedKitTestResult': { '$eq': testId } },
         ],
-      }).singleResult()
+      }).singleResult({ depth: 1 })
 
-    this.db.log.info('Comparison found to handle test result', testOverview)
-    return testOverview
+    this.db.log.info('Comparison found to handle test result', comparison)
+    return comparison
   }
 }

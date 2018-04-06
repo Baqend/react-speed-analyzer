@@ -23,16 +23,16 @@ export class WebPagetestResultHandler {
    * @return {TestResult} The updated test result.
    */
   async handleResult(testId: string): Promise<model.TestResult> {
-    this.db.log.info('handleTestResult', testId)
+    this.db.log.info(`[WPRH.handleResult] For ${testId}`)
     let testResult = await this.db.TestResult.find().equal('webPagetests.testId', testId).singleResult()
     if (!testResult) {
-      this.db.log.warn('There was no testResult found for testId', { testId })
+      this.db.log.warn('[WPRH.handleResult] There was no testResult found for testId', { testId })
       throw new Error(`No testResult found in cache ${testId}`)
     }
 
     const webPageTestInfo = this.getWebPagetestInfo(testResult, testId)
     if (!webPageTestInfo) {
-      this.db.log.warn('Unable to verify test type', { testResult })
+      this.db.log.warn('[WPRH.handleResult] Unable to verify test type', { testResult })
       throw new Error(`No WPT info with id ${testId} found for testResult ${testResult.id}`)
     }
 
@@ -42,7 +42,7 @@ export class WebPagetestResultHandler {
         testResult.speedKitConfig = config
       })
     } else if (webPageTestInfo.testType === PERFORMANCE_TYPE) {
-      this.db.log.info(`Test successful: ${testId}`, { testResult: testResult.id, testId })
+      this.db.log.info(`[WPRH.handleResult] Test successful: ${testId}`, { testResult: testResult.id, testId })
       promise = generateTestResult(testId, testResult, this.db).then((updatedResult) => {
         testResult = updatedResult
         testResult.hasFinished = true

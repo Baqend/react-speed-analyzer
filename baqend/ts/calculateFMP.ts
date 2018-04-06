@@ -1,6 +1,6 @@
+import { baqend } from 'baqend'
 import fetch from 'node-fetch'
 import credentials from './credentials'
-import { baqend } from 'baqend'
 
 /**
  * Get the raw visual progress data of a given html string.
@@ -16,7 +16,7 @@ function getDataFromHtml(htmlString: string): Array<[number, number]> {
     throw new Error('Could not find data table in HTML.')
   }
 
-  const data = JSON.parse(matchArray[1]) as Array<[string, number]>
+  const data = JSON.parse(matchArray[1].replace(/'/g, '"')) as Array<[string, number]>
 
   // Remove the first item of the data array because it has irrelevant data like "Time (ms)"
   data.shift()
@@ -65,16 +65,12 @@ function calculateFMP(data: Array<[number, number]>): number {
  * Gets the first meaningful paint for a given test run.
  */
 export async function getFMP(testId: string, runIndex: string): Promise<number> {
-  try {
-    const url = `http://${credentials.wpt_dns}/video/compare.php?tests=${testId}-r:${runIndex}-c:0`
-    const response = await fetch(url)
-    const htmlString = await response.text()
-    const data = getDataFromHtml(htmlString)
+  const url = `http://${credentials.wpt_dns}/video/compare.php?tests=${testId}-r:${runIndex}-c:0`
+  const response = await fetch(url)
+  const htmlString = await response.text()
+  const data = getDataFromHtml(htmlString)
 
-    return calculateFMP(data)
-  } catch (err) {
-    throw new Abort(err.mesage)
-  }
+  return calculateFMP(data)
 }
 
 /**
@@ -83,5 +79,9 @@ export async function getFMP(testId: string, runIndex: string): Promise<number> 
 export async function call(db: baqend, data: { testId: string, runIndex: string }): Promise<{ fmp: number }> {
   const { testId, runIndex = '0' } = data
 
-  return { fmp: await getFMP(testId, runIndex) }
+  try {
+    return { fmp: await getFMP(testId, runIndex) }
+  } catch (err) {
+    throw new Abort(err.message)
+  }
 }
