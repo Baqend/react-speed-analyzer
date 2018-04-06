@@ -63,7 +63,7 @@ export const startTest = (urlInfo = {}, useAdvancedConfig = false) => ({
       dispatch({
         type: START_TEST,
       })
-      const { url, location, caching, mobile, speedKitConfig, activityTimeout } = getState().config
+      const { url, location, caching, mobile, activityTimeout } = getState().config
       const { speedkit, speedkitVersion, swUrl, isSecured, type } = urlInfo
       let speedKitConfig = !speedkit || (speedkit && useAdvancedConfig) ? getState().config.speedKitConfig : null
 
