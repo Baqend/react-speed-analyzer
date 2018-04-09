@@ -6,7 +6,7 @@
  * @return {Promise<T>} A promise resolving with the result after the given time.
  * @template T
  */
-export function sleep<T>(time: number, result: T): Promise<T> {
+export function sleep<T>(time: number, result?: T): Promise<T> {
   return new Promise((resolve) => {
     setTimeout(() => resolve(result), time)
   })

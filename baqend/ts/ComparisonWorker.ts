@@ -18,7 +18,7 @@ export interface ComparisonListener {
  * @return {TestWorker}
  */
 export class ComparisonWorker implements TestListener {
-  constructor(private db: baqend, private testWorker: TestWorker, private listener?: ComparisonListener) {
+  constructor(private readonly db: baqend, private testWorker: TestWorker, private listener?: ComparisonListener) {
     this.testWorker.setListener(this)
   }
 
@@ -58,8 +58,12 @@ export class ComparisonWorker implements TestListener {
     }
 
     // Start competitor and speed kit tests
-    this.testWorker.next(competitor.id).catch((err) => this.db.log.error(err.message, err))
-    this.testWorker.next(speedKit.id).catch((err) => this.db.log.error(err.message, err))
+    if (!competitor.hasFinished) {
+      this.testWorker.next(competitor.id).catch((err) => this.db.log.error(err.message, err))
+    }
+    if (!speedKit.hasFinished) {
+      this.testWorker.next(speedKit.id).catch((err) => this.db.log.error(err.message, err))
+    }
   }
 
   async handleTestFinished(test: model.TestResult): Promise<void> {

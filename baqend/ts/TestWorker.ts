@@ -1,9 +1,10 @@
 import { baqend, model } from 'baqend'
 import { API } from './Pagetest'
-import { WebPagetestResultHandler } from './WebPagetestResultHandler'
+import { TestType, WebPagetestResultHandler } from './WebPagetestResultHandler'
 import { getFallbackConfig, getMinimalConfig } from './configGeneration'
 import { createTestScript, SpeedKitConfigArgument } from './createTestScript'
 import credentials from './credentials'
+import { sleep } from './sleep'
 
 const PING_BACK_URL = `https://${credentials.app}.app.baqend.com/v1/code/testResultPingback`;
 
@@ -39,7 +40,7 @@ export interface TestParams {
 export class TestWorker {
   private testResultHandler: WebPagetestResultHandler
 
-  constructor(private db: baqend, private listener?: TestListener) {
+  constructor(private readonly db: baqend, private listener?: TestListener) {
     this.db = db
     this.listener = listener
     this.testResultHandler = new WebPagetestResultHandler(db)
@@ -50,7 +51,7 @@ export class TestWorker {
   }
 
   /* public */
-  async next(testResultId: string) {
+  async next(testResultId: string): Promise<void> {
     this.db.log.info(`TestWorker.next("${testResultId}")`)
     try {
       const test = await this.db.TestResult.load(testResultId, { refresh: true })
@@ -63,28 +64,30 @@ export class TestWorker {
         return
       }
 
-      await test.ready()
+      // Is WebPagetest still running this test? Check the status and start over.
       if (this.hasNotFinishedWebPagetests(test)) {
-        this.db.log.info(`checkWebPagetestStatus`, { test })
         this.checkWebPagetestsStatus(test)
+          .catch((err) => this.db.log.error(`TestWorker.checkWebPagetestsStatus failed: ${err.message}`, err))
 
         return
       }
 
-      if (test.isClone) {
-        if (this.shouldStartPreparationTests(test)) {
-          !test.speedKitConfig && this.startConfigGenerationTest(test)
+      if /* test is against Speed Kit */ (test.isClone) {
+        if (this.shouldStartPrewarmWebPagetest(test)) {
+          if (!test.speedKitConfig) {
+            this.startConfigWebPagetest(test)
+          }
+
           this.startPrewarmWebPagetest(test)
-        } else if (this.shouldStartPerformanceTests(test)) {
-          this.db.log.info(`startPerformanceTest`, { test })
-          this.startPerformanceWebPagetest(test)
-        }
-      } else {
-        if (this.shouldStartPerformanceTests(test)) {
-          this.startPerformanceWebPagetest(test)
+
+          return
         }
       }
-    } catch(error) {
+
+      if (this.shouldStartPerformanceWebPagetest(test)) {
+        this.startPerformanceWebPagetest(test)
+      }
+    } catch (error) {
       this.db.log.warn(`Error while next iteration`, {id: testResultId, error: error.stack})
     }
   }
@@ -99,100 +102,147 @@ export class TestWorker {
     }
   }
 
-  private shouldStartPreparationTests(testResult: model.TestResult) {
-    if (testResult.testInfo.skipPrewarm) {
+  /**
+   * Determines whether a prewarm test against WebPagetest should be started.
+   */
+  private shouldStartPrewarmWebPagetest(test: model.TestResult): boolean {
+    if (test.testInfo.skipPrewarm) {
       return false
     }
-    return !testResult.webPagetests || !testResult.webPagetests.length
+    return !test.webPagetests || !test.webPagetests.length
   }
 
-  private shouldStartPerformanceTests(testResult: model.TestResult) {
-    return testResult.webPagetests.map(wpt => wpt.testType).indexOf('performance') === -1
+  /**
+   * Determines whether a performance test against WebPagetest should be started.
+   */
+  private shouldStartPerformanceWebPagetest(test: model.TestResult): boolean {
+    return test.webPagetests.map(wpt => wpt.testType).indexOf('performance') === -1
   }
 
-  private hasNotFinishedWebPagetests(testResult: model.TestResult) {
-    return testResult.webPagetests.filter(wpt => !wpt.hasFinished).length > 0
+  /**
+   * Checks whether all WebPagetest tests have been finished or not.
+   */
+  private hasNotFinishedWebPagetests(test: model.TestResult): boolean {
+    return test.webPagetests.filter(wpt => !wpt.hasFinished).length > 0
   }
 
-  private checkWebPagetestsStatus(testResult: model.TestResult) {
-    this.db.log.info("checkWebPagetestsStatus next", { testResult })
-    const checks = testResult.webPagetests.filter(wpt => !wpt.hasFinished).map(wpt => this.getStatusFromAPI(wpt.testId))
-    Promise.all(checks).then(() => this.next(testResult.id));
+  /**
+   * Is executed when WebPagetest tests are currently running.
+   */
+  private async checkWebPagetestsStatus(test: model.TestResult): Promise<void> {
+    this.db.log.info(`TestWorker.checkWebPagetestsStatus("${test.key}")`, { test })
+    const checks = test.webPagetests
+      .filter(wpt => !wpt.hasFinished)
+      .map(async wpt => {
+        const wptTestId = wpt.testId
+        if (await this.isWebPagetestFinished(wptTestId)) {
+          try {
+            await this.handleWebPagetestResult(wptTestId)
+          } catch (err) {
+            this.db.log.warn(`Could not find status of test ${wptTestId}`, err)
+          }
+
+          return true
+        }
+
+        return false
+      })
+
+    const results = await Promise.all(checks)
+    const areAllWebPagetestsFinished = results.reduce((prev, it) => prev && it, true)
+    if (areAllWebPagetestsFinished) {
+      return
+    }
+
+    this.db.log.info(`TestWorker.checkWebPagetestsStatus("${test.key}"): WPT not finished! Sleep …`, { test })
+    // We are not finished: check again after sleep
+    await sleep(1000)
+
+    return this.checkWebPagetestsStatus(test)
   }
 
-  private getStatusFromAPI(testId: string) {
-    return API.getTestStatus(testId).then(test => {
-      if (test.statusCode === 200) {
-        return Promise.resolve(
-          this.testResultHandler.handleResult(testId)
-            .catch(error => this.db.log.warn(`Could not find testResult`, {id: testId, error: error.stack}))
-        )
-      }
-      return Promise.reject(false)
-    })
+  /**
+   * Checks that the status from the API is 200.
+   *
+   * @param {string} wptTestId The WebPagetest test's ID.
+   * @return {Promise<void>}
+   */
+  private async isWebPagetestFinished(wptTestId: string): Promise<boolean> {
+    const test = await API.getTestStatus(wptTestId)
+
+    return test.statusCode === 200
   }
 
-  private startPrewarmWebPagetest(testResult: model.TestResult) {
-    const { speedKitConfig, testInfo } = testResult
+  /**
+   * Starts a prewarm against WebPagetest.
+   */
+  private startPrewarmWebPagetest(test: model.TestResult): Promise<void> {
+    const { speedKitConfig, testInfo } = test
     const { testOptions } = testInfo
     const prewarmTestScript = this.getScriptForConfig(speedKitConfig, testInfo);
     const prewarmTestOptions = Object.assign({ pingback: PING_BACK_URL }, testOptions, prewarmOptions);
-    return API.runTestWithoutWait(prewarmTestScript, prewarmTestOptions).then(testId => {
-      return this.pushWebPagetestToTestResult(testResult, new this.db.WebPagetest({
-        testId: testId,
-        testType: 'prewarm',
-        testScript: prewarmTestScript,
-        testOptions: prewarmTestOptions,
-        hasFinished: false
-      }))
-    }).catch(error => this.db.log.error(`Error while starting WPT test`,{ testResult: testResult.id, error:error.stack }))
+
+    return this.startWebPagetest(test, TestType.PREWARM, prewarmTestScript, prewarmTestOptions)
   }
 
-  private startConfigGenerationTest(testResult: model.TestResult) {
-    const { testInfo } = testResult
+  /**
+   * Starts a config test against WebPagetest.
+   */
+  private startConfigWebPagetest(test: model.TestResult): Promise<void> {
+    const { testInfo } = test
     const { testOptions } = testInfo;
     const configTestScript = this.getTestScriptWithMinimalWhitelist(testInfo);
     const configTestOptions = Object.assign({ pingback: PING_BACK_URL }, testOptions, prewarmOptions, { runs: 1 });
-    return API.runTestWithoutWait(configTestScript, configTestOptions).then(testId => {
-      return this.pushWebPagetestToTestResult(testResult, new this.db.WebPagetest({
-        testId: testId,
-        testType: 'config',
-        testScript: configTestScript,
-        testOptions: configTestOptions,
-        hasFinished: false
-      }))
-    }).catch(error => this.db.log.error(`Error while starting WPT test`,{ testResult: testResult.id, error:error.stack }))
+
+    return this.startWebPagetest(test, TestType.CONFIG, configTestScript, configTestOptions)
   }
 
-  private startPerformanceWebPagetest(testResult: model.TestResult): Promise<model.TestResult> {
-    const { speedKitConfig, testInfo } = testResult
+  /**
+   * Starts a performance test against WebPagetest.
+   */
+  private startPerformanceWebPagetest(test: model.TestResult): Promise<void> {
+    const { speedKitConfig, testInfo } = test
     const { testOptions } = testInfo
     const performanceTestScript = this.getScriptForConfig(speedKitConfig, testInfo)
     const performanceTestOptions = Object.assign({ pingback: PING_BACK_URL }, testOptions)
-    return API.runTestWithoutWait(performanceTestScript, performanceTestOptions).then(testId => {
-      return this.pushWebPagetestToTestResult(testResult, new this.db.WebPagetest({
-        testId: testId,
-        testType: 'performance',
-        testScript: performanceTestScript,
-        testOptions: performanceTestOptions,
+
+    return this.startWebPagetest(test, TestType.PERFORMANCE, performanceTestScript, performanceTestOptions)
+  }
+
+  /**
+   * Starts a test against WebPagetest.
+   */
+  private async startWebPagetest(test: model.TestResult, testType: TestType, testScript: string, testOptions: any): Promise<void> {
+    try {
+      const testId = await API.runTestWithoutWait(testScript, testOptions)
+      await this.pushWebPagetestToTestResult(test, new this.db.WebPagetest({
+        testId,
+        testType,
+        testScript,
+        testOptions,
         hasFinished: false
       }))
-    }).catch(error => this.db.log.error(`Error while starting WPT test`,{ testResult: testResult.id, error:error.stack }))
+    } catch (error) {
+      this.db.log.error(`Error while starting ${testType} WPT test`, { test, error })
+    }
   }
 
-  private pushWebPagetestToTestResult(testResult: model.TestResult, webPagetest: model.WebPagetest): Promise<model.TestResult> {
-    testResult.webPagetests.push(webPagetest)
-
-    return testResult.ready().then(() => testResult.save())
+  /**
+   * Saves a WebPagetest info in a test.
+   */
+  private pushWebPagetestToTestResult(test: model.TestResult, webPagetest: model.WebPagetest): Promise<model.TestResult> {
+    return test.optimisticSave((it: model.TestResult) => {
+      it.webPagetests.push(webPagetest)
+    })
   }
 
-  private getScriptForConfig(config: SpeedKitConfigArgument, { url, isSpeedKitComparison, isTestWithSpeedKit, activityTimeout, testOptions }: TestParams) {
-    config = config || getFallbackConfig(this.db, url, testOptions.mobile)
+  private getScriptForConfig(config: SpeedKitConfigArgument, { url, isSpeedKitComparison, isTestWithSpeedKit, activityTimeout, testOptions }: TestParams): string {
+    const c = config || getFallbackConfig(this.db, url, testOptions.mobile)
 
-    return createTestScript(url, isTestWithSpeedKit, isSpeedKitComparison, config, activityTimeout)
+    return createTestScript(url, isTestWithSpeedKit, isSpeedKitComparison, c, activityTimeout)
   }
 
-  private getTestScriptWithMinimalWhitelist({ url, isTestWithSpeedKit, isSpeedKitComparison, activityTimeout, testOptions }: TestParams) {
+  private getTestScriptWithMinimalWhitelist({ url, isTestWithSpeedKit, isSpeedKitComparison, activityTimeout, testOptions }: TestParams): string {
     const config = getMinimalConfig(this.db, url, testOptions.mobile);
 
     return createTestScript(url, isTestWithSpeedKit, isSpeedKitComparison, config, activityTimeout);

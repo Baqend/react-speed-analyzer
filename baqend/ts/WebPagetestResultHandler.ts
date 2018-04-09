@@ -4,8 +4,11 @@ import { generateTestResult } from './resultGeneration'
 import { cacheSpeedKitConfig } from './configCaching'
 import { createSmartConfig, getFallbackConfig } from './configGeneration'
 
-const CONFIG_TYPE = 'config';
-const PERFORMANCE_TYPE = 'performance';
+export enum TestType {
+  CONFIG = 'config',
+  PERFORMANCE = 'performance',
+  PREWARM = 'prewarm',
+}
 
 /**
  * Handles a webpage test result to continue a single comparison test.
@@ -17,43 +20,70 @@ export class WebPagetestResultHandler {
   }
 
   /**
-   * Handles the result of a given WPT test id.
+   * Handles the result of a given WPT test ID.
    *
-   * @param {string} testId The id of the WPT test to be handled.
-   * @return {TestResult} The updated test result.
+   * @param wptTestId The ID of the WebPagetest test to be handled.
+   * @return The updated test result.
    */
-  async handleResult(testId: string): Promise<model.TestResult> {
-    this.db.log.info(`[WPRH.handleResult] For ${testId}`)
-    let testResult = await this.db.TestResult.find().equal('webPagetests.testId', testId).singleResult()
+  async handleResult(wptTestId: string): Promise<model.TestResult> {
+    this.db.log.info(`[WPRH.handleResult] For ${wptTestId}`)
+    let testResult = await this.db.TestResult.find().equal('webPagetests.testId', wptTestId).singleResult()
     if (!testResult) {
-      this.db.log.warn('[WPRH.handleResult] There was no testResult found for testId', { testId })
-      throw new Error(`No testResult found in cache ${testId}`)
+      this.db.log.warn('[WPRH.handleResult] There was no testResult found for testId', { wptTestId })
+      throw new Error(`No testResult found in cache ${wptTestId}`)
     }
 
-    const webPageTestInfo = this.getWebPagetestInfo(testResult, testId)
+    const webPageTestInfo = this.getWebPagetestInfo(testResult, wptTestId)
     if (!webPageTestInfo) {
       this.db.log.warn('[WPRH.handleResult] Unable to verify test type', { testResult })
-      throw new Error(`No WPT info with id ${testId} found for testResult ${testResult.id}`)
+      throw new Error(`No WPT info with id ${wptTestId} found for testResult ${testResult.id}`)
     }
 
-    let promise = Promise.resolve()
-    if (webPageTestInfo.testType === CONFIG_TYPE) {
-      promise = this.getSmartConfig(testId, testResult.testInfo).then((config) => {
-        testResult.speedKitConfig = config
-      })
-    } else if (webPageTestInfo.testType === PERFORMANCE_TYPE) {
-      this.db.log.info(`[WPRH.handleResult] Test successful: ${testId}`, { testResult: testResult.id, testId })
-      promise = generateTestResult(testId, testResult, this.db).then((updatedResult) => {
-        testResult = updatedResult
-        testResult.hasFinished = true
-      })
+    if (webPageTestInfo.hasFinished) {
+      this.db.log.warn('[WPRH.handleResult] wptInfo object was already finished', { testResult })
+      throw new Error(`WPT ${wptTestId} for testResult ${testResult.id} was already finished`)
     }
 
-    await promise
-    webPageTestInfo.hasFinished = true
-    await testResult.ready()
+    await this.updateTestWithResult(testResult, webPageTestInfo)
+    return testResult.optimisticSave(() => {
+      webPageTestInfo.hasFinished = true
+    })
+  }
 
-    return testResult.save()
+  /**
+   * Updates the test after a WebPagetest test is finished.
+   */
+  private updateTestWithResult(test: model.TestResult, wptInfo: model.WebPagetest): Promise<any> {
+    const wptTestId = wptInfo.testId
+
+    switch (wptInfo.testType) {
+      case TestType.CONFIG: {
+        return this.getSmartConfig(wptTestId, test.testInfo).then((config) => {
+          return test.optimisticSave((it: model.TestResult) => {
+            it.speedKitConfig = config
+          })
+        })
+      }
+
+      case TestType.PERFORMANCE: {
+        this.db.log.info(`[WPRH.handleResult] Performance Test successful: ${wptTestId}`, { testResult: test.id, wptTestId })
+
+        return generateTestResult(wptTestId, test, this.db).then(() => {
+          return test.optimisticSave((it: model.TestResult) => {
+            it.hasFinished = true
+          })
+        })
+      }
+
+      case TestType.PREWARM: {
+        /* Do nothing */
+        return Promise.resolve()
+      }
+
+      default: {
+        throw new Error(`Unexpected test type: ${wptInfo.testType}.`)
+      }
+    }
   }
 
   /**
@@ -87,13 +117,13 @@ export class WebPagetestResultHandler {
   }
 
   /**
-   * Get the corresponding WPT info object (id, type and status) of a given testId.
+   * Get the corresponding WPT info object (id, type and status) of a given wptTestId.
    *
-   * @param {TestResult} testResult The result in which the info is to be found.
-   * @param {string} testId The id to get the WPT info for.
-   * @return {object} The WPT info object.
+   * @param test The result in which the info is to be found.
+   * @param wptTestId The WebPagetest test ID to get the WPT info for.
+   * @return The WPT info object.
    */
-  private getWebPagetestInfo(testResult: model.TestResult, testId: string): model.WebPagetest | undefined {
-    return testResult.webPagetests.find(wpt => wpt.testId === testId)
+  private getWebPagetestInfo(test: model.TestResult, wptTestId: string): model.WebPagetest | undefined {
+    return test.webPagetests.find(wpt => wpt.testId === wptTestId)
   }
 }
