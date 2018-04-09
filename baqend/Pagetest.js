@@ -109,11 +109,14 @@ class Pagetest {
   }
 
   /**
+   * @param db
    * @param {string} testId The ID of the test to reject.
+   * @param {any} data Additional data to log by the rejection.
    * @private
    */
-  rejectTest(testId) {
+  rejectTest(db, testId, data) {
     if (this.testRejecter.has(testId)) {
+      db.log.warn(`Rejecter found for test: ${testId}`, data);
       this.testRejecter.get(testId).call(null, new Error(`Test rejected for testId: ${testId}`));
       this.testResolver.delete(testId);
       this.testRejecter.delete(testId);
@@ -132,10 +135,11 @@ class Pagetest {
         clearInterval(interval)
       }
 
-      this.getTestStatus(testId).then(({ statusCode }) => {
+      this.getTestStatus(testId).then((data) => {
+        const { statusCode } = data;
         // 4XX status code indicates some error
         if (!statusCode || statusCode >= 400) {
-          this.rejectTest(testId)
+          this.rejectTest(db, testId, data)
           clearInterval(interval)
           return
         }
