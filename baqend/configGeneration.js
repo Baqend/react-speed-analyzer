@@ -75,6 +75,7 @@ function filterCDNs(domains, db) {
   return fetch(CDN_LOCAL_URL)
     .then(resp => resp.text())
     .then((text) => {
+      text = text.replace(/(?:\\[rn]|[\r\n]+)+/g, '\n')
       return text.trim().split('\n').map(toRegex)
     })
     .then((regExs) => {

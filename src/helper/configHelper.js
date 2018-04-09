@@ -77,22 +77,15 @@ export function generateRules(originalUrl, whitelist) {
  * Returns the URL to send to Speed Kit.
  *
  * @param {string} originalUrl The URL to make fast.
- * @param {string} whitelistStr The whitelist string with comma-separated values.
  * @param {boolean} enableUserAgentDetection Enables the user agent detection in makefast.
  * @return {string} A URL to send to Speed Kit.
  */
-export function generateSpeedKitConfig(originalUrl, whitelistStr, enableUserAgentDetection) {
-  const whitelistDomains = whitelistStr
-    .split(',')
-    .map(item => item.trim())
-    .filter(item => !!item)
+export function generateDefaultConfig(originalUrl, enableUserAgentDetection) {
+  const whitelist = generateRules(originalUrl, '')
 
-  // whitelist: [{ host: [ /^(?:[\w-]*\.){0,3}(?:kicker\.)/ ] }],
-  const whitelist = generateRules(originalUrl, whitelistDomains)
-  // debugger
   return `{
-    appName: "makefast",
-    whitelist: [{ host: [ ${whitelist}, /cdn/ ] }],
+    appName: 'makefast',
+    whitelist: [{ host: [ ${whitelist} ] }],
     userAgentDetection: ${enableUserAgentDetection},
   }`
 }

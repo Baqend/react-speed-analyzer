@@ -18,7 +18,7 @@ class ResultVideos extends Component {
     const playPromise = this[videoLabel].play()
     const secondVideo = videoLabel === 'speedKitVideo' ? 'competitorVideo' : 'speedKitVideo'
     if(isIE() || isEdge()) {
-      if(this[secondVideo]) {
+      if (this[secondVideo]) {
         this[secondVideo].currentTime = 0
         this[secondVideo].play()
       }

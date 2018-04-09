@@ -69,7 +69,7 @@ export const startTest = (urlInfo = {}) => ({
         type: START_TEST,
       })
       let { url, location, caching, mobile, speedKitConfig, activityTimeout } = getState().config
-      let { speedkit, speedkitVersion } = urlInfo
+      let { speedkit, speedkitVersion, type } = urlInfo
 
       if (mobile && speedKitConfig) {
         // eslint-disable-next-line no-eval
@@ -85,6 +85,7 @@ export const startTest = (urlInfo = {}) => ({
         mobile,
         speedKitConfig,
         activityTimeout,
+        type,
         isSpeedKitComparison: speedkit,
         speedKitVersion: speedkitVersion,
       })
