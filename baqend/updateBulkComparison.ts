@@ -150,7 +150,7 @@ export async function updateBulkTest(db: baqend, bulkTestRef: model.BulkTest): P
 
     return bulkTest.save()
   } catch (e) {
-    db.log.error('Error while computing bulk test aggregate.', e);
+    db.log.error('Error while computing bulk test aggregate.', { error: e.stack });
 
     return bulkTest
   }

@@ -1,4 +1,10 @@
-declare class Abort extends Error {}
+interface AbortConstructor {
+  new(data?: any): Error
+  (message?: string): Error
+  readonly prototype: Error
+}
+
+declare const Abort: AbortConstructor
 
 declare module 'limiter' {
   export class RateLimiter {

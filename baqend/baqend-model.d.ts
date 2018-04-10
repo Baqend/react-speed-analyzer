@@ -1,4 +1,4 @@
-import {binding, ContentSize} from 'baqend'
+import { binding } from 'baqend'
 
 declare module 'baqend' {
 

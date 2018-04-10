@@ -1,10 +1,8 @@
 import { toFile } from './download'
 import { getAdSet } from './adBlocker'
 import credentials from './credentials'
-import { timeout } from './sleep'
 import { API, WptRun, WptTestResult, WptTestResultOptions, WptView } from './Pagetest'
 import { countHits } from './countHits'
-import fetch from 'node-fetch'
 import { getFMP } from './calculateFMP'
 import { baqend, binding, model } from 'baqend'
 
@@ -65,9 +63,9 @@ function getResultRawData(testId: string): Promise<WptTestResult> {
     breakdown: false,
     domains: false,
     pageSpeed: false,
-  };
+  }
 
-  return API.getTestResults(testId, options).then(result => result.data);
+  return API.getTestResults(testId, options).then(result => result.data)
 }
 
 /**
@@ -118,7 +116,7 @@ function createTestResult(db: baqend, wptData: WptTestResult, testId: string, ru
 
   return Promise.all([
     createRun(db, resultRun.firstView, testId, runIndex),
-    createRun(db, resultRun.repeatView, testId, runIndex)
+    createRun(db, resultRun.repeatView, testId, runIndex),
   ])
 }
 
@@ -198,24 +196,24 @@ async function createRun(db: baqend, data: WptView | undefined, testId: string, 
 function countContentSize(requests: any[]): any {
   const contentSize = {
     text: 0,
-    images: 0
+    images: 0,
   }
 
   requests.forEach(req => {
-    const contentType: string = req.contentType;
-    const objectSize: number = req.objectSize;
-    if(!contentType) {
-      return;
+    const contentType: string = req.contentType
+    const objectSize: number = req.objectSize
+    if (!contentType) {
+      return
     }
 
     if (contentType.indexOf('text/') !== -1) {
-      contentSize.text += objectSize || 0;
+      contentSize.text += objectSize || 0
     } else if (contentType.indexOf('image/') !== -1) {
-      contentSize.images += objectSize || 0;
+      contentSize.images += objectSize || 0
     }
-  });
+  })
 
-  return contentSize;
+  return contentSize
 }
 
 /**
