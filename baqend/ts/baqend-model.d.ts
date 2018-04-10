@@ -1,4 +1,4 @@
-import { binding } from 'baqend'
+import {binding, ContentSize} from 'baqend'
 
 declare module 'baqend' {
 
@@ -12,6 +12,7 @@ declare module 'baqend' {
     CachedConfig: binding.EntityFactory<model.CachedConfig>;
     TestOverview: binding.EntityFactory<model.TestOverview>;
     Hits: binding.ManagedFactory<model.Hits>;
+    ContentSize: binding.ManagedFactory<model.ContentSize>;
     TestEntry: binding.ManagedFactory<model.TestEntry>;
     Task: binding.ManagedFactory<model.Task>;
     WebPagetest: binding.ManagedFactory<model.WebPagetest>;
@@ -144,6 +145,7 @@ declare module 'baqend' {
       hasFinished: boolean;
       factors: Mean | null;
       isSpeedKitComparison: boolean;
+      isSecured: boolean;
       speedKitVersion: string;
       activityTimeout: number;
       speedKitConfig: string | null;
@@ -156,6 +158,12 @@ declare module 'baqend' {
       miss: number;
       other: number;
       size: number;
+      withCaching: number;
+    }
+
+    interface ContentSize extends binding.Managed {
+      text: number;
+      images: number;
     }
 
     interface TestEntry extends binding.Managed {
@@ -195,6 +203,7 @@ declare module 'baqend' {
       basePageCDN: string;
       visualCompleteness: Completeness;
       hits: Hits;
+      contentSize: ContentSize;
     }
 
     interface ConfigAnalysis extends binding.Managed {
@@ -202,7 +211,6 @@ declare module 'baqend' {
       swPath: string;
       swPathMatches: boolean;
       isDisabled: boolean;
-      isSecured: boolean;
     }
 
     interface Completeness extends binding.Managed {

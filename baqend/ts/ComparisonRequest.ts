@@ -54,7 +54,6 @@ export class ComparisonRequest implements AnalyzerRequest<model.TestOverview> {
 
   private getConfigAnalysis(config: string | null): model.ConfigAnalysis {
     const configAnalysis = new this.db.ConfigAnalysis()
-    configAnalysis.isSecured = this.params.isSecured === true
     configAnalysis.swPath = this.params.swUrl
 
     if (!config) {
@@ -87,6 +86,7 @@ export class ComparisonRequest implements AnalyzerRequest<model.TestOverview> {
       competitorTestResult: competitorTest,
       speedKitTestResult: speedKitTest,
       tasks: [],
+      isSecured: this.params.isSecured === true,
     }
 
     const uniqueId = await generateUniqueId(this.db, 'TestOverview')

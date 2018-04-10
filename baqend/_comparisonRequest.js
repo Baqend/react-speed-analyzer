@@ -41,7 +41,6 @@ class ComparisonRequest {
 
   getConfigAnalysis(config){
     const configAnalysis = new this.db.ConfigAnalysis()
-    configAnalysis.isSecured = this.params.isSecured === true
     configAnalysis.swPath = this.params.swUrl
 
     if (!config) {
@@ -90,7 +89,8 @@ class ComparisonRequest {
       hasFinished: false,
       competitorTestResult: competitorTest,
       speedKitTestResult: speedKitTest,
-      tasks: []
+      tasks: [],
+      isSecured: this.params.isSecured === true,
     }
 
     return generateUniqueId(this.db, 'TestOverview')
