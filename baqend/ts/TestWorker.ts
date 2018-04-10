@@ -50,11 +50,11 @@ export class TestWorker {
     this.listener = value
   }
 
-  /* public */
-  async next(testResultId: string): Promise<void> {
-    this.db.log.info(`TestWorker.next("${testResultId}")`)
+  async next(test: model.TestResult): Promise<void> {
+    this.db.log.info(`TestWorker.next("${test.key}")`)
     try {
-      const test = await this.db.TestResult.load(testResultId, { refresh: true })
+      // Ensure test is loaded
+      await test.load()
 
       // Is the test finished?
       if (test.hasFinished) {
@@ -72,6 +72,7 @@ export class TestWorker {
         return
       }
 
+      // Start the next test
       if /* test is against Speed Kit */ (test.isClone) {
         if (this.shouldStartPrewarmWebPagetest(test)) {
           if (!test.speedKitConfig) {
@@ -88,15 +89,18 @@ export class TestWorker {
         this.startPerformanceWebPagetest(test)
       }
     } catch (error) {
-      this.db.log.warn(`Error while next iteration`, {id: testResultId, error: error.stack})
+      this.db.log.warn(`Error while next iteration`, {id: test.id, error: error.stack})
     }
   }
 
+  /**
+   * Handles the result of test from WebPagetest.
+   */
   async handleWebPagetestResult(testId: string): Promise<void> {
     try {
-      const testResult = await this.testResultHandler.handleResult(testId)
+      const test = await this.testResultHandler.handleResult(testId)
       this.db.log.info('handleTestResult next', { testId })
-      this.next(testResult.id).catch((err) => this.db.log.error(err.message, err))
+      this.next(test).catch((err) => this.db.log.error(err.message, err))
     } catch (error) {
       this.db.log.error('Error while handling WPT result', { testId, error: error.stack })
     }

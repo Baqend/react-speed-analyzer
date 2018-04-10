@@ -28,6 +28,10 @@ export class ComparisonWorker implements TestListener {
 
   async next(comparison: model.TestOverview) {
     this.db.log.info(`ComparisonWorker.next("${comparison.key}")`)
+
+    // Ensure comparison is loaded with depth 1
+    await comparison.load({ depth: 1 })
+
     const { competitorTestResult: competitor, speedKitTestResult: speedKit } = comparison
 
     // Handle PageSpeed Insights
@@ -53,16 +57,18 @@ export class ComparisonWorker implements TestListener {
         testOverview.hasFinished = true
       })
 
+      // Inform the listener that this comparison has finished
       this.listener && this.listener.handleComparisonFinished(comparison)
+
       return
     }
 
     // Start competitor and speed kit tests
     if (!competitor.hasFinished) {
-      this.testWorker.next(competitor.id).catch((err) => this.db.log.error(err.message, err))
+      this.testWorker.next(competitor).catch((err) => this.db.log.error(err.message, err))
     }
     if (!speedKit.hasFinished) {
-      this.testWorker.next(speedKit.id).catch((err) => this.db.log.error(err.message, err))
+      this.testWorker.next(speedKit).catch((err) => this.db.log.error(err.message, err))
     }
   }
 

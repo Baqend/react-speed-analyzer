@@ -21,7 +21,7 @@ export async function call(db: baqend, data: any, req: Request) {
 
   const bulkComparisonRequest = new BulkComparisonRequest(db, createdBy, tests)
   const bulkComparison = await bulkComparisonRequest.create()
-  bulkComparisonWorker.next(bulkComparison.id)
+  bulkComparisonWorker.next(bulkComparison)
 
   return bulkComparison
 }

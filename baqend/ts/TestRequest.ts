@@ -119,7 +119,7 @@ export function call(db: baqend, data: any, req: Request) {
   const testRequest = new TestRequest(db, params)
 
   return testRequest.create().then(testResult => {
-    testWorker.next(testResult.id)
+    testWorker.next(testResult)
     return testResult
   })
 }

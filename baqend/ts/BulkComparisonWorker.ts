@@ -7,19 +7,21 @@ export class BulkComparisonWorker implements MultiComparisonListener {
     this.multiComparisonWorker.setListener(this)
   }
 
-  async next(bulkComparisonId: string) {
-    this.db.log.info(`BulkComparisonWorker.next("${bulkComparisonId}")`)
+  async next(bulkComparison: model.BulkComparison) {
+    this.db.log.info(`BulkComparisonWorker.next("${bulkComparison.key}")`)
     try {
-      const bulkComparison = await this.db.BulkComparison.load(bulkComparisonId, { depth: 1 })
-      await bulkComparison.ready()
+      // Ensure bulk comparison is loaded with depth 1
+      await bulkComparison.load({ depth: 1 })
       const { multiComparisons, createdBy } = bulkComparison
+
+      // Is there an active multi comparison which is not finished?
       const currentMultiComparison = multiComparisons[multiComparisons.length - 1]
-      if (multiComparisons.length > 0 && !currentMultiComparison.hasFinished) {
+      if (currentMultiComparison && !currentMultiComparison.hasFinished) {
         return
       }
 
-      const nextMultipleComparison = this.getNextMultipleComparison(bulkComparison)
-      if (!nextMultipleComparison) {
+      const nextMultiComparison = this.getNextMultiComparison(bulkComparison)
+      if (!nextMultiComparison) {
         this.db.log.info(`BulkComparison ${bulkComparison.key} is finished.`, { bulkComparison })
         if (bulkComparison.hasFinished) {
           this.db.log.warn(`BulkComparison ${bulkComparison.key} was already finished.`, { bulkComparison })
@@ -36,14 +38,15 @@ export class BulkComparisonWorker implements MultiComparisonListener {
       }
 
       // Start next multi comparison
-      const multiComparisonRequest = new MultiComparisonRequest(this.db, createdBy, nextMultipleComparison)
+      const multiComparisonRequest = new MultiComparisonRequest(this.db, createdBy, nextMultiComparison)
       const multiComparison = await multiComparisonRequest.create()
-      bulkComparison.multiComparisons.push(multiComparison)
-      bulkComparison.ready().then(() => bulkComparison.save())
+      await bulkComparison.optimisticSave((it: model.BulkComparison) => {
+        it.multiComparisons.push(multiComparison)
+      })
 
-      this.multiComparisonWorker.next(multiComparison.id)
+      this.multiComparisonWorker.next(multiComparison)
     } catch (error) {
-      this.db.log.warn(`Error while next iteration`, { id: bulkComparisonId, error: error.stack })
+      this.db.log.warn(`Error while next iteration`, { id: bulkComparison.id, error: error.stack })
     }
   }
 
@@ -51,15 +54,15 @@ export class BulkComparisonWorker implements MultiComparisonListener {
     const bulkComparison = await this.db.BulkComparison.find().in('multiComparisons', multiComparison.id).singleResult()
     if (bulkComparison) {
       console.log(`Multi comparison finished: ${multiComparison.id}`)
-      this.next(bulkComparison.id)
+      this.next(bulkComparison)
     }
   }
 
-  private getNextMultipleComparison(bulkComparison: model.BulkComparison) {
+  private getNextMultiComparison(bulkComparison: model.BulkComparison): model.ComparisonInfo | undefined {
     const { multiComparisons, comparisonsToStart } = bulkComparison
 
     return comparisonsToStart.find(comparison => {
-      return multiComparisons.filter(multiComparison => multiComparison.url === comparison.url).length === 0
+      return !multiComparisons.some(multiComparison => multiComparison.url === comparison.url)
     })
   }
 }

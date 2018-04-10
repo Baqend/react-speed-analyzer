@@ -16,7 +16,7 @@ export function run(db: baqend, jobsStatus: model.JobStatus, jobsDefinition: mod
       db.log.info('Running callTestWorker job for', testResults)
       testResults.map(testResult => {
         testResult.retries = testResult.retries >= 0 ? testResult.retries + 1 : 0
-        testResult.save().then(() => testWorker.next(testResult.id))
+        testResult.save().then(() => testWorker.next(testResult))
       })
     })
 }
