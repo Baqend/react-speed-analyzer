@@ -171,6 +171,7 @@ async function createRun(db: baqend, data: WptView | undefined, testId: string, 
   run.failedRequests = countFailedRequests(data)
   run.bytes = data.bytesIn
   run.hits = new db.Hits(countHits(data.requests))
+  run.contentSize = new db.ContentSize(countContentSize(data.requests))
   run.basePageCDN = data.base_page_cdn
 
   // Set visual completeness
@@ -187,6 +188,34 @@ async function createRun(db: baqend, data: WptView | undefined, testId: string, 
   run.domains = domains
 
   return run
+}
+
+/**
+ * Creates an object including the size in bytes of text and image resources.
+ *
+ * @param requests An array of request objects.
+ */
+function countContentSize(requests: any[]): any {
+  const contentSize = {
+    text: 0,
+    images: 0
+  }
+
+  requests.forEach(req => {
+    const contentType: string = req.contentType;
+    const objectSize: number = req.objectSize;
+    if(!contentType) {
+      return;
+    }
+
+    if (contentType.indexOf('text/') !== -1) {
+      contentSize.text += objectSize || 0;
+    } else if (contentType.indexOf('image/') !== -1) {
+      contentSize.images += objectSize || 0;
+    }
+  });
+
+  return contentSize;
 }
 
 /**

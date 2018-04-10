@@ -7,10 +7,11 @@ import { connect } from 'react-redux'
 import { prepareTest, startTest } from 'actions/test'
 import { getObjectKey } from 'helper/utils'
 import { calculateAbsolute, calculateServedRequests } from 'helper/resultHelper'
+import { formatFileSize } from 'helper/utils'
 
 import WordPressLogo from 'assets/wordpress.png'
-import error from 'assets/error.svg'
-import success from 'assets/success.svg'
+import check from 'assets/check.svg'
+import cancel from 'assets/cancel.svg'
 
 class ResultAction extends Component {
 
@@ -22,6 +23,55 @@ class ResultAction extends Component {
       const testOverview = await this.props.actions.startTest(urlInfo)
       history.push(`/test/${getObjectKey(testOverview.id)}`)
     } catch (e) {}
+  }
+
+  getCTAContent = () => {
+    console.log(this.props)
+    const content = []
+    // TTFB improvement
+    const competitorData = this.props.competitorTest.firstView
+    const speedKitData = this.props.speedKitTest.firstView
+    if (competitorData.ttfb > speedKitData.ttfb) {
+      content.push(`Speed Kit cached your HTML in a CDN, which reduced the time-to-first-byte (TTFB) from ${competitorData.ttfb} ms to ${speedKitData.ttfb} ms.`)
+    }
+
+    // images size improvement
+    const imageSizeDiff = competitorData.contentSize.images - speedKitData.contentSize.images
+    if (imageSizeDiff > 0) {
+      content.push(`By optimizing images in size and encoding Speed Kit saved ${formatFileSize(imageSizeDiff)} of data.`)
+    }
+
+    // Caching header information
+    const servedRate = calculateServedRequests(speedKitData)
+    const withCaching = competitorData.hits.withCaching
+    const cachingAmount = withCaching ? Math.round((100 / competitorData.requests) * withCaching) : 0
+    content.push(`Only ${cachingAmount}% of all resources had correct caching headers. Speed Kit cached ${servedRate}% of them while making sure that they are always up-to-date.`)
+
+    // text size improvement
+    const textSizeDiff = competitorData.contentSize.text - speedKitData.contentSize.text
+    if (textSizeDiff > 0) {
+      content.push(`By Gzipping text resources Speed Kit reduced page weight by  ${formatFileSize(textSizeDiff)}.`)
+    }
+
+    // SSL information
+    if (!this.props.testOverview.isSecured) {
+      content.push('Your website uses HTTP/1.1. With Speed Kit everything was automatically fetched with an optimized HTTP/2 connection.')
+    }
+
+    // Speed Index and First Meaningful Paint improvement
+    const siImprovement = Math.round((competitorData.speedIndex - speedKitData.speedIndex) / competitorData.speedIndex * 100)
+    const fmpImprovement = Math.round((competitorData.firstMeaningfulPaint - speedKitData.firstMeaningfulPaint) / competitorData.firstMeaningfulPaint * 100)
+    if (siImprovement > 0 && fmpImprovement > 0) {
+      content.push(`Speed Kit improved the Speed Index by ${siImprovement}% and the First Meaningful Paint by ${fmpImprovement}%.`)
+    }
+
+    // Offline Mode
+    content.push('Without a network, your site displays an error. Speed Kit\'s Service Worker will show users the latest seen version (offline mode).')
+
+    //Bloom Filter
+    content.push('Upon repeat visit and navigation Speed Kit would serve all fresh resources from the client cache (Bloom filter-based cache coherence).')
+
+    return content
   }
 
   // all Tests failed
@@ -79,7 +129,9 @@ class ResultAction extends Component {
   }
 
   renderIsSpeedKitCta(speedKitVersion, configAnalysis) {
-    const { configMissing, isSecured, isDisabled, swPath, swPathMatches } = configAnalysis
+    const { configMissing, isDisabled, swPath, swPathMatches } = configAnalysis
+    const { isSecured } = this.props.testOverview
+
     return (
       <div style={{ maxWidth: 768, margin: '0 auto' }}>
         <div className="text-center pb2 pt2">
@@ -99,7 +151,7 @@ class ResultAction extends Component {
               </h4>
             </div>
             <div className="w-10 text-center">
-              <img src={isSecured ? success : error} alt="secure status" style={{ height: 30}} />
+              <img src={isSecured ? check : cancel} alt="secure status" style={{ height: 30}} />
             </div>
           </div>
           <div className="flex mt2">
@@ -114,7 +166,7 @@ class ResultAction extends Component {
               </h4>
             </div>
             <div className="w-10 text-center">
-              <img src={swPathMatches ? success : error} alt="service worker status" style={{ height: 30}} />
+              <img src={swPathMatches ? check : cancel} alt="service worker status" style={{ height: 30}} />
             </div>
           </div>
           <div className="flex mt2">
@@ -128,7 +180,7 @@ class ResultAction extends Component {
               </h4>
             </div>
             <div className="w-10 text-center">
-              <img src={!configMissing && !isDisabled ? success : error} alt="config status" style={{ height: 30}} />
+              <img src={!configMissing && !isDisabled ? check : cancel} alt="config status" style={{ height: 30}} />
             </div>
           </div>
         </div>
@@ -144,16 +196,34 @@ class ResultAction extends Component {
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
     const absolute = calculateAbsolute(competitorData[this.props.result.mainMetric], speedKitData[this.props.result.mainMetric])
-    const servedRate = calculateServedRequests(speedKitData)
+    const ctaContent = this.getCTAContent()
+
     return (
       <div>
         <div className="text-center pb2 pt2" style={{ maxWidth: 700, margin: '0 auto' }}>
           <h2 className="dn db-ns mb0">
-            Speed Kit made your site <span style={{ color: '#F27354' }}>{absolute}</span> faster by serving {servedRate}% of all requests.
+            How does Speed Kit made your site <span style={{ color: '#F27354' }}>{absolute}</span> faster?
           </h2>
           <h3 className="dn-ns mb0">
-            Speed Kit made your site <span style={{ color: '#F27354' }}>{absolute}</span> faster by serving {servedRate}% of all requests.
+            How does Speed Kit made your site <span style={{ color: '#F27354' }}>{absolute}</span> faster?
           </h3>
+          <h4 className="faded mt0 mb0">
+            Here are some features Speed Kit applied to your website.
+          </h4>
+        </div>
+        <div className="flex flex-wrap">
+          {ctaContent.map((content, index) => (
+            <div key={index} className="w-100 w-50-ns mt2 mb2">
+              <div className="flex ml2 mr2">
+                <div className="w-20 w-10-ns">
+                  <img src={ check } alt="speed kit feature" style={{ height: 30}} />
+                </div>
+                <div className="w-80 w-90-ns">
+                  <h4 className="mt0 mb0">{ content }</h4>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
         <div className="text-center">
           <a className="btn btn-orange ma1"
@@ -165,7 +235,7 @@ class ResultAction extends Component {
           <small>
             <a
               target="_blank" rel="noopener noreferrer"
-              href="https://www.baqend.com/speedkit.html?_ga=2.224276178.858004496.1520933148-181229276.1509025941#sk-features">How Speed Kit Did This
+              href="https://www.baqend.com/speedkit.html?_ga=2.224276178.858004496.1520933148-181229276.1509025941#sk-features">More facts about Speed Kit
             </a>
           </small>
         </div>

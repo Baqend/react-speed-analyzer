@@ -170,6 +170,7 @@ function createRun(db, data, testId, runIndex) {
   run.failedRequests = createFailedRequestsCount(data);
   run.bytes = data.bytesIn;
   run.hits = new db.Hits(countHits(data.requests));
+  run.contentSize = new db.ContentSize(countContentSize(data.requests));
   run.basePageCDN = data.base_page_cdn;
 
   // Set visual completeness
@@ -187,6 +188,29 @@ function createRun(db, data, testId, runIndex) {
       run.domains = domains;
       return run;
   })
+}
+
+function countContentSize(requests) {
+  const contentSize = {
+    text: 0,
+    images: 0
+  }
+
+  requests.forEach(req => {
+    const contentType = req.contentType;
+    const objectSize = req.objectSize;
+    if(!contentType) {
+      return;
+    }
+
+    if (contentType.indexOf('text/') !== -1) {
+      contentSize.text += objectSize || 0;
+    } else if (contentType.indexOf('image/') !== -1) {
+      contentSize.images += objectSize || 0;
+    }
+  });
+
+  return contentSize;
 }
 
 /**
