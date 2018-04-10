@@ -26,8 +26,8 @@ class ResultAction extends Component {
   }
 
   getCTAContent = () => {
-    console.log(this.props)
     const content = []
+
     // TTFB improvement
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
