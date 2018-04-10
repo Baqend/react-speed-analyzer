@@ -1,4 +1,7 @@
-const { DEFAULT_LOCATION, DEFAULT_ACTIVITY_TIMEOUT } = require('./_testRequest');
+import { baqend, model } from 'baqend'
+import { AnalyzerRequest } from './AnalyzerRequest'
+import { DEFAULT_LOCATION, DEFAULT_ACTIVITY_TIMEOUT } from './TestRequest'
+import { ComparisonParams } from './ComparisonRequest'
 
 const defaultParams = {
   activityTimeout: DEFAULT_ACTIVITY_TIMEOUT,
@@ -23,17 +26,17 @@ const defaultParams = {
  * @param {number} [priority=9] Defines the test's priority, from 0 (highest) to 9 (lowest).
  * @return {Promise<BulkTest>} A promise resolving when the bulk test has been created.
  */
-class MultiComparisonRequest {
-  constructor(db, createdBy, params) {
-    this.db = db
-    this.createdBy = createdBy
+export class MultiComparisonRequest implements AnalyzerRequest<model.BulkTest> {
+  private readonly params: any
+
+  constructor(private db: baqend, private createdBy: string, params: model.ComparisonInfo) {
     this.params = Object.assign(defaultParams, params)
   }
 
-  create() {
+  create(): Promise<model.BulkTest> {
     const { url, location, mobile, priority, runs } = this.params
 
-    const multiComparison = new this.db.BulkTest()
+    const multiComparison: model.BulkTest = new this.db.BulkTest()
     multiComparison.url = url
     multiComparison.testOverviews = []
     multiComparison.createdBy = this.createdBy
@@ -48,5 +51,3 @@ class MultiComparisonRequest {
     return multiComparison.save()
   }
 }
-
-exports.MultiComparisonRequest = MultiComparisonRequest

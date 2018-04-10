@@ -1,7 +1,7 @@
 import {baqend, model} from 'baqend'
 
 import { API } from './Pagetest'
-import { TestRequest } from './TestRequest'
+import { TestParams, TestRequest } from './TestRequest'
 import { getMinimalConfig } from './configGeneration'
 import { createTestScript } from './createTestScript'
 import { getCachedSpeedKitConfig } from './configCaching'
@@ -36,7 +36,10 @@ async function startConfigGenerationTest(db: baqend, testInfo: any): Promise<str
   }
 }
 
-export async function call(db: baqend, data: { url?: string, testId?: string }):Promise<string|null> {
+/**
+ * FIXME: Maybe inappropriate behavior when called with testId
+ */
+export async function call(db: baqend, data: any):Promise<string|null> {
   const { testId } = data
   const testRequest = new TestRequest(db, data)
   const testInfo = testRequest.getTestInfo()

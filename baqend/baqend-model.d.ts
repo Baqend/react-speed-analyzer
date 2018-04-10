@@ -32,6 +32,8 @@ declare module 'baqend' {
 
     interface ComparisonInfo extends UrlAware {
       runs: number
+      location: string
+      mobile: boolean
     }
 
     interface Domain extends UrlAware {
@@ -65,7 +67,7 @@ declare module 'baqend' {
       mobile: boolean;
       priority: number;
       urlAnalysis: UrlAnalysis;
-      params: {};
+      params: any;
     }
 
     interface Role extends binding.Entity {

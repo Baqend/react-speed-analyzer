@@ -5,8 +5,15 @@ import { getRootPath, getTLD } from './getSpeedKitUrl'
 import { generateUniqueId } from './generateUniqueId'
 import { analyzeSpeedKit } from './analyzeSpeedKit'
 import { timeout } from './sleep'
-import { DEFAULT_ACTIVITY_TIMEOUT, TestRequest } from './TestRequest'
+import { DEFAULT_ACTIVITY_TIMEOUT, TestParams, TestRequest } from './TestRequest'
 import { AnalyzerRequest } from './AnalyzerRequest'
+
+export interface ComparisonParams extends TestParams {
+  swUrl: string
+  isSecured: boolean
+  type: string
+  speedKitVersion: string
+}
 
 /**
  * Request which creates a TestOverview object and the TestResult objects that are processed
@@ -16,7 +23,7 @@ export class ComparisonRequest implements AnalyzerRequest<model.TestOverview> {
   private existingSpeedKitConfig: string | null
   private configAnalysis: model.ConfigAnalysis | null
 
-  constructor(private db: baqend, private params: any) {
+  constructor(private db: baqend, private params: ComparisonParams) {
     this.existingSpeedKitConfig = null
     this.configAnalysis = null
   }
@@ -49,7 +56,7 @@ export class ComparisonRequest implements AnalyzerRequest<model.TestOverview> {
       return timeout(5000, analyze, null)
     }
     // return Promise.resolve(null)
-    return getCachedSpeedKitConfig(this.db, url, mobile)
+    return getCachedSpeedKitConfig(this.db, url, mobile!)
   }
 
   private getConfigAnalysis(config: string | null): model.ConfigAnalysis {
@@ -99,7 +106,7 @@ export class ComparisonRequest implements AnalyzerRequest<model.TestOverview> {
   }
 
   private createCompetitorTest(): Promise<model.TestResult> {
-    const params = {
+    const params: TestParams = {
       isClone: false,
       url: this.params.url,
       location: this.params.location,
@@ -109,6 +116,7 @@ export class ComparisonRequest implements AnalyzerRequest<model.TestOverview> {
       isSpeedKitComparison: this.params.isSpeedKitComparison,
       speedKitConfig: this.params.isSpeedKitComparison ? this.existingSpeedKitConfig : null,
       priority: this.params.priority,
+      skipPrewarm: false,
       isWordPress: this.params.type === 'wordpress',
     }
     const competitorTest = new TestRequest(this.db, params)
@@ -116,7 +124,7 @@ export class ComparisonRequest implements AnalyzerRequest<model.TestOverview> {
   }
 
   private createSpeedKitTest(): Promise<model.TestResult> {
-    const params = {
+    const params: TestParams = {
       isClone: true,
       url: this.params.url,
       location: this.params.location,

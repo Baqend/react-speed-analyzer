@@ -27,7 +27,38 @@ const defaultTestOptions = {
   jpegQuality: 100,
   poll: 1, // poll every second
   timeout: 2 * DEFAULT_TIMEOUT,
-};
+}
+
+export interface TestParams {
+  url: string
+  isClone?: boolean
+  location?: string
+  caching?: boolean
+  mobile?: boolean
+  activityTimeout?: number
+  isSpeedKitComparison?: boolean
+  speedKitConfig?: string | null
+  priority?: number
+  isWordPress?: boolean
+  skipPrewarm?: boolean
+}
+
+export interface TestInfo {
+  url: string
+  isTestWithSpeedKit?: boolean
+  isSpeedKitComparison?: boolean
+  activityTimeout?: number
+  skipPrewarm?: boolean
+  testOptions: {
+    mobile?: boolean
+    runs?: number
+    firstViewOnly?: boolean
+    commandLine?: string
+    priority?: number
+    location?: string
+    device?: string
+  }
+}
 
 /**
  * Creates a TestResult object, that has all the information needed in order to be processed by the TestWorker
@@ -45,7 +76,7 @@ const defaultTestOptions = {
  * @return {Promise<TestResult>} A promise resolving when the test has been created.
  */
 export class TestRequest implements AnalyzerRequest<model.TestResult> {
-  constructor(private db: baqend, private params: any) {
+  constructor(private db: baqend, private params: TestParams) {
   }
 
   create(): Promise<model.TestResult> {
@@ -74,7 +105,7 @@ export class TestRequest implements AnalyzerRequest<model.TestResult> {
    * Creates a string that is used to execute the WebPageTest with some custom commands.
    * If the URL is http only, it adds an extra flag to inject SpeedKit into non secure websites.
    */
-  private createCommandLineFlags(testUrl: string, isClone: boolean): string {
+  private createCommandLineFlags(testUrl: string, isClone?: boolean): string {
     const http = 'http://'
     if (isClone && testUrl.startsWith(http)) {
       // origin should looks like http://example.com - without any path components
@@ -87,7 +118,7 @@ export class TestRequest implements AnalyzerRequest<model.TestResult> {
     return ''
   }
 
-  getTestInfo(): any {
+  getTestInfo(): TestInfo {
     const params = this.params
     const commandLine = this.createCommandLineFlags(params.url, params.isClone)
     if (commandLine) {

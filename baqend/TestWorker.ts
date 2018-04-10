@@ -5,6 +5,7 @@ import { getFallbackConfig, getMinimalConfig } from './configGeneration'
 import { createTestScript, SpeedKitConfigArgument } from './createTestScript'
 import credentials from './credentials'
 import { sleep } from './sleep'
+import { TestInfo } from './TestRequest'
 
 const PING_BACK_URL = `https://${credentials.app}.app.baqend.com/v1/code/testResultPingback`;
 
@@ -18,16 +19,6 @@ const prewarmOptions = {
 
 export interface TestListener {
   handleTestFinished(test: model.TestResult): any
-}
-
-export interface TestParams {
-  url: string
-  isTestWithSpeedKit: boolean
-  isSpeedKitComparison: boolean
-  activityTimeout: number
-  testOptions: {
-    mobile: boolean
-  }
 }
 
 /**
@@ -240,15 +231,15 @@ export class TestWorker {
     })
   }
 
-  private getScriptForConfig(config: SpeedKitConfigArgument, { url, isSpeedKitComparison, isTestWithSpeedKit, activityTimeout, testOptions }: TestParams): string {
+  private getScriptForConfig(config: SpeedKitConfigArgument, { url, isSpeedKitComparison, isTestWithSpeedKit, activityTimeout, testOptions }: TestInfo): string {
     const c = config || getFallbackConfig(this.db, url, testOptions.mobile)
 
-    return createTestScript(url, isTestWithSpeedKit, isSpeedKitComparison, c, activityTimeout)
+    return createTestScript(url, !!isTestWithSpeedKit, !!isSpeedKitComparison, c, activityTimeout)
   }
 
-  private getTestScriptWithMinimalWhitelist({ url, isTestWithSpeedKit, isSpeedKitComparison, activityTimeout, testOptions }: TestParams): string {
-    const config = getMinimalConfig(this.db, url, testOptions.mobile);
+  private getTestScriptWithMinimalWhitelist({ url, isTestWithSpeedKit, isSpeedKitComparison, activityTimeout, testOptions }: TestInfo): string {
+    const config = getMinimalConfig(this.db, url, !!testOptions.mobile);
 
-    return createTestScript(url, isTestWithSpeedKit, isSpeedKitComparison, config, activityTimeout);
+    return createTestScript(url, !!isTestWithSpeedKit, !!isSpeedKitComparison, config, activityTimeout);
   }
 }
