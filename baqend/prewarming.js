@@ -118,7 +118,7 @@ function prepareSmartConfig(testScript, testInfo, db) {
     })
     .catch(error => {
       db.log.warn(`Smart generation failed`, {url, error});
-      return getFallbackConfig(db, url);
+      return getFallbackConfig(db, url, testInfo.testOptions.mobile);
     });
 }
 
