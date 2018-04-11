@@ -51,6 +51,7 @@ export class ComparisonWorker implements TestListener {
         return
       }
 
+      await comparison.ready()
       await comparison.optimisticSave((testOverview: model.TestOverview) => {
         testOverview.speedKitConfig = speedKit.speedKitConfig
         testOverview.factors = this.calculateFactors(competitor, speedKit)
@@ -106,6 +107,7 @@ export class ComparisonWorker implements TestListener {
     const { url, mobile } = testOverview
     try {
       const pageSpeedInsights = await callPageSpeed(url, mobile)
+      await testOverview.ready()
       await testOverview.optimisticSave((test: model.TestOverview) => {
         test.psiDomains = pageSpeedInsights.domains
         test.psiRequests = pageSpeedInsights.requests

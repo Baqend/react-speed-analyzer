@@ -9,55 +9,61 @@ import { baqend, binding, model } from 'baqend'
 /**
  * Generates a test result from the given test and returns the updated test database object.
  *
- * @param testId The id of the executed test.
+ * @param wptTestId The id of the executed WebPagetest test.
  * @param pendingTest The test database object.
  * @param db The Baqend instance.
  * @return The updated test object containing the test result.
  */
-export async function generateTestResult(testId: string, pendingTest: model.TestResult, db: baqend): Promise<model.TestResult> {
-  db.log.info(`Generating test result: ${testId}`, { testResult: pendingTest.id, testId })
+export async function generateTestResult(wptTestId: string, pendingTest: model.TestResult, db: baqend): Promise<model.TestResult> {
+  db.log.info(`Generating test result: ${wptTestId}`, { test: pendingTest.id, wptTestId })
 
   if (pendingTest.hasFinished) {
-    db.log.info(`Result already exists: ${testId}`)
+    db.log.warn(`Test was already finished: ${wptTestId}`)
     return pendingTest
   }
 
   try {
-    const rawData = await getResultRawData(testId)
+    const rawData = await getResultRawData(wptTestId)
     pendingTest.location = rawData.location
     pendingTest.url = rawData.testUrl
     pendingTest.summaryUrl = rawData.summary
     pendingTest.testDataMissing = false
 
-    const runIndex = getValidTestRun(db, rawData, pendingTest.id)
+    const runIndex = getValidTestRun(db, rawData)
     const [testResult, videos] = await Promise.all([
-      createTestResult(db, rawData, testId, runIndex),
-      createVideos(db, testId, runIndex),
+      createTestResult(db, rawData, wptTestId, runIndex),
+      createVideos(db, wptTestId, runIndex),
     ])
 
+    // Copy view data
     const [firstView, repeatView] = testResult
-    const [videoFirstView, videoRepeatView] = videos
-
     pendingTest.firstView = firstView
     pendingTest.repeatView = repeatView
 
-    db.log.info(`Videos created: ${testId}`)
+    // Copy video data
+    const [videoFirstView, videoRepeatView] = videos
     pendingTest.videoFileFirstView = videoFirstView
     pendingTest.videoFileRepeatView = videoRepeatView
 
+    // Now the test is finished with data
+    pendingTest.testDataMissing = false
     pendingTest.hasFinished = true
+
     await pendingTest.ready()
     return pendingTest.save()
   } catch (error) {
-    db.log.error(`Generating test result failed: ${testId}`, { testResult: pendingTest.id, testId, error })
+    db.log.error(`Generating test result failed: ${error.message}`, { test: pendingTest.id, wptTestId, error: error.stack })
+
+    // Now the test is finished without data
     pendingTest.testDataMissing = true
     pendingTest.hasFinished = true
 
-    return pendingTest.ready().then(() => pendingTest.save())
+    await pendingTest.ready()
+    return pendingTest.save()
   }
 }
 
-function getResultRawData(testId: string): Promise<WptTestResult> {
+function getResultRawData(wptTestId: string): Promise<WptTestResult> {
   const options: WptTestResultOptions = {
     requests: true,
     breakdown: false,
@@ -65,7 +71,7 @@ function getResultRawData(testId: string): Promise<WptTestResult> {
     pageSpeed: false,
   }
 
-  return API.getTestResults(testId, options).then(result => result.data)
+  return API.getTestResults(wptTestId, options).then(result => result.data)
 }
 
 /**
@@ -125,13 +131,12 @@ function isValidRun(run: WptRun): boolean {
 }
 
 
-function getValidTestRun(db: baqend, wptData: WptTestResult, testId: string): string {
+function getValidTestRun(db: baqend, wptData: WptTestResult): string {
   const runIndex = Object.keys(wptData.runs).find(index => isValidRun(wptData.runs[index]))
   db.log.info(`Choosing run ${runIndex}`, { runs: Object.keys(wptData.runs) })
 
   if (!runIndex) {
-    db.log.error(`No valid test run`, { testResult: testId, wptData })
-    throw new Error(`No valid test run found: ${wptData.id}`)
+    throw new Error(`No valid test run found in ${wptData.id}`)
   }
 
   return runIndex

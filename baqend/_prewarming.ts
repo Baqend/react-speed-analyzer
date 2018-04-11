@@ -1,10 +1,9 @@
+import { baqend, model } from 'baqend'
 import stringifyObject from 'stringify-object'
-import { baqend } from 'baqend'
+import { analyzeSpeedKit } from './_analyzeSpeedKit'
 import { createSmartConfig, getFallbackConfig, getMinimalConfig } from './_configGeneration'
 import { createTestScript } from './_createTestScript'
-import { analyzeSpeedKit } from './_analyzeSpeedKit'
 import { API } from './_Pagetest'
-import { TestInfo } from './_TestFactory'
 
 const PREWARM_RUNS = 2
 
@@ -123,7 +122,7 @@ async function prepareSmartConfig(testScript: string, testInfo: any, db: baqend)
   }
 }
 
-function getSmartConfig(url: string, testId: string, testInfo: TestInfo, db: baqend) {
+function getSmartConfig(url: string, testId: string, testInfo: model.TestInfo, db: baqend) {
   const options = {
     requests: true,
     breakdown: false,

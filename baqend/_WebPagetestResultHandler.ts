@@ -27,33 +27,34 @@ export class WebPagetestResultHandler {
    */
   async handleResult(wptTestId: string): Promise<model.TestResult> {
     this.db.log.info(`[WPRH.handleResult] For ${wptTestId}`)
-    let testResult = await this.db.TestResult.find().equal('webPagetests.testId', wptTestId).singleResult()
-    if (!testResult) {
+    const test = await this.db.TestResult.find().equal('webPagetests.testId', wptTestId).singleResult()
+    if (!test) {
       this.db.log.warn('[WPRH.handleResult] There was no testResult found for testId', { wptTestId })
       throw new Error(`No testResult found in cache ${wptTestId}`)
     }
 
-    const webPageTestInfo = this.getWebPagetestInfo(testResult, wptTestId)
+    const webPageTestInfo = this.getWebPagetestInfo(test, wptTestId)
     if (!webPageTestInfo) {
-      this.db.log.warn('[WPRH.handleResult] Unable to verify test type', { testResult })
-      throw new Error(`No WPT info with id ${wptTestId} found for testResult ${testResult.id}`)
+      this.db.log.warn('[WPRH.handleResult] Unable to verify test type', { test })
+      throw new Error(`No WPT info with id ${wptTestId} found for testResult ${test.id}`)
     }
 
     if (webPageTestInfo.hasFinished) {
-      this.db.log.warn('[WPRH.handleResult] wptInfo object was already finished', { testResult })
-      throw new Error(`WPT ${wptTestId} for testResult ${testResult.id} was already finished`)
+      this.db.log.warn('[WPRH.handleResult] wptInfo object was already finished', { test })
+      throw new Error(`WPT ${wptTestId} for testResult ${test.id} was already finished`)
     }
 
-    await this.updateTestWithResult(testResult, webPageTestInfo)
-    return testResult.optimisticSave(() => {
-      webPageTestInfo.hasFinished = true
+    await test.ready()
+    const updatedTest = await this.updateTestWithResult(test, webPageTestInfo)
+    return updatedTest.optimisticSave(() => {
+      this.getWebPagetestInfo(updatedTest, wptTestId)!.hasFinished = true
     })
   }
 
   /**
    * Updates the test after a WebPagetest test is finished.
    */
-  private updateTestWithResult(test: model.TestResult, wptInfo: model.WebPagetest): Promise<any> {
+  private updateTestWithResult(test: model.TestResult, wptInfo: model.WebPagetest): Promise<model.TestResult> {
     const wptTestId = wptInfo.testId
 
     switch (wptInfo.testType) {
@@ -77,7 +78,7 @@ export class WebPagetestResultHandler {
 
       case TestType.PREWARM: {
         /* Do nothing */
-        return Promise.resolve()
+        return Promise.resolve(test)
       }
 
       default: {

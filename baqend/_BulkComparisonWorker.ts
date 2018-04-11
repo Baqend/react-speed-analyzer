@@ -3,7 +3,11 @@ import { MultiComparisonFactory } from './_MultiComparisonFactory'
 import { MultiComparisonListener, MultiComparisonWorker } from './_MultiComparisonWorker'
 
 export class BulkComparisonWorker implements MultiComparisonListener {
-  constructor(private db: baqend, private multiComparisonFactory: MultiComparisonFactory, private multiComparisonWorker: MultiComparisonWorker) {
+  constructor(
+    private readonly db: baqend,
+    private readonly multiComparisonFactory: MultiComparisonFactory,
+    private readonly multiComparisonWorker: MultiComparisonWorker,
+  ) {
     this.multiComparisonWorker.setListener(this)
   }
 
@@ -29,6 +33,7 @@ export class BulkComparisonWorker implements MultiComparisonListener {
         }
 
         // Save is finished state
+        await bulkComparison.ready()
         await bulkComparison.optimisticSave((it: model.BulkComparison) => {
           it.hasFinished = true
         })
@@ -38,8 +43,12 @@ export class BulkComparisonWorker implements MultiComparisonListener {
       }
 
       // Start next multi comparison
-      const multiComparison = await this.multiComparisonFactory.create(createdBy, nextMultiComparison)
+      const { urlInfo, runs, ...params } = nextMultiComparison
+      const multiComparison = await this.multiComparisonFactory.create(urlInfo, params, createdBy, runs)
+
+      await bulkComparison.ready()
       await bulkComparison.optimisticSave((it: model.BulkComparison) => {
+        nextMultiComparison.url = urlInfo.url
         it.multiComparisons.push(multiComparison)
       })
 
@@ -61,7 +70,7 @@ export class BulkComparisonWorker implements MultiComparisonListener {
     const { multiComparisons, comparisonsToStart } = bulkComparison
 
     return comparisonsToStart.find(comparison => {
-      return !multiComparisons.some(multiComparison => multiComparison.url === comparison.url)
+      return !multiComparisons.some(multiComparison => multiComparison.url === comparison.urlInfo.url)
     })
   }
 }

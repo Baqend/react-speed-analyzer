@@ -15,8 +15,8 @@ export async function call(db: baqend, { urls, mobile }: { urls: string[], mobil
     displayUrl: result!.displayUrl,
     isBaqendApp: result!.type === 'baqend',
     isSecured: result!.secured,
-    swUrl: result!.swUrl,
-    speedkit: result!.enabled,
+    swUrl: result!.speedKitUrl,
+    speedkit: result!.speedKitEnabled,
     speedkitVersion: result!.speedKitVersion,
     type: result!.type,
   }))

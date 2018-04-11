@@ -8,6 +8,7 @@ import { MultiComparisonWorker } from './_MultiComparisonWorker'
 import { Pagetest } from './_Pagetest'
 import { TestFactory } from './_TestFactory'
 import { TestWorker } from './_TestWorker'
+import { UrlAnalyzer } from './_UrlAnalyzer'
 import { WebPagetestResultHandler } from './_WebPagetestResultHandler'
 
 /**
@@ -22,6 +23,7 @@ import { WebPagetestResultHandler } from './_WebPagetestResultHandler'
  */
 export function bootstrap(db: baqend) {
   // Create services
+  const urlAnalyzer = new UrlAnalyzer(db)
   const pagetest = new Pagetest()
   const webPagetestResultHandler = new WebPagetestResultHandler(db, pagetest)
 
@@ -38,6 +40,7 @@ export function bootstrap(db: baqend) {
   const bulkComparisonWorker = new BulkComparisonWorker(db, multiComparisonFactory, multiComparisonWorker)
 
   return {
+    urlAnalyzer,
     pagetest,
     webPagetestResultHandler,
 

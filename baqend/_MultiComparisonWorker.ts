@@ -43,6 +43,7 @@ export class MultiComparisonWorker implements ComparisonListener {
         }
 
         // Save is finished state
+        await multiComparison.ready()
         await multiComparison.optimisticSave((it: model.BulkTest) => {
           it.hasFinished = true
         })
@@ -54,7 +55,8 @@ export class MultiComparisonWorker implements ComparisonListener {
       }
 
       // Start next comparison
-      const comparison = await this.comparisonFactory.create(multiComparison.params)
+      const comparison = await this.comparisonFactory.create(multiComparison.urlAnalysis, multiComparison.params)
+      await multiComparison.ready()
       await multiComparison.optimisticSave((it: model.BulkTest) => {
         it.testOverviews.push(comparison)
       })

@@ -1,11 +1,14 @@
 import { baqend, model } from 'baqend'
 import { AsyncFactory } from './_AsyncFactory'
+import { TestParams } from './_TestParams'
+import { UrlInfo } from './_UrlInfo'
 
 export const DEFAULT_LOCATION = 'eu-central-1:Chrome.Native'
 export const DEFAULT_ACTIVITY_TIMEOUT = 75
 export const DEFAULT_TIMEOUT = 30
 
-const defaultTestOptions = {
+const DEFAULT_TEST_OPTIONS: Partial<model.TestOptions> = {
+  runs: 2,
   video: true,
   disableOptimization: true,
   pageSpeed: false,
@@ -27,72 +30,31 @@ const defaultTestOptions = {
   timeout: 2 * DEFAULT_TIMEOUT,
 }
 
-export interface TestParams {
-  url: string
-  isClone?: boolean
-  location?: string
-  caching?: boolean
-  mobile?: boolean
-  activityTimeout?: number
-  isSpeedKitComparison?: boolean
-  speedKitConfig?: string | null
-  priority?: number
-  isWordPress?: boolean
-  skipPrewarm?: boolean
-}
-
-export interface TestInfo {
-  url: string
-  isTestWithSpeedKit?: boolean
-  isSpeedKitComparison?: boolean
-  activityTimeout?: number
-  skipPrewarm?: boolean
-  testOptions: {
-    mobile?: boolean
-    runs?: number
-    firstViewOnly?: boolean
-    commandLine?: string
-    priority?: number
-    location?: string
-    device?: string
-  }
-}
-
 /**
- * Creates a TestResult object, that has all the information needed in order to be processed by the TestWorker
- *
- * @param db The Baqend instance.
- * @param {string} url The URL to test.
- * @param {boolean} isClone True, if this is the cloned page.
- * @param {string} [location] The server location to execute the test.
- * @param {boolean} [caching] True, if browser caching should be used.
- * @param {number} [activityTimeout] The timeout when the test should be aborted.
- * @param {boolean} [isSpeedKitComparison] True, if Speed Kit is already running on the tested site.
- * @param {Object} [speedKitConfig] The speedKit configuration.
- * @param {boolean} [mobile] True, if a mobile-only test should be made.
- * @param {number} [priority=0] Defines the test's priority, from 0 (highest) to 9 (lowest).
- * @return {Promise<TestResult>} A promise resolving when the test has been created.
+ * Creates TestResult objects, that have all the information needed in order to be processed by the TestWorker.
  */
 export class TestFactory implements AsyncFactory<model.TestResult> {
-  constructor(private db: baqend) {
+  constructor(private readonly db: baqend) {
   }
 
-  create(params: TestParams): Promise<model.TestResult> {
-    const commandLine = this.createCommandLineFlags(params.url, params.isClone)
+  create(urlInfo: UrlInfo, isClone: boolean, params: Required<TestParams>): Promise<model.TestResult> {
+    const { url } = urlInfo
+    const { priority, speedKitConfig } = params
+    const commandLine = this.createCommandLineFlags(url, isClone)
     if (commandLine) {
       this.db.log.info('flags: %s', commandLine)
     }
 
-    const testInfo = this.getTestInfo(params)
+    const testInfo = this.createTestInfo(urlInfo, isClone, params)
 
     const testResult = new this.db.TestResult({
-      url: params.url,
-      isClone: params.isClone,
-      priority: params.priority,
-      speedKitConfig: params.speedKitConfig,
-      testInfo: testInfo,
+      url,
+      isClone,
+      priority,
+      speedKitConfig,
+      testInfo,
       hasFinished: false,
-      webPagetests: []
+      webPagetests: [],
     })
 
     return testResult.save()
@@ -102,7 +64,7 @@ export class TestFactory implements AsyncFactory<model.TestResult> {
    * Creates a string that is used to execute the WebPageTest with some custom commands.
    * If the URL is http only, it adds an extra flag to inject SpeedKit into non secure websites.
    */
-  private createCommandLineFlags(testUrl: string, isClone?: boolean): string {
+  private createCommandLineFlags(testUrl: string, isClone: boolean): string {
     const http = 'http://'
     if (isClone && testUrl.startsWith(http)) {
       // origin should looks like http://example.com - without any path components
@@ -115,27 +77,39 @@ export class TestFactory implements AsyncFactory<model.TestResult> {
     return ''
   }
 
-  getTestInfo(params: TestParams): TestInfo {
-    const commandLine = this.createCommandLineFlags(params.url, params.isClone)
+  /**
+   * Create a test info object.
+   */
+  createTestInfo(urlInfo: UrlInfo, isClone: boolean, params: Required<TestParams>): model.TestInfo {
+    const commandLine = this.createCommandLineFlags(urlInfo.url, isClone)
     if (commandLine) {
       this.db.log.info('flags: %s', commandLine)
     }
 
     return {
-      url: params.url,
-      isTestWithSpeedKit: params.isClone,
-      isSpeedKitComparison: params.isSpeedKitComparison,
+      url: urlInfo.url,
+      isSpeedKitComparison: urlInfo.speedKitEnabled,
+      isTestWithSpeedKit: isClone,
       activityTimeout: params.activityTimeout,
       skipPrewarm: params.skipPrewarm,
-      testOptions: Object.assign({}, defaultTestOptions, {
-        runs: 2,
-        firstViewOnly: !params.caching,
-        commandLine: commandLine,
-        priority: params.priority || 0,
-        location: params.location ? params.location : DEFAULT_LOCATION,
-        mobile: params.mobile ? params.mobile : false,
-        device: params.mobile ? 'iPhone6' : '',
-      }),
+      testOptions: this.buildTestOptions(commandLine, params),
     }
+  }
+
+  /**
+   * Builds the test options to use.
+   */
+  private buildTestOptions(commandLine: string, params: Required<TestParams>): model.TestOptions {
+    const testOptions: model.TestOptions = {
+      commandLine: commandLine,
+      firstViewOnly: !params.caching,
+      priority: params.priority,
+      location: params.location,
+      timeout: 2 * params.timeout,
+      mobile: params.mobile,
+      device: params.mobile ? 'iPhone6' : '',
+    }
+
+    return Object.assign({}, DEFAULT_TEST_OPTIONS, testOptions)
   }
 }

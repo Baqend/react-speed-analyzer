@@ -5,14 +5,23 @@ import { AsyncFactory } from './_AsyncFactory'
 import { getCachedSpeedKitConfig } from './_configCaching'
 import { getRootPath, getTLD } from './_getSpeedKitUrl'
 import { timeout } from './_sleep'
-import { DEFAULT_ACTIVITY_TIMEOUT, TestFactory, TestParams } from './_TestFactory'
+import { DEFAULT_ACTIVITY_TIMEOUT, DEFAULT_LOCATION, DEFAULT_TIMEOUT, TestFactory } from './_TestFactory'
+import { TestParams } from './_TestParams'
+import { UrlInfo } from './_UrlInfo'
 import { generateUniqueId } from './generateUniqueId'
 
-export interface ComparisonParams extends TestParams {
-  swUrl: string
-  isSecured: boolean
-  type: string
-  speedKitVersion: string
+/**
+ * The default test params.
+ */
+export const DEFAULT_PARAMS: Required<TestParams> = {
+  activityTimeout: DEFAULT_ACTIVITY_TIMEOUT,
+  caching: false,
+  location: DEFAULT_LOCATION,
+  mobile: false,
+  priority: 0,
+  skipPrewarm: false,
+  speedKitConfig: null,
+  timeout: DEFAULT_TIMEOUT,
 }
 
 /**
@@ -23,39 +32,59 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
   constructor(private db: baqend, private testFactory: TestFactory) {
   }
 
-  async create(params: ComparisonParams): Promise<model.TestOverview> {
-    const existingSpeedKitConfig = await this.getExistingSpeedKitConfigForUrl(params)
-    let configAnalysis = null
-    if (params.isSpeedKitComparison) {
-      configAnalysis = this.getConfigAnalysis(params.url, params.swUrl, params.speedKitConfig || existingSpeedKitConfig)
-    }
+  async create(urlInfo: UrlInfo, params: TestParams): Promise<model.TestOverview> {
+    const config = await this.buildSpeedKitConfig(urlInfo, params)
+    const requiredParams = this.buildParams(params, config)
+    const configAnalysis = urlInfo.speedKitEnabled ? this.createConfigAnalysis(urlInfo, config) : null
 
-    const competitorTest = this.createCompetitorTest(params, existingSpeedKitConfig)
-    const speedKitTest = this.createSpeedKitTest(params, existingSpeedKitConfig)
+    // Create the tests
+    const [competitorTest, speedKitTest] = await Promise.all([
+      this.createCompetitorTest(urlInfo, requiredParams),
+      this.createSpeedKitTest(urlInfo, requiredParams),
+    ])
 
-    const [competitorTestResult, speedKitTestResult] = await Promise.all([competitorTest, speedKitTest])
-
-    return this.createTestOverview(competitorTestResult, speedKitTestResult, params, configAnalysis)
+    // Create the comparison object
+    return this.createComparison(urlInfo, requiredParams, configAnalysis, competitorTest, speedKitTest)
   }
 
-  private getExistingSpeedKitConfigForUrl({ url, mobile, isSpeedKitComparison }: ComparisonParams): Promise<string | null> {
-    if (isSpeedKitComparison) {
-      this.db.log.info(`Extracting config from Website: ${url}`, { url, isSpeedKitComparison })
+  /**
+   * Builds the final test params.
+   */
+  private buildParams(params: TestParams, speedKitConfig: string | null): Required<TestParams> {
+    return Object.assign({}, DEFAULT_PARAMS, { speedKitConfig }, params)
+  }
+
+  /**
+   * Builds the Speed Kit config to use for this test.
+   */
+  private buildSpeedKitConfig({ url, speedKitEnabled }: UrlInfo, { mobile, speedKitConfig }: TestParams): Promise<string | null> {
+    // Has the user set a config as a test parameter?
+    if (speedKitConfig) {
+      return Promise.resolve(speedKitConfig)
+    }
+
+    // Is Speed Kit enabled on the URL? Get its config
+    if (speedKitEnabled) {
+      this.db.log.info(`Extracting config from URL ${url}`)
       const analyze = analyzeSpeedKit(url, this.db).then(it => stringifyObject(it.config))
         .catch(error => {
-          this.db.log.warn(`Could not analyze speed kit config`, { url, error: error.stack })
+          this.db.log.warn(`Could not analyze Speed Kit config`, { url, error: error.stack })
           return null
         })
 
       return timeout(5000, analyze, null)
     }
-    // return Promise.resolve(null)
+
+    // Create a default Speed Kit config for the URL
     return getCachedSpeedKitConfig(this.db, url, mobile!)
   }
 
-  private getConfigAnalysis(url: string, swUrl: string, config: string | null): model.ConfigAnalysis {
+  /**
+   * Creates a config analysis of the given URL.
+   */
+  private createConfigAnalysis({ url, speedKitUrl }: UrlInfo, config: string | null): model.ConfigAnalysis {
     const configAnalysis = new this.db.ConfigAnalysis()
-    configAnalysis.swPath = swUrl
+    configAnalysis.swPath = speedKitUrl
 
     if (!config) {
       configAnalysis.configMissing = true
@@ -66,65 +95,57 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
     const configObj = eval(`(${config})`)
     const rootPath = getRootPath(this.db, url)
 
-    configAnalysis.swPathMatches = configObj.sw || rootPath + '/sw.js' === swUrl
+    configAnalysis.swPathMatches = configObj.sw || rootPath + '/sw.js' === speedKitUrl
     configAnalysis.isDisabled = configObj.disabled === true
 
     return configAnalysis
   }
 
-  private async createTestOverview(competitorTest: model.TestResult, speedKitTest: model.TestResult, params: ComparisonParams, configAnalysis: model.ConfigAnalysis | null): Promise<model.TestOverview> {
-    const attributes: Partial<model.TestOverview> = {
-      url: params.url,
-      caching: params.caching,
-      location: params.location,
-      mobile: params.mobile,
-      activityTimeout: params.activityTimeout || DEFAULT_ACTIVITY_TIMEOUT,
-      isSpeedKitComparison: params.isSpeedKitComparison,
-      speedKitVersion: params.speedKitVersion,
-      speedKitConfig: null,
-      configAnalysis: configAnalysis,
-      hasFinished: false,
-      competitorTestResult: competitorTest,
-      speedKitTestResult: speedKitTest,
-      tasks: [],
-      isSecured: params.isSecured === true,
-    }
-
+  /**
+   * Create the comparison object itself.
+   */
+  private async createComparison(urlInfo: UrlInfo, params: Required<TestParams>, configAnalysis: model.ConfigAnalysis | null, competitorTest: model.TestResult, speedKitTest: model.TestResult): Promise<model.TestOverview> {
     const uniqueId = await generateUniqueId(this.db, 'TestOverview')
-    const tld = getTLD(this.db, params.url)
-    attributes.id = uniqueId + tld.substring(0, tld.length - 1)
+    const tld = getTLD(this.db, urlInfo.url)
+    const id = uniqueId + tld.substring(0, tld.length - 1)
 
-    const testOverview = new this.db.TestOverview(attributes)
+    const comparison = new this.db.TestOverview({ id })
+    comparison.url = urlInfo.url
+    comparison.caching = params.caching
+    comparison.location = params.location
+    comparison.mobile = params.mobile
+    comparison.activityTimeout = params.activityTimeout || DEFAULT_ACTIVITY_TIMEOUT
+    comparison.isSpeedKitComparison = urlInfo.speedKitEnabled
+    comparison.speedKitVersion = urlInfo.speedKitVersion
+    comparison.speedKitConfig = null
+    comparison.configAnalysis = configAnalysis
+    comparison.hasFinished = false
+    comparison.competitorTestResult = competitorTest
+    comparison.speedKitTestResult = speedKitTest
+    comparison.tasks = []
+    comparison.isSecured = urlInfo.secured
 
-    return testOverview.save()
+    return comparison.save()
   }
 
-  private createCompetitorTest(params: ComparisonParams, existingSpeedKitConfig: string | null): Promise<model.TestResult> {
-    return this.createTest(params, false, params.isSpeedKitComparison ? existingSpeedKitConfig : null)
+  /**
+   * Creates a competitor test from params.
+   */
+  private createCompetitorTest(urlInfo: UrlInfo, params: Required<TestParams>): Promise<model.TestResult> {
+    return this.createTest(false, urlInfo, params)
   }
 
-  private createSpeedKitTest(params: ComparisonParams, existingSpeedKitConfig: string | null): Promise<model.TestResult> {
-    return this.createTest(params, true, params.speedKitConfig || existingSpeedKitConfig)
+  /**
+   * Creates a Speed Kit test from params.
+   */
+  private createSpeedKitTest(urlInfo: UrlInfo, params: Required<TestParams>): Promise<model.TestResult> {
+    return this.createTest(true, urlInfo, params)
   }
 
   /**
    * Creates a test from params.
    */
-  private createTest(params: ComparisonParams, isClone: boolean, speedKitConfig: string | null): Promise<model.TestResult> {
-    const testParams = {
-      isClone,
-      url: params.url,
-      location: params.location,
-      caching: params.caching,
-      mobile: params.mobile,
-      activityTimeout: params.activityTimeout,
-      isSpeedKitComparison: params.isSpeedKitComparison,
-      speedKitConfig,
-      priority: params.priority,
-      skipPrewarm: false,
-      isWordPress: params.type === 'wordpress',
-    }
-
-    return this.testFactory.create(testParams)
+  private createTest(isClone: boolean, urlInfo: UrlInfo, params: Required<TestParams>) {
+    return this.testFactory.create(urlInfo, isClone, params)
   }
 }

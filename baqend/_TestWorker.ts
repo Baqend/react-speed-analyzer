@@ -3,7 +3,6 @@ import { getFallbackConfig, getMinimalConfig } from './_configGeneration'
 import { createTestScript, SpeedKitConfigArgument } from './_createTestScript'
 import { Pagetest } from './_Pagetest'
 import { sleep } from './_sleep'
-import { TestInfo } from './_TestFactory'
 import { TestType, WebPagetestResultHandler } from './_WebPagetestResultHandler'
 import credentials from './credentials'
 
@@ -218,28 +217,30 @@ export class TestWorker {
         hasFinished: false,
       }))
     } catch (error) {
-      this.db.log.error(`Error while starting ${testType} WPT test`, { test, error })
+      this.db.log.error(`Could not start "${testType}" WebPagetest test: ${error.message}`, { test: test.id, error: error.stack })
     }
   }
 
   /**
    * Saves a WebPagetest info in a test.
    */
-  private pushWebPagetestToTestResult(test: model.TestResult, webPagetest: model.WebPagetest): Promise<model.TestResult> {
+  private async pushWebPagetestToTestResult(test: model.TestResult, webPagetest: model.WebPagetest): Promise<model.TestResult> {
+    await test.ready()
     return test.optimisticSave((it: model.TestResult) => {
       it.webPagetests.push(webPagetest)
     })
   }
 
-  private getScriptForConfig(config: SpeedKitConfigArgument, { url, isSpeedKitComparison, isTestWithSpeedKit, activityTimeout, testOptions }: TestInfo): string {
+  private getScriptForConfig(config: SpeedKitConfigArgument, info: model.TestInfo): string {
+    const { url, isSpeedKitComparison, isTestWithSpeedKit, activityTimeout, testOptions } = info
     const c = config || getFallbackConfig(this.db, url, testOptions.mobile)
 
-    return createTestScript(url, !!isTestWithSpeedKit, !!isSpeedKitComparison, c, activityTimeout)
+    return createTestScript(url, isTestWithSpeedKit, isSpeedKitComparison, c, activityTimeout)
   }
 
-  private getTestScriptWithMinimalWhitelist({ url, isTestWithSpeedKit, isSpeedKitComparison, activityTimeout, testOptions }: TestInfo): string {
-    const config = getMinimalConfig(this.db, url, !!testOptions.mobile)
+  private getTestScriptWithMinimalWhitelist({ url, isTestWithSpeedKit, isSpeedKitComparison, activityTimeout, testOptions }: model.TestInfo): string {
+    const config = getMinimalConfig(this.db, url, testOptions.mobile)
 
-    return createTestScript(url, !!isTestWithSpeedKit, !!isSpeedKitComparison, config, activityTimeout)
+    return createTestScript(url, isTestWithSpeedKit, isSpeedKitComparison, config, activityTimeout)
   }
 }

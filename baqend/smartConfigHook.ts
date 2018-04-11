@@ -39,8 +39,8 @@ async function startConfigGenerationTest(db: baqend, testInfo: any): Promise<str
  */
 export async function call(db: baqend, data: any): Promise<string | null> {
   const { testFactory, webPagetestResultHandler } = bootstrap(db)
-  const { testId } = data
-  const testInfo = testFactory.getTestInfo(data)
+  const { testId, url, isClone } = data
+  const testInfo = testFactory.createTestInfo(url, isClone, data)
 
   if (testId) {
     const finished = await hasTestFinished(testId)

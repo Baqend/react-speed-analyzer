@@ -31,6 +31,8 @@ declare module 'baqend' {
     }
 
     interface ComparisonInfo extends UrlAware {
+      urlInfo: any
+      isStarted: boolean
       runs: number
       location: string
       mobile: boolean
@@ -46,7 +48,7 @@ declare module 'baqend' {
 
     interface BulkComparison extends binding.Entity {
       comparisonsToStart: Array<ComparisonInfo>;
-      createdBy: string;
+      createdBy: string | null;
       multiComparisons: Array<BulkTest>;
       hasFinished: boolean;
     }
@@ -60,7 +62,7 @@ declare module 'baqend' {
       factors: Mean;
       bestFactors: Mean;
       worstFactors: Mean;
-      createdBy: string;
+      createdBy: string | null;
       runs: number;
       completedRuns: number;
       location: string;
@@ -97,6 +99,44 @@ declare module 'baqend' {
       candidates: Array<{}>;
     }
 
+    interface TestOptions {
+      block?: string,
+      breakDown?: boolean,
+      chromeTrace?: boolean,
+      commandLine: string
+      device: string
+      disableHTTPHeaders?: boolean,
+      disableOptimization?: boolean,
+      disableScreenshot?: boolean,
+      domains?: boolean,
+      firstViewOnly: boolean
+      ignoreSSL?: boolean,
+      jpegQuality?: number,
+      location: string
+      minimumDuration?: number,
+      mobile: boolean
+      netLog?: boolean,
+      pageSpeed?: boolean,
+      poll?: number,
+      priority: number
+      requests?: boolean,
+      runs?: number
+      saveResponseBodies?: boolean,
+      tcpDump?: boolean,
+      timeline?: boolean,
+      timeout: number,
+      video?: boolean,
+    }
+
+    interface TestInfo {
+      url: string
+      isTestWithSpeedKit: boolean
+      isSpeedKitComparison: boolean
+      activityTimeout: number
+      skipPrewarm: boolean
+      testOptions: TestOptions
+    }
+
     interface TestResult extends binding.Entity {
       testId: string;
       location: string;
@@ -116,7 +156,7 @@ declare module 'baqend' {
       isClone: boolean;
       priority: number;
       speedKitConfig: string;
-      testInfo: any;
+      testInfo: TestInfo;
       webPagetests: Array<WebPagetest>;
       retries: number;
       checked: Date;
@@ -148,7 +188,7 @@ declare module 'baqend' {
       factors: Mean | null;
       isSpeedKitComparison: boolean;
       isSecured: boolean;
-      speedKitVersion: string;
+      speedKitVersion: string | null;
       activityTimeout: number;
       speedKitConfig: string | null;
       tasks: Array<Task>;
@@ -235,12 +275,13 @@ declare module 'baqend' {
     interface UrlAnalysis extends binding.Managed {
       url: string;
       displayUrl: string;
-      type: string;
+      type: string | null;
       secured: boolean;
       mobile: boolean;
       supported: boolean;
-      enabled: boolean;
-      speedKitVersion: string;
+      speedKitUrl: string | null;
+      speedKitEnabled: boolean;
+      speedKitVersion: string | null;
     }
 
     interface Tasks extends binding.Managed {

@@ -1,19 +1,28 @@
-import { Request } from 'express'
 import { baqend, model } from 'baqend'
 import { bootstrap } from './_compositionRoot'
+import { TestParams } from './_TestParams'
 
-export async function startMultiComparison(db: baqend, createdBy: string, tests: model.ComparisonInfo): Promise<model.BulkTest> {
-  const { multiComparisonWorker, multiComparisonFactory } = bootstrap(db)
+interface StartMultiComparisonParams extends TestParams {
+  runs?: number
+  createdBy?: string
+  url: string
+}
 
-  const multiComparison = await multiComparisonFactory.create(createdBy, tests)
+/**
+ * Baqend code API call.
+ */
+export async function call(db: baqend, data: StartMultiComparisonParams): Promise<model.BulkTest> {
+  const { multiComparisonWorker, multiComparisonFactory, urlAnalyzer } = bootstrap(db)
+
+  // Get necessary options
+  const { url, createdBy, runs, ...params } = data
+  const urlInfo = await urlAnalyzer.analyzeUrl(url, params.mobile)
+  if (!urlInfo) {
+    throw new Error(`Could not analyze URL: ${url}`)
+  }
+
+  const multiComparison = await multiComparisonFactory.create(urlInfo, params, createdBy, runs)
   multiComparisonWorker.next(multiComparison)
 
   return multiComparison
-}
-
-export async function call(db: baqend, data: any, req: Request): Promise<model.BulkTest> {
-  const { body } = req
-  const { createdBy = null, test } = body
-
-  return startMultiComparison(db, createdBy, test)
 }
