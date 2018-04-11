@@ -22,42 +22,30 @@ export class WebPagetestResultHandler {
   /**
    * Handles the result of a given WPT test ID.
    *
-   * @param wptTestId The ID of the WebPagetest test to be handled.
+   * @param test The abstract test model.
+   * @param webPagetest The actual WebPagetest run.
    * @return The updated test result.
    */
-  async handleResult(wptTestId: string): Promise<model.TestResult> {
+  async handleResult(test: model.TestResult, webPagetest: model.WebPagetest): Promise<model.TestResult> {
+    const wptTestId = webPagetest.testId
     this.db.log.info(`[WPRH.handleResult] For ${wptTestId}`)
-    const test = await this.db.TestResult.find().equal('webPagetests.testId', wptTestId).singleResult()
-    if (!test) {
-      this.db.log.warn('[WPRH.handleResult] There was no testResult found for testId', { wptTestId })
-      throw new Error(`No testResult found in cache ${wptTestId}`)
-    }
 
-    const webPageTestInfo = this.getWebPagetestInfo(test, wptTestId)
-    if (!webPageTestInfo) {
-      this.db.log.warn('[WPRH.handleResult] Unable to verify test type', { test })
-      throw new Error(`No WPT info with id ${wptTestId} found for testResult ${test.id}`)
-    }
-
-    if (webPageTestInfo.hasFinished) {
-      this.db.log.warn('[WPRH.handleResult] wptInfo object was already finished', { test })
-      throw new Error(`WPT ${wptTestId} for testResult ${test.id} was already finished`)
-    }
-
+    // Mark WebPagetest run as finished
     await test.ready()
-    const updatedTest = await this.updateTestWithResult(test, webPageTestInfo)
-    return updatedTest.optimisticSave(() => {
-      this.getWebPagetestInfo(updatedTest, wptTestId)!.hasFinished = true
-    })
+    webPagetest.hasFinished = true
+    await test.save()
+
+    // Handle the result by type
+    return this.updateTestWithResult(test, webPagetest)
   }
 
   /**
    * Updates the test after a WebPagetest test is finished.
    */
-  private updateTestWithResult(test: model.TestResult, wptInfo: model.WebPagetest): Promise<model.TestResult> {
-    const wptTestId = wptInfo.testId
+  private updateTestWithResult(test: model.TestResult, webPagetest: model.WebPagetest): Promise<model.TestResult> {
+    const wptTestId = webPagetest.testId
 
-    switch (wptInfo.testType) {
+    switch (webPagetest.testType) {
       case TestType.CONFIG: {
         return this.getSmartConfig(wptTestId, test.testInfo).then((config) => {
           return test.optimisticSave((it: model.TestResult) => {
@@ -82,7 +70,7 @@ export class WebPagetestResultHandler {
       }
 
       default: {
-        throw new Error(`Unexpected test type: ${wptInfo.testType}.`)
+        throw new Error(`Unexpected test type: ${webPagetest.testType}.`)
       }
     }
   }

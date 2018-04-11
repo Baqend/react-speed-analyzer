@@ -84,15 +84,26 @@ export class TestWorker {
   }
 
   /**
-   * Handles the result of test from WebPagetest.
+   * Handles the result of a test from WebPagetest.
    */
-  async handleWebPagetestResult(testId: string): Promise<void> {
+  async handleWebPagetestResult(wptTestId: string): Promise<void> {
     try {
-      const test = await this.webPagetestResultHandler.handleResult(testId)
-      this.db.log.info('handleTestResult next', { testId })
-      this.next(test).catch((err) => this.db.log.error(err.message, err))
+      const test = await this.db.TestResult.find().equal('webPagetests.testId', wptTestId).singleResult()
+      if (!test) {
+        this.db.log.warn('There was no testResult found for testId', { wptTestId })
+        return
+      }
+
+      const webPagetest = this.getWebPagetestInfo(test, wptTestId)
+      if (webPagetest.hasFinished) {
+        this.db.log.warn(`WebPagetest ${wptTestId} was already finished`, { test })
+        return
+      }
+
+      const updatedTest = await this.webPagetestResultHandler.handleResult(test, webPagetest)
+      this.next(updatedTest).catch((err) => this.db.log.error(err.message, err))
     } catch (error) {
-      this.db.log.error('Error while handling WPT result', { testId, error: error.stack })
+      this.db.log.error(`Cannot handle WPT result: ${error.message}`, { wptTestId, error: error.stack })
     }
   }
 
@@ -242,5 +253,21 @@ export class TestWorker {
     const config = getMinimalConfig(this.db, url, testOptions.mobile)
 
     return createTestScript(url, isTestWithSpeedKit, isSpeedKitComparison, config, activityTimeout)
+  }
+
+  /**
+   * Get the corresponding WPT info object (id, type and status) of a given wptTestId.
+   *
+   * @param test The result in which the info is to be found.
+   * @param wptTestId The WebPagetest test ID to get the WPT info for.
+   * @return The WPT info object.
+   */
+  private getWebPagetestInfo(test: model.TestResult, wptTestId: string): model.WebPagetest {
+    const found = test.webPagetests.find(wpt => wpt.testId === wptTestId)
+    if (!found) {
+      throw new Error(`Test is missing WebPagetest run ${wptTestId}`)
+    }
+
+    return found
   }
 }
