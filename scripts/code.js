@@ -2,6 +2,8 @@
 const { spawn } = require('child_process')
 const { resolve } = require('path')
 const which = require('which')
+const rimraf = require('rimraf')
+const db = require('baqend')
 
 function getAppForMode(mode) {
   switch (mode) {
@@ -23,27 +25,61 @@ function getApp() {
   return getAppForMode(mode)
 }
 
+async function deleteModules(app) {
+  await db.connect(app)
 
-const app = getApp()
+  db.token = '5acdfcfe5ace0b0eAAAAABgAAAABdf08b5081d75c33bc7c6c0f830c4888e6069b2bf'
+  await db.renew()
 
-const codeDir = resolve(__dirname, '..', 'baqend')
-const outDir = resolve(codeDir, 'out')
-const tsc = which.sync('tsc')
-const baqend = which.sync('baqend')
+  const { deleted } = await db.modules.post('_clean')
+  console.log(`Deleted ${deleted.length} modules`)
+}
 
-const compile = spawn(tsc, ['--project', codeDir])
-compile.stdout.pipe(process.stdout)
-compile.stderr.pipe(process.stderr)
-
-compile.on('close', (code) => {
-  console.log(`TypeScript exited with status code ${code}`)
-  if (code === 0 || code === 2) {
-    const deploy = spawn(baqend, ['deploy', '--code', '--code-dir', outDir, app])
-    deploy.stdout.pipe(process.stdout)
-    deploy.stderr.pipe(process.stderr)
-
-    deploy.on('close', (code) => {
-      console.log(`Baqend Deploy exited with status code ${code}`)
+function deleteDirectory(dir) {
+  return new Promise((resolve) => {
+    rimraf(dir, () => {
+      console.log(`Deleted directory: ${dir}`)
+      resolve()
     })
+  })
+}
+
+function execute(program, args) {
+  return new Promise((resolve) => {
+    const proc = spawn(program, args)
+    proc.stdout.pipe(process.stdout)
+    proc.stderr.pipe(process.stderr)
+
+    proc.on('close', (code) => {
+      resolve(code)
+    })
+  })
+}
+
+
+async function main() {
+  const app = getApp()
+
+  const codeDir = resolve(__dirname, '..', 'baqend')
+  const outDir = resolve(codeDir, 'out')
+  const tsc = which.sync('tsc')
+  const baqend = which.sync('baqend')
+
+  // Delete all modules from the app
+  await deleteModules(app)
+
+  // Delete output directory
+  await deleteDirectory(outDir)
+
+  const compile = await execute(tsc, ['--project', codeDir])
+  console.log(`TypeScript exited with status code ${compile}`)
+  if (compile !== 0 && compile !== 2) {
+    throw new Error(`TypeScript exited with bad status code: ${compile}`)
   }
-})
+
+  const deploy = await execute(baqend, ['deploy', '--code', '--code-dir', outDir, app])
+  console.log(`Baqend Deploy exited with status code ${deploy}`)
+}
+
+main()
+  .catch(console.error)

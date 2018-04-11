@@ -8,6 +8,7 @@
     "esModuleInterop": true,
     "downlevelIteration": true,
     "strict": true,
+    "alwaysStrict": false,
     "noImplicitUseStrict": true
   },
   "include": [
