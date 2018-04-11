@@ -1,9 +1,9 @@
 import { Request } from 'express'
 import { baqend, model } from 'baqend'
-import { MultiComparisonWorker } from './MultiComparisonWorker'
-import { MultiComparisonRequest } from './MultiComparisonRequest'
-import { ComparisonWorker } from './ComparisonWorker'
-import { TestWorker } from './TestWorker'
+import { MultiComparisonWorker } from './_MultiComparisonWorker'
+import { MultiComparisonRequest } from './_MultiComparisonRequest'
+import { ComparisonWorker } from './_ComparisonWorker'
+import { TestWorker } from './_TestWorker'
 
 export async function startMultiComparison(db: baqend, createdBy: string, tests: model.ComparisonInfo): Promise<model.BulkTest> {
   const testWorker = new TestWorker(db)

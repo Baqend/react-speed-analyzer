@@ -1,5 +1,5 @@
 import { baqend, model } from 'baqend'
-import { AnalyzerRequest } from './AnalyzerRequest'
+import { AnalyzerRequest } from './_AnalyzerRequest'
 
 /**
  * A request to start a bulk comparison.

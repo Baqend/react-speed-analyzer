@@ -1,6 +1,6 @@
 import { baqend, model } from 'baqend'
-import { MultiComparisonRequest } from './MultiComparisonRequest'
-import { MultiComparisonListener, MultiComparisonWorker } from './MultiComparisonWorker'
+import { MultiComparisonRequest } from './_MultiComparisonRequest'
+import { MultiComparisonListener, MultiComparisonWorker } from './_MultiComparisonWorker'
 
 export class BulkComparisonWorker implements MultiComparisonListener {
   constructor(private db: baqend, private multiComparisonWorker: MultiComparisonWorker) {

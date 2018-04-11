@@ -1,10 +1,10 @@
 import stringifyObject from 'stringify-object'
 import { baqend } from 'baqend'
-import { createSmartConfig, getFallbackConfig, getMinimalConfig } from './configGeneration'
-import { createTestScript } from './createTestScript'
-import { analyzeSpeedKit } from './analyzeSpeedKit'
-import { API } from './Pagetest'
-import { TestInfo } from './TestRequest'
+import { createSmartConfig, getFallbackConfig, getMinimalConfig } from './_configGeneration'
+import { createTestScript } from './_createTestScript'
+import { analyzeSpeedKit } from './_analyzeSpeedKit'
+import { API } from './_Pagetest'
+import { TestInfo } from './_TestRequest'
 
 const PREWARM_RUNS = 2
 

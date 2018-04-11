@@ -1,12 +1,12 @@
 import stringifyObject from 'stringify-object'
 import { baqend, model } from 'baqend'
-import { getCachedSpeedKitConfig } from './configCaching'
-import { getRootPath, getTLD } from './getSpeedKitUrl'
+import { getCachedSpeedKitConfig } from './_configCaching'
+import { getRootPath, getTLD } from './_getSpeedKitUrl'
 import { generateUniqueId } from './generateUniqueId'
-import { analyzeSpeedKit } from './analyzeSpeedKit'
-import { timeout } from './sleep'
-import { DEFAULT_ACTIVITY_TIMEOUT, TestParams, TestRequest } from './TestRequest'
-import { AnalyzerRequest } from './AnalyzerRequest'
+import { analyzeSpeedKit } from './_analyzeSpeedKit'
+import { timeout } from './_sleep'
+import { DEFAULT_ACTIVITY_TIMEOUT, TestParams, TestRequest } from './_TestRequest'
+import { AnalyzerRequest } from './_AnalyzerRequest'
 
 export interface ComparisonParams extends TestParams {
   swUrl: string

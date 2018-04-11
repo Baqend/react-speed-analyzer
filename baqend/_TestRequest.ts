@@ -1,7 +1,7 @@
 import { baqend, model } from 'baqend'
 import { Request } from 'express'
-import { TestWorker } from './TestWorker'
-import { AnalyzerRequest } from './AnalyzerRequest'
+import { TestWorker } from './_TestWorker'
+import { AnalyzerRequest } from './_AnalyzerRequest'
 
 export const DEFAULT_LOCATION = 'eu-central-1:Chrome.Native'
 export const DEFAULT_ACTIVITY_TIMEOUT = 75

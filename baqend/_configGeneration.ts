@@ -1,10 +1,10 @@
 import fetch from 'node-fetch'
 import { baqend } from 'baqend'
-import { getAdSet } from './adBlocker'
-import { getTLD } from './getSpeedKitUrl'
+import { getAdSet } from './_adBlocker'
+import { getTLD } from './_getSpeedKitUrl'
 import credentials from './credentials'
-import { escapeRegExp, toRegExp } from './helpers'
-import { WptTestResult } from './Pagetest'
+import { escapeRegExp, toRegExp } from './_helpers'
+import { WptTestResult } from './_Pagetest'
 
 const CDN_LOCAL_URL = 'https://makefast.app.baqend.com/v1/file/www/selfMaintainedCDNList';
 

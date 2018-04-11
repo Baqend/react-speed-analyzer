@@ -1,4 +1,4 @@
-import { TestWorker } from './TestWorker'
+import { TestWorker } from './_TestWorker'
 import { baqend, model } from 'baqend'
 
 export function run(db: baqend, jobsStatus: model.JobStatus, jobsDefinition: model.JobDefinition) {

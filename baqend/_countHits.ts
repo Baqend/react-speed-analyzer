@@ -1,5 +1,5 @@
 import { countBy } from 'lodash'
-import { WptRequest } from './Pagetest'
+import { WptRequest } from './_Pagetest'
 
 export type HitCounters = { hit: number, miss: number, other: number, size: number, withCaching: number }
 

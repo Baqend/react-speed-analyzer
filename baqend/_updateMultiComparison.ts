@@ -1,5 +1,5 @@
 import { baqend, model } from 'baqend'
-import { aggregateFields } from './helpers'
+import { aggregateFields } from './_helpers'
 
 type TestResultFieldPrefix = 'competitor' | 'speedKit'
 

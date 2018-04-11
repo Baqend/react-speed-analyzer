@@ -1,7 +1,7 @@
 import { baqend, model } from 'baqend'
-import { AnalyzerRequest } from './AnalyzerRequest'
-import { DEFAULT_LOCATION, DEFAULT_ACTIVITY_TIMEOUT } from './TestRequest'
-import { ComparisonParams } from './ComparisonRequest'
+import { AnalyzerRequest } from './_AnalyzerRequest'
+import { DEFAULT_LOCATION, DEFAULT_ACTIVITY_TIMEOUT } from './_TestRequest'
+import { ComparisonParams } from './_ComparisonRequest'
 
 const defaultParams = {
   activityTimeout: DEFAULT_ACTIVITY_TIMEOUT,

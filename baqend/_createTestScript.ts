@@ -1,6 +1,6 @@
 import URL from 'url'
 import credentials from './credentials'
-import { DEFAULT_ACTIVITY_TIMEOUT, DEFAULT_TIMEOUT } from './TestRequest'
+import { DEFAULT_ACTIVITY_TIMEOUT, DEFAULT_TIMEOUT } from './_TestRequest'
 
 export interface SpeedKitConfig {
   appName: string

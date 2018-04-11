@@ -1,7 +1,7 @@
 import { baqend, model } from 'baqend'
-import { factorize } from './updateMultiComparison'
-import { callPageSpeed } from './callPageSpeed'
-import { TestListener, TestWorker } from './TestWorker'
+import { factorize } from './_updateMultiComparison'
+import { callPageSpeed } from './_callPageSpeed'
+import { TestListener, TestWorker } from './_TestWorker'
 
 const PSI_TYPE = 'psi'
 

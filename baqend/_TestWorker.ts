@@ -1,11 +1,11 @@
 import { baqend, model } from 'baqend'
-import { API } from './Pagetest'
-import { TestType, WebPagetestResultHandler } from './WebPagetestResultHandler'
-import { getFallbackConfig, getMinimalConfig } from './configGeneration'
-import { createTestScript, SpeedKitConfigArgument } from './createTestScript'
+import { API } from './_Pagetest'
+import { TestType, WebPagetestResultHandler } from './_WebPagetestResultHandler'
+import { getFallbackConfig, getMinimalConfig } from './_configGeneration'
+import { createTestScript, SpeedKitConfigArgument } from './_createTestScript'
 import credentials from './credentials'
-import { sleep } from './sleep'
-import { TestInfo } from './TestRequest'
+import { sleep } from './_sleep'
+import { TestInfo } from './_TestRequest'
 
 const PING_BACK_URL = `https://${credentials.app}.app.baqend.com/v1/code/testResultPingback`;
 

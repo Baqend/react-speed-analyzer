@@ -1,7 +1,7 @@
 import URL from 'url'
 import { baqend } from 'baqend'
-import { escapeRegExp } from './helpers'
-import { getCdnRegExps } from './configGeneration'
+import { escapeRegExp } from './_helpers'
+import { getCdnRegExps } from './_configGeneration'
 import credentials from './credentials'
 
 /**

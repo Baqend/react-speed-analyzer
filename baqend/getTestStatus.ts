@@ -1,4 +1,4 @@
-import { API } from './Pagetest'
+import { API } from './_Pagetest'
 import { baqend, model } from 'baqend'
 import { TestStatus } from 'webpagetest'
 

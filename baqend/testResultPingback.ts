@@ -1,8 +1,8 @@
 import { baqend } from 'baqend'
-import { ComparisonWorker } from './ComparisonWorker'
-import { TestWorker } from './TestWorker'
-import { MultiComparisonWorker } from './MultiComparisonWorker'
-import { BulkComparisonWorker } from './BulkComparisonWorker'
+import { ComparisonWorker } from './_ComparisonWorker'
+import { TestWorker } from './_TestWorker'
+import { MultiComparisonWorker } from './_MultiComparisonWorker'
+import { BulkComparisonWorker } from './_BulkComparisonWorker'
 
 export function call(db: baqend, data: any) {
   db.log.info('Pingback for test ', { data })

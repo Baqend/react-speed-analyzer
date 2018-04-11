@@ -1,10 +1,10 @@
 import { Request } from 'express'
 import { baqend, model } from 'baqend'
-import { BulkComparisonRequest } from './BulkComparisonRequest'
-import { BulkComparisonWorker } from './BulkComparisonWorker'
-import { MultiComparisonWorker } from './MultiComparisonWorker'
-import { ComparisonWorker } from './ComparisonWorker'
-import { TestWorker } from './TestWorker'
+import { BulkComparisonRequest } from './_BulkComparisonRequest'
+import { BulkComparisonWorker } from './_BulkComparisonWorker'
+import { MultiComparisonWorker } from './_MultiComparisonWorker'
+import { ComparisonWorker } from './_ComparisonWorker'
+import { TestWorker } from './_TestWorker'
 
 export async function startBulkComparison(db: baqend, createdBy: string, tests: model.ComparisonInfo[]): Promise<model.BulkComparison> {
   const testWorker = new TestWorker(db)

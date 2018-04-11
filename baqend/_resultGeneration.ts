@@ -1,9 +1,9 @@
-import { toFile } from './download'
-import { getAdSet } from './adBlocker'
+import { toFile } from './_toFile'
+import { getAdSet } from './_adBlocker'
 import credentials from './credentials'
-import { API, WptRun, WptTestResult, WptTestResultOptions, WptView } from './Pagetest'
-import { countHits } from './countHits'
-import { getFMP } from './calculateFMP'
+import { API, WptRun, WptTestResult, WptTestResultOptions, WptView } from './_Pagetest'
+import { countHits } from './_countHits'
+import { getFMP } from './_calculateFMP'
 import { baqend, binding, model } from 'baqend'
 
 /**

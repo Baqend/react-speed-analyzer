@@ -1,5 +1,5 @@
-import { ComparisonWorker } from './ComparisonWorker'
-import { TestWorker } from './TestWorker'
+import { ComparisonWorker } from './_ComparisonWorker'
+import { TestWorker } from './_TestWorker'
 import { baqend, model } from 'baqend'
 
 export function run(db: baqend, jobsStatus: model.JobStatus, jobsDefinition: model.JobDefinition) {

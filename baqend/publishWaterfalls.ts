@@ -1,7 +1,7 @@
 import fetch from 'node-fetch'
 import { baqend, model } from 'baqend'
 import { Request, Response } from 'express'
-import { TestType } from './WebPagetestResultHandler'
+import { TestType } from './_WebPagetestResultHandler'
 
 function getTestId(testResult: model.TestResult): string | null {
   if (testResult.testId) {

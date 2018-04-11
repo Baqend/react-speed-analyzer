@@ -72,16 +72,3 @@ export async function getFMP(testId: string, runIndex: string): Promise<number> 
 
   return calculateFMP(data)
 }
-
-/**
- * Baqend code API call.
- */
-export async function call(db: baqend, data: { testId: string, runIndex: string }): Promise<{ fmp: number }> {
-  const { testId, runIndex = '0' } = data
-
-  try {
-    return { fmp: await getFMP(testId, runIndex) }
-  } catch (err) {
-    throw new Abort(err.message)
-  }
-}

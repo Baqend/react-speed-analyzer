@@ -1,11 +1,11 @@
 import {baqend, model} from 'baqend'
 
-import { API } from './Pagetest'
-import { TestParams, TestRequest } from './TestRequest'
-import { getMinimalConfig } from './configGeneration'
-import { createTestScript } from './createTestScript'
-import { getCachedSpeedKitConfig } from './configCaching'
-import { WebPagetestResultHandler } from './WebPagetestResultHandler'
+import { API } from './_Pagetest'
+import { TestParams, TestRequest } from './_TestRequest'
+import { getMinimalConfig } from './_configGeneration'
+import { createTestScript } from './_createTestScript'
+import { getCachedSpeedKitConfig } from './_configCaching'
+import { WebPagetestResultHandler } from './_WebPagetestResultHandler'
 
 const PREWARM_OPTIONS = {
   runs: 1,

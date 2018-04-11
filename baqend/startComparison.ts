@@ -1,8 +1,8 @@
 import { baqend } from 'baqend'
 import { Request } from 'express'
-import { ComparisonRequest } from './ComparisonRequest'
-import { ComparisonWorker } from './ComparisonWorker'
-import { TestWorker } from './TestWorker'
+import { ComparisonRequest } from './_ComparisonRequest'
+import { ComparisonWorker } from './_ComparisonWorker'
+import { TestWorker } from './_TestWorker'
 
 export async function call(db: baqend, data: any) {
   const testWorker = new TestWorker(db)

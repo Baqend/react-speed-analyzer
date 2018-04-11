@@ -1,8 +1,8 @@
 import { baqend, model } from 'baqend'
 import { Request } from 'express'
 import { isRateLimited } from './rateLimiter'
-import { executeTest, handleTestError } from './testExecution'
-import { executePrewarm } from './prewarming'
+import { executeTest, handleTestError } from './_testExecution'
+import { executePrewarm } from './_prewarming'
 
 export const DEFAULT_LOCATION = 'eu-central-1:Chrome.Native'
 export const DEFAULT_ACTIVITY_TIMEOUT = 75

@@ -1,6 +1,6 @@
 import { baqend, model } from 'baqend'
-import { API } from './Pagetest'
-import { generateTestResult } from './resultGeneration'
+import { API } from './_Pagetest'
+import { generateTestResult } from './_resultGeneration'
 
 /**
  * Executes the given test and returns the result.

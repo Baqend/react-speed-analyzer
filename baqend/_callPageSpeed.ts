@@ -53,12 +53,3 @@ export async function callPageSpeed(url: string, mobile: boolean): Promise<PageS
 
   return { url, mobile, domains, requests, bytes, screenshot }
 }
-
-/**
- * Baqend code API call.
- */
-export async function get(db: baqend, req: Request, res: Response): Promise<void> {
-  const results = await callPageSpeed(req.query.url, req.query.mobile === 'true')
-
-  res.send(results)
-}

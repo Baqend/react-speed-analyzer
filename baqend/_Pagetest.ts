@@ -2,7 +2,7 @@ import WebPageTest, { TestStatus } from 'webpagetest'
 import credentials from './credentials'
 import { baqend } from 'baqend'
 
-const { sleep } = require('./sleep');
+const { sleep } = require('./_sleep');
 
 const PING_BACK_URL = `https://${credentials.app}.app.baqend.com/v1/code/testPingback`;
 

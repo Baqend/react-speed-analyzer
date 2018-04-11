@@ -1,8 +1,8 @@
 import { baqend, model } from 'baqend'
-import { API, WptTestResultOptions } from './Pagetest'
-import { generateTestResult } from './resultGeneration'
-import { cacheSpeedKitConfig } from './configCaching'
-import { createSmartConfig, getFallbackConfig } from './configGeneration'
+import { API, WptTestResultOptions } from './_Pagetest'
+import { generateTestResult } from './_resultGeneration'
+import { cacheSpeedKitConfig } from './_configCaching'
+import { createSmartConfig, getFallbackConfig } from './_configGeneration'
 
 export enum TestType {
   CONFIG = 'config',
