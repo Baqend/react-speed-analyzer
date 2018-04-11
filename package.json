@@ -32,9 +32,9 @@
     "deploy:prod": "npm run deploy:app:prod && npm run deploy:modules:prod",
     "deploy:app:prod": "npm run build:app:prod && baqend deploy --file-dir build --bucket-path www makefast",
     "deploy:modules:prod": "npm run build:modules:prod && baqend deploy -F --file-dir build-modules --bucket-path embedded makefast",
-    "deploy-code:dev": "tsc -p baqend ; baqend deploy --code --code-dir baqend/out makefast-dev",
-    "deploy-code:staging": "tsc -p baqend ; baqend deploy --code --code-dir baqend/out makefast-staging",
-    "deploy-code:prod": "tsc -p baqend ; baqend deploy --code --code-dir baqend/out makefast",
+    "deploy-code:dev": "node scripts/code.js --mode=development",
+    "deploy-code:staging": "node scripts/code.js --mode=staging",
+    "deploy-code:prod": "node scripts/code.js --mode=production",
     "schema-download:dev": "baqend schema download makefast-dev && baqend typings makefast-dev",
     "schema-upload:dev": "baqend schema upload makefast-dev",
     "schema-upload:staging": "baqend schema upload makefast-staging",
@@ -118,7 +118,9 @@
     "get-own-enumerable-property-symbols": "^2.0.1",
     "is-obj": "^1.0.1",
     "is-regexp": "^1.0.0",
-    "node-fetch": "^1.7.3"
+    "node-fetch": "^1.7.3",
+    "typescript": "^2.8.1",
+    "which": "^1.3.0"
   },
   "jest": {
     "collectCoverageFrom": [
