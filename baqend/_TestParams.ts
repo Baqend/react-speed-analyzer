@@ -38,7 +38,4 @@ export interface TestParams {
    * The WebPagetest test timeout.
    */
   timeout?: number
-
-  // isWordPress?: boolean
-  // isSpeedKitComparison?: boolean
 }

@@ -35,7 +35,7 @@
     "deploy-code:dev": "node scripts/code.js --mode=development",
     "deploy-code:staging": "node scripts/code.js --mode=staging",
     "deploy-code:prod": "node scripts/code.js --mode=production",
-    "schema-download:dev": "baqend schema download makefast-dev && baqend typings makefast-dev",
+    "schema-download:dev": "baqend schema download makefast-dev",
     "schema-upload:dev": "baqend schema upload makefast-dev",
     "schema-upload:staging": "baqend schema upload makefast-staging",
     "schema-upload:prod": "baqend schema upload makefast",
