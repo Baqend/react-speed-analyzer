@@ -181,6 +181,7 @@ declare module 'baqend' {
       caching: boolean;
       mobile: boolean;
       url: string;
+      displayUrl: string;
       competitorTestResult: TestResult;
       speedKitTestResult: TestResult;
       whitelist: string;
@@ -188,6 +189,7 @@ declare module 'baqend' {
       factors: Mean | null;
       isSpeedKitComparison: boolean;
       isSecured: boolean;
+      type: string | null;
       speedKitVersion: string | null;
       activityTimeout: number;
       speedKitConfig: string | null;

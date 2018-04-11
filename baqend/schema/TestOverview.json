@@ -54,50 +54,75 @@
       "type": "/db/String",
       "order": 7
     },
+    "displayUrl": {
+      "name": "displayUrl",
+      "type": "/db/String",
+      "order": 8
+    },
     "competitorTestResult": {
       "name": "competitorTestResult",
       "type": "/db/TestResult",
-      "order": 8
+      "order": 9
     },
     "speedKitTestResult": {
       "name": "speedKitTestResult",
       "type": "/db/TestResult",
-      "order": 9
+      "order": 10
     },
     "whitelist": {
       "name": "whitelist",
       "type": "/db/String",
-      "order": 10
+      "order": 11
     },
     "hasFinished": {
       "name": "hasFinished",
       "type": "/db/Boolean",
-      "order": 11
+      "order": 12
     },
     "factors": {
       "name": "factors",
       "type": "/db/Mean",
-      "order": 12
+      "order": 13
     },
     "isSpeedKitComparison": {
       "name": "isSpeedKitComparison",
       "type": "/db/Boolean",
-      "order": 13
+      "order": 14
     },
     "speedKitVersion": {
       "name": "speedKitVersion",
       "type": "/db/String",
-      "order": 14
+      "order": 15
     },
     "activityTimeout": {
       "name": "activityTimeout",
       "type": "/db/Integer",
-      "order": 15
+      "order": 16
     },
     "speedKitConfig": {
       "name": "speedKitConfig",
       "type": "/db/String",
-      "order": 16
+      "order": 17
+    },
+    "tasks": {
+      "name": "tasks",
+      "type": "/db/collection.List[/db/Task]",
+      "order": 18
+    },
+    "configAnalysis": {
+      "name": "configAnalysis",
+      "type": "/db/ConfigAnalysis",
+      "order": 19
+    },
+    "isSecured": {
+      "name": "isSecured",
+      "type": "/db/Boolean",
+      "order": 20
+    },
+    "type": {
+      "name": "type",
+      "type": "/db/String",
+      "order": 21
     }
   }
 }

@@ -109,21 +109,28 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
     const tld = getTLD(this.db, urlInfo.url)
     const id = uniqueId + tld.substring(0, tld.length - 1)
 
+    // Initialize
     const comparison = new this.db.TestOverview({ id })
-    comparison.url = urlInfo.url
-    comparison.caching = params.caching
-    comparison.location = params.location
-    comparison.mobile = params.mobile
-    comparison.activityTimeout = params.activityTimeout || DEFAULT_ACTIVITY_TIMEOUT
-    comparison.isSpeedKitComparison = urlInfo.speedKitEnabled
-    comparison.speedKitVersion = urlInfo.speedKitVersion
-    comparison.speedKitConfig = null
-    comparison.configAnalysis = configAnalysis
     comparison.hasFinished = false
+    comparison.configAnalysis = configAnalysis
     comparison.competitorTestResult = competitorTest
     comparison.speedKitTestResult = speedKitTest
     comparison.tasks = []
+
+    // Copy URL info
+    comparison.url = urlInfo.url
+    comparison.displayUrl = urlInfo.displayUrl
+    comparison.isSpeedKitComparison = urlInfo.speedKitEnabled
+    comparison.speedKitVersion = urlInfo.speedKitVersion
     comparison.isSecured = urlInfo.secured
+    comparison.type = urlInfo.type
+
+    // Copy params
+    comparison.caching = params.caching
+    comparison.location = params.location
+    comparison.mobile = params.mobile
+    comparison.activityTimeout = params.activityTimeout
+    comparison.speedKitConfig = params.speedKitConfig
 
     return comparison.save()
   }
