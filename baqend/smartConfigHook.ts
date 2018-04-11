@@ -1,23 +1,21 @@
-import {baqend, model} from 'baqend'
-
-import { API } from './_Pagetest'
-import { TestParams, TestRequest } from './_TestRequest'
+import { baqend } from 'baqend'
+import { bootstrap } from './_compositionRoot'
+import { getCachedSpeedKitConfig } from './_configCaching'
 import { getMinimalConfig } from './_configGeneration'
 import { createTestScript } from './_createTestScript'
-import { getCachedSpeedKitConfig } from './_configCaching'
-import { WebPagetestResultHandler } from './_WebPagetestResultHandler'
+import { API } from './_Pagetest'
 
 const PREWARM_OPTIONS = {
   runs: 1,
   timeline: false,
   video: false,
   firstViewOnly: true,
-  minimalResults: true
+  minimalResults: true,
 }
 
 
 async function hasTestFinished(testId: string): Promise<boolean> {
-  const status: any = await API.getTestStatus(testId)
+  const status = await API.getTestStatus(testId)
   return status.statusCode === 200
 }
 
@@ -26,12 +24,12 @@ function getTestScriptWithMinimalWhitelist(db: baqend, url: string): string {
   return createTestScript(url, false, false, config, 75)
 }
 
-async function startConfigGenerationTest(db: baqend, testInfo: any): Promise<string|any> {
+async function startConfigGenerationTest(db: baqend, testInfo: any): Promise<string | any> {
   const configTestScript = getTestScriptWithMinimalWhitelist(db, testInfo.url)
   const configTestOptions = Object.assign(testInfo.testOptions, PREWARM_OPTIONS)
-  try{
+  try {
     return await API.runTestWithoutWait(configTestScript, configTestOptions)
-  } catch(error) {
+  } catch (error) {
     db.log.error(`Error while starting WPT test`, { error: error.stack })
   }
 }
@@ -39,15 +37,14 @@ async function startConfigGenerationTest(db: baqend, testInfo: any): Promise<str
 /**
  * FIXME: Maybe inappropriate behavior when called with testId
  */
-export async function call(db: baqend, data: any):Promise<string|null> {
+export async function call(db: baqend, data: any): Promise<string | null> {
+  const { testFactory, webPagetestResultHandler } = bootstrap(db)
   const { testId } = data
-  const testRequest = new TestRequest(db, data)
-  const testInfo = testRequest.getTestInfo()
+  const testInfo = testFactory.getTestInfo(data)
 
   if (testId) {
     const finished = await hasTestFinished(testId)
     if (finished) {
-      const webPagetestResultHandler = new WebPagetestResultHandler(db)
       return await webPagetestResultHandler.getSmartConfig(testId, testInfo)
     }
 

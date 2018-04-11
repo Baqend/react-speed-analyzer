@@ -4,7 +4,7 @@ import { createSmartConfig, getFallbackConfig, getMinimalConfig } from './_confi
 import { createTestScript } from './_createTestScript'
 import { analyzeSpeedKit } from './_analyzeSpeedKit'
 import { API } from './_Pagetest'
-import { TestInfo } from './_TestRequest'
+import { TestInfo } from './_TestFactory'
 
 const PREWARM_RUNS = 2
 

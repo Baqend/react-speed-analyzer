@@ -1,16 +1,10 @@
 import { baqend } from 'baqend'
-import { Request } from 'express'
-import { ComparisonRequest } from './_ComparisonRequest'
-import { ComparisonWorker } from './_ComparisonWorker'
-import { TestWorker } from './_TestWorker'
+import { bootstrap } from './_compositionRoot'
 
 export async function call(db: baqend, data: any) {
-  const testWorker = new TestWorker(db)
-  const comparisonWorker = new ComparisonWorker(db, testWorker)
+  const { comparisonWorker, comparisonFactory } = bootstrap(db)
 
-  const comparisonRequest = new ComparisonRequest(db, data)
-
-  const comparison = await comparisonRequest.create()
+  const comparison = await comparisonFactory.create(data)
   comparisonWorker.next(comparison).catch((err) => db.log.error(err.message, err))
 
   return comparison

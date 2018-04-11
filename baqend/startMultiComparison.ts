@@ -1,17 +1,11 @@
 import { Request } from 'express'
 import { baqend, model } from 'baqend'
-import { MultiComparisonWorker } from './_MultiComparisonWorker'
-import { MultiComparisonRequest } from './_MultiComparisonRequest'
-import { ComparisonWorker } from './_ComparisonWorker'
-import { TestWorker } from './_TestWorker'
+import { bootstrap } from './_compositionRoot'
 
 export async function startMultiComparison(db: baqend, createdBy: string, tests: model.ComparisonInfo): Promise<model.BulkTest> {
-  const testWorker = new TestWorker(db)
-  const comparisonWorker = new ComparisonWorker(db, testWorker)
-  const multiComparisonWorker = new MultiComparisonWorker(db, comparisonWorker)
+  const { multiComparisonWorker, multiComparisonFactory } = bootstrap(db)
 
-  const multiComparisonRequest = new MultiComparisonRequest(db, createdBy, tests)
-  const multiComparison = await multiComparisonRequest.create()
+  const multiComparison = await multiComparisonFactory.create(createdBy, tests)
   multiComparisonWorker.next(multiComparison)
 
   return multiComparison

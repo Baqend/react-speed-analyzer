@@ -1,5 +1,5 @@
 import { baqend, model } from 'baqend'
-import { API, WptTestResultOptions } from './_Pagetest'
+import { Pagetest, WptTestResultOptions } from './_Pagetest'
 import { generateTestResult } from './_resultGeneration'
 import { cacheSpeedKitConfig } from './_configCaching'
 import { createSmartConfig, getFallbackConfig } from './_configGeneration'
@@ -16,7 +16,7 @@ export enum TestType {
  * @return {WebPagetestResultHandler}
  */
 export class WebPagetestResultHandler {
-  constructor(private db: baqend) {
+  constructor(private readonly db: baqend, private readonly api: Pagetest) {
   }
 
   /**
@@ -102,7 +102,7 @@ export class WebPagetestResultHandler {
     }
 
     try {
-      const result = await API.getTestResults(testId, options)
+      const result = await this.api.getTestResults(testId, options)
       const domains = result.data
       this.db.log.info('Generating Smart Config', { url: testInfo.url })
       const config = await createSmartConfig(this.db, testInfo.url, domains, testInfo.isMobile)

@@ -1,17 +1,9 @@
 import { baqend } from 'baqend'
-import { ComparisonWorker } from './_ComparisonWorker'
-import { TestWorker } from './_TestWorker'
-import { MultiComparisonWorker } from './_MultiComparisonWorker'
-import { BulkComparisonWorker } from './_BulkComparisonWorker'
+import { bootstrap } from './_compositionRoot'
 
-export function call(db: baqend, data: any) {
-  db.log.info('Pingback for test ', { data })
+export function call(db: baqend, { id }: any) {
+  const { testWorker } = bootstrap(db)
+  db.log.info('Pingback for test', { id })
 
-  // Create all possible necessary workers
-  const testWorker = new TestWorker(db)
-  const comparisonWorker = new ComparisonWorker(db, testWorker)
-  const multiComparisonWorker = new MultiComparisonWorker(db, comparisonWorker)
-  new BulkComparisonWorker(db, multiComparisonWorker)
-
-  return testWorker.handleWebPagetestResult(data.id)
+  return testWorker.handleWebPagetestResult(id)
 }

@@ -1,20 +1,20 @@
 import { baqend, model } from 'baqend'
-import { API } from './_Pagetest'
-import { TestType, WebPagetestResultHandler } from './_WebPagetestResultHandler'
 import { getFallbackConfig, getMinimalConfig } from './_configGeneration'
 import { createTestScript, SpeedKitConfigArgument } from './_createTestScript'
-import credentials from './credentials'
+import { Pagetest } from './_Pagetest'
 import { sleep } from './_sleep'
-import { TestInfo } from './_TestRequest'
+import { TestInfo } from './_TestFactory'
+import { TestType, WebPagetestResultHandler } from './_WebPagetestResultHandler'
+import credentials from './credentials'
 
-const PING_BACK_URL = `https://${credentials.app}.app.baqend.com/v1/code/testResultPingback`;
+const PING_BACK_URL = `https://${credentials.app}.app.baqend.com/v1/code/testResultPingback`
 
 const prewarmOptions = {
   runs: 2,
   timeline: false,
   video: false,
   firstViewOnly: true,
-  minimalResults: true
+  minimalResults: true,
 }
 
 export interface TestListener {
@@ -29,12 +29,12 @@ export interface TestListener {
  * Takes care of starting the right webPagetests at the right time
  */
 export class TestWorker {
-  private testResultHandler: WebPagetestResultHandler
-
-  constructor(private readonly db: baqend, private listener?: TestListener) {
-    this.db = db
-    this.listener = listener
-    this.testResultHandler = new WebPagetestResultHandler(db)
+  constructor(
+    private readonly db: baqend,
+    private readonly api: Pagetest,
+    private readonly webPagetestResultHandler: WebPagetestResultHandler,
+    private listener?: TestListener,
+  ) {
   }
 
   setListener(value: TestListener) {
@@ -80,7 +80,7 @@ export class TestWorker {
         this.startPerformanceWebPagetest(test)
       }
     } catch (error) {
-      this.db.log.warn(`Error while next iteration`, {id: test.id, error: error.stack})
+      this.db.log.warn(`Error while next iteration`, { id: test.id, error: error.stack })
     }
   }
 
@@ -89,7 +89,7 @@ export class TestWorker {
    */
   async handleWebPagetestResult(testId: string): Promise<void> {
     try {
-      const test = await this.testResultHandler.handleResult(testId)
+      const test = await this.webPagetestResultHandler.handleResult(testId)
       this.db.log.info('handleTestResult next', { testId })
       this.next(test).catch((err) => this.db.log.error(err.message, err))
     } catch (error) {
@@ -163,7 +163,7 @@ export class TestWorker {
    * @return {Promise<void>}
    */
   private async isWebPagetestFinished(wptTestId: string): Promise<boolean> {
-    const test = await API.getTestStatus(wptTestId)
+    const test = await this.api.getTestStatus(wptTestId)
 
     return test.statusCode === 200
   }
@@ -174,8 +174,8 @@ export class TestWorker {
   private startPrewarmWebPagetest(test: model.TestResult): Promise<void> {
     const { speedKitConfig, testInfo } = test
     const { testOptions } = testInfo
-    const prewarmTestScript = this.getScriptForConfig(speedKitConfig, testInfo);
-    const prewarmTestOptions = Object.assign({ pingback: PING_BACK_URL }, testOptions, prewarmOptions);
+    const prewarmTestScript = this.getScriptForConfig(speedKitConfig, testInfo)
+    const prewarmTestOptions = Object.assign({ pingback: PING_BACK_URL }, testOptions, prewarmOptions)
 
     return this.startWebPagetest(test, TestType.PREWARM, prewarmTestScript, prewarmTestOptions)
   }
@@ -185,9 +185,9 @@ export class TestWorker {
    */
   private startConfigWebPagetest(test: model.TestResult): Promise<void> {
     const { testInfo } = test
-    const { testOptions } = testInfo;
-    const configTestScript = this.getTestScriptWithMinimalWhitelist(testInfo);
-    const configTestOptions = Object.assign({ pingback: PING_BACK_URL }, testOptions, prewarmOptions, { runs: 1 });
+    const { testOptions } = testInfo
+    const configTestScript = this.getTestScriptWithMinimalWhitelist(testInfo)
+    const configTestOptions = Object.assign({ pingback: PING_BACK_URL }, testOptions, prewarmOptions, { runs: 1 })
 
     return this.startWebPagetest(test, TestType.CONFIG, configTestScript, configTestOptions)
   }
@@ -209,13 +209,13 @@ export class TestWorker {
    */
   private async startWebPagetest(test: model.TestResult, testType: TestType, testScript: string, testOptions: any): Promise<void> {
     try {
-      const testId = await API.runTestWithoutWait(testScript, testOptions)
+      const testId = await this.api.runTestWithoutWait(testScript, testOptions)
       await this.pushWebPagetestToTestResult(test, new this.db.WebPagetest({
         testId,
         testType,
         testScript,
         testOptions,
-        hasFinished: false
+        hasFinished: false,
       }))
     } catch (error) {
       this.db.log.error(`Error while starting ${testType} WPT test`, { test, error })
@@ -238,8 +238,8 @@ export class TestWorker {
   }
 
   private getTestScriptWithMinimalWhitelist({ url, isTestWithSpeedKit, isSpeedKitComparison, activityTimeout, testOptions }: TestInfo): string {
-    const config = getMinimalConfig(this.db, url, !!testOptions.mobile);
+    const config = getMinimalConfig(this.db, url, !!testOptions.mobile)
 
-    return createTestScript(url, !!isTestWithSpeedKit, !!isSpeedKitComparison, config, activityTimeout);
+    return createTestScript(url, !!isTestWithSpeedKit, !!isSpeedKitComparison, config, activityTimeout)
   }
 }

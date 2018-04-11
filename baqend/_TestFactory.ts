@@ -1,7 +1,5 @@
 import { baqend, model } from 'baqend'
-import { Request } from 'express'
-import { TestWorker } from './_TestWorker'
-import { AnalyzerRequest } from './_AnalyzerRequest'
+import { AsyncFactory } from './_AsyncFactory'
 
 export const DEFAULT_LOCATION = 'eu-central-1:Chrome.Native'
 export const DEFAULT_ACTIVITY_TIMEOUT = 75
@@ -75,18 +73,17 @@ export interface TestInfo {
  * @param {number} [priority=0] Defines the test's priority, from 0 (highest) to 9 (lowest).
  * @return {Promise<TestResult>} A promise resolving when the test has been created.
  */
-export class TestRequest implements AnalyzerRequest<model.TestResult> {
-  constructor(private db: baqend, private params: TestParams) {
+export class TestFactory implements AsyncFactory<model.TestResult> {
+  constructor(private db: baqend) {
   }
 
-  create(): Promise<model.TestResult> {
-    const params = this.params
+  create(params: TestParams): Promise<model.TestResult> {
     const commandLine = this.createCommandLineFlags(params.url, params.isClone)
     if (commandLine) {
       this.db.log.info('flags: %s', commandLine)
     }
 
-    const testInfo = this.getTestInfo()
+    const testInfo = this.getTestInfo(params)
 
     const testResult = new this.db.TestResult({
       url: params.url,
@@ -118,8 +115,7 @@ export class TestRequest implements AnalyzerRequest<model.TestResult> {
     return ''
   }
 
-  getTestInfo(): TestInfo {
-    const params = this.params
+  getTestInfo(params: TestParams): TestInfo {
     const commandLine = this.createCommandLineFlags(params.url, params.isClone)
     if (commandLine) {
       this.db.log.info('flags: %s', commandLine)
@@ -142,15 +138,4 @@ export class TestRequest implements AnalyzerRequest<model.TestResult> {
       }),
     }
   }
-}
-
-export function call(db: baqend, data: any, req: Request) {
-  const params = data
-  const testWorker = new TestWorker(db)
-  const testRequest = new TestRequest(db, params)
-
-  return testRequest.create().then(testResult => {
-    testWorker.next(testResult)
-    return testResult
-  })
 }

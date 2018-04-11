@@ -1,10 +1,9 @@
-import WebPageTest, { TestStatus } from 'webpagetest'
-import credentials from './credentials'
 import { baqend } from 'baqend'
+import WebPageTest, { TestStatus } from 'webpagetest'
+import { sleep } from './_sleep'
+import credentials from './credentials'
 
-const { sleep } = require('./_sleep');
-
-const PING_BACK_URL = `https://${credentials.app}.app.baqend.com/v1/code/testPingback`;
+const PING_BACK_URL = `https://${credentials.app}.app.baqend.com/v1/code/testPingback`
 
 export interface WptResult<T> {
   data: T
@@ -66,36 +65,17 @@ export interface WptTestResultOptions {
   pageSpeed: boolean
 }
 
-class Pagetest {
+export class Pagetest {
   private wpt: WebPageTest
   private testResolver: Map<string, Function>
   private testRejecter: Map<string, Function>
   private waitPromises: Map<string, Promise<string>>
 
-  /**
-   * @param {string} wptEndpoint WebpageTest's URL endpoint.
-   * @param {string} wptApiKey WebpageTest's API key.
-   */
-  constructor(wptEndpoint: string, wptApiKey: string) {
-    /**
-     * @type {WebPageTest}
-     */
-    this.wpt = new WebPageTest(wptEndpoint, wptApiKey);
-
-    /**
-     * @type {Map<string, Function>}
-     */
-    this.testResolver = new Map();
-
-    /**
-     * @type {Map<string, Function>}
-     */
-    this.testRejecter = new Map();
-
-    /**
-     * @type {Map<string, Promise>}
-     */
-    this.waitPromises = new Map();
+  constructor() {
+    this.wpt = new WebPageTest(credentials.wpt_dns, credentials.wpt_api_key)
+    this.testResolver = new Map()
+    this.testRejecter = new Map()
+    this.waitPromises = new Map()
   }
 
   /**
@@ -108,7 +88,7 @@ class Pagetest {
    */
   runTest(testScriptOrUrl: string, options: any, db: baqend) {
     return this.runTestWithoutWait(testScriptOrUrl, options)
-      .then(testId => this.waitOnTest(testId, db));
+      .then(testId => this.waitOnTest(testId, db))
   }
 
   /**
@@ -119,29 +99,29 @@ class Pagetest {
    * @return {Promise<string>} A promise resolving with the queued test's ID.
    */
   runTestWithoutWait(testScriptOrUrl: string, options: any = {}): Promise<string> {
-    const opts = Object.assign({ pingback: PING_BACK_URL }, options);
+    const opts = Object.assign({ pingback: PING_BACK_URL }, options)
 
     return new Promise((resolve, reject) => {
       this.wpt.runTest(testScriptOrUrl, opts, (err, result) => {
         if (err) {
-          reject(err);
-          return;
+          reject(err)
+          return
         }
 
         if (!result.data) {
-          reject(new Error('Received no test id from WPT'));
-          return;
+          reject(new Error('Received no test id from WPT'))
+          return
         }
 
-        const { testId } = result.data;
+        const { testId } = result.data
         this.waitPromises.set(testId, new Promise((nestedResolve, nestedReject) => {
-          this.testResolver.set(testId, nestedResolve);
-          this.testRejecter.set(testId, nestedReject);
-        }));
+          this.testResolver.set(testId, nestedResolve)
+          this.testRejecter.set(testId, nestedReject)
+        }))
 
-        resolve(testId);
-      });
-    });
+        resolve(testId)
+      })
+    })
   }
 
   /**
@@ -234,12 +214,12 @@ class Pagetest {
     return new Promise((resolve, reject) => {
       this.wpt.getTestStatus(testId, {}, (err, result) => {
         if (err) {
-          reject(err);
+          reject(err)
         } else {
-          resolve(result);
+          resolve(result)
         }
-      });
-    });
+      })
+    })
   }
 
   /**
@@ -253,11 +233,11 @@ class Pagetest {
     // Make the result call more reliable
     const result = await this.wptGetTestResults(testId, options)
     const run = result.data.runs['1']
-    const firstMissing = run.firstView.lastVisualChange <= 0;
-    const secondMissing = run.repeatView && run.repeatView.lastVisualChange <= 0;
+    const firstMissing = run.firstView.lastVisualChange <= 0
+    const secondMissing = run.repeatView && run.repeatView.lastVisualChange <= 0
 
     if (!firstMissing && !secondMissing) {
-      return result;
+      return result
     }
 
     // Retry after 500 milliseconds
@@ -326,4 +306,4 @@ class Pagetest {
   }
 }
 
-export const API = new Pagetest(credentials.wpt_dns, credentials.wpt_api_key)
+export const API = new Pagetest()

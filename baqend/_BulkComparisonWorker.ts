@@ -1,9 +1,9 @@
 import { baqend, model } from 'baqend'
-import { MultiComparisonRequest } from './_MultiComparisonRequest'
+import { MultiComparisonFactory } from './_MultiComparisonFactory'
 import { MultiComparisonListener, MultiComparisonWorker } from './_MultiComparisonWorker'
 
 export class BulkComparisonWorker implements MultiComparisonListener {
-  constructor(private db: baqend, private multiComparisonWorker: MultiComparisonWorker) {
+  constructor(private db: baqend, private multiComparisonFactory: MultiComparisonFactory, private multiComparisonWorker: MultiComparisonWorker) {
     this.multiComparisonWorker.setListener(this)
   }
 
@@ -38,8 +38,7 @@ export class BulkComparisonWorker implements MultiComparisonListener {
       }
 
       // Start next multi comparison
-      const multiComparisonRequest = new MultiComparisonRequest(this.db, createdBy, nextMultiComparison)
-      const multiComparison = await multiComparisonRequest.create()
+      const multiComparison = await this.multiComparisonFactory.create(createdBy, nextMultiComparison)
       await bulkComparison.optimisticSave((it: model.BulkComparison) => {
         it.multiComparisons.push(multiComparison)
       })
