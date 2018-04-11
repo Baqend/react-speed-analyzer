@@ -1,13 +1,14 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "es2017",
     "module": "commonjs",
     "moduleResolution": "node",
-    "lib": ["es5", "dom", "es2015.promise", "es2015.core", "es2015.collection", "es2015.iterable", "es2015.generator"],
+    "lib": ["es2017", "dom"],
     "outDir": "out",
     "esModuleInterop": true,
     "downlevelIteration": true,
-    "strict": true
+    "strict": true,
+    "noImplicitUseStrict": true
   },
   "include": [
     "*.ts"
