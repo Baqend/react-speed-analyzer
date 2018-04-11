@@ -48,8 +48,8 @@ function getFinalTestConfig(config, testInfo, db) {
   return prepareSmartConfig(minimalTestScript, testInfo, db);
 }
 
-function getScriptForConfig(config, { url, isSpeedKitComparison, isTestWithSpeedKit, activityTimeout }) {
-  return createTestScript(url, isTestWithSpeedKit, isSpeedKitComparison, config, activityTimeout);
+function getScriptForConfig(config, { url, isSpeedKitComparison, isTestWithSpeedKit, activityTimeout, testOptions }) {
+  return createTestScript(url, isTestWithSpeedKit, isSpeedKitComparison, config, activityTimeout, testOptions.location);
 }
 
 function getPrewarmConfig({url, customSpeedKitConfig, isSpeedKitComparison, testOptions}, db) {
@@ -103,7 +103,7 @@ function prewarm(testScript, runs, { url, testOptions }, db) {
 
 function getTestScriptWithMinimalWhitelist(db, { url, isTestWithSpeedKit, isSpeedKitComparison, activityTimeout, testOptions }) {
   const config = getMinimalConfig(db, url, testOptions.mobile);
-  return createTestScript(url, isTestWithSpeedKit, isSpeedKitComparison, config, activityTimeout);
+  return createTestScript(url, isTestWithSpeedKit, isSpeedKitComparison, config, activityTimeout, testOptions.location);
 }
 
 function prepareSmartConfig(testScript, testInfo, db) {

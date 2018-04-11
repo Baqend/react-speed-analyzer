@@ -37,11 +37,12 @@ function createCompetitorTestScript(url, speedKitConfig, {
 /**
  * @param {string} url              The competitor's URL to test.
  * @param {object} speedKitConfig   The Speed Kit config.
+ * @param {string} location         The test location where the test is executed.
  * @param {number} activityTimeout  The activity timeout.
  * @param {number} timeout          The timeout.
  * @return {string}                 The created Web Page Test script.
  */
-function createSpeedKitTestScript(url, speedKitConfig, {
+function createSpeedKitTestScript(url, speedKitConfig, location, {
   activityTimeout = DEFAULT_ACTIVITY_TIMEOUT,
   timeout = DEFAULT_TIMEOUT,
 }) {
@@ -63,6 +64,14 @@ function createSpeedKitTestScript(url, speedKitConfig, {
     search: `config=${encodeURIComponent(isSpeedKitComparison ? JSON.stringify(speedKitConfig) : speedKitConfig)}`
   });
 
+  // The new test agent handle about:blank navigations not correctly,
+  // Therefore we must load a page which is not blank and paint the page blank afterwards,
+  // to ensure that the video starts when the navigation is requested
+  const aboutBlank = location.indexOf('-docker') === -1
+    ? `navigate about:blank`
+    : `navigate https://${credentials.app}.app.baqend.com/test-init.html
+       exec document.write('<body style="background-color: white"></body>')`;
+
   // SW always needs to be installed
   return `
     setActivityTimeout ${activityTimeout}
@@ -72,7 +81,8 @@ function createSpeedKitTestScript(url, speedKitConfig, {
     setDns ${hostname} ${credentials.makefast_ip}
     navigate ${installSpeedKitUrl}
     
-    navigate about:blank
+    ${aboutBlank}
+    
     logData 1
     setTimeout ${timeout}
     navigate ${url}
@@ -87,7 +97,7 @@ function createSpeedKitTestScript(url, speedKitConfig, {
  * @param {boolean} isSpeedKitComparison  Whether the competitor is running Speed Kit.
  * @param {string} speedKitConfig         The serialized speedkit config string.
  * @param {number} activityTimeout        The activity timeout.
- * @param {number} timeout                The timeout.
+ * @param {string} location               The test location where the test is executed
  * @return {string}                       The created Web Page Test script.
  */
 function createTestScript(
@@ -95,8 +105,8 @@ function createTestScript(
   isTestWithSpeedKit,
   isSpeedKitComparison,
   speedKitConfig,
-  activityTimeout = DEFAULT_ACTIVITY_TIMEOUT,
-  timeout = DEFAULT_TIMEOUT
+  activityTimeout,
+  location
 ) {
 
   // Resolve Speed Kit config
@@ -104,10 +114,10 @@ function createTestScript(
     if (!speedKitConfig) {
       throw new Error('Empty Speed Kit Config');
     }
-    return createSpeedKitTestScript(url, speedKitConfig, { activityTimeout, timeout });
+    return createSpeedKitTestScript(url, speedKitConfig, location, { activityTimeout, timeout: DEFAULT_TIMEOUT });
   }
 
-  return createCompetitorTestScript(url, speedKitConfig, { activityTimeout, timeout });
+  return createCompetitorTestScript(url, speedKitConfig, { activityTimeout, timeout: DEFAULT_TIMEOUT });
 }
 
 exports.createTestScript = createTestScript;
