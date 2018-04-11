@@ -133,14 +133,13 @@ function pickResults(bulkTest: model.BulkTest, prefix: TestResultFieldPrefix): m
 /**
  * Updates aggregates on a bulk test.
  */
-export async function updateBulkTest(db: baqend, bulkTestRef: model.BulkTest): Promise<model.BulkTest> {
+export async function updateMultiComparison(db: baqend, bulkTestRef: model.BulkTest): Promise<model.BulkTest> {
   const bulkTest = bulkTestRef
 
   try {
     // We must not use the refresh option because we have the same DB object when updating test results.
     await bulkTest.load({ depth: 2 })
 
-    bulkTest.hasFinished = bulkTest.testOverviews.length === bulkTest.runs ? hasBulkTestFinished(bulkTest) : false;
     bulkTest.speedKitMeanValues = new db.Mean(aggregateFields(pickResults(bulkTest, 'speedKit'), fields));
     bulkTest.competitorMeanValues = new db.Mean(aggregateFields(pickResults(bulkTest, 'competitor'), fields));
     bulkTest.factors = factorize(db, bulkTest.competitorMeanValues, bulkTest.speedKitMeanValues);

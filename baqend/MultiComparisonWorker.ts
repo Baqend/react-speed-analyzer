@@ -1,6 +1,7 @@
 import { baqend, model } from 'baqend'
 import { ComparisonListener, ComparisonWorker } from './ComparisonWorker'
 import { ComparisonRequest } from './ComparisonRequest'
+import { updateMultiComparison } from './updateMultiComparison'
 
 export interface MultiComparisonListener {
   handleMultiComparisonFinished(multiComparison: model.BulkTest): any
@@ -34,7 +35,7 @@ export class MultiComparisonWorker implements ComparisonListener {
       }
 
       // Are all planned comparisons finished?
-      if (testOverviews.length === runs) {
+      if (testOverviews.length >= runs) {
         this.db.log.info(`MultiComparison ${multiComparison.key} is finished.`, { multiComparison })
         if (multiComparison.hasFinished) {
           this.db.log.warn(`MultiComparison ${multiComparison.key} was already finished.`, { multiComparison })
@@ -69,6 +70,9 @@ export class MultiComparisonWorker implements ComparisonListener {
     const multiComparison = await this.db.BulkTest.find().in('testOverviews', comparison.id).singleResult()
     if (multiComparison) {
       console.log(`Comparison finished: ${comparison.id}`)
+
+      await updateMultiComparison(this.db, multiComparison)
+
       this.next(multiComparison)
     }
   }

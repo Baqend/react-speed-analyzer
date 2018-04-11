@@ -1,5 +1,5 @@
 import { baqend, model } from 'baqend'
-import { factorize } from './updateBulkComparison'
+import { factorize } from './updateMultiComparison'
 import { callPageSpeed } from './callPageSpeed'
 import { TestListener, TestWorker } from './TestWorker'
 
