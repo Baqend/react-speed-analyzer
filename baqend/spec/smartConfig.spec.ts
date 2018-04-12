@@ -22,7 +22,9 @@ function mockReqRes(body: any = {}, query: any = {}): { req: Request, res: Respo
 
 describe('smartConfig', () => {
   before(async () => {
-    await DB.connect('makefast-dev')
+    if (!DB.isOpen) {
+      await DB.connect('makefast-dev')
+    }
   })
 
   let testId

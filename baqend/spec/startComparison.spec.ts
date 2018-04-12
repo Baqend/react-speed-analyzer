@@ -5,7 +5,9 @@ import { call } from '../startComparison'
 
 describe('startComparison', () => {
   before(async () => {
-    await DB.connect('makefast-dev')
+    if (!DB.isOpen) {
+      await DB.connect('makefast-dev')
+    }
   })
 
   it('starts comparisons correctly', async () => {
