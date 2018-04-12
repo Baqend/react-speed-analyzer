@@ -23,6 +23,8 @@
   },
   "dependencies": {
     "baqend": "^2.10.0",
+    "lodash": "^4.17.5",
+    "node-fetch": "^2.1.2",
     "stringify-object": "^3.2.2",
     "webpagetest": "^0.3.8"
   }
