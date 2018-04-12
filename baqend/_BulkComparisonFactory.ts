@@ -29,7 +29,7 @@ export class BulkComparisonFactory implements AsyncFactory<model.BulkComparison>
    */
   create(createdBy: string | null, tests: BulkComparisonTestParams[]): Promise<model.BulkComparison> {
     const bulkComparison: model.BulkComparison = new this.db.BulkComparison()
-    bulkComparison.comparisonsToStart = tests.map(this.buildParams)
+    bulkComparison.comparisonsToStart = tests.map(this.buildParams.bind(this))
     bulkComparison.createdBy = createdBy
     bulkComparison.multiComparisons = []
     bulkComparison.hasFinished = false
