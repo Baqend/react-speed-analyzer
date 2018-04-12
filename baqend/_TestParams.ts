@@ -1,3 +1,16 @@
+export enum Priority {
+  HIGHEST = 0,
+  HIGHER = 1,
+  HIGH = 2,
+  LESS_HIGH = 3,
+  MEDIUM_HIGH = 4,
+  MEDIUM_LOW = 5,
+  LESS_LOW = 6,
+  LOW = 7,
+  LOWER = 8,
+  LOWEST = 9,
+}
+
 export interface TestParams {
   /**
    * The activity timeout of the test.
@@ -22,7 +35,7 @@ export interface TestParams {
   /**
    * The test's priority.
    */
-  priority?: number
+  priority?: Priority
 
   /**
    * If a prewarm run should be skipped for this test.
@@ -38,4 +51,11 @@ export interface TestParams {
    * The WebPagetest test timeout.
    */
   timeout?: number
+}
+
+export interface MultiTestParams extends TestParams {
+  /**
+   * The number of runs to execute.
+   */
+  runs?: number
 }

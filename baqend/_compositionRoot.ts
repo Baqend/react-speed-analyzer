@@ -6,6 +6,7 @@ import { ComparisonWorker } from './_ComparisonWorker'
 import { MultiComparisonFactory } from './_MultiComparisonFactory'
 import { MultiComparisonWorker } from './_MultiComparisonWorker'
 import { Pagetest } from './_Pagetest'
+import { TestBuilder } from './_TestBuilder'
 import { TestFactory } from './_TestFactory'
 import { TestWorker } from './_TestWorker'
 import { UrlAnalyzer } from './_UrlAnalyzer'
@@ -26,12 +27,13 @@ export function bootstrap(db: baqend) {
   const urlAnalyzer = new UrlAnalyzer(db)
   const pagetest = new Pagetest()
   const webPagetestResultHandler = new WebPagetestResultHandler(db, pagetest)
+  const testBuilder = new TestBuilder()
 
   // Create factories
-  const testFactory = new TestFactory(db)
-  const comparisonFactory = new ComparisonFactory(db, testFactory)
-  const multiComparisonFactory = new MultiComparisonFactory(db)
-  const bulkComparisonFactory = new BulkComparisonFactory(db)
+  const testFactory = new TestFactory(db, testBuilder)
+  const comparisonFactory = new ComparisonFactory(db, testFactory, testBuilder)
+  const multiComparisonFactory = new MultiComparisonFactory(db, testBuilder)
+  const bulkComparisonFactory = new BulkComparisonFactory(db, testBuilder)
 
   // Create workers
   const testWorker = new TestWorker(db, pagetest, webPagetestResultHandler)
@@ -43,6 +45,7 @@ export function bootstrap(db: baqend) {
     urlAnalyzer,
     pagetest,
     webPagetestResultHandler,
+    testBuilder,
 
     testFactory,
     bulkComparisonFactory,

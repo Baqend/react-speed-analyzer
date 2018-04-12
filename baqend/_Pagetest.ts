@@ -1,4 +1,4 @@
-import { baqend } from 'baqend'
+import { baqend, model } from 'baqend'
 import WebPageTest, { TestStatus } from 'webpagetest'
 import { sleep } from './_sleep'
 import credentials from './credentials'
@@ -94,11 +94,11 @@ export class Pagetest {
   /**
    * Runs a WebpageTest without waiting for the result.
    *
-   * @param {string} testScriptOrUrl The URL under test or a test script.
-   * @param {object} options The options to pass to WPT.
-   * @return {Promise<string>} A promise resolving with the queued test's ID.
+   * @param testScriptOrUrl The URL under test or a test script.
+   * @param options The options to pass to WPT.
+   * @return A promise resolving with the queued test's ID.
    */
-  runTestWithoutWait(testScriptOrUrl: string, options: any = {}): Promise<string> {
+  runTestWithoutWait(testScriptOrUrl: string, options: model.TestOptions): Promise<string> {
     const opts = Object.assign({ pingback: PING_BACK_URL }, options)
 
     return new Promise((resolve, reject) => {

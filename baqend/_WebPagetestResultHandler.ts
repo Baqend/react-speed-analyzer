@@ -47,7 +47,7 @@ export class WebPagetestResultHandler {
 
     switch (webPagetest.testType) {
       case TestType.CONFIG: {
-        return this.getSmartConfig(wptTestId, test.testInfo).then((config) => {
+        return this.getSmartConfig(wptTestId, test.testInfo.url, test.testInfo.testOptions.mobile).then((config) => {
           return test.optimisticSave((it: model.TestResult) => {
             it.speedKitConfig = config
           })
@@ -79,10 +79,11 @@ export class WebPagetestResultHandler {
    * Get the smart config based on the domains of a given testId.
    *
    * @param testId    The id of the test to get the domains from.
-   * @param testInfo  The info of the corresponding test.
+   * @param url       The URL the test was performed against.
+   * @param mobile
    * @return          The generated config as string formatted json.
    */
-  async getSmartConfig(testId: string, testInfo: any): Promise<string> {
+  async getSmartConfig(testId: string, url: string, mobile: boolean): Promise<string> {
     const options: WptTestResultOptions = {
       requests: true,
       breakdown: false,
@@ -93,15 +94,15 @@ export class WebPagetestResultHandler {
     try {
       const result = await this.api.getTestResults(testId, options)
       const domains = result.data
-      this.db.log.info('Generating Smart Config', { url: testInfo.url })
-      const config = await createSmartConfig(this.db, testInfo.url, domains, testInfo.isMobile)
+      this.db.log.info('Generating Smart Config', { url, mobile })
+      const config = await createSmartConfig(this.db, url, domains, mobile)
 
       // Save cached config
-      return await cacheSpeedKitConfig(this.db, testInfo.url, testInfo.testOptions.mobile, config)
+      return await cacheSpeedKitConfig(this.db, url, mobile, config)
     } catch (error) {
-      this.db.log.warn('Smart generation failed', { url: testInfo.url, error: error.stack })
+      this.db.log.warn('Smart generation failed', { url, mobile, error: error.stack })
 
-      return getFallbackConfig(this.db, testInfo.url)
+      return getFallbackConfig(this.db, url)
     }
   }
 

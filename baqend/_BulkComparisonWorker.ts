@@ -48,7 +48,6 @@ export class BulkComparisonWorker implements MultiComparisonListener {
 
       await bulkComparison.ready()
       await bulkComparison.optimisticSave((it: model.BulkComparison) => {
-        nextMultiComparison.url = urlInfo.url
         it.multiComparisons.push(multiComparison)
       })
 

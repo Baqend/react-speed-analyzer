@@ -1,41 +1,17 @@
 import { baqend, model } from 'baqend'
 import { AsyncFactory } from './_AsyncFactory'
+import { TestBuilder } from './_TestBuilder'
 import { TestParams } from './_TestParams'
 import { UrlInfo } from './_UrlInfo'
-
-export const DEFAULT_LOCATION = 'eu-central-1:Chrome.Native'
-export const DEFAULT_ACTIVITY_TIMEOUT = 75
-export const DEFAULT_TIMEOUT = 30
-
-const DEFAULT_TEST_OPTIONS: Partial<model.TestOptions> = {
-  runs: 2,
-  video: true,
-  disableOptimization: true,
-  pageSpeed: false,
-  requests: false,
-  breakDown: false,
-  domains: false,
-  saveResponseBodies: false,
-  tcpDump: false,
-  timeline: false,
-  minimumDuration: 1, // capture at least one second
-  chromeTrace: false,
-  netLog: false,
-  disableHTTPHeaders: true,
-  disableScreenshot: true,
-  ignoreSSL: true,
-  block: 'favicon', // exclude favicons for fair comparison, as not handled by SWs
-  jpegQuality: 100,
-  poll: 1, // poll every second
-  timeout: 2 * DEFAULT_TIMEOUT,
-}
 
 /**
  * Creates TestResult objects, that have all the information needed in order to be processed by the TestWorker.
  */
 export class TestFactory implements AsyncFactory<model.TestResult> {
-  constructor(private readonly db: baqend) {
-  }
+  constructor(
+    private readonly db: baqend,
+    private readonly testBuilder: TestBuilder,
+  ) {}
 
   create(urlInfo: UrlInfo, isClone: boolean, params: Required<TestParams>): Promise<model.TestResult> {
     const { url } = urlInfo
@@ -92,24 +68,7 @@ export class TestFactory implements AsyncFactory<model.TestResult> {
       isTestWithSpeedKit: isClone,
       activityTimeout: params.activityTimeout,
       skipPrewarm: params.skipPrewarm,
-      testOptions: this.buildTestOptions(commandLine, params),
+      testOptions: this.testBuilder.buildOptions(params, commandLine),
     }
-  }
-
-  /**
-   * Builds the test options to use.
-   */
-  private buildTestOptions(commandLine: string, params: Required<TestParams>): model.TestOptions {
-    const testOptions: model.TestOptions = {
-      commandLine: commandLine,
-      firstViewOnly: !params.caching,
-      priority: params.priority,
-      location: params.location,
-      timeout: 2 * params.timeout,
-      mobile: params.mobile,
-      device: params.mobile ? 'iPhone6' : '',
-    }
-
-    return Object.assign({}, DEFAULT_TEST_OPTIONS, testOptions)
   }
 }

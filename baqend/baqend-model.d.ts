@@ -30,7 +30,7 @@ declare module 'baqend' {
       url: string
     }
 
-    interface ComparisonInfo extends UrlAware {
+    interface ComparisonInfo {
       urlInfo: any
       isStarted: boolean
       runs: number
@@ -113,6 +113,7 @@ declare module 'baqend' {
       ignoreSSL?: boolean,
       jpegQuality?: number,
       location: string
+      minimalResults?: boolean,
       minimumDuration?: number,
       mobile: boolean
       netLog?: boolean,

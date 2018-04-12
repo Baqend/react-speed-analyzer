@@ -1,18 +1,17 @@
 import { baqend, model } from 'baqend'
 import { AsyncFactory } from './_AsyncFactory'
-import { DEFAULT_PARAMS } from './_ComparisonFactory'
+import { TestBuilder } from './_TestBuilder'
 import { TestParams } from './_TestParams'
 import { UrlInfo } from './_UrlInfo'
-
-export const DEFAULT_MULTI_PARAMS: TestParams = {
-  priority: 9,
-}
 
 /**
  * Creates multi comparisons, which are comparisons with multiple runs.
  */
 export class MultiComparisonFactory implements AsyncFactory<model.BulkTest> {
-  constructor(private readonly db: baqend) {
+  constructor(
+    private readonly db: baqend,
+    private readonly testBuilder: TestBuilder,
+  ) {
   }
 
   /**
@@ -21,7 +20,7 @@ export class MultiComparisonFactory implements AsyncFactory<model.BulkTest> {
    * @return A promise which resolves with the created object.
    */
   create(urlInfo: UrlInfo, params: TestParams, createdBy: string | null = null, runs: number = 1): Promise<model.BulkTest> {
-    const usedParams = this.buildParams(params)
+    const usedParams = this.testBuilder.buildParams(params, null, 9)
     const { location, mobile, priority } = usedParams
 
     const multiComparison: model.BulkTest = new this.db.BulkTest()
@@ -38,12 +37,5 @@ export class MultiComparisonFactory implements AsyncFactory<model.BulkTest> {
     multiComparison.params = usedParams
 
     return multiComparison.save()
-  }
-
-  /**
-   * Builds the final test params.
-   */
-  private buildParams(params: TestParams): Required<TestParams> {
-    return Object.assign({}, DEFAULT_PARAMS, DEFAULT_MULTI_PARAMS, params)
   }
 }

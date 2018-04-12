@@ -5,36 +5,27 @@ import { AsyncFactory } from './_AsyncFactory'
 import { getCachedSpeedKitConfig } from './_configCaching'
 import { getRootPath, getTLD } from './_getSpeedKitUrl'
 import { timeout } from './_sleep'
-import { DEFAULT_ACTIVITY_TIMEOUT, DEFAULT_LOCATION, DEFAULT_TIMEOUT, TestFactory } from './_TestFactory'
+import { TestBuilder } from './_TestBuilder'
+import { TestFactory } from './_TestFactory'
 import { TestParams } from './_TestParams'
 import { UrlInfo } from './_UrlInfo'
 import { generateUniqueId } from './generateUniqueId'
-
-/**
- * The default test params.
- */
-export const DEFAULT_PARAMS: Required<TestParams> = {
-  activityTimeout: DEFAULT_ACTIVITY_TIMEOUT,
-  caching: false,
-  location: DEFAULT_LOCATION,
-  mobile: false,
-  priority: 0,
-  skipPrewarm: false,
-  speedKitConfig: null,
-  timeout: DEFAULT_TIMEOUT,
-}
 
 /**
  * Request which creates a TestOverview object and the TestResult objects that are processed
  * by the {@link ComparisonWorker} and the {@link TestWorker}.
  */
 export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
-  constructor(private db: baqend, private testFactory: TestFactory) {
+  constructor(
+    private db: baqend,
+    private testFactory: TestFactory,
+    private testBuilder: TestBuilder,
+  ) {
   }
 
   async create(urlInfo: UrlInfo, params: TestParams): Promise<model.TestOverview> {
     const config = await this.buildSpeedKitConfig(urlInfo, params)
-    const requiredParams = this.buildParams(params, config)
+    const requiredParams = this.testBuilder.buildParams(params, config)
     const configAnalysis = urlInfo.speedKitEnabled ? this.createConfigAnalysis(urlInfo, config) : null
 
     // Create the tests
@@ -45,13 +36,6 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
 
     // Create the comparison object
     return this.createComparison(urlInfo, requiredParams, configAnalysis, competitorTest, speedKitTest)
-  }
-
-  /**
-   * Builds the final test params.
-   */
-  private buildParams(params: TestParams, speedKitConfig: string | null): Required<TestParams> {
-    return Object.assign({}, DEFAULT_PARAMS, { speedKitConfig }, params)
   }
 
   /**

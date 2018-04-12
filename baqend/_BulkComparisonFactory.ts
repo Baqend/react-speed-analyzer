@@ -1,7 +1,6 @@
 import { baqend, model } from 'baqend'
 import { AsyncFactory } from './_AsyncFactory'
-import { DEFAULT_PARAMS } from './_ComparisonFactory'
-import { DEFAULT_MULTI_PARAMS } from './_MultiComparisonFactory'
+import { TestBuilder } from './_TestBuilder'
 import { TestParams } from './_TestParams'
 import { UrlInfo } from './_UrlInfo'
 
@@ -17,7 +16,10 @@ export interface BulkComparisonTestParams extends TestParams {
  * A factory to create bulk comparisons.
  */
 export class BulkComparisonFactory implements AsyncFactory<model.BulkComparison> {
-  constructor(private db: baqend) {
+  constructor(
+    private readonly db: baqend,
+    private readonly testBuilder: TestBuilder,
+  ) {
   }
 
   /**
@@ -39,6 +41,9 @@ export class BulkComparisonFactory implements AsyncFactory<model.BulkComparison>
    * Builds the final test params.
    */
   buildParams(test: BulkComparisonTestParams): model.ComparisonInfo {
-    return Object.assign({}, DEFAULT_PARAMS, DEFAULT_MULTI_PARAMS, { runs: 1 }, test)
+    const { urlInfo, ...params } = test
+    const isStarted = false
+
+    return Object.assign(this.testBuilder.buildBulkParams(params), { urlInfo, isStarted })
   }
 }
