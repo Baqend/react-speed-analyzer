@@ -37,6 +37,17 @@ function findBestComparison(multiComparison: model.BulkTest): model.TestOverview
 }
 
 /**
+ * Checks if something is a string array
+ */
+function isNotStringArray(it: any) {
+  if (it instanceof Array) {
+    return it.some(item => typeof item !== 'string')
+  }
+
+  return true
+}
+
+/**
  * GET: Get state of bulk comparisons by domain URL and ID.
  */
 export async function get(db: baqend, request: Request, response: Response) {
@@ -64,8 +75,23 @@ export async function get(db: baqend, request: Request, response: Response) {
  * POST: Start bulk comparisons for given domains.
  */
 export async function post(db: baqend, request: Request, response: Response) {
-  const { tests, createdBy } = request.body
-  const bulkComparison = await startBulkComparison(db, createdBy, tests)
+  const { body } = request
+  if (isNotStringArray(body)) {
+    response.status(400)
+    response.send({ error: 'Please send an array of domain names.' })
+  }
 
-  response.send({ bulkComparison })
+  const domainNames: string[] = body
+  try {
+    const tests = domainNames.map(domainName => ({ url: domainName }))
+    const bulkComparison = await startBulkComparison(db, 'plesk', tests)
+
+    const domainMap = bulkComparison.comparisonsToStart.map((comparison, index) => [domainNames[index], comparison.urlInfo.url] as [string, string])
+    const bulkComparisonId = bulkComparison.id
+
+    response.send({ bulkComparisonId, domainMap })
+  } catch (e) {
+    response.status(500)
+    response.send({ error: e.message, stack: e.stack, domainNames })
+  }
 }
