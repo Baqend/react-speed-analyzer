@@ -1,8 +1,8 @@
-import { baqend } from 'baqend'
-import fetch, { Response } from 'node-fetch'
-import { toUnicode } from 'punycode'
-import { format, parse } from 'url'
-import { BasicUrlInfo, OptUrlInfo, SpeedKitInfo, UrlInfo } from './_UrlInfo'
+import { baqend } from 'baqend';
+import fetch, { Response } from 'node-fetch';
+import { toUnicode } from 'punycode';
+import { format, parse } from 'url';
+import { BasicUrlInfo, OptUrlInfo, SpeedKitInfo, UrlInfo, UrlType } from './_UrlInfo';
 
 const MOBILE_USER_AGENT = 'Mozilla/5.0 (iPhone; CPU iPhone OS 9_0_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13A452 Safari/601.1 PTST/396'
 
@@ -52,27 +52,27 @@ export class UrlAnalyzer {
    *
    * @param {Response} response
    */
-  private async analyzeType(response: Response): Promise<string | null> {
+  private async analyzeType(response: Response): Promise<UrlType | null> {
     const via = response.headers.get('via')
     if (via === 'baqend' || response.url.includes('www.baqend.com')) {
-      return Promise.resolve('baqend')
+      return Promise.resolve(UrlType.BAQEND)
     }
 
     const xGenerator = response.headers.get('x-generator')
     if (xGenerator && xGenerator.toLocaleLowerCase().includes('sulu')) {
-      return Promise.resolve('sulu')
+      return Promise.resolve(UrlType.SULU)
     }
 
     if (response.headers.has('x-wix-request-id') || response.headers.has('x-wix-route-id')) {
-      return Promise.resolve('wix')
+      return Promise.resolve(UrlType.WIX)
     }
 
     if (response.headers.has('x-host') && response.headers.get('x-host')!.includes('weebly.net')) {
-      return Promise.resolve('weebly')
+      return Promise.resolve(UrlType.WEEBLY)
     }
 
     if (response.headers.has('x-jimdo-instance')) {
-      return Promise.resolve('jimdo')
+      return Promise.resolve(UrlType.JIMDO)
     }
 
     const text = await response.text()
@@ -81,21 +81,25 @@ export class UrlAnalyzer {
       const [, generator] = result
       const s = generator.toLocaleLowerCase()
       if (s.includes('joomla')) {
-        return 'joomla'
+        return UrlType.JOOMLA
       }
       if (s.includes('wordpress')) {
-        return 'wordpress'
+        return UrlType.WORDPRESS
       }
       if (s.includes('drupal')) {
-        return 'drupal'
+        return UrlType.DRUPAL
       }
       if (s.includes('typo3')) {
-        return 'typo3'
+        return UrlType.TYPO3
       }
     }
 
+    if (text.includes('<link rel=\'dns-prefetch\' href=\'//s.w.org\' />')) {
+      return UrlType.WORDPRESS
+    }
+
     if (text.includes('<!-- This is Squarespace. -->')) {
-      return 'squarespace'
+      return UrlType.SQUARESPACE
     }
 
     return null

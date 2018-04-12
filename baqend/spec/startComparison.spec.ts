@@ -12,7 +12,7 @@ describe('startComparison', () => {
 
   it('starts comparisons correctly', async () => {
     // Check call result
-    const result= await call(DB, { url: 'google.de' })
+    const result = await call(DB, { url: 'google.de' })
     expect(result).to.be.ok
     expect(result.url).to.eql('https://www.google.de/')
     expect(result.displayUrl).to.eql('https://www.google.de/')

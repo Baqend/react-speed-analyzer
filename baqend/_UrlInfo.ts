@@ -1,4 +1,20 @@
 /**
+ * The type of a URL.
+ */
+export enum UrlType {
+  BAQEND = 'baqend',
+  SULU = 'sulu',
+  WIX = 'wix',
+  WEEBLY = 'weebly',
+  JIMDO = 'jimdo',
+  JOOMLA = 'joomla',
+  WORDPRESS = 'wordpress',
+  DRUPAL = 'drupal',
+  TYPO3 = 'typo3',
+  SQUARESPACE = 'squarespace',
+}
+
+/**
  * Info about Speed Kit.
  */
 export interface SpeedKitInfo {
@@ -13,7 +29,7 @@ export interface SpeedKitInfo {
 export interface BasicUrlInfo {
   url: string
   displayUrl: string
-  type: string | null
+  type: UrlType | null
   secured: boolean
   mobile: boolean
 }

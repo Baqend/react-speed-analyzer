@@ -12,7 +12,7 @@ export class BulkComparisonWorker implements MultiComparisonListener {
   }
 
   async next(bulkComparison: model.BulkComparison) {
-    this.db.log.info(`BulkComparisonWorker.next("${bulkComparison.key}")`)
+    this.db.log.debug(`BulkComparisonWorker.next("${bulkComparison.key}")`)
     try {
       // Ensure bulk comparison is loaded with depth 1
       await bulkComparison.load({ depth: 1 })

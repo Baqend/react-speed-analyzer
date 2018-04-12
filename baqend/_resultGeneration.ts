@@ -133,8 +133,6 @@ function isValidRun(run: WptRun): boolean {
 
 function getValidTestRun(db: baqend, wptData: WptTestResult): string {
   const runIndex = Object.keys(wptData.runs).find(index => isValidRun(wptData.runs[index]))
-  db.log.info(`Choosing run ${runIndex}`, { runs: Object.keys(wptData.runs) })
-
   if (!runIndex) {
     throw new Error(`No valid test run found in ${wptData.id}`)
   }

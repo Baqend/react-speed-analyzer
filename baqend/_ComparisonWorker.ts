@@ -27,7 +27,7 @@ export class ComparisonWorker implements TestListener {
   }
 
   async next(comparison: model.TestOverview) {
-    this.db.log.info(`ComparisonWorker.next("${comparison.key}")`)
+    this.db.log.debug(`ComparisonWorker.next("${comparison.key}")`)
 
     // Ensure comparison is loaded with depth 1
     await comparison.load({ depth: 1 })

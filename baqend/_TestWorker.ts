@@ -41,7 +41,7 @@ export class TestWorker {
   }
 
   async next(test: model.TestResult): Promise<void> {
-    this.db.log.info(`TestWorker.next("${test.key}")`)
+    this.db.log.debug(`TestWorker.next("${test.key}")`)
     try {
       // Ensure test is loaded
       await test.load()
@@ -96,7 +96,7 @@ export class TestWorker {
 
       const webPagetest = this.getWebPagetestInfo(test, wptTestId)
       if (webPagetest.hasFinished) {
-        this.db.log.warn(`WebPagetest ${wptTestId} was already finished`, { test })
+        this.db.log.debug(`WebPagetest ${wptTestId} was already finished`, { test })
         return
       }
 
@@ -135,7 +135,7 @@ export class TestWorker {
    * Is executed when WebPagetest tests are currently running.
    */
   private async checkWebPagetestsStatus(test: model.TestResult): Promise<void> {
-    this.db.log.info(`TestWorker.checkWebPagetestsStatus("${test.key}")`, { test })
+    this.db.log.debug(`TestWorker.checkWebPagetestsStatus("${test.key}")`, { test })
     const checks = test.webPagetests
       .filter(wpt => !wpt.hasFinished)
       .map(async wpt => {
@@ -159,7 +159,6 @@ export class TestWorker {
       return
     }
 
-    this.db.log.info(`TestWorker.checkWebPagetestsStatus("${test.key}"): WPT not finished! Sleep …`, { test })
     // We are not finished: check again after sleep
     await sleep(1000)
 

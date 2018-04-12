@@ -4,7 +4,7 @@
   "description": "TypeScript Baqend Code",
   "scripts": {
     "build": "tsc",
-    "test": "JUNIT_REPORT_PATH=build/test-results/unit-tests.xml JUNIT_REPORT_NAME=\"E2E Tests\" JUNIT_REPORT_STACK=1 mocha --no-colors -r ts-node/register -R mocha-jenkins-reporter spec/*.ts"
+    "test": "JUNIT_REPORT_PATH=build/test-results/unit-tests.xml JUNIT_REPORT_NAME=\"E2E Tests\" JUNIT_REPORT_STACK=1 mocha --timeout 10000 --no-colors -r ts-node/register -R mocha-jenkins-reporter spec/*.ts"
   },
   "devDependencies": {
     "@types/chai": "^4.1.2",
