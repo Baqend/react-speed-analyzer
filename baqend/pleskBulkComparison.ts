@@ -1,6 +1,7 @@
 import { baqend, model } from 'baqend'
 import { Request, Response } from 'express'
 import { startBulkComparison } from './startBulkComparison'
+import { DEFAULT_PLESK_PRIORITY } from './_TestBuilder'
 
 /**
  * Sorts the comparisons of a multi comparison and finds the one with the best Speed Index.
@@ -83,7 +84,7 @@ export async function post(db: baqend, request: Request, response: Response) {
 
   const domainNames: string[] = body
   try {
-    const tests = domainNames.map(domainName => ({ url: domainName }))
+    const tests = domainNames.map(domainName => ({ url: domainName, priority: DEFAULT_PLESK_PRIORITY }))
     const bulkComparison = await startBulkComparison(db, 'plesk', tests)
 
     const domainMap = bulkComparison.comparisonsToStart.map((comparison, index) => [domainNames[index], comparison.urlInfo.url] as [string, string])
