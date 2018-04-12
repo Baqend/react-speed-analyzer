@@ -2,10 +2,9 @@
   "name": "psa-typescript",
   "version": "1.0.0",
   "description": "TypeScript Baqend Code",
-  "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "test": "mocha -r ts-node/register spec/*.ts"
+    "test": "JUNIT_REPORT_PATH=build/test-results/unit-tests.xml JUNIT_REPORT_NAME=\"E2E Tests\" JUNIT_REPORT_STACK=1 mocha --no-colors -r ts-node/register -R mocha-jenkins-reporter spec/*.ts"
   },
   "devDependencies": {
     "@types/chai": "^4.1.2",
@@ -16,14 +15,14 @@
     "@types/node-cache": "^4.1.1",
     "@types/node-fetch": "^1.6.7",
     "@types/stringify-object": "^3.2.0",
-    "baqend": "^2.10.0",
     "chai": "^4.1.2",
     "mocha": "^5.0.5",
+    "mocha-jenkins-reporter": "^0.3.12",
     "ts-node": "^5.0.1",
     "typescript": "^2.8.1"
   },
   "dependencies": {
-    "rxjs": "^5.5.8",
+    "baqend": "^2.10.0",
     "stringify-object": "^3.2.2",
     "webpagetest": "^0.3.8"
   }
