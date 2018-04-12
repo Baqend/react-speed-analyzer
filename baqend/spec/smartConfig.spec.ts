@@ -3,6 +3,7 @@ import DB from 'baqend'
 import { Request, Response } from 'express'
 import { expect } from 'chai'
 import { get, post } from '../smartConfig'
+import { sleep } from '../_sleep';
 
 function mockReqRes(body: any = {}, query: any = {}): { req: Request, res: Response & { data: any, statusCode: number } } {
   const req = { body, query } as any
@@ -42,8 +43,16 @@ describe('smartConfig', () => {
   })
 
   it('GETs generated smart config', async () => {
+
     const { req, res } = mockReqRes({}, { testId })
     await get(DB, req, res)
+
+    // Wait until result is done
+    while (res.statusCode == 404) {
+      res.statusCode = 200
+      await sleep(1000)
+      await get(DB, req, res)
+    }
 
     // Check GET result
     expect(res.data).to.be.ok
