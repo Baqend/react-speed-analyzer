@@ -17,5 +17,8 @@
   "optionalDependencies": {
     "bufferutil": "^3.0.3",
     "utf-8-validate": "^4.0.0"
+  },
+  "scripts": {
+    "local-proxy": "docker-compose -f docker-compose.local-proxy.yml up"
   }
 }
