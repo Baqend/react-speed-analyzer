@@ -28,7 +28,7 @@ function getApp() {
 async function deleteModules(app) {
   await db.connect(app)
 
-  db.token = '5acdfcfe5ace0b0eAAAAABgAAAABdf08b5081d75c33bc7c6c0f830c4888e6069b2bf'
+  db.token = '5acf531a5acf612aAAAAABgAAAAB35231fcc8bc63719f6b8417bdbf068846cc87d0c'
   await db.renew()
 
   const { deleted } = await db.modules.post('_clean')
