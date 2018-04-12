@@ -160,7 +160,7 @@ export class UrlAnalyzer {
    */
   private urlToUnicode(url: string): string {
     const { hostname, protocol, search, query, port, pathname } = parse(url)
-    const obj = { hostname: toUnicode(hostname!), protocol, search, query, port, pathname }
+    const obj = { hostname: toUnicode(hostname!), pathname: decodeURIComponent(pathname || ''), protocol, search, query, port }
 
     return format(obj)
   }
