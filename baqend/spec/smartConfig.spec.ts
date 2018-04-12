@@ -59,6 +59,6 @@ describe('smartConfig', () => {
     expect(res.data.testId).to.eql(testId)
     expect(res.data.url).to.be.eql('https://www.alibaba.com/')
     expect(res.data.mobile).to.be.eql(0)
-    expect(res.data.config).to.be.eql('{\n    appName: "makefast-dev",\n    whitelist: [{ host: [ /^(?:[\\w-]*\\.){0,3}(?:alibaba\\.)/, /sc01\\.alicdn\\.com/, /sc02\\.alicdn\\.com/, /g\\.alicdn\\.com/, /img\\.alicdn\\.com/, /i\\.alicdn\\.com/, /is\\.alicdn\\.com/, /assets\\.alicdn\\.com/, /u\\.alicdn\\.com/ ] }],\n    userAgentDetection: false\n  }')
+    expect(res.data.config).to.be.eql('{ appName: "makefast-dev", whitelist: [{ host: [/^(?:[\\w-]*\\.){0,3}(?:alibaba\\.)/, /sc01\\.alicdn\\.com/, /sc02\\.alicdn\\.com/, /g\\.alicdn\\.com/, /img\\.alicdn\\.com/, /i\\.alicdn\\.com/, /is\\.alicdn\\.com/, /assets\\.alicdn\\.com/, /u\\.alicdn\\.com/] }], userAgentDetection: false }')
   })
 })

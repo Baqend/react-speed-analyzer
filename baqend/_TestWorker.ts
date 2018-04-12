@@ -1,5 +1,5 @@
 import { baqend, model } from 'baqend'
-import { getFallbackConfig, getMinimalConfig } from './_configGeneration'
+import { ConfigGenerator } from './_ConfigGenerator'
 import { createTestScript, SpeedKitConfigArgument } from './_createTestScript'
 import { Pagetest } from './_Pagetest'
 import { sleep } from './_sleep'
@@ -32,6 +32,7 @@ export class TestWorker {
     private readonly db: baqend,
     private readonly api: Pagetest,
     private readonly webPagetestResultHandler: WebPagetestResultHandler,
+    private readonly configGenerator: ConfigGenerator,
     private listener?: TestListener,
   ) {
   }
@@ -243,13 +244,13 @@ export class TestWorker {
 
   private getScriptForConfig(config: SpeedKitConfigArgument, info: model.TestInfo): string {
     const { url, isSpeedKitComparison, isTestWithSpeedKit, activityTimeout, testOptions } = info
-    const c = config || getFallbackConfig(this.db, url, testOptions.mobile)
+    const c = config || this.configGenerator.generateFallback(url, testOptions.mobile)
 
     return createTestScript(url, isTestWithSpeedKit, isSpeedKitComparison, c, activityTimeout)
   }
 
   private getTestScriptWithMinimalWhitelist({ url, isTestWithSpeedKit, isSpeedKitComparison, activityTimeout, testOptions }: model.TestInfo): string {
-    const config = getMinimalConfig(this.db, url, testOptions.mobile)
+    const config = this.configGenerator.generateMinimal(url, testOptions.mobile)
 
     return createTestScript(url, isTestWithSpeedKit, isSpeedKitComparison, config, activityTimeout)
   }

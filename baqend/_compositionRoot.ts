@@ -3,9 +3,11 @@ import { BulkComparisonFactory } from './_BulkComparisonFactory'
 import { BulkComparisonWorker } from './_BulkComparisonWorker'
 import { ComparisonFactory } from './_ComparisonFactory'
 import { ComparisonWorker } from './_ComparisonWorker'
+import { ConfigGenerator } from './_ConfigGenerator'
 import { MultiComparisonFactory } from './_MultiComparisonFactory'
 import { MultiComparisonWorker } from './_MultiComparisonWorker'
 import { Pagetest } from './_Pagetest'
+import { Serializer } from './_Serializer'
 import { TestBuilder } from './_TestBuilder'
 import { TestFactory } from './_TestFactory'
 import { TestWorker } from './_TestWorker'
@@ -24,9 +26,11 @@ import { WebPagetestResultHandler } from './_WebPagetestResultHandler'
  */
 export function bootstrap(db: baqend) {
   // Create services
+  const serializer = new Serializer()
+  const configGenerator = new ConfigGenerator(db, serializer)
   const urlAnalyzer = new UrlAnalyzer(db)
   const pagetest = new Pagetest()
-  const webPagetestResultHandler = new WebPagetestResultHandler(db, pagetest)
+  const webPagetestResultHandler = new WebPagetestResultHandler(db, pagetest, configGenerator)
   const testBuilder = new TestBuilder()
 
   // Create factories
@@ -36,12 +40,14 @@ export function bootstrap(db: baqend) {
   const bulkComparisonFactory = new BulkComparisonFactory(db, testBuilder)
 
   // Create workers
-  const testWorker = new TestWorker(db, pagetest, webPagetestResultHandler)
+  const testWorker = new TestWorker(db, pagetest, webPagetestResultHandler, configGenerator)
   const comparisonWorker = new ComparisonWorker(db, testWorker)
   const multiComparisonWorker = new MultiComparisonWorker(db, comparisonFactory, comparisonWorker)
   const bulkComparisonWorker = new BulkComparisonWorker(db, multiComparisonFactory, multiComparisonWorker)
 
   return {
+    serializer,
+    configGenerator,
     urlAnalyzer,
     pagetest,
     webPagetestResultHandler,

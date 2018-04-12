@@ -1,8 +1,9 @@
 import { baqend, model } from 'baqend'
+import { ConfigGenerator } from './_ConfigGenerator'
 import { Pagetest, WptTestResultOptions } from './_Pagetest'
 import { generateTestResult } from './_resultGeneration'
 import { cacheSpeedKitConfig } from './_configCaching'
-import { createSmartConfig, getFallbackConfig } from './_configGeneration'
+import { DataType } from './_Serializer'
 
 export enum TestType {
   CONFIG = 'config',
@@ -16,7 +17,11 @@ export enum TestType {
  * @return {WebPagetestResultHandler}
  */
 export class WebPagetestResultHandler {
-  constructor(private readonly db: baqend, private readonly api: Pagetest) {
+  constructor(
+    private readonly db: baqend,
+    private readonly api: Pagetest,
+    private readonly configGenerator: ConfigGenerator,
+  ) {
   }
 
   /**
@@ -81,9 +86,10 @@ export class WebPagetestResultHandler {
    * @param testId    The id of the test to get the domains from.
    * @param url       The URL the test was performed against.
    * @param mobile
-   * @return          The generated config as string formatted json.
+   * @param type      The data type of the config to generate.
+   * @return          The generated config as serialized string.
    */
-  async getSmartConfig(testId: string, url: string, mobile: boolean): Promise<string> {
+  async getSmartConfig(testId: string, url: string, mobile: boolean, type: DataType = DataType.JAVASCRIPT): Promise<string> {
     const options: WptTestResultOptions = {
       requests: true,
       breakdown: false,
@@ -95,14 +101,13 @@ export class WebPagetestResultHandler {
       const result = await this.api.getTestResults(testId, options)
       const domains = result.data
       this.db.log.info('Generating Smart Config', { url, mobile })
-      const config = await createSmartConfig(this.db, url, domains, mobile)
-
+      const config = await this.configGenerator.generateSmart(url, domains, mobile, type)
       // Save cached config
       return await cacheSpeedKitConfig(this.db, url, mobile, config)
     } catch (error) {
       this.db.log.warn('Smart generation failed', { url, mobile, error: error.stack })
 
-      return getFallbackConfig(this.db, url)
+      return this.configGenerator.generateFallback(url)
     }
   }
 
