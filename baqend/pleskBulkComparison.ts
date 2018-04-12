@@ -84,7 +84,7 @@ export async function post(db: baqend, request: Request, response: Response) {
 
   const domainNames: string[] = body
   try {
-    const tests = domainNames.map(domainName => ({ url: domainName, priority: DEFAULT_PLESK_PRIORITY }))
+    const tests = domainNames.map(domainName => ({ url: domainName, priority: DEFAULT_PLESK_PRIORITY, runs: 2 }))
     const bulkComparison = await startBulkComparison(db, 'plesk', tests)
 
     const domainMap = bulkComparison.comparisonsToStart.map((comparison, index) => [domainNames[index], comparison.urlInfo.url] as [string, string])
