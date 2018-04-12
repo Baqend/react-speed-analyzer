@@ -40,7 +40,11 @@ node {
 
     stage('Test') {
       dir('baqend') {
-        sh "/usr/bin/npm test"
+        try {
+          sh "/usr/bin/npm test"
+        } catch (e) {
+          currentBuild.result = "UNSTABLE"
+        }
       }
     }
 
