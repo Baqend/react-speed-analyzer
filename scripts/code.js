@@ -65,9 +65,6 @@ async function main() {
   const tsc = which.sync('tsc')
   const baqend = which.sync('baqend')
 
-  // Delete all modules from the app
-  await deleteModules(app)
-
   // Delete output directory
   await deleteDirectory(outDir)
 
@@ -76,6 +73,9 @@ async function main() {
   if (compile !== 0 && compile !== 2) {
     throw new Error(`TypeScript exited with bad status code: ${compile}`)
   }
+
+  // Delete all modules from the app
+  await deleteModules(app)
 
   const deploy = await execute(baqend, ['deploy', '--code', '--code-dir', outDir, app])
   console.log(`Baqend Deploy exited with status code ${deploy}`)
