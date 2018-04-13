@@ -19,6 +19,7 @@
 @import "./_modal.css";
 
 @import "tachyons/src/_text-align";
+@import "tachyons/src/_font-weight";
 @import "tachyons/src/_display";
 
 :root {

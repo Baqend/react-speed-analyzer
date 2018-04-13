@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import renderHTML from 'react-render-html';
 
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -28,48 +29,93 @@ class ResultAction extends Component {
   getCTAContent = () => {
     const content = []
 
-    // TTFB improvement
+    // Request Latency
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
     if (competitorData.ttfb > speedKitData.ttfb) {
-      content.push(`Speed Kit cached your HTML in a CDN, which reduced the time-to-first-byte (TTFB) from ${competitorData.ttfb} ms to ${speedKitData.ttfb} ms.`)
+      const ttfbFact = [
+        'Request Latency',
+        `Speed Kit cached your HTML in a CDN, which reduced the <strong>time-to-first-byte</strong> (<i>TTFB</i>) from <strong>${competitorData.ttfb} ms</strong> to <strong>${speedKitData.ttfb} ms</strong>.`
+      ]
+      content.push(ttfbFact)
     }
 
-    // images size improvement
+    // Image Optimization
     const imageSizeDiff = competitorData.contentSize.images - speedKitData.contentSize.images
     if (imageSizeDiff > 0) {
-      content.push(`By optimizing images in size and encoding Speed Kit saved ${formatFileSize(imageSizeDiff)} of data.`)
-    }
-
-    // Caching header information
-    const servedRate = calculateServedRequests(speedKitData)
-    const withCaching = competitorData.hits.withCaching
-    const cachingAmount = withCaching ? Math.round((100 / competitorData.requests) * withCaching) : 0
-    content.push(`Only ${cachingAmount}% of all resources had correct caching headers. Speed Kit cached ${servedRate}% of them while making sure that they are always up-to-date.`)
-
-    // text size improvement
-    const textSizeDiff = competitorData.contentSize.text - speedKitData.contentSize.text
-    if (textSizeDiff > 0) {
-      content.push(`By Gzipping text resources Speed Kit reduced page weight by  ${formatFileSize(textSizeDiff)}.`)
+      const imageOptFact = [
+        'Image Optimization',
+        `By optimizing <strong>images</strong> in size (<i>responsiveness</i>) and encoding (<i>WebP</i> & <i>Progessive JPG</i>) Speed Kit saved <strong>${formatFileSize(imageSizeDiff)}</strong> of data.`
+      ]
+      content.push(imageOptFact)
     }
 
     // SSL information
     if (!this.props.testOverview.isSecured) {
-      content.push('Your website uses HTTP/1.1. With Speed Kit everything was automatically fetched with an optimized HTTP/2 connection.')
+      const sslFact = [
+        'HTTP/2',
+        `Your website uses <strong>HTTP/1.1</strong>. With Speed Kit everything was automatically fetched with an encrypted <strong>HTTP/2</strong> connection.`
+      ]
+      content.push(sslFact)
     }
 
-    // Speed Index and First Meaningful Paint improvement
-    const siImprovement = Math.round((competitorData.speedIndex - speedKitData.speedIndex) / competitorData.speedIndex * 100)
-    const fmpImprovement = Math.round((competitorData.firstMeaningfulPaint - speedKitData.firstMeaningfulPaint) / competitorData.firstMeaningfulPaint * 100)
-    if (siImprovement > 0 && fmpImprovement > 0) {
-      content.push(`Speed Kit improved the Speed Index by ${siImprovement}% and the First Meaningful Paint by ${fmpImprovement}%.`)
+    // Compression
+    const textSizeDiff = competitorData.contentSize.text - speedKitData.contentSize.text
+    if (textSizeDiff > 0) {
+      const compressionFact = [
+        'Compression',
+        `By compressing text resources with GZip, Speed Kit reduced page weight by <strong>${formatFileSize(textSizeDiff)}</strong>.`
+      ]
+      content.push(compressionFact)
     }
 
-    // Offline Mode
-    content.push('Without a network, your site displays an error. Speed Kit\'s Service Worker will show users the latest seen version (offline mode).')
+    // HTTP Caching
+    const servedRate = calculateServedRequests(speedKitData)
+    const withCaching = competitorData.hits.withCaching
+    const cachingAmount = withCaching ? Math.round((100 / competitorData.requests) * withCaching) : 0
 
-    //Bloom Filter
-    content.push('Upon repeat visit and navigation Speed Kit would serve all fresh resources from the client cache (Bloom filter-based cache coherence).')
+    const cachingFact = [
+      'HTTP Caching',
+      `Only <strong>${cachingAmount}%</strong> of resources had correct <strong>caching headers</strong>. Speed Kit cached <strong>${servedRate}%</strong> and keeps the cache up-to-date.`
+    ]
+    content.push(cachingFact)
+
+    // Progressive Web App
+    const offlineFact = [
+      'Progressive Web App',
+      `Without a network, an error is shown. Speed Kit's <strong>Service Worker</strong> shows the last seen version (<i>offline mode</i>).`
+    ]
+    content.push(offlineFact)
+
+    // Faster Dependencies
+/*    const thirdPartyDomains = this.props.speedKitTest.thirdPartyDomains
+    if (thirdPartyDomains > 0) {
+      const dependenciesFact = [
+        'Faster Dependencies',
+        `You included static resources from <strong>${thirdPartyDomains} external domains</strong> that Speed Kit accelerated.`
+      ]
+      content.push(dependenciesFact)
+    }*/
+
+    // Client Caching
+    const clientFact = [
+      'Client Caching',
+      `On repeat visit and navigation Speed Kit serves fresh data from the cache (<i>Bloom filter-based cache coherence</i>).`
+    ]
+    content.push(clientFact)
+
+    if(content.length % 2 !== 0) {
+      // User-Perceived Performance
+      const siImprovement = Math.round((competitorData.speedIndex - speedKitData.speedIndex) / competitorData.speedIndex * 100)
+      const fmpImprovement = Math.round((competitorData.firstMeaningfulPaint - speedKitData.firstMeaningfulPaint) / competitorData.firstMeaningfulPaint * 100)
+      if (siImprovement > 0 && fmpImprovement > 0) {
+        const performanceFact = [
+          'User-Perceived Performance',
+          `Speed Kit improved the <strong>Speed Index</strong> by <strong>${siImprovement}%</strong> and the <strong>First Meaningful Paint</strong> by <strong>${fmpImprovement}%</strong>.`
+        ]
+        content.splice(content.length - 4, 0, performanceFact)
+      }
+    }
 
     return content
   }
@@ -202,14 +248,11 @@ class ResultAction extends Component {
       <div>
         <div className="text-center pb2 pt2" style={{ maxWidth: 700, margin: '0 auto' }}>
           <h2 className="dn db-ns mb0">
-            How does Speed Kit made your site <span style={{ color: '#F27354' }}>{absolute}</span> faster?
+            Optimizations that Reduced Page Load Time by <span style={{ color: '#F27354' }}>{absolute}</span>.
           </h2>
           <h3 className="dn-ns mb0">
-            How does Speed Kit made your site <span style={{ color: '#F27354' }}>{absolute}</span> faster?
+            Optimizations that Reduced Page Load Time by <span style={{ color: '#F27354' }}>{absolute}</span>.
           </h3>
-          <h4 className="faded mt0 mb0">
-            Here are some features Speed Kit applied to your website.
-          </h4>
         </div>
         <div className="flex flex-wrap">
           {ctaContent.map((content, index) => (
@@ -219,7 +262,8 @@ class ResultAction extends Component {
                   <img src={ check } alt="speed kit feature" style={{ height: 30}} />
                 </div>
                 <div className="w-80 w-90-ns">
-                  <h4 className="mt0 mb0">{ content }</h4>
+                  <h4 className="mb0 mt0 fw6">{ content[0] }</h4>
+                  <span className="font-small">{ renderHTML(content[1]) }</span>
                 </div>
               </div>
             </div>
@@ -228,16 +272,8 @@ class ResultAction extends Component {
         <div className="text-center">
           <a className="btn btn-orange ma1"
             target="_blank" rel="noopener noreferrer"
-            href="https://dashboard.baqend.com/register?appType=speedkit">Sign Up</a>
+            href="https://www.baqend.com/speedkit.html?_ga=2.224276178.858004496.1520933148-181229276.1509025941#sk-features">Learn more</a>
           <a className="btn btn-orange btn-ghost ma1" onClick={this.props.toggleModal}>Contact Us</a>
-        </div>
-        <div className="text-center mt1">
-          <small>
-            <a
-              target="_blank" rel="noopener noreferrer"
-              href="https://www.baqend.com/speedkit.html?_ga=2.224276178.858004496.1520933148-181229276.1509025941#sk-features">More facts about Speed Kit
-            </a>
-          </small>
         </div>
       </div>
     )
