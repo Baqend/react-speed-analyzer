@@ -1,0 +1,40 @@
+{
+  "class": "/db/WebPagetest",
+  "acl": {
+    "schemaAdd": {
+      "/db/Role/1": "allow"
+    },
+    "schemaReplace": {
+      "/db/Role/1": "allow"
+    }
+  },
+  "embedded": true,
+  "metadata": {},
+  "fields": {
+    "testId": {
+      "name": "testId",
+      "type": "/db/String",
+      "order": 0
+    },
+    "testType": {
+      "name": "testType",
+      "type": "/db/String",
+      "order": 1
+    },
+    "testScript": {
+      "name": "testScript",
+      "type": "/db/String",
+      "order": 2
+    },
+    "testOptions": {
+      "name": "testOptions",
+      "type": "/db/JsonObject",
+      "order": 3
+    },
+    "hasFinished": {
+      "name": "hasFinished",
+      "type": "/db/Boolean",
+      "order": 4
+    }
+  }
+}

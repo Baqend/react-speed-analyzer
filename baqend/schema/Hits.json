@@ -30,6 +30,11 @@
       "name": "size",
       "type": "/db/Integer",
       "order": 3
+    },
+    "withCaching": {
+      "name": "withCaching",
+      "type": "/db/Integer",
+      "order": 4
     }
   }
 }

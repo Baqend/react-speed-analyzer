@@ -88,6 +88,11 @@
       "name": "urlAnalysis",
       "type": "/db/UrlAnalysis",
       "order": 14
+    },
+    "params": {
+      "name": "params",
+      "type": "/db/JsonObject",
+      "order": 15
     }
   }
 }
