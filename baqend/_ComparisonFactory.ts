@@ -67,15 +67,19 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
 
     // Create a default Speed Kit config for the URL
     const config = await this.configCache.get(url, mobile!)
-    return this.serializer.serialize(config, DataType.JAVASCRIPT)
+    if (config) {
+      return this.serializer.serialize(config, DataType.JAVASCRIPT)
+    }
+
+    return null
   }
 
   /**
    * Creates a config analysis of the given URL.
    */
   private createConfigAnalysis({ url, speedKitUrl }: UrlInfo, config: string | null): model.ConfigAnalysis {
-    const configAnalysis = new this.db.ConfigAnalysis()
-    configAnalysis.swPath = speedKitUrl
+    const configAnalysis: model.ConfigAnalysis = new this.db.ConfigAnalysis()
+    configAnalysis.swPath = speedKitUrl!
 
     if (!config) {
       configAnalysis.configMissing = true
