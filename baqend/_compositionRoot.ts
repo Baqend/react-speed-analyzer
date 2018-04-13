@@ -3,6 +3,7 @@ import { BulkComparisonFactory } from './_BulkComparisonFactory'
 import { BulkComparisonWorker } from './_BulkComparisonWorker'
 import { ComparisonFactory } from './_ComparisonFactory'
 import { ComparisonWorker } from './_ComparisonWorker'
+import { ConfigCache } from './_ConfigCache'
 import { ConfigGenerator } from './_ConfigGenerator'
 import { MultiComparisonFactory } from './_MultiComparisonFactory'
 import { MultiComparisonWorker } from './_MultiComparisonWorker'
@@ -27,15 +28,16 @@ import { WebPagetestResultHandler } from './_WebPagetestResultHandler'
 export function bootstrap(db: baqend) {
   // Create services
   const serializer = new Serializer()
+  const configCache = new ConfigCache(db)
   const configGenerator = new ConfigGenerator(db, serializer)
   const urlAnalyzer = new UrlAnalyzer(db)
   const pagetest = new Pagetest()
-  const webPagetestResultHandler = new WebPagetestResultHandler(db, pagetest, configGenerator)
+  const webPagetestResultHandler = new WebPagetestResultHandler(db, pagetest, configGenerator, configCache)
   const testBuilder = new TestBuilder()
 
   // Create factories
   const testFactory = new TestFactory(db, testBuilder)
-  const comparisonFactory = new ComparisonFactory(db, testFactory, testBuilder)
+  const comparisonFactory = new ComparisonFactory(db, testFactory, testBuilder, configCache)
   const multiComparisonFactory = new MultiComparisonFactory(db, testBuilder)
   const bulkComparisonFactory = new BulkComparisonFactory(db, testBuilder)
 
@@ -47,6 +49,7 @@ export function bootstrap(db: baqend) {
 
   return {
     serializer,
+    configCache,
     configGenerator,
     urlAnalyzer,
     pagetest,

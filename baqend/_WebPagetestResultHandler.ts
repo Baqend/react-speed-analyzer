@@ -2,7 +2,7 @@ import { baqend, model } from 'baqend'
 import { ConfigGenerator } from './_ConfigGenerator'
 import { Pagetest, WptTestResultOptions } from './_Pagetest'
 import { generateTestResult } from './_resultGeneration'
-import { cacheSpeedKitConfig } from './_configCaching'
+import { ConfigCache } from './_ConfigCache'
 import { DataType } from './_Serializer'
 
 export enum TestType {
@@ -21,6 +21,7 @@ export class WebPagetestResultHandler {
     private readonly db: baqend,
     private readonly api: Pagetest,
     private readonly configGenerator: ConfigGenerator,
+    private readonly configCache: ConfigCache,
   ) {
   }
 
@@ -103,7 +104,7 @@ export class WebPagetestResultHandler {
       this.db.log.info('Generating Smart Config', { url, mobile })
       const config = await this.configGenerator.generateSmart(url, domains, mobile, type)
       // Save cached config
-      return await cacheSpeedKitConfig(this.db, url, mobile, config)
+      return await this.configCache.put(url, mobile, config)
     } catch (error) {
       this.db.log.warn('Smart generation failed', { url, mobile, error: error.stack })
 

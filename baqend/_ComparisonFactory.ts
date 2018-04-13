@@ -2,7 +2,7 @@ import { baqend, model } from 'baqend'
 import stringifyObject from 'stringify-object'
 import { analyzeSpeedKit } from './_analyzeSpeedKit'
 import { AsyncFactory } from './_AsyncFactory'
-import { getCachedSpeedKitConfig } from './_configCaching'
+import { ConfigCache } from './_ConfigCache'
 import { getRootPath, getTLD } from './_getSpeedKitUrl'
 import { timeout } from './_sleep'
 import { TestBuilder } from './_TestBuilder'
@@ -20,6 +20,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
     private db: baqend,
     private testFactory: TestFactory,
     private testBuilder: TestBuilder,
+    private configCache: ConfigCache,
   ) {
   }
 
@@ -60,7 +61,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
     }
 
     // Create a default Speed Kit config for the URL
-    return getCachedSpeedKitConfig(this.db, url, mobile!)
+    return this.configCache.get(url, mobile!)
   }
 
   /**
