@@ -6,7 +6,7 @@ import {
   CHANGE_SPEED_KIT_CONFIG,
   SWITCH_MOBILE,
   SWITCH_CACHING,
-  NORMALIZE_URL_POST,
+  START_TEST_POST,
   TESTOVERVIEW_LOAD,
 } from '../actions/types'
 
@@ -36,8 +36,8 @@ export default function config(state = initialState, action = {}) {
       return { ...state, mobile: action.payload }
     case SWITCH_CACHING:
       return { ...state, caching: action.payload }
-    case NORMALIZE_URL_POST:
-      return { ...state, url: action.payload.url, isSpeedKitComparison: action.payload.isSpeedKitComparison }
+    case START_TEST_POST:
+      return { ...state, url: action.payload.displayUrl, isSpeedKitComparison: action.payload.isSpeedKitComparison }
     case TESTOVERVIEW_LOAD:
       return {
         ...state,

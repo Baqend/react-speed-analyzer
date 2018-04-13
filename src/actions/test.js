@@ -2,7 +2,7 @@ import {
   ADD_ERROR,
   INIT_TEST,
   START_TEST,
-  NORMALIZE_URL_POST,
+  START_TEST_POST,
   MONITOR_TEST,
   TESTOVERVIEW_LOAD,
   TESTOVERVIEW_NEXT,
@@ -25,19 +25,6 @@ export const prepareTest = (url = null) => ({
       if (!isURL(url)) {
         throw new Error("Input is not a valid url")
       }
-      const { mobile } = getState().config
-      const urlInfo = await db.modules.post('normalizeUrl', { urls: url, mobile: mobile })
-      if (!urlInfo[0]) {
-        throw new Error("Input is not a valid url")
-      }
-      if (urlInfo[0].isBaqendApp) {
-        throw new Error("Url is already a Baqend app")
-      }
-      dispatch({
-        type: NORMALIZE_URL_POST,
-        payload: urlInfo[0]
-      })
-      return urlInfo[0]
     } catch(e) {
       dispatch({
         type: RESET_TEST_RESULT,
@@ -54,7 +41,7 @@ export const prepareTest = (url = null) => ({
 /**
  * Triggers the start of a new test.
  */
-export const startTest = (urlInfo = {}, useAdvancedConfig = false) => ({
+export const startTest = (useAdvancedConfig = true) => ({
   'BAQEND': async ({ dispatch, getState, db }) => {
     dispatch({
       type: RESET_TEST_RESULT
@@ -64,10 +51,8 @@ export const startTest = (urlInfo = {}, useAdvancedConfig = false) => ({
         type: START_TEST,
       })
       const { url, location, caching, mobile, activityTimeout } = getState().config
-      const { speedkit, speedkitVersion, swUrl, isSecured, type } = urlInfo
-      let speedKitConfig = !speedkit || (speedkit && useAdvancedConfig) ? getState().config.speedKitConfig : null
+      let { speedKitConfig } = getState().config
 
-      console.log(speedKitConfig)
       if (mobile && speedKitConfig) {
         // eslint-disable-next-line no-eval
         const speedKitConfigObj = eval(`(${speedKitConfig})`)
@@ -83,12 +68,14 @@ export const startTest = (urlInfo = {}, useAdvancedConfig = false) => ({
         mobile,
         speedKitConfig,
         activityTimeout,
-        type,
-        swUrl,
-        isSecured,
-        isSpeedKitComparison: speedkit,
-        speedKitVersion: speedkitVersion,
       })
+
+      // dispatch to update the display URL
+      dispatch({
+        type: START_TEST_POST,
+        payload: testOverview
+      })
+
       return testOverview
     } catch(e) {
       dispatch({

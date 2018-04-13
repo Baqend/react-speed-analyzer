@@ -19,9 +19,9 @@ class ResultAction extends Component {
   restartAnalyzer = async () => {
     const { history } = this.props
     try {
-      const urlInfo = await this.props.actions.prepareTest(this.props.config.url)
+      await this.props.actions.prepareTest(this.props.config.url)
       history.push('/')
-      const testOverview = await this.props.actions.startTest(urlInfo)
+      const testOverview = await this.props.actions.startTest()
       history.push(`/test/${getObjectKey(testOverview.id)}`)
     } catch (e) {}
   }
