@@ -20,7 +20,7 @@ export class MultiComparisonFactory implements AsyncFactory<model.BulkTest> {
    * @return A promise which resolves with the created object.
    */
   create(urlInfo: UrlInfo, params: TestParams, createdBy: string | null = null, runs: number = 1): Promise<model.BulkTest> {
-    const usedParams = this.testBuilder.buildParams(params, null, 9)
+    const usedParams = this.testBuilder.buildSingleTestParams(params, null, 9)
     const { location, mobile, priority } = usedParams
 
     const multiComparison: model.BulkTest = new this.db.BulkTest()

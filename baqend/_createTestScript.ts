@@ -1,13 +1,9 @@
 import URL from 'url'
+import { Config } from './_Config'
 import { DEFAULT_ACTIVITY_TIMEOUT, DEFAULT_TIMEOUT } from './_TestBuilder'
 import credentials from './credentials'
 
-export interface SpeedKitConfig {
-  appName: string
-  appDomain?: string
-}
-
-export type SpeedKitConfigArgument = string | SpeedKitConfig | null
+export type SpeedKitConfigArgument = string | Config | null
 
 /**
  * @param url             The competitor's URL to test.

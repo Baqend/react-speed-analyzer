@@ -1,9 +1,9 @@
 import { baqend, model } from 'baqend'
-import stringifyObject from 'stringify-object'
 import { analyzeSpeedKit } from './_analyzeSpeedKit'
 import { AsyncFactory } from './_AsyncFactory'
 import { ConfigCache } from './_ConfigCache'
 import { getRootPath, getTLD } from './_getSpeedKitUrl'
+import { DataType, Serializer } from './_Serializer'
 import { timeout } from './_sleep'
 import { TestBuilder } from './_TestBuilder'
 import { TestFactory } from './_TestFactory'
@@ -21,12 +21,18 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
     private testFactory: TestFactory,
     private testBuilder: TestBuilder,
     private configCache: ConfigCache,
+    private serializer: Serializer,
   ) {
   }
 
+  /**
+   * Creates the object which is demanded by this factory.
+   *
+   * @return A promise which resolves with the created object.
+   */
   async create(urlInfo: UrlInfo, params: TestParams): Promise<model.TestOverview> {
     const config = await this.buildSpeedKitConfig(urlInfo, params)
-    const requiredParams = this.testBuilder.buildParams(params, config)
+    const requiredParams = this.testBuilder.buildSingleTestParams(params, config)
     const configAnalysis = urlInfo.speedKitEnabled ? this.createConfigAnalysis(urlInfo, config) : null
 
     // Create the tests
@@ -42,26 +48,27 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
   /**
    * Builds the Speed Kit config to use for this test.
    */
-  private buildSpeedKitConfig({ url, speedKitEnabled }: UrlInfo, { mobile, speedKitConfig }: TestParams): Promise<string | null> {
+  private async buildSpeedKitConfig({ url, speedKitEnabled }: UrlInfo, { mobile, speedKitConfig }: TestParams): Promise<string | null> {
     // Has the user set a config as a test parameter?
     if (speedKitConfig) {
-      return Promise.resolve(speedKitConfig)
+      return speedKitConfig
     }
 
     // Is Speed Kit enabled on the URL? Get its config
+    this.db.log.info(`${url} has Speed Kit: ${speedKitEnabled ? 'yes' : 'no'}`)
     if (speedKitEnabled) {
-      this.db.log.info(`Extracting config from URL ${url}`)
-      const analyze = analyzeSpeedKit(url, this.db).then(it => stringifyObject(it.config))
-        .catch(error => {
-          this.db.log.warn(`Could not analyze Speed Kit config`, { url, error: error.stack })
-          return null
-        })
-
-      return timeout(5000, analyze, null)
+      try {
+        this.db.log.info(`Extracting config from URL: ${url}`)
+        const config = await analyzeSpeedKit(url, this.db)
+        return this.serializer.serialize(config, DataType.JAVASCRIPT)
+      } catch (error) {
+        this.db.log.warn(`Extracting config from URL failed: ${error.message}`, { url, error: error.stack })
+      }
     }
 
     // Create a default Speed Kit config for the URL
-    return this.configCache.get(url, mobile!)
+    const config = await this.configCache.get(url, mobile!)
+    return this.serializer.serialize(config, DataType.JAVASCRIPT)
   }
 
   /**

@@ -28,16 +28,16 @@ import { WebPagetestResultHandler } from './_WebPagetestResultHandler'
 export function bootstrap(db: baqend) {
   // Create services
   const serializer = new Serializer()
-  const configCache = new ConfigCache(db)
-  const configGenerator = new ConfigGenerator(db, serializer)
+  const configCache = new ConfigCache(db, serializer)
+  const configGenerator = new ConfigGenerator(db)
   const urlAnalyzer = new UrlAnalyzer(db)
   const pagetest = new Pagetest()
-  const webPagetestResultHandler = new WebPagetestResultHandler(db, pagetest, configGenerator, configCache)
+  const webPagetestResultHandler = new WebPagetestResultHandler(db, pagetest, configGenerator, configCache, serializer)
   const testBuilder = new TestBuilder()
 
   // Create factories
   const testFactory = new TestFactory(db, testBuilder)
-  const comparisonFactory = new ComparisonFactory(db, testFactory, testBuilder, configCache)
+  const comparisonFactory = new ComparisonFactory(db, testFactory, testBuilder, configCache, serializer)
   const multiComparisonFactory = new MultiComparisonFactory(db, testBuilder)
   const bulkComparisonFactory = new BulkComparisonFactory(db, testBuilder)
 

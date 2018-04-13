@@ -49,13 +49,25 @@ export const DEFAULT_TEST_OPTIONS: Partial<model.TestOptions> = {
 }
 
 export class TestBuilder {
-
-  buildParams(params: TestParams, speedKitConfig: string | null = null, priority: Priority = DEFAULT_SINGLE_PRIORITY): Required<TestParams> {
-    return Object.assign(this.buildDefaultParams(speedKitConfig, priority), params)
+  /**
+   * Build test parameters for single runs.
+   */
+  buildSingleTestParams(params: TestParams, speedKitConfig: string | null = null, priority: Priority = DEFAULT_SINGLE_PRIORITY): Required<TestParams> {
+    return Object.assign({}, DEFAULT_PARAMS, params, {
+      speedKitConfig: params.speedKitConfig || speedKitConfig,
+      priority: params.priority || priority,
+    })
   }
 
+  /**
+   * Build test parameters for bulk runs.
+   */
   buildBulkParams(params: MultiTestParams, runs: number = 1, speedKitConfig: string | null = null, priority: Priority = DEFAULT_BULK_PRIORITY): Required<MultiTestParams> {
-    return Object.assign(this.buildDefaultParams(speedKitConfig, priority), { runs }, params)
+    return Object.assign({}, DEFAULT_PARAMS, params, {
+      speedKitConfig: params.speedKitConfig || speedKitConfig,
+      priority: params.priority || priority,
+      runs: params.runs || runs,
+    })
   }
 
   buildOptions(params: Required<TestParams>, commandLine: string = ''): model.TestOptions {
@@ -71,12 +83,5 @@ export class TestBuilder {
     }
 
     return Object.assign({}, DEFAULT_TEST_OPTIONS, testOptions)
-  }
-
-  /**
-   * Create the default params.
-   */
-  private buildDefaultParams(speedKitConfig: string | null, priority: Priority): Required<TestParams> {
-    return Object.assign({}, DEFAULT_PARAMS, { speedKitConfig, priority })
   }
 }

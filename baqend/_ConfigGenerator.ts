@@ -1,10 +1,10 @@
 import { baqend } from 'baqend'
 import fetch from 'node-fetch'
 import { getAdSet } from './_adBlocker'
+import { Config } from './_Config'
 import { getTLD } from './_getSpeedKitUrl'
 import { escapeRegExp, toRegExp } from './_helpers'
 import { WptTestResult } from './_Pagetest'
-import { DataType, Serializer } from './_Serializer'
 import credentials from './credentials'
 
 export const CDN_LOCAL_URL = 'https://makefast.app.baqend.com/v1/file/www/selfMaintainedCDNList'
@@ -12,47 +12,41 @@ export const CDN_LOCAL_URL = 'https://makefast.app.baqend.com/v1/file/www/selfMa
 export class ConfigGenerator {
   constructor(
     private readonly db: baqend,
-    private readonly serializer: Serializer,
   ) {
   }
 
   /**
    * Returns the default Speed Kit config for the given URL.
    */
-  generateMinimal(url: string, mobile: boolean = false, type: DataType = DataType.JAVASCRIPT): string {
+  generateMinimal(url: string, mobile: boolean = false): Config {
     const tld = getTLD(this.db, url)
     const domainRegex = new RegExp(`^(?:[\\w-]*\\.){0,3}(?:${escapeRegExp(tld)})`)
 
-    return this.serializer.serialize({
+    return {
       appName: credentials.app,
       whitelist: [{ host: domainRegex }],
       userAgentDetection: mobile,
-    }, type)
+    }
   }
 
   /**
    * Returns the fallback config for a URL.
    */
-  generateFallback(url: string, mobile: boolean = false, type: DataType = DataType.JAVASCRIPT): string {
+  generateFallback(url: string, mobile: boolean = false): Config {
     const tld = getTLD(this.db, url)
     const domainRegex = new RegExp(`^(?:[\\w-]*\\.){0,3}(?:${escapeRegExp(tld)})`)
 
-    return this.serializer.serialize({
+    return {
       appName: credentials.app,
       whitelist: [{ host: [domainRegex, /cdn/, /assets\./, /static\./] }],
       userAgentDetection: mobile,
-    }, type)
+    }
   }
 
   /**
    * Analyzes the given domains and creates a Speed Kit config with a suggested whitelist.
    */
-  async generateSmart(
-    url: string,
-    testResult: WptTestResult,
-    mobile: boolean = false,
-    type: DataType = DataType.JAVASCRIPT,
-  ) {
+  async generateSmart(url: string, testResult: WptTestResult, mobile: boolean = false): Promise<Config> {
     const domains = this.getDomains(testResult)
     this.db.log.info(`Analyzing domains: ${url}`, { domains })
 
@@ -67,11 +61,11 @@ export class ConfigGenerator {
     const tld = getTLD(this.db, url)
     const domainRegex = new RegExp(`^(?:[\\w-]*\\.){0,3}(?:${escapeRegExp(tld)})`)
 
-    return this.serializer.serialize({
+    return {
       appName: credentials.app,
       whitelist: [{ host: [domainRegex, ...whitelistedHosts] }],
       userAgentDetection: mobile,
-    }, type)
+    }
   }
 
   private getDomains(testResult: WptTestResult): string[] {
