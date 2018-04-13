@@ -1,9 +1,10 @@
 import { baqend, model } from 'baqend'
+import { Config } from './_Config'
 import { ConfigGenerator } from './_ConfigGenerator'
 import { Pagetest, WptTestResultOptions } from './_Pagetest'
 import { generateTestResult } from './_resultGeneration'
-import { cacheSpeedKitConfig } from './_configCaching'
-import { DataType } from './_Serializer'
+import { ConfigCache } from './_ConfigCache'
+import { DataType, Serializer } from './_Serializer'
 
 export enum TestType {
   CONFIG = 'config',
@@ -21,6 +22,8 @@ export class WebPagetestResultHandler {
     private readonly db: baqend,
     private readonly api: Pagetest,
     private readonly configGenerator: ConfigGenerator,
+    private readonly configCache: ConfigCache,
+    private readonly serializer: Serializer,
   ) {
   }
 
@@ -54,7 +57,7 @@ export class WebPagetestResultHandler {
       case TestType.CONFIG: {
         return this.getSmartConfig(wptTestId, test.testInfo.url, test.testInfo.testOptions.mobile).then((config) => {
           return test.optimisticSave((it: model.TestResult) => {
-            it.speedKitConfig = config
+            it.speedKitConfig = this.serializer.serialize(config, DataType.JAVASCRIPT)
           })
         })
       }
@@ -86,10 +89,9 @@ export class WebPagetestResultHandler {
    * @param testId    The id of the test to get the domains from.
    * @param url       The URL the test was performed against.
    * @param mobile
-   * @param type      The data type of the config to generate.
    * @return          The generated config as serialized string.
    */
-  async getSmartConfig(testId: string, url: string, mobile: boolean, type: DataType = DataType.JAVASCRIPT): Promise<string> {
+  async getSmartConfig(testId: string, url: string, mobile: boolean): Promise<Config> {
     const options: WptTestResultOptions = {
       requests: true,
       breakdown: false,
@@ -101,9 +103,11 @@ export class WebPagetestResultHandler {
       const result = await this.api.getTestResults(testId, options)
       const domains = result.data
       this.db.log.info('Generating Smart Config', { url, mobile })
-      const config = await this.configGenerator.generateSmart(url, domains, mobile, type)
+      const config = await this.configGenerator.generateSmart(url, domains, mobile)
       // Save cached config
-      return await cacheSpeedKitConfig(this.db, url, mobile, config)
+      await this.configCache.put(url, mobile, config)
+
+      return config
     } catch (error) {
       this.db.log.warn('Smart generation failed', { url, mobile, error: error.stack })
 

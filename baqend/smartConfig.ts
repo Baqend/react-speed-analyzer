@@ -1,7 +1,6 @@
 import { baqend, model } from 'baqend'
 import { Request, Response } from 'express'
 import { bootstrap } from './_compositionRoot'
-import { getCachedSpeedKitConfig } from './_configCaching'
 import { ConfigGenerator } from './_ConfigGenerator'
 import { createTestScript } from './_createTestScript'
 import { DataType } from './_Serializer'
@@ -33,7 +32,7 @@ export async function post(db: baqend, req: Request, res: Response) {
 
   try {
     const configTestScript = getTestScriptWithMinimalWhitelist(configGenerator, url)
-    const testParams = testBuilder.buildParams(params)
+    const testParams = testBuilder.buildSingleTestParams(params)
     const testOptions = Object.assign(testBuilder.buildOptions(testParams), SMART_CONFIG_TEST_OPTIONS)
     const testId = await pagetest.runTestWithoutWait(configTestScript, testOptions)
 
@@ -55,27 +54,34 @@ export async function get(db: baqend, req: Request, res: Response) {
     return
   }
 
-  const { pagetest, webPagetestResultHandler } = bootstrap(db)
-  try {
-    // Get test status
-    const { statusCode, data: { testInfo: { url, mobile } } } = await pagetest.getTestStatus(testId)
+  const { pagetest, webPagetestResultHandler, configCache, serializer } = bootstrap(db)
 
+  /**
+   * Gets the config for the given situation.
+   */
+  async function getConfig(statusCode: number, url: string, mobile: boolean, type: DataType): Promise<string | null> {
     // Try to get config from cache
-    const cachedConfig = await getCachedSpeedKitConfig(db, url, !!mobile)
+    const cachedConfig = await configCache.get(url, mobile)
     if (cachedConfig) {
-      res.send({ testId, url, mobile, type, config: cachedConfig })
-      return
+      return serializer.serialize(cachedConfig, type)
     }
 
     // Is the test finished?
     if (statusCode === 200) {
-      const config = await webPagetestResultHandler.getSmartConfig(testId, url, !!mobile, type)
-      res.send({ testId, url, mobile, type, config })
-      return
+      return serializer.serialize(webPagetestResultHandler.getSmartConfig(testId, url, mobile), type)
     }
 
-    res.status(404)
-    res.send({ testId, url, mobile, type, config: null })
+    return null
+  }
+
+  try {
+    // Get test status
+    const { statusCode, data: { testInfo: { url, mobile: mobileAsNumber } } } = await pagetest.getTestStatus(testId)
+    const mobile = mobileAsNumber > 0
+
+    const config = await getConfig(statusCode, url, mobile, type)
+    res.status(config !== null ? 200 : 404)
+    res.send({ testId, url, mobile, type, config })
   } catch (error) {
     res.status(500)
     res.send({ error: error.message, stack: error.stack, testId })

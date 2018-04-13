@@ -4,12 +4,27 @@ export enum DataType {
 }
 
 export class Serializer {
+  /**
+   * Serializes given data as the given type.
+   */
   serialize(data: any, type: DataType): string {
     switch (type) {
       case DataType.JAVASCRIPT:
         return this.serializeJavascript(data)
       case DataType.JSON:
         return this.serializeJson(data)
+      default:
+        throw new Error(`Invalid type specified: ${type}. Must be one of ${DataType}`)
+    }
+  }
+
+  /**
+   * Deserializes given data as the given type.
+   */
+  deserialize(data: string, type: DataType): any {
+    switch (type) {
+      case DataType.JSON:
+        return this.deserializeJson(data)
       default:
         throw new Error(`Invalid type specified: ${type}. Must be one of ${DataType}`)
     }
@@ -25,6 +40,10 @@ export class Serializer {
 
     if (typeof thing != 'object') {
       return JSON.stringify(thing)
+    }
+
+    if (thing === null) {
+      return 'null'
     }
 
     if (thing instanceof RegExp) {
@@ -44,7 +63,7 @@ export class Serializer {
   }
 
   /**
-   * Converts something to a JSON.
+   * Converts something to JSON.
    *
    * @param thing The thing to serialize as JSON.
    * @return A JSON string.
@@ -52,7 +71,24 @@ export class Serializer {
   private serializeJson(thing: any): string {
     return JSON.stringify(thing, ((key, value) => {
       if (value instanceof RegExp) {
-        return this.regExpToJSON(value)
+        return `regexp:/${value.source}/${value.flags || ''}`
+      }
+
+      return value
+    }))
+  }
+
+  /**
+   * Converts something from JSON.
+   */
+  private deserializeJson(thing: string): any {
+    return JSON.parse(thing, ((key, value) => {
+      if (typeof value === 'string') {
+        const match = /^regexp:\/(.*)\/([\w]*)$/.exec(value)
+        if (match) {
+          const [, source, flags] = match
+          return new RegExp(source, flags)
+        }
       }
 
       return value
@@ -68,15 +104,5 @@ export class Serializer {
     }
 
     return `"${key}"`
-  }
-
-  /**
-   * Converts a regular expression to JSON.
-   *
-   * @param regExp A regular expression to represent as JSON.
-   * @return A JSON representation of a regular expression.
-   */
-  private regExpToJSON(regExp: RegExp): string {
-    return `regexp:/${regExp.source}/${regExp.flags || ''}`
   }
 }
