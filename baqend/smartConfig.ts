@@ -1,8 +1,6 @@
 import { baqend, model } from 'baqend'
 import { Request, Response } from 'express'
 import { bootstrap } from './_compositionRoot'
-import { ConfigGenerator } from './_ConfigGenerator'
-import { createTestScript } from './_createTestScript'
 import { DataType } from './_Serializer'
 
 const SMART_CONFIG_TEST_OPTIONS: Partial<model.TestOptions> = {
@@ -11,11 +9,6 @@ const SMART_CONFIG_TEST_OPTIONS: Partial<model.TestOptions> = {
   video: false,
   firstViewOnly: true,
   minimalResults: true,
-}
-
-function getTestScriptWithMinimalWhitelist(configGenerator: ConfigGenerator, url: string): string {
-  const config = configGenerator.generateMinimal(url, false)
-  return createTestScript(url, false, false, config, 75)
 }
 
 /**
@@ -28,10 +21,12 @@ export async function post(db: baqend, req: Request, res: Response) {
     res.send({ error: 'Please provide a URL.' })
   }
 
-  const { testBuilder, pagetest, configGenerator } = bootstrap(db)
+  const { testBuilder, pagetest, configGenerator, testScriptBuilder, serializer } = bootstrap(db)
 
   try {
-    const configTestScript = getTestScriptWithMinimalWhitelist(configGenerator, url)
+    const minimal = configGenerator.generateMinimal(url, false)
+    const config = serializer.serialize(minimal, DataType.JAVASCRIPT)
+    const configTestScript = testScriptBuilder.createTestScript(url, false, config)
     const testParams = testBuilder.buildSingleTestParams(params)
     const testOptions = Object.assign(testBuilder.buildOptions(testParams), SMART_CONFIG_TEST_OPTIONS)
     const testId = await pagetest.runTestWithoutWait(configTestScript, testOptions)

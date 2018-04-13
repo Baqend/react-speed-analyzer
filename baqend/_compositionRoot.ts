@@ -11,6 +11,7 @@ import { Pagetest } from './_Pagetest'
 import { Serializer } from './_Serializer'
 import { TestBuilder } from './_TestBuilder'
 import { TestFactory } from './_TestFactory'
+import { TestScriptBuilder } from './_TestScriptBuilder'
 import { TestWorker } from './_TestWorker'
 import { UrlAnalyzer } from './_UrlAnalyzer'
 import { WebPagetestResultHandler } from './_WebPagetestResultHandler'
@@ -28,6 +29,7 @@ import { WebPagetestResultHandler } from './_WebPagetestResultHandler'
 export function bootstrap(db: baqend) {
   // Create services
   const serializer = new Serializer()
+  const testScriptBuilder = new TestScriptBuilder()
   const configCache = new ConfigCache(db, serializer)
   const configGenerator = new ConfigGenerator(db)
   const urlAnalyzer = new UrlAnalyzer(db)
@@ -42,13 +44,14 @@ export function bootstrap(db: baqend) {
   const bulkComparisonFactory = new BulkComparisonFactory(db, testBuilder)
 
   // Create workers
-  const testWorker = new TestWorker(db, pagetest, webPagetestResultHandler, configGenerator)
+  const testWorker = new TestWorker(db, pagetest, webPagetestResultHandler, configGenerator, testScriptBuilder, serializer)
   const comparisonWorker = new ComparisonWorker(db, testWorker)
   const multiComparisonWorker = new MultiComparisonWorker(db, comparisonFactory, comparisonWorker)
   const bulkComparisonWorker = new BulkComparisonWorker(db, multiComparisonFactory, multiComparisonWorker)
 
   return {
     serializer,
+    testScriptBuilder,
     configCache,
     configGenerator,
     urlAnalyzer,

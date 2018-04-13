@@ -1,6 +1,7 @@
 import { baqend, model } from 'baqend'
 import { ConfigGenerator } from './_ConfigGenerator'
-import { createTestScript, SpeedKitConfigArgument } from './_createTestScript'
+import { DataType, Serializer } from './_Serializer'
+import { TestScriptBuilder } from './_TestScriptBuilder'
 import { Pagetest } from './_Pagetest'
 import { sleep } from './_sleep'
 import { TestType, WebPagetestResultHandler } from './_WebPagetestResultHandler'
@@ -33,6 +34,8 @@ export class TestWorker {
     private readonly api: Pagetest,
     private readonly webPagetestResultHandler: WebPagetestResultHandler,
     private readonly configGenerator: ConfigGenerator,
+    private readonly testScriptBuilder: TestScriptBuilder,
+    private readonly serializer: Serializer,
     private listener?: TestListener,
   ) {
   }
@@ -182,9 +185,8 @@ export class TestWorker {
    * Starts a prewarm against WebPagetest.
    */
   private startPrewarmWebPagetest(test: model.TestResult): Promise<void> {
-    const { speedKitConfig, testInfo } = test
-    const { testOptions } = testInfo
-    const prewarmTestScript = this.getScriptForConfig(speedKitConfig, testInfo)
+    const { testInfo: { testOptions } } = test
+    const prewarmTestScript = this.buildScriptForTestWithConfig(test)
     const prewarmTestOptions = Object.assign({ pingback: PING_BACK_URL }, testOptions, prewarmOptions)
 
     return this.startWebPagetest(test, TestType.PREWARM, prewarmTestScript, prewarmTestOptions)
@@ -196,7 +198,7 @@ export class TestWorker {
   private startConfigWebPagetest(test: model.TestResult): Promise<void> {
     const { testInfo } = test
     const { testOptions } = testInfo
-    const configTestScript = this.getTestScriptWithMinimalWhitelist(testInfo)
+    const configTestScript = this.buildScriptWithMinimalWhitelist(testInfo)
     const configTestOptions = Object.assign({ pingback: PING_BACK_URL }, testOptions, prewarmOptions, { runs: 1 })
 
     return this.startWebPagetest(test, TestType.CONFIG, configTestScript, configTestOptions)
@@ -206,9 +208,8 @@ export class TestWorker {
    * Starts a performance test against WebPagetest.
    */
   private startPerformanceWebPagetest(test: model.TestResult): Promise<void> {
-    const { speedKitConfig, testInfo } = test
-    const { testOptions } = testInfo
-    const performanceTestScript = this.getScriptForConfig(speedKitConfig, testInfo)
+    const { testInfo: { testOptions } } = test
+    const performanceTestScript = this.buildScriptForTestWithConfig(test)
     const performanceTestOptions = Object.assign({ pingback: PING_BACK_URL }, testOptions)
 
     return this.startWebPagetest(test, TestType.PERFORMANCE, performanceTestScript, performanceTestOptions)
@@ -242,17 +243,39 @@ export class TestWorker {
     })
   }
 
-  private getScriptForConfig(config: SpeedKitConfigArgument, info: model.TestInfo): string {
-    const { url, isSpeedKitComparison, isTestWithSpeedKit, activityTimeout, testOptions } = info
-    const c = config || this.configGenerator.generateFallback(url, testOptions.mobile)
+  /**
+   * Builds a test script for a test which has a config.
+   */
+  private buildScriptForTestWithConfig(test: model.TestResult): string {
+    const { testInfo } = test
+    const { url, isTestWithSpeedKit, activityTimeout } = testInfo
+    const config = this.getConfigForTest(test)
 
-    return createTestScript(url, isTestWithSpeedKit, isSpeedKitComparison, c, activityTimeout)
+    return this.testScriptBuilder.createTestScript(url, isTestWithSpeedKit, config, activityTimeout)
   }
 
-  private getTestScriptWithMinimalWhitelist({ url, isTestWithSpeedKit, isSpeedKitComparison, activityTimeout, testOptions }: model.TestInfo): string {
-    const config = this.configGenerator.generateMinimal(url, testOptions.mobile)
+  /**
+   * Builds a test script for a minimal whitelist.
+   */
+  private buildScriptWithMinimalWhitelist({ url, isTestWithSpeedKit, activityTimeout, testOptions }: model.TestInfo): string {
+    const minimal = this.configGenerator.generateMinimal(url, testOptions.mobile)
+    const config = this.serializer.serialize(minimal, DataType.JAVASCRIPT)
 
-    return createTestScript(url, isTestWithSpeedKit, isSpeedKitComparison, config, activityTimeout)
+    return this.testScriptBuilder.createTestScript(url, isTestWithSpeedKit, config, activityTimeout)
+  }
+
+  /**
+   * Gets the config for a given test.
+   * If the test has no config set, a fallback will be generated.
+   */
+  private getConfigForTest(test: model.TestResult): string {
+    const { speedKitConfig, testInfo: { url, testOptions } } = test
+    if (speedKitConfig) {
+      return speedKitConfig
+    }
+
+    const fallback = this.configGenerator.generateFallback(url, testOptions.mobile)
+    return this.serializer.serialize(fallback, DataType.JAVASCRIPT)
   }
 
   /**
