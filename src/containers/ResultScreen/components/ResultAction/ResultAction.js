@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import renderHTML from 'react-render-html';
+import renderHTML from 'react-render-html'
 
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -95,14 +95,16 @@ class ResultAction extends Component {
     content.push(offlineFact)
 
     // Faster Dependencies
-/*    const thirdPartyDomains = this.props.speedKitTest.thirdPartyDomains
+    /*
+    const thirdPartyDomains = this.props.speedKitTest.thirdPartyDomains
     if (thirdPartyDomains > 0) {
       const dependenciesFact = [
         'Faster Dependencies',
         `You included static resources from <strong>${thirdPartyDomains} external domains</strong> that Speed Kit accelerated.`
       ]
       content.push(dependenciesFact)
-    }*/
+    }
+    */
 
     // Client Caching
     const clientFact = [

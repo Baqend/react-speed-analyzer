@@ -7,6 +7,7 @@ import {
   SPEED_KIT_RESULT_LOAD,
   TERMINATE_TEST,
 } from './types'
+import { trackURL } from '../helper/utils'
 
 export const resetTestStatus = () => ({
   type: RESET_TEST_STATUS
@@ -23,18 +24,25 @@ export const loadResult = (testId) => ({
     let testOverview
     try {
       testOverview = await dispatch(getTestOverview(testId))
-      const { competitorTestResult, speedKitTestResult } = testOverview
-      const testResults = await Promise.all([
-        db.TestResult.load(competitorTestResult),
-        db.TestResult.load(speedKitTestResult)
+      const { competitorTestOverview, speedKitTestOverview } = testOverview
+      const [competitorTestResult, speedKitTestResult] = await Promise.all([
+        db.TestResult.load(competitorTestOverview),
+        db.TestResult.load(speedKitTestOverview)
       ])
+
+      if (speedKitTestResult) {
+        trackURL('showTestResult', speedKitTestResult.url, speedKitTestOverview.factors)
+      } else {
+        trackURL('errorTestResult', speedKitTestResult.url)
+      }
+
       dispatch({
         type: COMPETITOR_RESULT_LOAD,
-        payload: testResults[0]
+        payload: competitorTestResult
       })
       dispatch({
         type: SPEED_KIT_RESULT_LOAD,
-        payload: testResults[1]
+        payload: speedKitTestResult
       })
       dispatch({
         type: TERMINATE_TEST

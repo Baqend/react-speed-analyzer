@@ -1,4 +1,4 @@
-/* global window */
+/* global window fbq ga */
 
 /**
  * @param {number} bytes The file size in bytes to format.
@@ -12,6 +12,18 @@ export const formatFileSize = (bytes, decimals) => {
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
   const i = Math.floor(Math.log(bytes) / Math.log(k))
   return `${parseFloat((bytes / (k ** i)).toFixed(dm))} ${sizes[i]}`
+}
+
+export const trackURL = (name, url, factors) => {
+  console.log(`Track ${name} with ${url} and ${factors}`)
+
+  if (typeof fbq !== 'undefined') {
+    fbq('trackCustom', name, { url, factors })
+  }
+
+  if (typeof ga !== 'undefined') {
+    ga('send', 'speed-analyzer', name, name, url)
+  }
 }
 
 
