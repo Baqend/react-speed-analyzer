@@ -37,9 +37,10 @@ class StartingScreen extends Component {
 
   startTest = async (url = null) => {
     const { history } = this.props
+    const useAdvancedConfig = this.state.showAdvancedConfig
     try {
-      const urlInfo = await this.props.actions.prepareTest(url)
-      const testOverview = await this.props.actions.startTest(urlInfo)
+      await this.props.actions.prepareTest(url)
+      const testOverview = await this.props.actions.startTest(useAdvancedConfig)
       history.push(`/test/${getObjectKey(testOverview.id)}${history.location.search}`)
     } catch (e) {
       this.props.actions.resetTestStatus()
@@ -48,6 +49,10 @@ class StartingScreen extends Component {
 
   onSubmit = () => {
     this.startTest(this.props.config.url)
+  }
+
+  onToggleAdvancedConfig = (showAdvancedConfig) => {
+    this.setState({ showAdvancedConfig })
   }
 
   componentWillMount() {
@@ -70,7 +75,12 @@ class StartingScreen extends Component {
 
   render() {
     return (
-      <StartingScreenComponent { ...this.props } { ...this.state} onSubmit={this.onSubmit} />
+      <StartingScreenComponent
+        { ...this.props }
+        { ...this.state}
+        onToggleAdvancedConfig={this.onToggleAdvancedConfig}
+        onSubmit={this.onSubmit}
+      />
     )
   }
 }

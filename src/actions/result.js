@@ -2,6 +2,7 @@ import {
   RESET_TEST_STATUS,
   RESET_TEST_RESULT,
   TESTOVERVIEW_LOAD,
+  TESTOVERVIEW_LOAD_FAIL,
   COMPETITOR_RESULT_LOAD,
   SPEED_KIT_RESULT_LOAD,
   TERMINATE_TEST,
@@ -56,11 +57,19 @@ const getTestOverview = (testId) => ({
     let { testOverview } = getState().result
     if(Object.keys(testOverview).length === 0 || testOverview.id !== testId) {
       testOverview = await db.TestOverview.load(testId)
-      dispatch({
-        type: TESTOVERVIEW_LOAD,
-        payload: testOverview
-      })
-      return testOverview.toJSON()
+      if (testOverview) {
+        dispatch({
+          type: TESTOVERVIEW_LOAD,
+          payload: testOverview
+        })
+        return testOverview.toJSON()
+      } else {
+        dispatch({
+          type: TESTOVERVIEW_LOAD_FAIL,
+          payload: null,
+        })
+        return null
+      }
     }
     return testOverview
   }

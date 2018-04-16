@@ -59,14 +59,14 @@
       "type": "/db/String",
       "order": 8
     },
-    "testDataMissing": {
-      "name": "testDataMissing",
-      "type": "/db/Boolean",
-      "order": 9
-    },
     "videoFileFirstView": {
       "name": "videoFileFirstView",
       "type": "/db/File",
+      "order": 9
+    },
+    "testDataMissing": {
+      "name": "testDataMissing",
+      "type": "/db/Boolean",
       "order": 10
     },
     "videoFileRepeatView": {
@@ -89,15 +89,40 @@
       "type": "/db/Boolean",
       "order": 14
     },
+    "isClone": {
+      "name": "isClone",
+      "type": "/db/Boolean",
+      "order": 15
+    },
     "priority": {
       "name": "priority",
       "type": "/db/Integer",
-      "order": 15
+      "order": 16
     },
     "speedKitConfig": {
       "name": "speedKitConfig",
       "type": "/db/String",
-      "order": 16
+      "order": 17
+    },
+    "testInfo": {
+      "name": "testInfo",
+      "type": "/db/JsonObject",
+      "order": 18
+    },
+    "webPagetests": {
+      "name": "webPagetests",
+      "type": "/db/collection.List[/db/WebPagetest]",
+      "order": 19
+    },
+    "retries": {
+      "name": "retries",
+      "type": "/db/Integer",
+      "order": 20
+    },
+    "checked": {
+      "name": "checked",
+      "type": "/db/DateTime",
+      "order": 21
     }
   }
 }

@@ -1,0 +1,24 @@
+{
+  "class": "/db/Task",
+  "acl": {
+    "schemaAdd": {
+      "/db/Role/1": "allow"
+    },
+    "schemaReplace": {
+      "/db/Role/1": "allow"
+    }
+  },
+  "embedded": true,
+  "fields": {
+    "taskType": {
+      "name": "taskType",
+      "type": "/db/String",
+      "order": 0
+    },
+    "lastExecution": {
+      "name": "lastExecution",
+      "type": "/db/DateTime",
+      "order": 1
+    }
+  }
+}

@@ -15,10 +15,6 @@ class StartingScreenComponent extends Component {
     }
   }
 
-  onToggleAdvancedConfig = (showAdvancedConfig) => {
-    this.setState({ showAdvancedConfig })
-  }
-
   renderForm() {
     return (
       <div className="flex-grow-1 flex flex-column justify-center" style={{ overflow: 'hidden' }}>
@@ -31,7 +27,7 @@ class StartingScreenComponent extends Component {
             showConfig={true}
             showConfigToggle={false}
             showAdvancedConfig={this.state.showAdvancedConfig}
-            onToggleAdvancedConfig={this.onToggleAdvancedConfig}
+            onToggleAdvancedConfig={this.props.onToggleAdvancedConfig}
             onSubmit={this.props.onSubmit}
           />
         </div>
@@ -60,6 +56,7 @@ class StartingScreenComponent extends Component {
 
 StartingScreenComponent.propTypes = {
   config: PropTypes.object.isRequired,
+  onToggleAdvancedConfig: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
 }
 

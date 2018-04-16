@@ -1,0 +1,73 @@
+properties([
+  disableConcurrentBuilds(),
+  parameters([string(description: 'The branch to build', name: 'BRANCH', defaultValue: 'async')]),
+  pipelineTriggers([[$class: 'GitLabPushTrigger', triggerOnPush: true, ciSkip: true, branchFilterType: 'All']])
+])
+
+node {
+  try {
+    // $BRANCH is taken from the GitLab hook plugin
+    BRANCH = env.gitlabSourceBranch ? env.gitlabSourceBranch : BRANCH
+    def branchExists = !sh(returnStdout: true, script: "git ls-remote --heads git@github.com:Baqend/react-speed-analyzer.git $BRANCH").trim().isEmpty()
+    def branch = branchExists ? BRANCH : 'master'
+
+    currentBuild.displayName = "Branch: $branch"
+
+    stage('Checkout') {
+      git branch: branch, credentialsId: 'ece0cdc0-dd1a-4673-aeba-8ca23f57d725', url: 'git@github.com:Baqend/react-speed-analyzer.git'
+    }
+
+    stage('Install') {
+      dir('baqend') {
+        // Install Node dependencies
+        sh "/usr/bin/npm install"
+      }
+    }
+
+    stage('Build') {
+      dir('baqend') {
+        // Clear output directory
+        sh "rm -rf out"
+
+        // Build TypeScript source
+        def statusCode = sh script: "node_modules/.bin/tsc", returnStatus: true
+        if (statusCode != 0 && statusCode != 2) {
+          currentBuild.result = "FAILED"
+          error "TypeScript returned illegal status code: $statusCode"
+        }
+      }
+    }
+
+    stage('Test') {
+      dir('baqend') {
+        try {
+          sh "/usr/bin/npm test"
+        } catch (e) {
+          currentBuild.result = "UNSTABLE"
+        }
+      }
+    }
+
+    stage('Report') {
+      dir('baqend') {
+        // Render JUnit reports
+        junit 'build/test-results/*.xml'
+      }
+    }
+
+    if (currentBuild.result == null) {
+      currentBuild.result = "SUCCESS"
+    }
+  } catch (e) {
+    currentBuild.result = "FAILED"
+    throw e
+  } finally {
+    step([
+      $class                  : 'Mailer',
+      notifyEveryUnstableBuild: true,
+      recipients              : emailextrecipients([
+        [$class: 'RequesterRecipientProvider']
+      ])
+    ])
+  }
+}

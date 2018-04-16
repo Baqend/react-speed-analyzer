@@ -2,7 +2,7 @@ import {
   ADD_ERROR,
   INIT_TEST,
   START_TEST,
-  NORMALIZE_URL_POST,
+  START_TEST_POST,
   MONITOR_TEST,
   TESTOVERVIEW_LOAD,
   TESTOVERVIEW_NEXT,
@@ -25,24 +25,6 @@ export const prepareTest = (url = null) => ({
       if (!isURL(url)) {
         throw new Error("Input is not a valid url")
       }
-      // const rateLimitResult = await db.modules.get('rateLimiter')
-      // dispatch({
-      //   type: RATE_LIMITER_GET,
-      //   payload: rateLimitResult.isRateLimited,
-      // })
-      const { mobile } = getState().config
-      const urlInfo = await db.modules.post('normalizeUrl', { urls: url, mobile: mobile })
-      if (!urlInfo[0]) {
-        throw new Error("Input is not a valid url")
-      }
-      if (urlInfo[0].isBaqendApp) {
-        throw new Error("Url is already a Baqend app")
-      }
-      dispatch({
-        type: NORMALIZE_URL_POST,
-        payload: urlInfo[0]
-      })
-      return urlInfo[0]
     } catch(e) {
       dispatch({
         type: RESET_TEST_RESULT,
@@ -59,7 +41,7 @@ export const prepareTest = (url = null) => ({
 /**
  * Triggers the start of a new test.
  */
-export const startTest = (urlInfo = {}) => ({
+export const startTest = (useAdvancedConfig = true) => ({
   'BAQEND': async ({ dispatch, getState, db }) => {
     dispatch({
       type: RESET_TEST_RESULT
@@ -68,8 +50,10 @@ export const startTest = (urlInfo = {}) => ({
       dispatch({
         type: START_TEST,
       })
-      let { url, location, caching, mobile, speedKitConfig, activityTimeout } = getState().config
-      let { speedkit, speedkitVersion, type } = urlInfo
+      const { testOverview } = getState().result
+      const speedKit = testOverview.isSpeedKitComparison
+      const { url, location, caching, mobile, activityTimeout } = getState().config
+      let speedKitConfig = !speedKit || (speedKit && useAdvancedConfig) ? getState().config.speedKitConfig : null
 
       if (mobile && speedKitConfig) {
         // eslint-disable-next-line no-eval
@@ -78,18 +62,23 @@ export const startTest = (urlInfo = {}) => ({
         speedKitConfig = stringifyObject(speedKitConfigObj, { indent: '  ' })
       }
 
-      const testOverview = await db.modules.post('runComparison', {
+      // const testOverview = await db.modules.post('runComparison', {
+      const comparison = await db.modules.post('startComparison', {
         url,
         location,
         caching,
         mobile,
         speedKitConfig,
         activityTimeout,
-        type,
-        isSpeedKitComparison: speedkit,
-        speedKitVersion: speedkitVersion,
       })
-      return testOverview
+
+      // dispatch to update the display URL
+      dispatch({
+        type: START_TEST_POST,
+        payload: testOverview
+      })
+
+      return comparison
     } catch(e) {
       dispatch({
         type: RESET_TEST_RESULT,

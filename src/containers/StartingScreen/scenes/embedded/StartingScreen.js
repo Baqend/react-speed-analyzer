@@ -37,9 +37,11 @@ class StartingScreen extends Component {
 
   startTest = async (url = null) => {
     const { history } = this.props
+    const useAdvancedConfig = this.state.showAdvancedConfig
+
     try {
-      const urlInfo = await this.props.actions.prepareTest(url)
-      const testOverview = await this.props.actions.startTest(urlInfo)
+      await this.props.actions.prepareTest(url)
+      const testOverview = await this.props.actions.startTest(useAdvancedConfig)
       history.push(`/test/${getObjectKey(testOverview.id)}`)
     } catch (e) {
       this.props.actions.resetTestStatus()

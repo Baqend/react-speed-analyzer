@@ -1,0 +1,24 @@
+{
+  "class": "/db/ContentSize",
+  "acl": {
+    "schemaAdd": {
+      "/db/Role/1": "allow"
+    },
+    "schemaReplace": {
+      "/db/Role/1": "allow"
+    }
+  },
+  "embedded": true,
+  "fields": {
+    "text": {
+      "name": "text",
+      "type": "/db/Integer",
+      "order": 0
+    },
+    "images": {
+      "name": "images",
+      "type": "/db/Integer",
+      "order": 1
+    }
+  }
+}

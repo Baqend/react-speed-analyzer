@@ -1,0 +1,35 @@
+{
+  "class": "/db/ConfigAnalysis",
+  "acl": {
+    "schemaAdd": {
+      "/db/Role/1": "allow"
+    },
+    "schemaReplace": {
+      "/db/Role/1": "allow"
+    }
+  },
+  "embedded": true,
+  "metadata": {},
+  "fields": {
+    "configMissing": {
+      "name": "configMissing",
+      "type": "/db/Boolean",
+      "order": 0
+    },
+    "swPath": {
+      "name": "swPath",
+      "type": "/db/String",
+      "order": 1
+    },
+    "swPathMatches": {
+      "name": "swPathMatches",
+      "type": "/db/Boolean",
+      "order": 2
+    },
+    "isDisabled": {
+      "name": "isDisabled",
+      "type": "/db/Boolean",
+      "order": 3
+    }
+  }
+}

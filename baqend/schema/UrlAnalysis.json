@@ -9,6 +9,7 @@
     }
   },
   "embedded": true,
+  "metadata": {},
   "fields": {
     "url": {
       "name": "url",
@@ -40,8 +41,8 @@
       "type": "/db/Boolean",
       "order": 5
     },
-    "enabled": {
-      "name": "enabled",
+    "speedKitEnabled": {
+      "name": "speedKitEnabled",
       "type": "/db/Boolean",
       "order": 6
     },
@@ -49,6 +50,11 @@
       "name": "speedKitVersion",
       "type": "/db/String",
       "order": 7
+    },
+    "speedKitUrl": {
+      "name": "speedKitUrl",
+      "type": "/db/String",
+      "order": 8
     }
   }
 }

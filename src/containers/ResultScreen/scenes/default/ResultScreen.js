@@ -54,16 +54,27 @@ class ResultScreen extends Component {
 
   onSubmit = async () => {
     const { history } = this.props
+    const useAdvancedConfig = this.state.showAdvancedConfig
+
     try {
-      const urlInfo = await this.props.actions.prepareTest(this.props.config.url)
-      const testOverview = await this.props.actions.startTest(urlInfo)
+      await this.props.actions.prepareTest(this.props.config.url)
+      const testOverview = await this.props.actions.startTest(useAdvancedConfig)
       history.push(`/test/${getObjectKey(testOverview.id)}${history.location.search}`)
     } catch (e) {}
   }
 
+  onToggleAdvancedConfig = (showAdvancedConfig) => {
+    this.setState({ showAdvancedConfig })
+  }
+
   render() {
     return (
-      <ResultScreenComponent { ...this.props } { ...this.state } onSubmit={this.onSubmit} />
+      <ResultScreenComponent
+        { ...this.props }
+        { ...this.state }
+        onToggleAdvancedConfig={this.onToggleAdvancedConfig}
+        onSubmit={this.onSubmit}
+      />
     )
   }
 }
