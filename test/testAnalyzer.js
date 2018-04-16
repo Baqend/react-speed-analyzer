@@ -164,6 +164,7 @@ async function execNonSpeedKit() {
     displayUrl: "http://www.kicker.de/",
     isBaqendApp: false,
     isSecured: false,
+    swUrl: null,
     speedkit: false,
     speedkitVersion: null,
     type: null
@@ -181,6 +182,7 @@ async function execSpeedKit() {
     displayUrl: "https://www.fussballdaten.de/bundesliga/ewige-tabelle/",
     isBaqendApp: false,
     isSecured: true,
+    swPath: "https://www.fussballdaten.de/sw.js",
     speedkit: true,
     speedkitVersion: "1.4.0",
     type: null
