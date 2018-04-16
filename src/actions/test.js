@@ -50,8 +50,10 @@ export const startTest = (useAdvancedConfig = true) => ({
       dispatch({
         type: START_TEST,
       })
+      const { testOverview } = getState().result
+      const speedKit = testOverview.isSpeedKitComparison
       const { url, location, caching, mobile, activityTimeout } = getState().config
-      let { speedKitConfig } = getState().config
+      let speedKitConfig = !speedKit || (speedKit && useAdvancedConfig) ? getState().config.speedKitConfig : null
 
       if (mobile && speedKitConfig) {
         // eslint-disable-next-line no-eval
@@ -61,7 +63,7 @@ export const startTest = (useAdvancedConfig = true) => ({
       }
 
       // const testOverview = await db.modules.post('runComparison', {
-      const testOverview = await db.modules.post('startComparison', {
+      const comparison = await db.modules.post('startComparison', {
         url,
         location,
         caching,
@@ -76,7 +78,7 @@ export const startTest = (useAdvancedConfig = true) => ({
         payload: testOverview
       })
 
-      return testOverview
+      return comparison
     } catch(e) {
       dispatch({
         type: RESET_TEST_RESULT,
