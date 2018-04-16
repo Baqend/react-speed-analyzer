@@ -81,7 +81,7 @@ export async function analyzeType(client: CDPSession, documentResource: Resource
     return { framework: null, language: Language.PHP, server }
   }
 
-  return null
+  return { framework: null, language: null, server }
 }
 
 function getServer(headers: Map<string, string>): Server | null {
