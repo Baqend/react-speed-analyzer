@@ -1,18 +1,43 @@
-import puppeteer from 'puppeteer'
+import puppeteer, { Browser, CDPSession, Page, Target } from 'puppeteer'
 import express from 'express'
+import fetch from 'node-fetch'
 import { parse } from 'url'
+import { analyzeTimings } from './analyzeTimings'
+import { analyzeStats } from './analyzeStats'
 
-interface Resource {
-  url: string
-  type: string
-  host: string
-  scheme: string
-  pathname: string
-  status: number
-  mimeType: string
-  protocol: string
-  fromServiceWorker: boolean
-  fromDiskCache: boolean
+async function findServiceWorkers(browser: Browser): Promise<Target[]> {
+  const targets = await browser.targets()
+
+  return targets
+    .filter(target => target.type() === 'service_worker')
+}
+
+async function findSpeedKit(page: Page, serviceWorkers: Target[]): Promise<SpeedKit | null> {
+  for (const serviceWorker of serviceWorkers) {
+    const swUrl = serviceWorker.url()
+    const response = await fetch(swUrl)
+    const text = await response.text()
+    const match = text.match(/\/\* ! speed-kit (\d+\.\d+\.\d+) \| Copyright \(c\) (\d+) Baqend GmbH \*\//)
+    if (match) {
+      const config = await page.evaluate(async () => {
+        try {
+          const resp = await caches.match('com.baqend.speedkit.config')
+          return JSON.parse(resp.statusText)
+        } catch (e) {
+          return null
+        }
+      })
+
+      const { pathname: swPath } = parse(swUrl)
+      const [, version, yearString] = match
+      const year = parseInt(yearString, 10)
+      const { appName = null, appDomain = null } = (config || {})
+
+      return { version, year, swUrl, swPath, appName, appDomain, config }
+    }
+  }
+
+  return null
 }
 
 const app = express()
@@ -29,18 +54,17 @@ app.get('/config', async (req, res) => {
       const domains = new Set<string>()
       const protocols = new Map<string, string>()
 
-      // Track domains being loaded
+      // Track domains and resources being loaded
       const client = await page.target().createCDPSession()
       await client.send('Network.enable')
-      await client.on('Network.responseReceived', ({ type, timestamp, response }) => {
-        const { url, status, mimeType, protocol, fromServiceWorker, fromDiskCache } = response
+      await client.on('Network.responseReceived', ({ requestId, type, timestamp, response }) => {
+        const { url, status, mimeType, protocol, fromServiceWorker, fromDiskCache, timing } = response
+
         const { host, protocol: scheme, pathname } = parse(url)
         domains.add(host)
-        if (protocols.has(host) && protocols.get(host) !== protocol) {
-          throw new Error(`${host} sent more than 1 protocol?`)
-        }
         protocols.set(host, protocol)
         resourceSet.add({
+          requestId,
           url,
           type,
           host,
@@ -50,88 +74,47 @@ app.get('/config', async (req, res) => {
           mimeType,
           protocol,
           fromServiceWorker,
-          fromDiskCache
+          fromDiskCache,
+          timing
         })
       })
 
+      // Enable performance statistics
+      await client.send('Performance.enable')
+
+      // Load the document
       const response = await page.goto(request)
       const url = response.url()
+      const documentResource = [...resourceSet].find(it => it.url === url)
 
-      const { protocol, host, pathname, search, query, hash } = parse(url)
+      // Get the protocol
+      const protocol = documentResource.protocol
 
-      const httpProtocol = protocols.get(host)
+      // Timings analysis
+      const timings = await analyzeTimings(client, page, documentResource)
 
+      // Calculate statistics
+      const stats = analyzeStats(resourceSet, domains)
 
-      const targets = await browser.targets()
-      const swTargets = targets.filter(target => target.type() === 'service_worker')
-      const serviceWorkers = swTargets.map(target => ({ url: target.url() }))
+      // Service Worker and Speed Kit detection
+      const swTargets = await findServiceWorkers(browser)
+      const serviceWorkers = swTargets.map(target => target.url())
+      const speedKit = await findSpeedKit(page, swTargets)
 
-      let speedKit = null
-      for (const target of swTargets) {
-        const swUrl = target.url()
-        const speedKitResponse = await page.goto(swUrl)
-        const speedKitText = await speedKitResponse.text()
-        const match = speedKitText.match(/\/\* ! speed-kit (\d+\.\d+\.\d+) \| Copyright \(c\) (\d+) Baqend GmbH \*\//)
-        if (match) {
-          const config = await page.evaluate(async () => {
-            try {
-              const resp = await caches.match('com.baqend.speedkit.config')
-              return JSON.parse(resp.statusText)
-            } catch (e) {
-              return null
-            }
-          })
-
-          const { pathname: swPath } = parse(swUrl)
-          const [, version, year] = match
-          const { appName, appDomain = null } = config
-
-          speedKit = { version, year, swUrl, swPath, appName, appDomain, config }
-        }
-      }
-
-      const paintTimings = new Map<string, number>(await page.evaluate(() => {
-        return performance.getEntriesByType('paint').map(timing => [timing.name, timing.startTime])
-      }))
-
-      const performanceTimings = await page.evaluate(() => {
-        return performance.getEntriesByType('navigation').map(it => ({
-          fetchStart: it.fetchStart,
-          domComplete: it.domComplete,
-          domInteractive: it.domInteractive,
-          duration: it.duration,
-          dnsLookup: it.domainLookupEnd - it.domainLookupStart,
-          initialConnection: it.connectEnd - it.connectStart,
-          ttfb: it.responseStart - it.requestStart,
-          contentDownload: it.responseEnd - it.responseStart,
-        }))[0] || {}
-      })
-
-      const timings = Object.assign(performanceTimings, {
-        firstPaint: paintTimings.get('first-paint'),
-        firstContentfulPaint: paintTimings.get('first-contentful-paint'),
-      })
-
-      const total = resourceSet.size
-      const resources = [...resourceSet]
-      const errors = resources.filter(resource => resource.status >= 400).length
-      const redirects = resources.filter(resource => resource.status >= 300 && resource.status < 400).length
-      const successful = resources.filter(resource => resource.status < 300).length
-      const fromServiceWorker = resources.filter(resource => resource.fromServiceWorker).length
-      const stats = { total, domains: domains.size, errors, redirects, successful, fromServiceWorker }
+      // URL information
+      const urlInfo = parse(url)
 
       res.status(200)
       res.json({
         url,
-        httpProtocol,
-        resources,
+        protocol,
+        timings,
+        stats,
+        speedKit,
         domains: [...domains],
         protocols: [...protocols],
-        urlInfo: { protocol, host, pathname, search, query, hash },
+        urlInfo,
         serviceWorkers,
-        stats,
-        timings,
-        speedKit
       })
     } catch (e) {
       res.status(404)
@@ -145,6 +128,8 @@ app.get('/config', async (req, res) => {
   }
 })
 
-app.listen(8080, '0.0.0.0', () => {
-  console.log('Server is listening on http://0.0.0.0:80/config')
+const port = 8080
+const hostname = '0.0.0.0'
+app.listen(port, hostname, () => {
+  console.log(`Server is listening on http://${hostname}:${port}/config`)
 })

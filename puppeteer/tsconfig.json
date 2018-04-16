@@ -4,5 +4,8 @@
     "moduleResolution": "node",
     "module": "commonjs",
     "esModuleInterop": true
-  }
+  },
+  "exclude": [
+    "node_modules"
+  ]
 }
