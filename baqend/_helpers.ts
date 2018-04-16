@@ -59,3 +59,38 @@ export function escapeRegExp(str: string): string {
 export function toRegExp(str: string): RegExp {
   return new RegExp(escapeRegExp(str))
 }
+
+/**
+ * Cleans all entries of an object which contain an empty value.
+ */
+export function cleanObject<T extends { [key: string]: any }>(obj: T): Required<T> {
+  const result: Required<T> = Object.create(null)
+  for (const [key, value] of Object.entries(obj)) {
+    if (value !== null && value !== undefined) {
+      result[key] = value
+    }
+  }
+
+  return result
+}
+
+/**
+ * Assigns fields of the source to the target.
+ */
+export function assignObject<S>(target: S, source: S, ...keys: Array<keyof S>) {
+  for (const key of keys) {
+    target[key] = source[key]
+  }
+}
+
+/**
+ * Appends an element to a possible empty array.
+ */
+export function appendItem<T>(array: T[] | null | undefined, item: T): T[] {
+  if (array instanceof Array) {
+    array.push(item)
+    return array
+  }
+
+  return [item]
+}

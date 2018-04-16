@@ -300,12 +300,13 @@ declare module 'baqend' {
       error: string
     }
 
-    interface JobDefinition {
+    interface JobDefinition extends binding.Entity {
       module: string
       cronpattern: string
       startsAt: Date
       expiresAt: Date
       nextExecution: Date
+      testseries: model.Testseries
     }
 
   }

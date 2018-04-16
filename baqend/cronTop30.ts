@@ -248,6 +248,6 @@ function startCheckStateInterval(db: baqend, bulkComparison: model.BulkCompariso
  * @param db The Baqend instance.
  */
 export async function call(db: baqend): Promise<void> {
-  const bulkComparison = await startBulkComparison(db, 'cronjob', TOP_LIST)
+  const bulkComparison = await startBulkComparison(db, 'cronTop30', TOP_LIST)
   startCheckStateInterval(db, bulkComparison)
 }

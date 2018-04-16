@@ -2,7 +2,7 @@ import { baqend, model } from 'baqend'
 import { bootstrap } from './_compositionRoot'
 import { TestParams } from './_TestParams'
 
-interface StartMultiComparisonParams extends TestParams {
+export interface StartMultiComparisonParams extends TestParams {
   runs?: number
   createdBy?: string
   url: string
