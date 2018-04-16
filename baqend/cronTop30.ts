@@ -90,26 +90,25 @@ function diffColor(diff: number): string {
  * Create table data cell (td) with optional color style
  *
  * @param data The data to be displayed
- * @param withoutColor Boolean to decide whether to display a colored result or not
  * @param isFactor Boolean to decide how to generate the display color
  */
-function createTableDataCell(data: number | string, withoutColor = false, isFactor = true): string {
-  if (withoutColor) {
-    return `<td>${data}</td>`
+function createTableDataCell(data: number, isFactor = true): string {
+  if (!Number.isFinite(data)) {
+    return `<td style="text-align: center">–</td>`
   }
 
-  if (typeof data === 'string') {
-    data = parseInt(data, 10)
-  }
-
-  return `<td style="color: ${isFactor ? factorColor(data) : diffColor(data)}">${data}</td>`
+  return `<td style="text-align: right; color: ${isFactor ? factorColor(data) : diffColor(data)}">${data.toFixed(2)}</td>`
 }
 
 /**
  * Rounds a number to its hundredths.
  */
 function roundToHundredths(number: number): number {
-  return Math.round(number * 100) / 100
+  if (Number.isFinite(number)) {
+    return Math.round(number * 100) / 100
+  }
+
+  return number
 }
 
 /**
@@ -118,57 +117,61 @@ function roundToHundredths(number: number): number {
  * @param bulkTestMap A mapping of new and previous bulkTest objects
  */
 function createMailTemplate(bulkTestMap: Map<model.BulkTest, model.BulkTest>): string {
-  const totalValues = { SIPrevious: 0, SILatest: 0, FMPPrevious: 0, FMPLatest: 0 }
+  const totalValues = { SIPrevious: 0, SILatest: 0, SITotal: 0, FMPPrevious: 0, FMPLatest: 0, FMPTotal: 0 }
   let templateString = '<html><head><meta http-equiv="Content-Type" content="text/html charset=UTF-8"></head>' +
     '<body><table border="1" width="100%"><tr><th>URL</th><th>SI Ø Previous</th><th>SI Ø Latest</th><th>SI ∆</th>' +
     '<th>FMP Ø Previous</th><th>FMP Ø Latest</th><th>FMP ∆</th></tr>'
 
-  bulkTestMap.forEach((previous, latest) => {
+  for (const [previous, latest] of bulkTestMap) {
     // dummy object to ensure that factors is available
-    const ensurePrevious = previous || { factors: {} }
-    const ensureLatest = latest || { factors: {} }
+    const { factors: previousFactors = { speedIndex: NaN, firstMeaningfulPaint: NaN } }: { factors: Partial<model.Mean> } = previous
+    const { factors: latestFactors = { speedIndex: NaN, firstMeaningfulPaint: NaN } }: { factors: Partial<model.Mean> } = latest
 
-    const speedIndexDiff = (ensureLatest.factors.speedIndex || 0) - (ensurePrevious.factors.speedIndex || 0)
-    const firstMeaningfulPaintDiff =
-      (ensureLatest.factors.firstMeaningfulPaint || 0) - (ensurePrevious.factors.firstMeaningfulPaint || 0)
+    const speedIndexDiff = latestFactors.speedIndex! - previousFactors.speedIndex!
+    const firstMeaningfulPaintDiff = latestFactors.firstMeaningfulPaint! - previousFactors.firstMeaningfulPaint!
 
     // calculate total values
-    totalValues.SIPrevious += ensurePrevious.factors.speedIndex || 0
-    totalValues.SILatest += ensureLatest.factors.speedIndex || 0
-    totalValues.FMPPrevious += ensurePrevious.factors.firstMeaningfulPaint || 0
-    totalValues.FMPLatest += ensureLatest.factors.firstMeaningfulPaint || 0
+    if (previousFactors.speedIndex && latestFactors.speedIndex) {
+      totalValues.SITotal += 1
+      totalValues.SIPrevious += previousFactors.speedIndex
+      totalValues.SILatest += latestFactors.speedIndex
+    }
+
+    if (previousFactors.firstMeaningfulPaint && latestFactors.firstMeaningfulPaint) {
+      totalValues.FMPTotal += 1
+      totalValues.FMPPrevious += previousFactors.firstMeaningfulPaint
+      totalValues.FMPLatest += latestFactors.firstMeaningfulPaint
+    }
 
     templateString +=
       `<tr>
-         ${createTableDataCell(latest.url, true)}
-         ${ensurePrevious.factors.speedIndex ? createTableDataCell(ensurePrevious.factors.speedIndex.toFixed(2)) : createTableDataCell('-', true)}
-         ${ensureLatest.factors.speedIndex ? createTableDataCell(ensureLatest.factors.speedIndex.toFixed(2)) : createTableDataCell('-', true)}
-         ${createTableDataCell(speedIndexDiff.toFixed(2), false, false)}
-         ${ensurePrevious.factors.firstMeaningfulPaint ? createTableDataCell(ensurePrevious.factors.firstMeaningfulPaint.toFixed(2)) : createTableDataCell('-', true)}
-         ${ensureLatest.factors.firstMeaningfulPaint ? createTableDataCell(ensureLatest.factors.firstMeaningfulPaint.toFixed(2)) : createTableDataCell('-', true)}
-         ${createTableDataCell(firstMeaningfulPaintDiff.toFixed(2), false, false)}
+         <th style="text-align: left; font-weight: bold">${latest.url}</th>
+         ${createTableDataCell(previousFactors.speedIndex!)}
+         ${createTableDataCell(latestFactors.speedIndex!)}
+         ${createTableDataCell(speedIndexDiff, false)}
+         ${createTableDataCell(previousFactors.firstMeaningfulPaint!)}
+         ${createTableDataCell(latestFactors.firstMeaningfulPaint!)}
+         ${createTableDataCell(firstMeaningfulPaintDiff, false)}
        </tr>`
-  })
+  }
 
-  const totalSpedIndexPrevious = roundToHundredths(totalValues.SIPrevious / bulkTestMap.size)
-  const totalSpedIndexLatest = roundToHundredths(totalValues.SILatest / bulkTestMap.size)
+  const totalSpedIndexPrevious = roundToHundredths(totalValues.SIPrevious / totalValues.SITotal)
+  const totalSpedIndexLatest = roundToHundredths(totalValues.SILatest / totalValues.SITotal)
   const totalSpeedIndexDiff = totalSpedIndexLatest - totalSpedIndexPrevious
 
-  const totalFMPPrevious = roundToHundredths(totalValues.FMPPrevious / bulkTestMap.size)
-  const totalFMPLatest = roundToHundredths(totalValues.FMPLatest / bulkTestMap.size)
+  const totalFMPPrevious = roundToHundredths(totalValues.FMPPrevious / totalValues.FMPTotal)
+  const totalFMPLatest = roundToHundredths(totalValues.FMPLatest / totalValues.FMPTotal)
   const totalFirstMeaningfulPaintDiff = totalFMPLatest - totalFMPPrevious
 
   templateString +=
     `<tr>
-       <td>
-         <strong>Total</strong>
-       </td>
+       <th style="text-align: left; font-weight: bold">Total</th>
        ${createTableDataCell(totalSpedIndexPrevious)}
        ${createTableDataCell(totalSpedIndexLatest)}
-       ${createTableDataCell(totalSpeedIndexDiff, false, false)}
+       ${createTableDataCell(totalSpeedIndexDiff, false)}
        ${createTableDataCell(totalFMPPrevious)}
        ${createTableDataCell(totalFMPLatest)}
-       ${createTableDataCell(totalFirstMeaningfulPaintDiff, false, false)}
+       ${createTableDataCell(totalFirstMeaningfulPaintDiff, false)}
      </tr></table></body></html>`
 
   return templateString
@@ -183,7 +186,7 @@ function createMailTemplate(bulkTestMap: Map<model.BulkTest, model.BulkTest>): s
 function loadPreviousBulkTest(db: baqend, bulkTest: model.BulkTest): Promise<model.BulkTest> {
   return db.BulkTest.find()
     .eq('url', bulkTest.url)
-    .eq('createdBy', 'cronjob')
+    .eq('createdBy', bulkTest.createdBy)
     .lt('createdAt', bulkTest.createdAt)
     .descending('createdAt')
     .singleResult()
@@ -209,9 +212,12 @@ async function sendMail(template: string): Promise<void> {
  * @param bulkComparison The bulk comparison being executed.
  */
 async function sendSuccessMail(db: baqend, bulkComparison: model.BulkComparison) {
-  const loadPromises: Array<Promise<[model.BulkTest, model.BulkTest]>> = bulkComparison.multiComparisons
-    .map(bulkTest => loadPreviousBulkTest(db, bulkTest)
-      .then(previous => [bulkTest, previous] as [model.BulkTest, model.BulkTest]))
+  const loadPromises = bulkComparison.multiComparisons.map(async (bulkTest) => {
+    await bulkTest.load({ refresh: true })
+    const previous = await loadPreviousBulkTest(db, bulkTest)
+
+    return [previous, bulkTest] as [model.BulkTest, model.BulkTest]
+  })
 
   const bulkTestMap = new Map(await Promise.all(loadPromises))
   const template = createMailTemplate(bulkTestMap)
@@ -228,7 +234,9 @@ async function sendSuccessMail(db: baqend, bulkComparison: model.BulkComparison)
 function startCheckStateInterval(db: baqend, bulkComparison: model.BulkComparison) {
   let iterations = 0
 
-  const interval = setInterval(() => {
+  const interval = setInterval(async () => {
+    await bulkComparison.load({ refresh: true })
+
     if (bulkComparison.hasFinished) {
       db.log.info('Clear interval because of success')
       clearInterval(interval)
@@ -248,6 +256,6 @@ function startCheckStateInterval(db: baqend, bulkComparison: model.BulkCompariso
  * @param db The Baqend instance.
  */
 export async function call(db: baqend): Promise<void> {
-  const bulkComparison = await startBulkComparison(db, 'cronTop30', TOP_LIST)
+  const bulkComparison = await startBulkComparison(db, 'cronjob', TOP_LIST)
   startCheckStateInterval(db, bulkComparison)
 }

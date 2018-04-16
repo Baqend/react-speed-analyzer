@@ -15,7 +15,7 @@ export class TestFactory implements AsyncFactory<model.TestResult> {
 
   create(urlInfo: UrlInfo, isClone: boolean, params: Required<TestParams>): Promise<model.TestResult> {
     const { url } = urlInfo
-    const { priority, speedKitConfig } = params
+    const { priority, speedKitConfig, location } = params
     const commandLine = this.createCommandLineFlags(url, isClone)
     if (commandLine) {
       this.db.log.info('flags: %s', commandLine)
@@ -26,6 +26,7 @@ export class TestFactory implements AsyncFactory<model.TestResult> {
     const testResult = new this.db.TestResult({
       url,
       isClone,
+      location,
       priority,
       speedKitConfig,
       testInfo,
