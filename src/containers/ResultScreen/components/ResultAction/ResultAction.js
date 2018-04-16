@@ -40,14 +40,19 @@ class ResultAction extends Component {
       content.push(ttfbFact)
     }
 
+    const { contentSize: competitorContentSize = null } = competitorData
+    const { contentSize: speedKitContentSize = null } = speedKitData
+
     // Image Optimization
-    const imageSizeDiff = competitorData.contentSize.images - speedKitData.contentSize.images
-    if (imageSizeDiff > 0) {
-      const imageOptFact = [
-        'Image Optimization',
-        `By optimizing <strong>images</strong> in size (<i>responsiveness</i>) and encoding (<i>WebP</i> & <i>Progessive JPG</i>) Speed Kit saved <strong>${formatFileSize(imageSizeDiff)}</strong> of data.`
-      ]
-      content.push(imageOptFact)
+    if (competitorContentSize && speedKitContentSize) {
+      const imageSizeDiff = competitorContentSize.images - speedKitContentSize.images
+      if (imageSizeDiff > 0) {
+        const imageOptFact = [
+          'Image Optimization',
+          `By optimizing <strong>images</strong> in size (<i>responsiveness</i>) and encoding (<i>WebP</i> & <i>Progessive JPG</i>) Speed Kit saved <strong>${formatFileSize(imageSizeDiff)}</strong> of data.`
+        ]
+        content.push(imageOptFact)
+      }
     }
 
     // SSL information
@@ -60,13 +65,15 @@ class ResultAction extends Component {
     }
 
     // Compression
-    const textSizeDiff = competitorData.contentSize.text - speedKitData.contentSize.text
-    if (textSizeDiff > 0) {
-      const compressionFact = [
-        'Compression',
-        `By compressing text resources with GZip, Speed Kit reduced page weight by <strong>${formatFileSize(textSizeDiff)}</strong>.`
-      ]
-      content.push(compressionFact)
+    if (competitorContentSize && speedKitContentSize) {
+      const textSizeDiff = competitorContentSize.text - speedKitContentSize.text
+      if (textSizeDiff > 0) {
+        const compressionFact = [
+          'Compression',
+          `By compressing text resources with GZip, Speed Kit reduced page weight by <strong>${formatFileSize(textSizeDiff)}</strong>.`
+        ]
+        content.push(compressionFact)
+      }
     }
 
     // HTTP Caching
