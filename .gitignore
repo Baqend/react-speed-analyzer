@@ -1,12 +1,5 @@
 # See https://help.github.com/ignore-files/ for more about ignoring files.
 
-### Credentials
-baqend/credentials.js
-baqend/schema/jobs.Definition.json
-baqend/schema/jobs.Status.json
-baqend/schema/speedKit.Asset.json
-baqend/schema/Means.json
-
 ### Node template
 # Logs
 logs

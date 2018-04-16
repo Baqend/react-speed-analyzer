@@ -1,3 +1,16 @@
+### Node.js dependencies
 /node_modules/
+
+### TypeScript output
 /out/
+
+### Test output
 /build/
+credentials.js
+
+### Schema
+schema/jobs.Definition.json
+schema/jobs.Status.json
+schema/speedKit.Asset.json
+schema/Means.json
+schema/Tasks.json
