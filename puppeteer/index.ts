@@ -1,45 +1,10 @@
-import puppeteer, { Browser, CDPSession, Page, Target } from 'puppeteer'
 import express from 'express'
-import fetch from 'node-fetch'
+import puppeteer from 'puppeteer'
 import { parse } from 'url'
-import { analyzeTimings } from './analyzeTimings'
+import { analyzeServiceWorkers } from './analyzeServiceWorkers'
 import { analyzeStats } from './analyzeStats'
+import { analyzeTimings } from './analyzeTimings'
 import { analyzeType } from './analyzeType'
-
-async function findServiceWorkers(browser: Browser): Promise<Target[]> {
-  const targets = await browser.targets()
-
-  return targets
-    .filter(target => target.type() === 'service_worker')
-}
-
-async function findSpeedKit(page: Page, serviceWorkers: Target[]): Promise<SpeedKit | null> {
-  for (const serviceWorker of serviceWorkers) {
-    const swUrl = serviceWorker.url()
-    const response = await fetch(swUrl)
-    const text = await response.text()
-    const match = text.match(/\/\* ! speed-kit (\d+\.\d+\.\d+) \| Copyright \(c\) (\d+) Baqend GmbH \*\//)
-    if (match) {
-      const config = await page.evaluate(async () => {
-        try {
-          const resp = await caches.match('com.baqend.speedkit.config')
-          return JSON.parse(resp.statusText)
-        } catch (e) {
-          return null
-        }
-      })
-
-      const { pathname: swPath } = parse(swUrl)
-      const [, version, yearString] = match
-      const year = parseInt(yearString, 10)
-      const { appName = null, appDomain = null } = (config || {})
-
-      return { version, year, swUrl, swPath, appName, appDomain, config }
-    }
-  }
-
-  return null
-}
 
 const app = express()
 
@@ -77,7 +42,7 @@ app.get('/config', async (req, res) => {
           protocol,
           fromServiceWorker,
           fromDiskCache,
-          timing
+          timing,
         })
       })
 
@@ -92,19 +57,20 @@ app.get('/config', async (req, res) => {
       // Get the protocol
       const protocol = documentResource.protocol
 
-      // Type analysis
-      const type = await analyzeType(client, documentResource)
+      // Concurrently analyze
+      const [type, timings, stats, { serviceWorkers, speedKit }] = await Promise.all([
+        // Type analysis
+        analyzeType(client, documentResource),
 
-      // Timings analysis
-      const timings = await analyzeTimings(client, page, documentResource)
+        // Timings analysis
+        analyzeTimings(client, page, documentResource),
 
-      // Calculate statistics
-      const stats = analyzeStats(resourceSet, domains)
+        // Calculate statistics
+        analyzeStats(resourceSet, domains),
 
-      // Service Worker and Speed Kit detection
-      const swTargets = await findServiceWorkers(browser)
-      const serviceWorkers = swTargets.map(target => target.url())
-      const speedKit = await findSpeedKit(page, swTargets)
+        // Service Worker and Speed Kit detection
+        analyzeServiceWorkers(browser, page),
+      ])
 
       // URL information
       const urlInfo = parse(url)
