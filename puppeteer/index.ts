@@ -4,6 +4,7 @@ import fetch from 'node-fetch'
 import { parse } from 'url'
 import { analyzeTimings } from './analyzeTimings'
 import { analyzeStats } from './analyzeStats'
+import { analyzeType } from './analyzeType'
 
 async function findServiceWorkers(browser: Browser): Promise<Target[]> {
   const targets = await browser.targets()
@@ -58,7 +59,7 @@ app.get('/config', async (req, res) => {
       const client = await page.target().createCDPSession()
       await client.send('Network.enable')
       await client.on('Network.responseReceived', ({ requestId, type, timestamp, response }) => {
-        const { url, status, mimeType, protocol, fromServiceWorker, fromDiskCache, timing } = response
+        const { url, headers, status, mimeType, protocol, fromServiceWorker, fromDiskCache, timing } = response
 
         const { host, protocol: scheme, pathname } = parse(url)
         domains.add(host)
@@ -66,6 +67,7 @@ app.get('/config', async (req, res) => {
         resourceSet.add({
           requestId,
           url,
+          headers,
           type,
           host,
           scheme,
@@ -90,6 +92,9 @@ app.get('/config', async (req, res) => {
       // Get the protocol
       const protocol = documentResource.protocol
 
+      // Type analysis
+      const type = await analyzeType(client, documentResource)
+
       // Timings analysis
       const timings = await analyzeTimings(client, page, documentResource)
 
@@ -108,6 +113,7 @@ app.get('/config', async (req, res) => {
       res.json({
         url,
         protocol,
+        type,
         timings,
         stats,
         speedKit,
