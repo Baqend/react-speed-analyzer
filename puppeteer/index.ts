@@ -1,4 +1,5 @@
 import express from 'express'
+import morgan from 'morgan'
 import puppeteer from 'puppeteer'
 import { parse } from 'url'
 import { analyzeServiceWorkers } from './analyzeServiceWorkers'
@@ -7,6 +8,8 @@ import { analyzeTimings } from './analyzeTimings'
 import { analyzeType } from './analyzeType'
 
 const app = express()
+
+app.use(morgan('common'))
 
 app.get('/config', async (req, res) => {
   const { url: request } = req.query
@@ -104,6 +107,6 @@ app.get('/config', async (req, res) => {
 
 const port = 8080
 const hostname = '0.0.0.0'
-app.listen(port, hostname, () => {
+app.listen(port, () => {
   console.log(`Server is listening on http://${hostname}:${port}/config`)
 })
