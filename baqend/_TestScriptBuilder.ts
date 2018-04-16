@@ -63,7 +63,15 @@ export class TestScriptBuilder {
       .navigate(url)
   }
 
+  /**
+   * Adds to a test script the logic to clear the browser's content.
+   */
   private clearBrowserContent(testScript: TestScript, location: string) {
+    if (location.includes('-win')) {
+      return testScript
+        .navigate(`http://localhost:8888/orange.html`)
+    }
+
     // Handle test script for new WPT agent
     if (location.includes('-docker')) {
       return testScript
