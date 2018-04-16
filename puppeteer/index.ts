@@ -7,6 +7,22 @@ import { analyzeStats } from './analyzeStats'
 import { analyzeTimings } from './analyzeTimings'
 import { analyzeType } from './analyzeType'
 
+function getBetterProtocol(now: string, other: string | undefined): string {
+  if (!other) {
+    return now
+  }
+
+  if (now === 'h2' || other === 'h2') {
+    return 'h2'
+  }
+
+  if (now === 'http/1.1' || other === 'http/1.1') {
+    return 'http/1.1'
+  }
+
+  return now
+}
+
 const app = express()
 
 app.use(morgan('common'))
@@ -31,7 +47,10 @@ app.get('/config', async (req, res) => {
 
         const { host, protocol: scheme, pathname } = parse(url)
         domains.add(host)
-        protocols.set(host, protocol)
+
+        // Record the protocol
+        protocols.set(host, getBetterProtocol(protocol, protocols.get(host)))
+
         resourceSet.add({
           requestId,
           url,
