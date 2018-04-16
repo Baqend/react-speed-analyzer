@@ -58,7 +58,7 @@ app.get('/config', async (req, res) => {
       const protocol = documentResource.protocol
 
       // Concurrently analyze
-      const [type, timings, stats, { serviceWorkers, speedKit }] = await Promise.all([
+      const [{ framework, language, server }, timings, stats, { serviceWorkers, speedKit }] = await Promise.all([
         // Type analysis
         analyzeType(client, documentResource),
 
@@ -79,7 +79,9 @@ app.get('/config', async (req, res) => {
       res.json({
         url,
         protocol,
-        type,
+        framework,
+        language,
+        server,
         timings,
         stats,
         speedKit,
