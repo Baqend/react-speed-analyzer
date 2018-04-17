@@ -28,6 +28,8 @@ export function server(port: number) {
 
   app.use(morgan('common'))
 
+  app.use(express.static('public'))
+
   app.get('/config', async (req, res) => {
     const { url: request } = req.query
 
