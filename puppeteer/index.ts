@@ -2,7 +2,7 @@
 import yargs = require('yargs')
 import { server } from './server'
 
-const { port = 8080, caching = false, timings = false, userDataDir = null, noSandbox = false } = yargs
+const { port = 8080, caching = false, userDataDir = null, noSandbox = false } = yargs
   .option('port', {
     type: 'number',
     alias: 'p',
@@ -23,18 +23,13 @@ const { port = 8080, caching = false, timings = false, userDataDir = null, noSan
     alias: 'x',
     desc: 'Run chrome in no-sandbox mode',
   })
-  .option('timings', {
-    type: 'boolean',
-    alias: 'T',
-    desc: 'Track performance timings',
-  })
 
   .alias('h', 'help')
   .alias('v', 'version')
 
   .argv
 
-server(port, { caching, timings, userDataDir, noSandbox })
+server(port, { caching, userDataDir, noSandbox })
   .catch((e) => {
     process.stderr.write(e.stack)
     process.exit(1)
