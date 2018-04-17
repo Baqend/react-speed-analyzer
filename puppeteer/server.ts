@@ -23,8 +23,14 @@ function getBetterProtocol(now: string, other: string | undefined): string {
   return now
 }
 
-export async function server(port: number, enableCaching: boolean, userDataDir: string | null) {
-  if (enableCaching && !userDataDir) {
+export interface Options {
+  caching: boolean
+  timings: boolean
+  userDataDir: string | null
+}
+
+export async function server(port: number, { caching, timings, userDataDir }: Options) {
+  if (caching && !userDataDir) {
     throw new Error('Please provide a userDataDir to enable caching')
   }
 
@@ -41,7 +47,7 @@ export async function server(port: number, enableCaching: boolean, userDataDir: 
     try {
       const page = await browser.newPage()
       try {
-        await page.setCacheEnabled(enableCaching)
+        await page.setCacheEnabled(caching)
 
         const resourceSet = new Set<Resource>()
         const domains = new Set<string>()
@@ -51,20 +57,24 @@ export async function server(port: number, enableCaching: boolean, userDataDir: 
         const client = await page.target().createCDPSession()
 
         // Activate CDP controls
-        await Promise.all([
+        const cdpControls: Array<Promise<any>> = [
           // Enable network control
           client.send('Network.enable'),
 
           // Enable ServiceWorker control
           client.send('ServiceWorker.enable'),
-
+        ]
+        if (timings) {
           // Enable performance statistics
-          client.send('Performance.enable'),
-        ])
+          cdpControls.push(client.send('Performance.enable'))
+        }
+        await Promise.all(cdpControls)
 
         // Track domains and resources being loaded
         await client.on('Network.responseReceived', ({ requestId, type, timestamp, response }) => {
-          const { url, headers, status, mimeType, protocol, fromServiceWorker, fromDiskCache, timing } = response
+          const { url, headers: bareHeaders, status, mimeType, protocol, fromServiceWorker, fromDiskCache, timing } = response
+
+          const headers = new Map(Object.entries(bareHeaders).map(([key, value]) => [key.toLowerCase(), value] as [string, string]))
 
           const { host, protocol: scheme, pathname } = parse(url)
           domains.add(host)
@@ -108,19 +118,21 @@ export async function server(port: number, enableCaching: boolean, userDataDir: 
         const protocol = documentResource.protocol
 
         // Concurrently analyze
-        const analyses = await Promise.all([
+        const promises: Array<any | Promise<any>> = [
           // Type analysis
-          analyzeType(client, documentResource),
-
-          // Timings analysis
-          analyzeTimings(client, page, documentResource),
+          analyzeType(page, documentResource),
 
           // Calculate statistics
           analyzeStats(resourceSet, domains),
 
           // Service Worker and Speed Kit detection
           analyzeServiceWorkers(browser, page),
-        ])
+        ]
+        if (timings) {
+          // Timings analysis
+          promises.push(analyzeTimings(client, page, documentResource))
+        }
+        const analyses = await Promise.all(promises)
 
         // URL information
         const urlInfo = parse(url)
@@ -157,7 +169,7 @@ export async function server(port: number, enableCaching: boolean, userDataDir: 
   const hostname = '0.0.0.0'
   app.listen(port, () => {
     console.log(`Server is listening on http://${hostname}:${port}/config`)
-    console.log(`Caching is ${enableCaching ? 'enabled' : 'disabled'}`)
+    console.log(`Caching is ${caching ? 'enabled' : 'disabled'}`)
   })
 
   process.on('SIGTERM', async () => {

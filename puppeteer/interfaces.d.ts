@@ -21,7 +21,7 @@ declare interface ResourceTiming {
 
 declare interface Resource {
   requestId: string
-  headers: { [key: string]: string }
+  headers: Map<string, string>
   url: string
   type: string
   host: string

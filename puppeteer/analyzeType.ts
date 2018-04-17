@@ -1,4 +1,10 @@
-import { CDPSession } from 'puppeteer'
+import { Page } from 'puppeteer'
+
+export interface Type {
+  framework: Framework | null
+  language: Language | null
+  server: Server | null
+}
 
 export enum Framework {
   BAQEND = 'baqend',
@@ -6,7 +12,6 @@ export enum Framework {
   EXPRESS = 'express',
   JIMDO = 'jimdo',
   JOOMLA = 'joomla',
-  SQUARESPACE = 'squarespace',
   SULU = 'sulu',
   TYPO3 = 'typo3',
   WEEBLY = 'weebly',
@@ -24,9 +29,29 @@ export enum Server {
   NGINX = 'nginx',
 }
 
-export async function analyzeType(client: CDPSession, documentResource: Resource): Promise<{ framework: Framework | null, language: Language | null, server: Server | null }> {
-  const { headers: headersObj, url } = documentResource
-  const headers = new Map(Object.entries(headersObj).map(([key, value]) => [key.toLowerCase(), value] as [string, string]))
+const typeCache = new Map<string, Type>()
+
+export async function analyzeType(page: Page, documentResource: Resource): Promise<Type> {
+  const etag = documentResource.headers.get('etag')
+  if (etag) {
+    if (typeCache.has(etag)) {
+      console.log(`Found cached type for ETag ${etag}`)
+      return typeCache.get(etag)
+    }
+
+    const type = await retrieveType(page, documentResource)
+    console.log(`Caching type for ETag ${etag}`)
+    typeCache.set(etag, type)
+
+    return type
+  }
+
+  console.log(`Cannot cache type of ${page.url()}`)
+  return retrieveType(page, documentResource)
+}
+
+async function retrieveType(page: Page, documentResource: Resource): Promise<Type> {
+  const { headers, url } = documentResource
   const server = getServer(headers)
 
   const via = headers.get('via')
@@ -56,8 +81,14 @@ export async function analyzeType(client: CDPSession, documentResource: Resource
     return { framework: Framework.JIMDO, language: null, server }
   }
 
-  const { body } = await client.send('Network.getResponseBody', { requestId: documentResource.requestId })
-  const result = /<meta\s+name=["']generator["']\s*content=["']([^"']+)["']/i.exec(body)
+  const result = await page.evaluate(() => {
+    const generator = document.querySelector('meta[name="generator"]')
+    if (generator) {
+      return generator.getAttribute('content')
+    }
+
+    return null
+  })
   if (result) {
     const [, generator] = result
     const s = generator.toLocaleLowerCase()
@@ -75,12 +106,10 @@ export async function analyzeType(client: CDPSession, documentResource: Resource
     }
   }
 
-  if (body.includes('<link rel=\'dns-prefetch\' href=\'//s.w.org\' />')) {
+  if (await page.evaluate(() => {
+    return !!document.querySelector('link[rel="dns-prefetch"][href="//s.w.org"]')
+  })) {
     return { framework: Framework.WORDPRESS, language: Language.PHP, server }
-  }
-
-  if (body.includes('<!-- This is Squarespace. -->')) {
-    return { framework: Framework.SQUARESPACE, language: null, server }
   }
 
   // Fallback: detect any PHP

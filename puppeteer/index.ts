@@ -2,7 +2,7 @@
 import yargs = require('yargs')
 import { server } from './server'
 
-const { port = 8080, caching = false, userDataDir = null } = yargs
+const { port = 8080, caching = false, timings = false, userDataDir = null } = yargs
   .option('port', {
     alias: 'p',
   })
@@ -12,7 +12,10 @@ const { port = 8080, caching = false, userDataDir = null } = yargs
   .option('user-data-dir', {
     alias: 'u',
   })
+  .option('timings', {
+    alias: 'T',
+  })
   .argv
 
 
-server(port, caching, userDataDir)
+server(port, { caching, timings, userDataDir })
