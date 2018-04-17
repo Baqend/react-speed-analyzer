@@ -51,4 +51,4 @@ RUN npm install \
 EXPOSE 8080
 
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["node", "/srv/www/puppeteer/index.js", "--port=8080", "--caching", "--user-data-dir=/var/chrome"]
+CMD ["node", "/srv/www/puppeteer/index.js", "-x", "--port=8080", "--caching", "--user-data-dir=/var/chrome"]
