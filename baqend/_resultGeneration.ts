@@ -29,7 +29,12 @@ export async function generateTestResult(wptTestId: string, pendingTest: model.T
     pendingTest.summaryUrl = rawData.summary
     pendingTest.testDataMissing = false
 
-    const runIndex = getValidTestRun(db, rawData)
+    const validRuns = getValidTestRuns(db, rawData)
+    const runIndex = validRuns.reduce((a, b) => {
+      return rawData.runs[a].firstView.SpeedIndex > rawData.runs[b].firstView.SpeedIndex ? a : b
+    })
+
+    db.log.info('Run index', {runIndex})
     const [testResult, videos] = await Promise.all([
       createTestResult(db, rawData, wptTestId, runIndex),
       createVideos(db, wptTestId, runIndex),
@@ -131,13 +136,13 @@ function isValidRun(run: WptRun): boolean {
 }
 
 
-function getValidTestRun(db: baqend, wptData: WptTestResult): string {
-  const runIndex = Object.keys(wptData.runs).find(index => isValidRun(wptData.runs[index]))
-  if (!runIndex) {
+function getValidTestRuns(db: baqend, wptData: WptTestResult): string[] {
+  const validRuns = Object.keys(wptData.runs).filter(index => isValidRun(wptData.runs[index]))
+  if (validRuns.length === 0) {
     throw new Error(`No valid test run found in ${wptData.id}`)
   }
 
-  return runIndex
+  return validRuns
 }
 
 /**
