@@ -7,22 +7,6 @@ import { analyzeStats } from './analyzeStats'
 import { analyzeTimings } from './analyzeTimings'
 import { analyzeType } from './analyzeType'
 
-function getBetterProtocol(now: string, other: string | undefined): string {
-  if (!other) {
-    return now
-  }
-
-  if (now === 'h2' || other === 'h2') {
-    return 'h2'
-  }
-
-  if (now === 'http/1.1' || other === 'http/1.1') {
-    return 'http/1.1'
-  }
-
-  return now
-}
-
 export interface Options {
   caching: boolean
   timings: boolean
@@ -51,7 +35,6 @@ export async function server(port: number, { caching, timings, userDataDir }: Op
 
         const resourceSet = new Set<Resource>()
         const domains = new Set<string>()
-        const protocols = new Map<string, string>()
 
         // Get CDP client
         const client = await page.target().createCDPSession()
@@ -78,9 +61,6 @@ export async function server(port: number, { caching, timings, userDataDir }: Op
 
           const { host, protocol: scheme, pathname } = parse(url)
           domains.add(host)
-
-          // Record the protocol
-          protocols.set(host, getBetterProtocol(protocol, protocols.get(host)))
 
           resourceSet.add({
             requestId,
@@ -134,11 +114,8 @@ export async function server(port: number, { caching, timings, userDataDir }: Op
         }
         const analyses = await Promise.all(promises)
 
-        // URL information
-        const urlInfo = parse(url)
-
         // Stop all service workers in the end
-        for (const [id, sw] of swRegistrations) {
+        for (const sw of swRegistrations.values()) {
           const { scopeURL } = sw
           await client.send('ServiceWorker.unregister', { scopeURL })
         }
@@ -151,14 +128,12 @@ export async function server(port: number, { caching, timings, userDataDir }: Op
           url,
           protocol,
           domains: [...domains],
-          protocols: [...protocols],
-          urlInfo,
         }, ...analyses))
       } catch (e) {
         res.status(404)
         res.json({ message: e.message, stack: e.stack, url: request })
       } finally {
-        page.close()
+        await page.close()
       }
     } catch (e) {
       res.status(500)
