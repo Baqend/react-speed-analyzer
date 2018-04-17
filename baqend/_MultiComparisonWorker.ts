@@ -55,8 +55,11 @@ export class MultiComparisonWorker implements ComparisonListener {
         return
       }
 
+      // Make the prewarm only on the first run
+      const testParams = Object.assign(multiComparison.params, { skipPrewarm: !!currentComparison })
+
       // Start next comparison
-      const comparison = await this.comparisonFactory.create(multiComparison.urlAnalysis as UrlInfo, multiComparison.params)
+      const comparison = await this.comparisonFactory.create(multiComparison.urlAnalysis as UrlInfo, testParams)
       await multiComparison.ready()
       await multiComparison.optimisticSave((it: model.BulkTest) => {
         it.testOverviews.push(comparison)
