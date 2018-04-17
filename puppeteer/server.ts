@@ -169,7 +169,8 @@ export async function server(port: number, { caching, timings, userDataDir }: Op
   const hostname = '0.0.0.0'
   app.listen(port, () => {
     console.log(`Server is listening on http://${hostname}:${port}/config`)
-    console.log(`Caching is ${caching ? 'enabled' : 'disabled'}`)
+    console.log(`Caching is ${caching ? `enabled, caching to ${userDataDir}` : 'disabled'}`)
+    timings && console.log('Timings are tracked')
   })
 
   process.on('SIGTERM', async () => {
