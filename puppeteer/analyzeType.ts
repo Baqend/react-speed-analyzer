@@ -2,25 +2,26 @@ import { CDPSession } from 'puppeteer'
 
 export enum Framework {
   BAQEND = 'baqend',
-  SULU = 'sulu',
-  WIX = 'wix',
-  WEEBLY = 'weebly',
+  DRUPAL = 'drupal',
+  EXPRESS = 'express',
   JIMDO = 'jimdo',
   JOOMLA = 'joomla',
-  WORDPRESS = 'wordpress',
-  DRUPAL = 'drupal',
-  TYPO3 = 'typo3',
   SQUARESPACE = 'squarespace',
-  PHP = 'php',
+  SULU = 'sulu',
+  TYPO3 = 'typo3',
+  WEEBLY = 'weebly',
+  WIX = 'wix',
+  WORDPRESS = 'wordpress',
 }
 
 export enum Language {
+  JAVASCRIPT = 'javascript',
   PHP = 'php',
 }
 
 export enum Server {
-  NGINX = 'nginx',
   APACHE = 'apache',
+  NGINX = 'nginx',
 }
 
 export async function analyzeType(client: CDPSession, documentResource: Resource): Promise<{ framework: Framework | null, language: Language | null, server: Server | null }> {
@@ -31,6 +32,11 @@ export async function analyzeType(client: CDPSession, documentResource: Resource
   const via = headers.get('via')
   if (via === 'baqend' || url.includes('www.baqend.com')) {
     return { framework: Framework.BAQEND, language: null, server }
+  }
+
+  const xPoweredBy = headers.get('x-powered-by')
+  if (xPoweredBy && xPoweredBy.includes('Express')) {
+    return { framework: Framework.EXPRESS, language: Language.JAVASCRIPT, server }
   }
 
   const xGenerator = headers.get('x-generator')
@@ -77,7 +83,8 @@ export async function analyzeType(client: CDPSession, documentResource: Resource
     return { framework: Framework.SQUARESPACE, language: null, server }
   }
 
-  if (headers.has('x-powered-by') && headers.get('x-powered-by')!.includes('PHP')) {
+  // Fallback: detect any PHP
+  if (xPoweredBy && xPoweredBy.includes('PHP')) {
     return { framework: null, language: Language.PHP, server }
   }
 
