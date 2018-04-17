@@ -193,12 +193,12 @@ class ResultAction extends Component {
             The Analyzer detected Speed Kit version {speedKitVersion}. The test therefore compared your website with Speed Kit to
             a version where Speed Kit is not installed.
           </span>
-          {configAnalysis && (
+          {configAnalysis &&
             <span className="faded">To help you integrating Speed Kit on your website, you can find the status of your installation below.
             </span>
-          )}
+          }
         </div>
-        {configAnalysis && (
+        {configAnalysis &&
           <div className="flex flex-wrap pb2">
             <div className="flex mt2">
               <div className="w-90">
@@ -212,21 +212,23 @@ class ResultAction extends Component {
                 <img src={isSecured ? check : cancel} alt="secure status" style={{ height: 30}} />
               </div>
             </div>
-            <div className="flex mt2">
-              <div className="w-90">
-                <h3 className="mt0 mb0">Host the <strong>Service Worker</strong> script in the correct scope</h3>
-                <h4 className="faded mt0 mb0">
-                  The path of the Service Worker script specified in your Speed Kit config has to match the path found by the Analyzer.&nbsp;
-                  {!swPath && <span>There was no Service Worker found by the Analyzer.</span>}
-                  {(!swPathMatches && swPath) &&
-                  <span>The detected Service Worker path at <strong>{swPath}</strong> does not match the specified path.</span>
-                  }
-                </h4>
+            {!configAnalysis.configMissing &&
+              <div className="flex mt2">
+                <div className="w-90">
+                  <h3 className="mt0 mb0">Host the <strong>Service Worker</strong> script in the correct scope</h3>
+                  <h4 className="faded mt0 mb0">
+                    The path of the Service Worker script specified in your Speed Kit config has to match the path found by the Analyzer.&nbsp;
+                    {!swPath && <span>There was no Service Worker found by the Analyzer.</span>}
+                    {(!swPathMatches && swPath) &&
+                    <span>The detected Service Worker path at <strong>{swPath}</strong> does not match the specified path.</span>
+                    }
+                  </h4>
+                </div>
+                <div className="w-10 text-center">
+                  <img src={swPathMatches ? check : cancel} alt="service worker status" style={{ height: 30}} />
+                </div>
               </div>
-              <div className="w-10 text-center">
-                <img src={swPathMatches ? check : cancel} alt="service worker status" style={{ height: 30}} />
-              </div>
-            </div>
+            }
             <div className="flex mt2">
               <div className="w-90">
                 <h3 className="mt0 mb0">Provide an enabled <strong>Speed Kit config</strong> on your website</h3>
@@ -242,7 +244,7 @@ class ResultAction extends Component {
               </div>
             </div>
           </div>
-        )}
+        }
         <div className="text-center">
           <a className="btn btn-orange btn-ghost ma1" onClick={this.props.toggleModal}>Contact Us</a>
         </div>
