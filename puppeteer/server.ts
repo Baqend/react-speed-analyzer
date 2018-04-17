@@ -1,12 +1,16 @@
 import express from 'express'
 import morgan from 'morgan'
+import { resolve } from 'path'
 import { toUnicode } from 'punycode'
 import puppeteer from 'puppeteer'
 import { format, parse } from 'url'
+import { analyzeScreenshot } from './analyzeScreenshot'
 import { analyzeServiceWorkers } from './analyzeServiceWorkers'
 import { analyzeStats } from './analyzeStats'
 import { analyzeTimings } from './analyzeTimings'
 import { analyzeType } from './analyzeType'
+
+const screenshotDir = resolve(__dirname, 'public', 'screenshots')
 
 export interface Options {
   caching: boolean
@@ -19,6 +23,7 @@ export interface Segments {
   speedKit: boolean
   type: boolean
   stats: boolean
+  screenshot: boolean
 }
 
 function tailHead<T>(array: T[]): [T[], T] {
@@ -61,6 +66,7 @@ function getEnabledSegments(segments: string[]): Segments {
     speedKit: false,
     type: false,
     stats: false,
+    screenshot: false,
   }
   for (const segment of segments) {
     if (segment in defaults) {
@@ -88,7 +94,7 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
     const [segments, rest] = tailHead(req.url.substr(1).split(/;/g))
     const request = normalizeUrl(rest)
 
-    const { timings, speedKit, type, stats } = getEnabledSegments(segments)
+    const { timings, speedKit, type, stats, screenshot } = getEnabledSegments(segments)
     try {
       const page = await browser.newPage()
       try {
@@ -179,6 +185,11 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
         if (timings) {
           // Timings analysis
           promises.push(analyzeTimings(client, page, documentResource))
+        }
+
+        if (screenshot) {
+          // Screenshot analysis
+          promises.push(analyzeScreenshot(page, screenshotDir, req.get('host')))
         }
         const analyses = await Promise.all(promises)
 
