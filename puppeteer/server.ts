@@ -23,7 +23,12 @@ function getBetterProtocol(now: string, other: string | undefined): string {
   return now
 }
 
-export function server(port: number) {
+export async function server(port: number, enableCaching: boolean, userDataDir: string | null) {
+  if (enableCaching && !userDataDir) {
+    throw new Error('Please provide a userDataDir to enable caching')
+  }
+
+  const browser = await puppeteer.launch({ args: ['--no-sandbox'], userDataDir })
   const app = express()
 
   app.use(morgan('common'))
@@ -34,17 +39,30 @@ export function server(port: number) {
     const { url: request } = req.query
 
     try {
-      const browser = await puppeteer.launch({ args: ['--no-sandbox'] })
+      const page = await browser.newPage()
       try {
-        const page = await browser.newPage()
+        await page.setCacheEnabled(enableCaching)
 
         const resourceSet = new Set<Resource>()
         const domains = new Set<string>()
         const protocols = new Map<string, string>()
 
-        // Track domains and resources being loaded
+        // Get CDP client
         const client = await page.target().createCDPSession()
-        await client.send('Network.enable')
+
+        // Activate CDP controls
+        await Promise.all([
+          // Enable network control
+          client.send('Network.enable'),
+
+          // Enable ServiceWorker control
+          client.send('ServiceWorker.enable'),
+
+          // Enable performance statistics
+          client.send('Performance.enable'),
+        ])
+
+        // Track domains and resources being loaded
         await client.on('Network.responseReceived', ({ requestId, type, timestamp, response }) => {
           const { url, headers, status, mimeType, protocol, fromServiceWorker, fromDiskCache, timing } = response
 
@@ -71,11 +89,18 @@ export function server(port: number) {
           })
         })
 
-        // Enable performance statistics
-        await client.send('Performance.enable')
+        // Collect all service worker registrations
+        const swRegistrations = new Map<string, ServiceWorkerRegistration>()
+        await client.on('ServiceWorker.workerRegistrationUpdated', ({ registrations }: { registrations: ServiceWorkerRegistration[] }) => {
+          for (const registration of registrations) {
+            swRegistrations.set(registration.registrationId, registration)
+          }
+        })
 
         // Load the document
+        const start = Date.now()
         const response = await page.goto(request)
+        const end = Date.now()
         const url = response.url()
         const documentResource = [...resourceSet].find(it => it.url === url)
 
@@ -100,6 +125,15 @@ export function server(port: number) {
         // URL information
         const urlInfo = parse(url)
 
+        // Stop all service workers in the end
+        for (const [id, sw] of swRegistrations) {
+          const { scopeURL } = sw
+          await client.send('ServiceWorker.unregister', { scopeURL })
+        }
+
+        const finished = Date.now()
+        console.log(`request = ${end - start}ms, stats = ${finished - end}ms, overall ${finished - start}ms`)
+
         res.status(200)
         res.json({
           url,
@@ -119,7 +153,7 @@ export function server(port: number) {
         res.status(404)
         res.json({ message: e.message, stack: e.stack, url: request })
       } finally {
-        await browser.close()
+        page.close()
       }
     } catch (e) {
       res.status(500)
@@ -130,5 +164,18 @@ export function server(port: number) {
   const hostname = '0.0.0.0'
   app.listen(port, () => {
     console.log(`Server is listening on http://${hostname}:${port}/config`)
+    console.log(`Caching is ${enableCaching ? 'enabled' : 'disabled'}`)
+  })
+
+  process.on('SIGTERM', async () => {
+    console.log('Received SIGTERM, shutting down')
+    await browser.close()
+    process.exit()
+  })
+
+  process.on('SIGINT', async () => {
+    console.log('Received SIGINT, shutting down')
+    await browser.close()
+    process.exit()
   })
 }

@@ -58,3 +58,9 @@ declare interface Timings {
   domContentLoaded: number
   fullyLoaded: number
 }
+
+declare interface ServiceWorkerRegistration {
+  registrationId: string
+  scopeURL: string
+  isDeleted: boolean
+}
