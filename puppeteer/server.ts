@@ -108,7 +108,7 @@ export async function server(port: number, enableCaching: boolean, userDataDir: 
         const protocol = documentResource.protocol
 
         // Concurrently analyze
-        const [{ framework, language, server }, timings, stats, { serviceWorkers, speedKit }] = await Promise.all([
+        const analyses = await Promise.all([
           // Type analysis
           analyzeType(client, documentResource),
 
@@ -135,20 +135,13 @@ export async function server(port: number, enableCaching: boolean, userDataDir: 
         console.log(`request = ${end - start}ms, stats = ${finished - end}ms, overall ${finished - start}ms`)
 
         res.status(200)
-        res.json({
+        res.json(Object.assign({
           url,
           protocol,
-          framework,
-          language,
-          server,
-          timings,
-          stats,
-          speedKit,
           domains: [...domains],
           protocols: [...protocols],
           urlInfo,
-          serviceWorkers,
-        })
+        }, ...analyses))
       } catch (e) {
         res.status(404)
         res.json({ message: e.message, stack: e.stack, url: request })

@@ -9,7 +9,7 @@ export function analyzeStats(resourceSet: Set<Resource>, domainSet: Set<string>)
   const fromDiskCache = resources.filter(resource => resource.fromDiskCache).length
   const fromServiceWorker = resources.filter(resource => resource.fromServiceWorker).length
 
-  return {
+  const stats = {
     requests,
     domains,
     errors,
@@ -18,4 +18,6 @@ export function analyzeStats(resourceSet: Set<Resource>, domainSet: Set<string>)
     fromDiskCache,
     fromServiceWorker,
   }
+
+  return { stats }
 }

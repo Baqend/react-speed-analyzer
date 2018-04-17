@@ -1,13 +1,13 @@
 import { CDPSession, Page } from 'puppeteer'
 import { difference, kebabToCamelCase, lcFirst, mergeMaps, objectToMap, optionalNumber } from './helpers'
 
-export async function analyzeTimings(client: CDPSession, page: Page, document: Resource): Promise<Timings> {
+export async function analyzeTimings(client: CDPSession, page: Page, document: Resource): Promise<{ timings: Timings }> {
   const metricsMap = await getPerformanceMetrics(client)
   const paintTimings = await getPaintTimings(page)
   const documentTimings = objectToMap(document.timing)
   mergeMaps(metricsMap, paintTimings, documentTimings)
 
-  return aggregateTimings(metricsMap)
+  return { timings: aggregateTimings(metricsMap) }
 }
 
 async function getPerformanceMetrics(client: CDPSession): Promise<Map<string, number>> {
