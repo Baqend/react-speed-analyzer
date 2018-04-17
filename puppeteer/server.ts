@@ -11,14 +11,16 @@ export interface Options {
   caching: boolean
   timings: boolean
   userDataDir: string | null
+  noSandbox: boolean
 }
 
-export async function server(port: number, { caching, timings, userDataDir }: Options) {
+export async function server(port: number, { caching, timings, userDataDir, noSandbox }: Options) {
   if (caching && !userDataDir) {
     throw new Error('Please provide a userDataDir to enable caching')
   }
 
-  const browser = await puppeteer.launch({ args: ['--no-sandbox'], userDataDir })
+  const args = noSandbox ? ['--no-sandbox'] : []
+  const browser = await puppeteer.launch({ args, userDataDir })
   const app = express()
 
   app.use(morgan('common'))
@@ -146,6 +148,7 @@ export async function server(port: number, { caching, timings, userDataDir }: Op
     console.log(`Server is listening on http://${hostname}:${port}/config`)
     console.log(`Caching is ${caching ? `enabled, caching to ${userDataDir}` : 'disabled'}`)
     timings && console.log('Timings are tracked')
+    noSandbox && console.log('Running chrome in no-sandbox mode')
   })
 
   process.on('SIGTERM', async () => {

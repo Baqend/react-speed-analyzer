@@ -4,7 +4,7 @@
   "description": "Puppeteer server for Page Speed Analyzer",
   "main": "index.ts",
   "scripts": {
-    "start": "ts-node index.ts",
+    "start": "ts-node index.ts -xcp 1337 -u /tmp/psa-puppeteer",
     "build": "tsc"
   },
   "dependencies": {
