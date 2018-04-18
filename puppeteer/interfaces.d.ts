@@ -36,7 +36,7 @@ declare interface Resource {
   timing: ResourceTiming
   size?: number
   loadStart: number
-  loadEnd?: number
+  loadEnd: number
 }
 
 declare interface SpeedKit {

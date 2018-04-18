@@ -11,6 +11,7 @@ import { analyzeTimings } from './analyzeTimings'
 import { analyzeType } from './analyzeType'
 
 const screenshotDir = resolve(__dirname, 'public', 'screenshots')
+const sizeCache = new Map<string, number>()
 
 export interface Options {
   caching: boolean
@@ -131,6 +132,7 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
 
           const compressed: boolean = headers.has('content-encoding') && headers.get('content-encoding').toLowerCase() !== 'identity'
 
+          const loadStart = timing ? timing.requestTime : -1
           resources.set(requestId, {
             requestId,
             url,
@@ -146,14 +148,19 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
             fromServiceWorker,
             fromDiskCache,
             timing,
-            loadStart: timing.requestTime,
+            loadStart,
+            loadEnd: -1,
+            size: sizeCache.get(url),
           })
         })
 
         await client.on('Network.loadingFinished', ({ requestId, timestamp, encodedDataLength }) => {
           const resource = resources.get(requestId)
           if (resource) {
-            resource.size = encodedDataLength
+            if (!resource.fromDiskCache && !resource.fromServiceWorker) {
+              sizeCache.set(resource.url, encodedDataLength)
+              resource.size = encodedDataLength
+            }
             resource.loadEnd = timestamp
           }
         })
