@@ -17,9 +17,9 @@ describe('startMultiComparison', () => {
     const result = await call(DB, { url: 'obama.org', runs: 3, priority: Priority.HIGH })
     expect(result).to.be.ok
     expect(result.url).to.eql('https://www.obama.org/')
-    expect(result.urlAnalysis.url).to.eql('https://www.obama.org/')
-    expect(result.urlAnalysis.displayUrl).to.eql('https://www.obama.org/')
-    expect(result.urlAnalysis.type).to.eql('wordpress')
+    expect(result.puppeteer.url).to.eql('https://www.obama.org/')
+    expect(result.puppeteer.displayUrl).to.eql('https://www.obama.org/')
+    expect(result.puppeteer.type.framework).to.eql('wordpress')
     expect(result.hasFinished).to.be.false
 
     // Check remote
@@ -30,7 +30,7 @@ describe('startMultiComparison', () => {
     const bulkTest = await DB.BulkTest.load(id, { depth: 2 })
 
     expect(bulkTest).to.be.ok
-    expect(bulkTest.urlAnalysis).to.be.ok
+    expect(bulkTest.puppeteer).to.be.ok
     expect(bulkTest.url).to.eql('https://www.obama.org/')
     expect(bulkTest.priority).to.eql(Priority.HIGH)
 

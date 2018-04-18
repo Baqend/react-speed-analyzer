@@ -28,7 +28,7 @@ describe('startBulkComparison', () => {
 
     const bulkTest = bulkComparison.multiComparisons[0]
     expect(bulkTest).to.be.ok
-    expect(bulkTest.urlAnalysis).to.be.ok
+    expect(bulkTest.puppeteer).to.be.ok
     expect(bulkTest.url).to.eql('https://www.obama.org/')
     expect(bulkTest.priority).to.eql(Priority.HIGH)
 
