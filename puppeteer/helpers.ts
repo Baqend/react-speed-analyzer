@@ -1,3 +1,4 @@
+import { writeFile } from 'fs'
 import { toUnicode } from 'punycode'
 import { format, parse } from 'url'
 
@@ -80,4 +81,32 @@ export function urlToUnicode(url: string): string {
   }
 
   return format(obj)
+}
+
+/**
+ * Generate a hash with 6 chars.
+ */
+export function generateHash(): string {
+  const chars = 'ABCDEFGHIJKLMOPQRSTUVWXYZabcdefghijklmopqrstuvwxyz0123456789'
+  let result = ''
+  for (let i = 0; i < 6; i += 1) {
+    result += chars[Math.floor(Math.random() * chars.length)]
+  }
+
+  return result
+}
+
+/**
+ * Puts a buffer's content to a file.
+ */
+export function filePutContents(path: string, data: Buffer): Promise<void> {
+  return new Promise((resolve, reject) => {
+    writeFile(path, data, (err) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve()
+      }
+    })
+  })
 }

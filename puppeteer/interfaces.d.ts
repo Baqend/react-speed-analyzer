@@ -81,4 +81,5 @@ declare interface Segments {
   type: boolean
   stats: boolean
   screenshot: boolean
+  pdf: boolean
 }

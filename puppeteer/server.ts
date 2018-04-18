@@ -5,6 +5,7 @@ import { resolve } from 'path'
 import puppeteer from 'puppeteer'
 import rimraf from 'rimraf'
 import { parse } from 'url'
+import { analyzePdf } from './analyzePdf'
 import { analyzeScreenshot } from './analyzeScreenshot'
 import { analyzeServiceWorkers } from './analyzeServiceWorkers'
 import { analyzeStats } from './analyzeStats'
@@ -22,6 +23,7 @@ function getEnabledSegments(segments: string[]): Segments {
     type: false,
     stats: false,
     screenshot: false,
+    pdf: false,
   }
   for (const segment of segments) {
     if (segment in defaults) {
@@ -80,7 +82,7 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
     const [segments, rest] = tailHead(req.url.substr(1).split(/;/g))
     const request = normalizeUrl(rest)
 
-    const { timings, speedKit, type, stats, screenshot } = getEnabledSegments(segments)
+    const { timings, speedKit, type, stats, screenshot, pdf } = getEnabledSegments(segments)
     try {
       const page = await browser.newPage()
       try {
@@ -192,6 +194,11 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
         if (screenshot) {
           // Screenshot analysis
           promises.push(analyzeScreenshot(page, screenshotDir, req.get('host')))
+        }
+
+        if (pdf) {
+          // Pdf analysis
+          promises.push(analyzePdf(page, screenshotDir, req.get('host')))
         }
         const analyses = await Promise.all(promises)
 
