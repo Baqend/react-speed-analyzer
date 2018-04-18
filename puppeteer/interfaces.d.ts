@@ -68,3 +68,17 @@ declare interface ServiceWorkerRegistration {
   scopeURL: string
   isDeleted: boolean
 }
+
+declare interface Options {
+  caching: boolean
+  userDataDir: string | null
+  noSandbox: boolean
+}
+
+declare interface Segments {
+  timings: boolean
+  speedKit: boolean
+  type: boolean
+  stats: boolean
+  screenshot: boolean
+}

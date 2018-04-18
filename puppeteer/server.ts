@@ -1,66 +1,18 @@
 import express from 'express'
 import morgan from 'morgan'
 import { resolve } from 'path'
-import { toUnicode } from 'punycode'
 import puppeteer from 'puppeteer'
-import { format, parse } from 'url'
+import rimraf from 'rimraf'
+import { parse } from 'url'
 import { analyzeScreenshot } from './analyzeScreenshot'
 import { analyzeServiceWorkers } from './analyzeServiceWorkers'
 import { analyzeStats } from './analyzeStats'
 import { analyzeTimings } from './analyzeTimings'
 import { analyzeType } from './analyzeType'
-import rimraf from 'rimraf'
+import { normalizeUrl, tailHead, urlToUnicode } from './helpers'
 
 const screenshotDir = resolve(__dirname, 'public', 'screenshots')
 const sizeCache = new Map<string, number>()
-
-export interface Options {
-  caching: boolean
-  userDataDir: string | null
-  noSandbox: boolean
-}
-
-export interface Segments {
-  timings: boolean
-  speedKit: boolean
-  type: boolean
-  stats: boolean
-  screenshot: boolean
-}
-
-function tailHead<T>(array: T[]): [T[], T] {
-  const it = array.pop()
-  return [array, it]
-}
-
-function normalizeUrl(request: string): string {
-  if (request.startsWith('//')) {
-    return `http:${decodeURIComponent(request)}`
-  }
-
-  if (!request.startsWith('http')) {
-    return `http://${decodeURIComponent(request)}`
-  }
-
-  return decodeURIComponent(request)
-}
-
-/**
- * Converts a punycode URL to a UTF-8 URL.
- */
-function urlToUnicode(url: string): string {
-  const { hostname, protocol, search, query, port, pathname } = parse(url)
-  const obj = {
-    hostname: toUnicode(hostname!),
-    pathname: decodeURIComponent(pathname || ''),
-    protocol,
-    search,
-    query,
-    port,
-  }
-
-  return format(obj)
-}
 
 function getEnabledSegments(segments: string[]): Segments {
   const defaults: Segments = {

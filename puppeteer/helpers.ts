@@ -1,4 +1,7 @@
-export function mergeMaps<K,V>(target: Map<K,V>, ...maps: Array<Map<K,V>>): Map<K,V> {
+import { toUnicode } from 'punycode'
+import { format, parse } from 'url'
+
+export function mergeMaps<K, V>(target: Map<K, V>, ...maps: Array<Map<K, V>>): Map<K, V> {
   for (const map of maps) {
     map.forEach((value, key) => target.set(key, value))
   }
@@ -43,4 +46,38 @@ export function optionalNumber(number: number | undefined) {
 
 export function roundToThousandths(number: number): number {
   return Math.round(number * 1000) / 1000
+}
+
+export function tailHead<T>(array: T[]): [T[], T] {
+  const it = array.pop()
+  return [array, it]
+}
+
+export function normalizeUrl(url: string): string {
+  if (url.startsWith('//')) {
+    return `http:${decodeURIComponent(url)}`
+  }
+
+  if (!url.startsWith('http')) {
+    return `http://${decodeURIComponent(url)}`
+  }
+
+  return decodeURIComponent(url)
+}
+
+/**
+ * Converts a punycode URL to a UTF-8 URL.
+ */
+export function urlToUnicode(url: string): string {
+  const { hostname, protocol, search, query, port, pathname } = parse(url)
+  const obj = {
+    hostname: toUnicode(hostname!),
+    pathname: decodeURIComponent(pathname || ''),
+    protocol,
+    search,
+    query,
+    port,
+  }
+
+  return format(obj)
 }
