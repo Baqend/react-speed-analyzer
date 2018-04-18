@@ -1,0 +1,79 @@
+{
+  "class": "/db/PuppeteerStats",
+  "acl": {
+    "schemaAdd": {
+      "/db/Role/1": "allow"
+    },
+    "schemaReplace": {
+      "/db/Role/1": "allow"
+    }
+  },
+  "embedded": true,
+  "fields": {
+    "requests": {
+      "name": "requests",
+      "type": "/db/Integer",
+      "order": 0
+    },
+    "size": {
+      "name": "size",
+      "type": "/db/Integer",
+      "order": 1
+    },
+    "errors": {
+      "name": "errors",
+      "type": "/db/Integer",
+      "order": 2
+    },
+    "redirects": {
+      "name": "redirects",
+      "type": "/db/Integer",
+      "order": 3
+    },
+    "successful": {
+      "name": "successful",
+      "type": "/db/Integer",
+      "order": 4
+    },
+    "compressed": {
+      "name": "compressed",
+      "type": "/db/Integer",
+      "order": 5
+    },
+    "images": {
+      "name": "images",
+      "type": "/db/Integer",
+      "order": 6
+    },
+    "scripts": {
+      "name": "scripts",
+      "type": "/db/Integer",
+      "order": 7
+    },
+    "stylesheets": {
+      "name": "stylesheets",
+      "type": "/db/Integer",
+      "order": 8
+    },
+    "fonts": {
+      "name": "fonts",
+      "type": "/db/Integer",
+      "order": 9
+    },
+    "fromDiskCache": {
+      "name": "fromDiskCache",
+      "type": "/db/Integer",
+      "order": 10
+    },
+    "fromServiceWorker": {
+      "name": "fromServiceWorker",
+      "type": "/db/Integer",
+      "order": 11
+    },
+    "domains": {
+      "name": "domains",
+      "type": "/db/Integer",
+      "order": 12
+    }
+  }
+}

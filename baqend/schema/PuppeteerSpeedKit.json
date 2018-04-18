@@ -1,0 +1,60 @@
+{
+  "class": "/db/PuppeteerSpeedKit",
+  "acl": {
+    "schemaAdd": {
+      "/db/Role/1": "allow"
+    },
+    "schemaReplace": {
+      "/db/Role/1": "allow"
+    }
+  },
+  "embedded": true,
+  "metadata": {},
+  "fields": {
+    "major": {
+      "name": "major",
+      "type": "/db/Integer",
+      "order": 0
+    },
+    "minor": {
+      "name": "minor",
+      "type": "/db/Integer",
+      "order": 1
+    },
+    "patch": {
+      "name": "patch",
+      "type": "/db/Integer",
+      "order": 2
+    },
+    "stability": {
+      "name": "stability",
+      "type": "/db/String",
+      "order": 3
+    },
+    "swUrl": {
+      "name": "swUrl",
+      "type": "/db/String",
+      "order": 4
+    },
+    "swPath": {
+      "name": "swPath",
+      "type": "/db/String",
+      "order": 5
+    },
+    "appName": {
+      "name": "appName",
+      "type": "/db/String",
+      "order": 6
+    },
+    "appDomain": {
+      "name": "appDomain",
+      "type": "/db/String",
+      "order": 7
+    },
+    "config": {
+      "name": "config",
+      "type": "/db/JsonObject",
+      "order": 8
+    }
+  }
+}
