@@ -2,7 +2,6 @@ import { baqend, model } from 'baqend'
 import { ComparisonListener, ComparisonWorker } from './_ComparisonWorker'
 import { ComparisonFactory } from './_ComparisonFactory'
 import { updateMultiComparison } from './_updateMultiComparison'
-import { UrlInfo } from './_UrlInfo';
 
 export interface MultiComparisonListener {
   handleMultiComparisonFinished(multiComparison: model.BulkTest): any

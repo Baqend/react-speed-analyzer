@@ -4,7 +4,6 @@ import { expect } from 'chai'
 import { call } from '../startBulkComparison'
 import { sleep } from '../_sleep';
 import { Priority } from '../_TestParams';
-import { UrlType } from '../_UrlInfo';
 
 describe('startBulkComparison', () => {
   before(async () => {
@@ -37,7 +36,7 @@ describe('startBulkComparison', () => {
     expect(comparison).to.be.ok
     expect(comparison.url).to.eql('https://www.obama.org/')
     expect(comparison.displayUrl).to.eql('https://www.obama.org/')
-    expect(comparison.type).to.eql(UrlType.WORDPRESS)
+    expect(comparison.type).to.eql('wordpress')
 
     // Check comparison's tests
     expect(comparison.speedKitTestResult).to.be.ok

@@ -4,7 +4,6 @@ import { expect } from 'chai'
 import { call } from '../startMultiComparison'
 import { sleep } from '../_sleep';
 import { Priority } from '../_TestParams';
-import { UrlType } from '../_UrlInfo';
 
 describe('startMultiComparison', () => {
   before(async () => {
@@ -20,7 +19,7 @@ describe('startMultiComparison', () => {
     expect(result.url).to.eql('https://www.obama.org/')
     expect(result.urlAnalysis.url).to.eql('https://www.obama.org/')
     expect(result.urlAnalysis.displayUrl).to.eql('https://www.obama.org/')
-    expect(result.urlAnalysis.type).to.eql(UrlType.WORDPRESS)
+    expect(result.urlAnalysis.type).to.eql('wordpress')
     expect(result.hasFinished).to.be.false
 
     // Check remote
@@ -39,7 +38,7 @@ describe('startMultiComparison', () => {
     expect(comparison).to.be.ok
     expect(comparison.url).to.eql('https://www.obama.org/')
     expect(comparison.displayUrl).to.eql('https://www.obama.org/')
-    expect(comparison.type).to.eql(UrlType.WORDPRESS)
+    expect(comparison.type).to.eql('wordpress')
 
     // Check comparison's tests
     expect(comparison.speedKitTestResult).to.be.ok

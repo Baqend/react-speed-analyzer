@@ -2,7 +2,6 @@ import { baqend, model } from 'baqend'
 import { AsyncFactory } from './_AsyncFactory'
 import { TestBuilder } from './_TestBuilder'
 import { TestParams } from './_TestParams'
-import { UrlInfo } from './_UrlInfo'
 
 /**
  * The params which are allowed per test.

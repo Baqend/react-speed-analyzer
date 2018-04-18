@@ -14,7 +14,6 @@ import { TestBuilder } from './_TestBuilder'
 import { TestFactory } from './_TestFactory'
 import { TestScriptBuilder } from './_TestScriptBuilder'
 import { TestWorker } from './_TestWorker'
-import { UrlAnalyzer } from './_UrlAnalyzer'
 import { WebPagetestResultHandler } from './_WebPagetestResultHandler'
 
 /**
@@ -33,7 +32,6 @@ export function bootstrap(db: baqend) {
   const testScriptBuilder = new TestScriptBuilder()
   const configCache = new ConfigCache(db, serializer)
   const configGenerator = new ConfigGenerator(db)
-  const urlAnalyzer = new UrlAnalyzer(db)
   const pagetest = new Pagetest()
   const webPagetestResultHandler = new WebPagetestResultHandler(db, pagetest, configGenerator, configCache, serializer)
   const testBuilder = new TestBuilder()
@@ -56,7 +54,6 @@ export function bootstrap(db: baqend) {
     testScriptBuilder,
     configCache,
     configGenerator,
-    urlAnalyzer,
     pagetest,
     webPagetestResultHandler,
     testBuilder,
