@@ -38,12 +38,10 @@ async function loadSpeedKit(swUrl: string, etag: string | undefined, page: Page)
   const response = await fetch(swUrl, { headers })
   const newEtag = response.headers.get('etag')
   if (response.status === 304 || newEtag && newEtag === etag) {
-    console.log(`Taking cached Speed Kit for ${etag}`)
     return speedKitCache.get(swUrl)
   }
 
   if (newEtag) {
-    console.log(`Caching ETag ${newEtag} for ${swUrl}`)
     etagCache.set(swUrl, newEtag)
   }
   const text = await response.text()
@@ -64,7 +62,6 @@ async function loadSpeedKit(swUrl: string, etag: string | undefined, page: Page)
     const { appName = null, appDomain = null } = (config || {})
 
     const speedKit = { version, year, swUrl, swPath, appName, appDomain, config }
-    console.log(`Caching Speed Kit info for ${swUrl}`)
     speedKitCache.set(swUrl, speedKit)
     return speedKit
   }

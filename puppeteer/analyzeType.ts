@@ -36,19 +36,16 @@ export async function analyzeType(page: Page, documentResource: Resource): Promi
   if (etag) {
     if (typeCache.has(etag)) {
       const type = typeCache.get(etag)
-      console.log(`Found cached type for ETag ${etag}`)
 
       return { type }
     }
 
     const type = await retrieveType(page, documentResource)
-    console.log(`Caching type for ETag ${etag}`)
     typeCache.set(etag, type)
 
     return { type }
   }
 
-  console.log(`Cannot cache type of ${page.url()}`)
   const type = await retrieveType(page, documentResource)
 
   return { type }

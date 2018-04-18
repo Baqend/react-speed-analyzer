@@ -1,3 +1,4 @@
+import chalk from 'chalk'
 import express from 'express'
 import morgan from 'morgan'
 import { resolve } from 'path'
@@ -60,8 +61,18 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
   const browser = await puppeteer.launch({ args, userDataDir })
   const app = express()
 
+  morgan.token('status', (req, res) => {
+    const status = String(res.statusCode)
+    if (res.statusCode >= 400) {
+      return chalk.bgRed.black(status)
+    } else if (res.statusCode >= 300) {
+      return chalk.bgYellow.black(status)
+    } else {
+      return chalk.bgGreen.black(status)
+    }
+  })
 
-  app.use(morgan('common'))
+  app.use(morgan(chalk`:remote-addr [:date[clf]] {yellow.bold :method} :status ":url" HTTP/:http-version :response-time`))
 
   app.use(express.static('public'))
 
@@ -148,9 +159,7 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
         })
 
         // Load the document
-        const start = Date.now()
         const response = await page.goto(request)
-        const end = Date.now()
         const url = response.url()
         const displayUrl = urlToUnicode(url)
         const documentResource = [...resources.values()].find(it => it.url === url)
@@ -191,9 +200,6 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
           const { scopeURL } = sw
           await client.send('ServiceWorker.unregister', { scopeURL })
         }
-
-        const finished = Date.now()
-        console.log(`request = ${end - start}ms, stats = ${finished - end}ms, overall ${finished - start}ms`)
 
         res.status(200)
         res.json(Object.assign({
