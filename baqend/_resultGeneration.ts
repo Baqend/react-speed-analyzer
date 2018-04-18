@@ -29,8 +29,7 @@ export async function generateTestResult(wptTestId: string, pendingTest: model.T
     pendingTest.summaryUrl = rawData.summary
     pendingTest.testDataMissing = false
 
-    const validRuns = getValidTestRuns(db, rawData)
-    const runIndex = validRuns.reduce((a, b) => {
+    const runIndex = getValidTestRuns(db, rawData).reduce((a, b) => {
       return rawData.runs[a].firstView.SpeedIndex > rawData.runs[b].firstView.SpeedIndex ? a : b
     })
 

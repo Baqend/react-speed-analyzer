@@ -7,7 +7,7 @@ import { connect } from 'react-redux'
 
 import { prepareTest, startTest } from 'actions/test'
 import { getObjectKey } from 'helper/utils'
-import { calculateAbsolute, calculateServedRequests } from 'helper/resultHelper'
+import { calculateAbsolute } from 'helper/resultHelper'
 import { formatFileSize } from 'helper/utils'
 
 import WordPressLogo from 'assets/wordpress.png'
@@ -77,15 +77,19 @@ class ResultAction extends Component {
     }
 
     // HTTP Caching
-    const servedRate = calculateServedRequests(speedKitData)
-    const withCaching = competitorData.hits.withCaching
-    const cachingAmount = withCaching ? Math.round((100 / competitorData.requests) * withCaching) : 0
+    const competitorCaching = competitorData.hits.withCaching
+    const competitorAmount = competitorCaching ? Math.round((100 / competitorData.requests) * competitorCaching) : 0
 
-    const cachingFact = [
-      'HTTP Caching',
-      `Only <strong>${cachingAmount}%</strong> of resources had correct <strong>caching headers</strong>. Speed Kit cached <strong>${servedRate}%</strong> and keeps the cache up-to-date.`
-    ]
-    content.push(cachingFact)
+    const speedKitCaching = speedKitData.hits.withCaching
+    const speedKitAmount = speedKitCaching ? Math.round((100 / speedKitData.requests) * speedKitCaching) : 0
+
+    if ( speedKitAmount > competitorAmount) {
+      const cachingFact = [
+        'HTTP Caching',
+        `Without Speed Kit <strong>${competitorAmount}%</strong> of resources had correct <strong>caching headers</strong>. Speed Kit cached <strong>${speedKitAmount}%</strong> and keeps the cache up-to-date.`
+      ]
+      content.push(cachingFact)
+    }
 
     // Progressive Web App
     const offlineFact = [
@@ -263,10 +267,10 @@ class ResultAction extends Component {
       <div>
         <div className="text-center pb2 pt2" style={{ maxWidth: 700, margin: '0 auto' }}>
           <h2 className="dn db-ns mb0">
-            Optimizations that Reduced Page Load Time by <span style={{ color: '#F27354' }}>{absolute}</span>.
+            Optimizations to Reduce Page Load Time by <span style={{ color: '#F27354' }}>{absolute}</span>.
           </h2>
           <h3 className="dn-ns mb0">
-            Optimizations that Reduced Page Load Time by <span style={{ color: '#F27354' }}>{absolute}</span>.
+            Optimizations to Reduce Page Load Time by <span style={{ color: '#F27354' }}>{absolute}</span>.
           </h3>
         </div>
         <div className="flex flex-wrap">
@@ -274,7 +278,7 @@ class ResultAction extends Component {
             <div key={index} className="w-100 w-50-ns mt2 mb2">
               <div className="flex ml2 mr2">
                 <div className="w-20 w-10-ns">
-                  <img src={ check } alt="speed kit feature" style={{ height: 30}} />
+                  <img src={ cancel } alt="speed kit feature" style={{ height: 30}} />
                 </div>
                 <div className="w-80 w-90-ns">
                   <h4 className="mb0 mt0 fw6">{ content[0] }</h4>
