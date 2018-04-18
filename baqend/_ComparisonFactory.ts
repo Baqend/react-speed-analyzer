@@ -80,6 +80,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
   private createConfigAnalysis({ url, speedKitUrl }: UrlInfo, config: string | null): model.ConfigAnalysis {
     const configAnalysis: model.ConfigAnalysis = new this.db.ConfigAnalysis()
     configAnalysis.swPath = speedKitUrl!
+    configAnalysis.configMissing = false
 
     if (!config) {
       configAnalysis.configMissing = true
