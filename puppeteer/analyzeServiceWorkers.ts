@@ -6,11 +6,10 @@ const etagCache = new Map<string, string>()
 const speedKitCache = new Map<string, SpeedKit | null>()
 
 export async function analyzeServiceWorkers(browser: Browser, page: Page) {
-  const swTargets = await findServiceWorkers(browser)
-  const serviceWorkers = swTargets.map(target => target.url())
-  const speedKit = await findSpeedKit(page, swTargets)
+  const serviceWorkers = await findServiceWorkers(browser)
+  const speedKit = await findSpeedKit(page, serviceWorkers)
 
-  return { serviceWorkers, speedKit }
+  return { speedKit }
 }
 
 async function findServiceWorkers(browser: Browser): Promise<Target[]> {

@@ -31,23 +31,27 @@ export enum Server {
 
 const typeCache = new Map<string, Type>()
 
-export async function analyzeType(page: Page, documentResource: Resource): Promise<Type> {
+export async function analyzeType(page: Page, documentResource: Resource): Promise<{ type: Type }> {
   const etag = documentResource.headers.get('etag')
   if (etag) {
     if (typeCache.has(etag)) {
+      const type = typeCache.get(etag)
       console.log(`Found cached type for ETag ${etag}`)
-      return typeCache.get(etag)
+
+      return { type }
     }
 
     const type = await retrieveType(page, documentResource)
     console.log(`Caching type for ETag ${etag}`)
     typeCache.set(etag, type)
 
-    return type
+    return { type }
   }
 
   console.log(`Cannot cache type of ${page.url()}`)
-  return retrieveType(page, documentResource)
+  const type = await retrieveType(page, documentResource)
+
+  return { type }
 }
 
 async function retrieveType(page: Page, documentResource: Resource): Promise<Type> {
