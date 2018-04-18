@@ -35,10 +35,10 @@ COPY . "/srv/www/puppeteer/"
 RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
     && mkdir -p /home/pptruser/Downloads \
     && mkdir -p /srv/www/puppeteer/node_modules \
-    && mkdir -p /var/chrome \
+    && mkdir -p /var \
     && chown -R pptruser:pptruser /home/pptruser \
     && chown -R pptruser:pptruser /srv/www/puppeteer \
-    && chown -R pptruser:pptruser /var/chrome
+    && chmod a+w /var
 
 # Run everything after as non-privileged user.
 USER pptruser
