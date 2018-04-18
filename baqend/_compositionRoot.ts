@@ -8,6 +8,7 @@ import { ConfigGenerator } from './_ConfigGenerator'
 import { MultiComparisonFactory } from './_MultiComparisonFactory'
 import { MultiComparisonWorker } from './_MultiComparisonWorker'
 import { Pagetest } from './_Pagetest'
+import { Puppeteer } from './_Puppeteer'
 import { Serializer } from './_Serializer'
 import { TestBuilder } from './_TestBuilder'
 import { TestFactory } from './_TestFactory'
@@ -36,6 +37,7 @@ export function bootstrap(db: baqend) {
   const pagetest = new Pagetest()
   const webPagetestResultHandler = new WebPagetestResultHandler(db, pagetest, configGenerator, configCache, serializer)
   const testBuilder = new TestBuilder()
+  const puppeteer = new Puppeteer(db)
 
   // Create factories
   const testFactory = new TestFactory(db, testBuilder)
@@ -58,6 +60,7 @@ export function bootstrap(db: baqend) {
     pagetest,
     webPagetestResultHandler,
     testBuilder,
+    puppeteer,
 
     testFactory,
     bulkComparisonFactory,

@@ -29,7 +29,7 @@ export interface SpeedKitInfo {
 export interface BasicUrlInfo {
   url: string
   displayUrl: string
-  type: UrlType | null
+  type: string | null
   secured: boolean
   mobile: boolean
 }

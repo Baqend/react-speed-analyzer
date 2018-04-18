@@ -8,7 +8,7 @@ import { UrlInfo } from './_UrlInfo'
  * The params which are allowed per test.
  */
 export interface BulkComparisonTestParams extends TestParams {
-  urlInfo: UrlInfo
+  puppeteer: model.Puppeteer
   runs?: number
 }
 
@@ -41,9 +41,9 @@ export class BulkComparisonFactory implements AsyncFactory<model.BulkComparison>
    * Builds the final test params.
    */
   buildParams(test: BulkComparisonTestParams): model.ComparisonInfo {
-    const { urlInfo, ...params } = test
+    const { puppeteer, ...params } = test
     const isStarted = false
 
-    return Object.assign(this.testBuilder.buildBulkParams(params), { urlInfo, isStarted })
+    return Object.assign(this.testBuilder.buildBulkParams(params), { puppeteer, isStarted })
   }
 }
