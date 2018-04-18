@@ -9,6 +9,7 @@ import { analyzeServiceWorkers } from './analyzeServiceWorkers'
 import { analyzeStats } from './analyzeStats'
 import { analyzeTimings } from './analyzeTimings'
 import { analyzeType } from './analyzeType'
+import rimraf from 'rimraf'
 
 const screenshotDir = resolve(__dirname, 'public', 'screenshots')
 const sizeCache = new Map<string, number>()
@@ -78,14 +79,35 @@ function getEnabledSegments(segments: string[]): Segments {
   return defaults
 }
 
+/**
+ * Deletes a directory.
+ */
+function deleteDirectory(dir: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    rimraf(dir, (err) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve()
+      }
+    })
+  })
+}
+
 export async function server(port: number, { caching, userDataDir, noSandbox }: Options) {
   if (caching && !userDataDir) {
     throw new Error('Please provide a userDataDir to enable caching')
   }
 
+  if (userDataDir) {
+    await deleteDirectory(userDataDir)
+    console.log(`Deleted ${userDataDir}`)
+  }
+
   const args = noSandbox ? ['--no-sandbox'] : []
   const browser = await puppeteer.launch({ args, userDataDir })
   const app = express()
+
 
   app.use(morgan('common'))
 
