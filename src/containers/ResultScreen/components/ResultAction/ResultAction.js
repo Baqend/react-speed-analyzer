@@ -35,7 +35,7 @@ class ResultAction extends Component {
     if (competitorData.ttfb > speedKitData.ttfb) {
       const ttfbFact = [
         'Request Latency',
-        `Speed Kit cached your HTML in a CDN, which reduced the <strong>time-to-first-byte</strong> (<i>TTFB</i>) from <strong>${competitorData.ttfb} ms</strong> to <strong>${speedKitData.ttfb} ms</strong>.`
+        `Speed Kit will cache your HTML in a CDN and thereby reduce the <strong>time-to-first-byte</strong> (<i>TTFB</i>) from <strong>${competitorData.ttfb} ms</strong> to <strong>${speedKitData.ttfb} ms</strong>.`
       ]
       content.push(ttfbFact)
     }
@@ -49,7 +49,7 @@ class ResultAction extends Component {
       if (imageSizeDiff > 0) {
         const imageOptFact = [
           'Image Optimization',
-          `By optimizing <strong>images</strong> in size (<i>responsiveness</i>) and encoding (<i>WebP</i> & <i>Progessive JPG</i>) Speed Kit saved <strong>${formatFileSize(imageSizeDiff)}</strong> of data.`
+          `By optimizing <strong>images</strong> in size (<i>responsiveness</i>) and encoding (<i>WebP</i> & <i>Progessive JPEG</i>), Speed Kit will save <strong>${formatFileSize(imageSizeDiff)}</strong> of data.`
         ]
         content.push(imageOptFact)
       }
@@ -59,7 +59,7 @@ class ResultAction extends Component {
     if (!this.props.testOverview.isSecured) {
       const sslFact = [
         'HTTP/2',
-        `Your website uses <strong>HTTP/1.1</strong>. With Speed Kit everything was automatically fetched with an encrypted <strong>HTTP/2</strong> connection.`
+        `Your website is currently using <strong>HTTP/1.1</strong>. With Speed Kit, everything will be fetched over an encrypted <strong>HTTP/2</strong> connection.`
       ]
       content.push(sslFact)
     }
@@ -70,7 +70,7 @@ class ResultAction extends Component {
       if (textSizeDiff > 0) {
         const compressionFact = [
           'Compression',
-          `By compressing text resources with GZip, Speed Kit reduced page weight by <strong>${formatFileSize(textSizeDiff)}</strong>.`
+          `By compressing text resources with GZip, Speed Kit will reduce page weight by <strong>${formatFileSize(textSizeDiff)}</strong>.`
         ]
         content.push(compressionFact)
       }
@@ -86,7 +86,7 @@ class ResultAction extends Component {
     if ( speedKitAmount > competitorAmount) {
       const cachingFact = [
         'HTTP Caching',
-        `Without Speed Kit <strong>${competitorAmount}%</strong> of resources had correct <strong>caching headers</strong>. Speed Kit cached <strong>${speedKitAmount}%</strong> and keeps the cache up-to-date.`
+        `Your website serves <strong>${competitorAmount}%</strong> of resources with correct <strong>caching headers</strong>. Speed Kit will cache <strong>${speedKitAmount}%</strong> and keep the cache up-to-date.`
       ]
       content.push(cachingFact)
     }
@@ -94,24 +94,24 @@ class ResultAction extends Component {
     // Progressive Web App
     const offlineFact = [
       'Progressive Web App',
-      `Without a network, an error is shown. Speed Kit's <strong>Service Worker</strong> shows the last seen version (<i>offline mode</i>).`
+      `Without Internet connection, users cannot open your website, whereas Speed Kit will show the last-seen version (<i>offline mode</i>).`
     ]
     content.push(offlineFact)
 
     // Faster Dependencies
-/*    const thirdPartyDomains = this.props.speedKitTest.thirdPartyDomains
-    if (thirdPartyDomains > 0) {
-      const dependenciesFact = [
-        'Faster Dependencies',
-        `You included static resources from <strong>${thirdPartyDomains} external domains</strong> that Speed Kit accelerated.`
-      ]
-      content.push(dependenciesFact)
-    }*/
+    /*    const thirdPartyDomains = this.props.speedKitTest.thirdPartyDomains
+        if (thirdPartyDomains > 0) {
+          const dependenciesFact = [
+            'Faster Dependencies',
+            `You included static resources from <strong>${thirdPartyDomains} external domains</strong> that Speed Kit accelerated.`
+          ]
+          content.push(dependenciesFact)
+        }*/
 
     // Client Caching
     const clientFact = [
       'Client Caching',
-      `On repeat visit and navigation Speed Kit serves fresh data from the cache (<i>Bloom filter-based cache coherence</i>).`
+      `Speed Kit will serve data from fast caches and <i>make sure you never see stale content</i> (Bloom filter-based cache coherence).`
     ]
     content.push(clientFact)
 
@@ -122,7 +122,7 @@ class ResultAction extends Component {
       if (siImprovement > 0 && fmpImprovement > 0) {
         const performanceFact = [
           'User-Perceived Performance',
-          `Speed Kit improved the <strong>Speed Index</strong> by <strong>${siImprovement}%</strong> and the <strong>First Meaningful Paint</strong> by <strong>${fmpImprovement}%</strong>.`
+          `Speed Kit will improve <strong>Speed Index</strong> by <strong>${siImprovement}%</strong> and <strong>First Meaningful Paint</strong> by <strong>${fmpImprovement}%</strong>.`
         ]
         content.splice(content.length - 4, 0, performanceFact)
       }
@@ -198,56 +198,56 @@ class ResultAction extends Component {
             a version where Speed Kit is not installed.
           </span>
           {configAnalysis &&
-            <span className="faded">To help you integrating Speed Kit on your website, you can find the status of your installation below.
+          <span className="faded">To help you integrating Speed Kit on your website, you can find the status of your installation below.
             </span>
           }
         </div>
         {configAnalysis &&
-          <div className="flex flex-wrap pb2">
-            <div className="flex mt2">
-              <div className="w-90">
-                <h3 className="mt0 mb0">Secure your website with <strong>SSL</strong></h3>
-                <h4 className="faded mt0 mb0">
-                  Since Speed Kit is built on Service Workers, it is only available when SSL is turned on.
-                  Thereby a encrypted communication for your website is enabled.
-                </h4>
-              </div>
-              <div className="w-10 text-center">
-                <img src={isSecured ? check : cancel} alt="secure status" style={{ height: 30}} />
-              </div>
+        <div className="flex flex-wrap pb2">
+          <div className="flex mt2">
+            <div className="w-90">
+              <h3 className="mt0 mb0">Secure your website with <strong>SSL</strong></h3>
+              <h4 className="faded mt0 mb0">
+                Since Speed Kit is built on Service Workers, it is only available when SSL is turned on.
+                Thereby a encrypted communication for your website is enabled.
+              </h4>
             </div>
-            {!configAnalysis.configMissing &&
-              <div className="flex mt2">
-                <div className="w-90">
-                  <h3 className="mt0 mb0">Host the <strong>Service Worker</strong> script in the correct scope</h3>
-                  <h4 className="faded mt0 mb0">
-                    The path of the Service Worker script specified in your Speed Kit config has to match the path found by the Analyzer.&nbsp;
-                    {!swPath && <span>There was no Service Worker found by the Analyzer.</span>}
-                    {(!swPathMatches && swPath) &&
-                    <span>The detected Service Worker path at <strong>{swPath}</strong> does not match the specified path.</span>
-                    }
-                  </h4>
-                </div>
-                <div className="w-10 text-center">
-                  <img src={swPathMatches ? check : cancel} alt="service worker status" style={{ height: 30}} />
-                </div>
-              </div>
-            }
-            <div className="flex mt2">
-              <div className="w-90">
-                <h3 className="mt0 mb0">Provide an enabled <strong>Speed Kit config</strong> on your website</h3>
-                <h4 className="faded mt0 mb0">
-                  Use the config in your website to enable and configure Speed Kit. It needs to be included into your page.&nbsp;
-                  {configMissing && <span>Unfortunately, there was no Speed Kit config found on your page.</span>}
-                  {(!configMissing && isDisabled) &&
-                  <span>The Speed Kit config found on your page is disabled. Set attribute "disabled" to false to fix this issue.</span>}
-                </h4>
-              </div>
-              <div className="w-10 text-center">
-                <img src={!configMissing && !isDisabled ? check : cancel} alt="config status" style={{ height: 30}} />
-              </div>
+            <div className="w-10 text-center">
+              <img src={isSecured ? check : cancel} alt="secure status" style={{ height: 30}} />
             </div>
           </div>
+          {!configAnalysis.configMissing &&
+          <div className="flex mt2">
+            <div className="w-90">
+              <h3 className="mt0 mb0">Host the <strong>Service Worker</strong> script in the correct scope</h3>
+              <h4 className="faded mt0 mb0">
+                The path of the Service Worker script specified in your Speed Kit config has to match the path found by the Analyzer.&nbsp;
+                {!swPath && <span>There was no Service Worker found by the Analyzer.</span>}
+                {(!swPathMatches && swPath) &&
+                <span>The detected Service Worker path at <strong>{swPath}</strong> does not match the specified path.</span>
+                }
+              </h4>
+            </div>
+            <div className="w-10 text-center">
+              <img src={swPathMatches ? check : cancel} alt="service worker status" style={{ height: 30}} />
+            </div>
+          </div>
+          }
+          <div className="flex mt2">
+            <div className="w-90">
+              <h3 className="mt0 mb0">Provide an enabled <strong>Speed Kit config</strong> on your website</h3>
+              <h4 className="faded mt0 mb0">
+                Use the config in your website to enable and configure Speed Kit. It needs to be included into your page.&nbsp;
+                {configMissing && <span>Unfortunately, there was no Speed Kit config found on your page.</span>}
+                {(!configMissing && isDisabled) &&
+                <span>The Speed Kit config found on your page is disabled. Set attribute "disabled" to false to fix this issue.</span>}
+              </h4>
+            </div>
+            <div className="w-10 text-center">
+              <img src={!configMissing && !isDisabled ? check : cancel} alt="config status" style={{ height: 30}} />
+            </div>
+          </div>
+        </div>
         }
         <div className="text-center">
           <a className="btn btn-orange btn-ghost ma1" onClick={this.props.toggleModal}>Contact Us</a>
@@ -290,8 +290,8 @@ class ResultAction extends Component {
         </div>
         <div className="text-center">
           <a className="btn btn-orange ma1"
-            target="_blank" rel="noopener noreferrer"
-            href="https://www.baqend.com/speedkit.html?_ga=2.224276178.858004496.1520933148-181229276.1509025941#sk-features">Learn more</a>
+             target="_blank" rel="noopener noreferrer"
+             href="https://www.baqend.com/speedkit.html?_ga=2.224276178.858004496.1520933148-181229276.1509025941#sk-features">Learn more</a>
           <a className="btn btn-orange btn-ghost ma1" onClick={this.props.toggleModal}>Contact Us</a>
         </div>
       </div>
