@@ -5,7 +5,7 @@ import { parse } from 'url'
 const etagCache = new Map<string, string>()
 const speedKitCache = new Map<string, SpeedKit | null>()
 
-export async function analyzeServiceWorkers(browser: Browser, page: Page) {
+export async function analyzeSpeedKit(browser: Browser, page: Page) {
   const serviceWorkers = await findServiceWorkers(browser)
   const speedKit = await findSpeedKit(page, serviceWorkers)
 
@@ -45,7 +45,7 @@ async function loadSpeedKit(swUrl: string, etag: string | undefined, page: Page)
     etagCache.set(swUrl, newEtag)
   }
   const text = await response.text()
-  const match = text.match(/\/\* ! speed-kit (\d+\.\d+\.\d+) \| Copyright \(c\) (\d+) Baqend GmbH \*\//)
+  const match = text.match(/\/\* ! speed-kit (\d+)\.(\d+)\.(\d+)(|-\w*) \| Copyright \(c\) (\d+) Baqend GmbH \*\//)
   if (match) {
     const config = await page.evaluate(async () => {
       try {
@@ -57,11 +57,15 @@ async function loadSpeedKit(swUrl: string, etag: string | undefined, page: Page)
     })
 
     const { pathname: swPath } = parse(swUrl)
-    const [, version, yearString] = match
-    const year = parseInt(yearString, 10)
+    const [, majorStr, minorStr, patchStr, stabilityStr, yearStr] = match
+    const major = parseInt(majorStr, 10)
+    const minor = parseInt(minorStr, 10)
+    const patch = parseInt(patchStr, 10)
+    const stability = stabilityStr.length ? stabilityStr.substr(1) : null
+    const year = parseInt(yearStr, 10)
     const { appName = null, appDomain = null } = (config || {})
 
-    const speedKit = { version, year, swUrl, swPath, appName, appDomain, config }
+    const speedKit = { major, minor, patch, stability, year, swUrl, swPath, appName, appDomain, config }
     speedKitCache.set(swUrl, speedKit)
     return speedKit
   }

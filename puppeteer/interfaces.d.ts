@@ -40,12 +40,15 @@ declare interface Resource {
 }
 
 declare interface SpeedKit {
-  version: string,
-  year: number,
-  swUrl: string,
-  swPath: string,
-  appName: string,
-  appDomain: string | null,
+  major: number
+  minor: number
+  patch: number
+  stability: string | null
+  year: number
+  swUrl: string
+  swPath: string
+  appName: string
+  appDomain: string | null
   config: any
 }
 

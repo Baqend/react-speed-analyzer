@@ -7,7 +7,7 @@ import rimraf from 'rimraf'
 import { parse } from 'url'
 import { analyzePdf } from './analyzePdf'
 import { analyzeScreenshot } from './analyzeScreenshot'
-import { analyzeServiceWorkers } from './analyzeServiceWorkers'
+import { analyzeSpeedKit } from './analyzeSpeedKit'
 import { analyzeStats } from './analyzeStats'
 import { analyzeTimings } from './analyzeTimings'
 import { analyzeType } from './analyzeType'
@@ -183,7 +183,7 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
 
         if (speedKit) {
           // Service Worker and Speed Kit detection
-          promises.push(analyzeServiceWorkers(browser, page))
+          promises.push(analyzeSpeedKit(browser, page))
         }
 
         if (timings) {
