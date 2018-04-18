@@ -43,13 +43,13 @@ export class BulkComparisonWorker implements MultiComparisonListener {
       }
 
       // Start next multi comparison
-      const { urlInfo, runs, ...params } = bulkComparison.comparisonsToStart[nextIndex]
-      const multiComparison = await this.multiComparisonFactory.create(urlInfo, params, createdBy, runs)
+      const { puppeteer, runs, ...params } = bulkComparison.comparisonsToStart[nextIndex]
+      const multiComparison = await this.multiComparisonFactory.create(puppeteer, params, createdBy, runs)
 
       await bulkComparison.ready()
       await bulkComparison.optimisticSave((it: model.BulkComparison) => {
         it.multiComparisons.push(multiComparison)
-        it.comparisonsToStart[nextIndex] = Object.assign(it.comparisonsToStart[nextIndex], {isStarted: true})
+        Object.assign(it.comparisonsToStart[nextIndex], { isStarted: true })
       })
 
       this.multiComparisonWorker.next(multiComparison)

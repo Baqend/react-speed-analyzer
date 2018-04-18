@@ -2,7 +2,6 @@ import { baqend, model } from 'baqend'
 import { ComparisonListener, ComparisonWorker } from './_ComparisonWorker'
 import { ComparisonFactory } from './_ComparisonFactory'
 import { updateMultiComparison } from './_updateMultiComparison'
-import { UrlInfo } from './_UrlInfo';
 
 export interface MultiComparisonListener {
   handleMultiComparisonFinished(multiComparison: model.BulkTest): any
@@ -59,7 +58,7 @@ export class MultiComparisonWorker implements ComparisonListener {
       const testParams = Object.assign(multiComparison.params, { skipPrewarm: !!currentComparison })
 
       // Start next comparison
-      const comparison = await this.comparisonFactory.create(multiComparison.urlAnalysis as UrlInfo, testParams)
+      const comparison = await this.comparisonFactory.create(multiComparison.puppeteer!, testParams)
       await multiComparison.ready()
       await multiComparison.optimisticSave((it: model.BulkTest) => {
         it.testOverviews.push(comparison)

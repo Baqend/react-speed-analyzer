@@ -93,6 +93,11 @@
       "name": "params",
       "type": "/db/JsonObject",
       "order": 15
+    },
+    "puppeteer": {
+      "name": "puppeteer",
+      "type": "/db/Puppeteer",
+      "order": 16
     }
   }
 }

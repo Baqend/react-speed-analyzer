@@ -1,0 +1,30 @@
+{
+  "class": "/db/PuppeteerType",
+  "acl": {
+    "schemaAdd": {
+      "/db/Role/1": "allow"
+    },
+    "schemaReplace": {
+      "/db/Role/1": "allow"
+    }
+  },
+  "embedded": true,
+  "metadata": {},
+  "fields": {
+    "framework": {
+      "name": "framework",
+      "type": "/db/String",
+      "order": 0
+    },
+    "language": {
+      "name": "language",
+      "type": "/db/String",
+      "order": 1
+    },
+    "server": {
+      "name": "server",
+      "type": "/db/String",
+      "order": 2
+    }
+  }
+}

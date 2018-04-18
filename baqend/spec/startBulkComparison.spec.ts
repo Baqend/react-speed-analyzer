@@ -4,7 +4,6 @@ import { expect } from 'chai'
 import { call } from '../startBulkComparison'
 import { sleep } from '../_sleep';
 import { Priority } from '../_TestParams';
-import { UrlType } from '../_UrlInfo';
 
 describe('startBulkComparison', () => {
   before(async () => {
@@ -29,7 +28,7 @@ describe('startBulkComparison', () => {
 
     const bulkTest = bulkComparison.multiComparisons[0]
     expect(bulkTest).to.be.ok
-    expect(bulkTest.urlAnalysis).to.be.ok
+    expect(bulkTest.puppeteer).to.be.ok
     expect(bulkTest.url).to.eql('https://www.obama.org/')
     expect(bulkTest.priority).to.eql(Priority.HIGH)
 
@@ -37,7 +36,7 @@ describe('startBulkComparison', () => {
     expect(comparison).to.be.ok
     expect(comparison.url).to.eql('https://www.obama.org/')
     expect(comparison.displayUrl).to.eql('https://www.obama.org/')
-    expect(comparison.type).to.eql(UrlType.WORDPRESS)
+    expect(comparison.type).to.eql('wordpress')
 
     // Check comparison's tests
     expect(comparison.speedKitTestResult).to.be.ok
