@@ -154,15 +154,33 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
 
         // Collect all service worker registrations
         const swRegistrations = new Map<string, ServiceWorkerRegistration>()
-        await client.on('ServiceWorker.workerRegistrationUpdated', ({ registrations }: { registrations: ServiceWorkerRegistration[] }) => {
+        await client.on('ServiceWorker.workerRegistrationUpdated', ({ registrations }) => {
           for (const registration of registrations) {
             swRegistrations.set(registration.registrationId, registration)
           }
         })
 
+        // Collect all script URLs
+        if (speedKit) {
+          await client.on('ServiceWorker.workerVersionUpdated', ({ versions }) => {
+            for (const { registrationId, scriptURL } of versions) {
+              const registration = swRegistrations.get(registrationId)
+              if (registration) {
+                registration.scriptURL = scriptURL
+              }
+            }
+          })
+        }
+
         // Load the document
         const response = await page.goto(request)
         const url = response.url()
+        for (const [registrationId, registration] of swRegistrations) {
+          if (!url.includes(registration.scopeURL)) {
+            swRegistrations.delete(registrationId)
+          }
+        }
+
         const displayUrl = urlToUnicode(url)
         const documentResource = [...resources.values()].find(it => it.url === url)
 
@@ -183,7 +201,7 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
 
         if (speedKit) {
           // Service Worker and Speed Kit detection
-          promises.push(analyzeSpeedKit(browser, page))
+          promises.push(analyzeSpeedKit(swRegistrations.values(), page))
         }
 
         if (timings) {

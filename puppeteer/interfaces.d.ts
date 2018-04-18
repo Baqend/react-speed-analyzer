@@ -70,6 +70,7 @@ declare interface ServiceWorkerRegistration {
   registrationId: string
   scopeURL: string
   isDeleted: boolean
+  scriptURL?: string
 }
 
 declare interface Options {

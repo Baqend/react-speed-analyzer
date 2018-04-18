@@ -1,36 +1,22 @@
 import fetch from 'node-fetch'
-import { Browser, Page, Target } from 'puppeteer'
+import { Page } from 'puppeteer'
 import { parse } from 'url'
 
 const etagCache = new Map<string, string>()
 const speedKitCache = new Map<string, SpeedKit | null>()
 
-export async function analyzeSpeedKit(browser: Browser, page: Page) {
-  const serviceWorkers = await findServiceWorkers(browser)
-  const speedKit = await findSpeedKit(page, serviceWorkers)
-
-  return { speedKit }
-}
-
-async function findServiceWorkers(browser: Browser): Promise<Target[]> {
-  const targets = await browser.targets()
-
-  return targets
-    .filter(target => target.type() === 'service_worker')
-}
-
-async function findSpeedKit(page: Page, serviceWorkers: Target[]): Promise<SpeedKit | null> {
+export async function analyzeSpeedKit(serviceWorkers: Iterable<ServiceWorkerRegistration>, page: Page) {
   for (const serviceWorker of serviceWorkers) {
-    const swUrl = serviceWorker.url()
+    const swUrl = serviceWorker.scriptURL
     const etag = etagCache.get(swUrl)
 
-    const speedKit = loadSpeedKit(swUrl, etag, page)
+    const speedKit = await loadSpeedKit(swUrl, etag, page)
     if (speedKit) {
-      return speedKit
+      return { speedKit }
     }
   }
 
-  return null
+  return { speedKit: null }
 }
 
 async function loadSpeedKit(swUrl: string, etag: string | undefined, page: Page): Promise<SpeedKit | null> {
