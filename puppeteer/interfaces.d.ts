@@ -23,6 +23,7 @@ declare interface Resource {
   requestId: string
   headers: Map<string, string>
   url: string
+  compressed: boolean
   type: string
   host: string
   scheme: string
@@ -33,6 +34,9 @@ declare interface Resource {
   fromServiceWorker: boolean
   fromDiskCache: boolean
   timing: ResourceTiming
+  size?: number
+  loadStart: number
+  loadEnd?: number
 }
 
 declare interface SpeedKit {

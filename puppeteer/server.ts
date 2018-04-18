@@ -100,7 +100,7 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
       try {
         await page.setCacheEnabled(caching)
 
-        const resourceSet = new Set<Resource>()
+        const resources = new Map<string, Resource>()
         const domains = new Set<string>()
 
         // Get CDP client
@@ -129,10 +129,13 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
           const { host, protocol: scheme, pathname } = parse(url)
           domains.add(host)
 
-          resourceSet.add({
+          const compressed: boolean = headers.has('content-encoding') && headers.get('content-encoding').toLowerCase() !== 'identity'
+
+          resources.set(requestId, {
             requestId,
             url,
             headers,
+            compressed,
             type,
             host,
             scheme,
@@ -143,7 +146,16 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
             fromServiceWorker,
             fromDiskCache,
             timing,
+            loadStart: timing.requestTime,
           })
+        })
+
+        await client.on('Network.loadingFinished', ({ requestId, timestamp, encodedDataLength }) => {
+          const resource = resources.get(requestId)
+          if (resource) {
+            resource.size = encodedDataLength
+            resource.loadEnd = timestamp
+          }
         })
 
         // Collect all service worker registrations
@@ -160,7 +172,7 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
         const end = Date.now()
         const url = response.url()
         const displayUrl = urlToUnicode(url)
-        const documentResource = [...resourceSet].find(it => it.url === url)
+        const documentResource = [...resources.values()].find(it => it.url === url)
 
         // Get the protocol
         const protocol = documentResource.protocol
@@ -174,7 +186,7 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
 
         if (stats) {
           // Calculate statistics
-          promises.push(analyzeStats(resourceSet, domains))
+          promises.push(analyzeStats(resources.values(), domains))
         }
 
         if (speedKit) {
