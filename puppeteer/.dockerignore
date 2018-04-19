@@ -1,2 +1,8 @@
 /node_modules/
+/public/screenshots/*
+!/public/screenshots/.gitkeep
 *.js
+benchmark.ts
+docker-compose.yml
+Dockerfile
+.gitignore
