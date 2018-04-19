@@ -176,7 +176,7 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
         const response = await page.goto(request)
         const url = response.url()
         for (const [registrationId, registration] of swRegistrations) {
-          if (!url.includes(registration.scopeURL)) {
+          if (!url.startsWith(registration.scopeURL)) {
             swRegistrations.delete(registrationId)
           }
         }
