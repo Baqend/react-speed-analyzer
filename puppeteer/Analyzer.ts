@@ -32,11 +32,14 @@ interface Context {
   displayUrl: string
 }
 
+const MAX_CONCURRENT_CONTEXTS = 20
+
 export class Analyzer {
   private readonly analyzerFunctions: Map<string, AnalyzerFunction>
   private readonly screenshotDir: string
   private readonly contextListeners: Map<string, number> = new Map()
   private readonly contextPromises: Map<string, Promise<Context>> = new Map()
+  private readonly loadersWaiting: Array<() => void> = []
 
   constructor(screenshotDir: string) {
     this.screenshotDir = screenshotDir
@@ -112,6 +115,7 @@ export class Analyzer {
     const l = (this.contextListeners.get(query) || 0) + 1
     this.contextListeners.set(query, l)
 
+    // Is query not loading yet?
     if (!this.contextPromises.has(query)) {
       this.contextPromises.set(query, this.doLoadContext(browser, query))
     }
@@ -127,13 +131,19 @@ export class Analyzer {
     const l = this.contextListeners.get(query)! - 1
     this.contextListeners.set(query, l)
 
+    // Is nobody listening anymore? Close the page
     if (l <= 0) {
       return this.doCloseContext(query)
     }
   }
 
   private async doLoadContext(browser: Browser, query: string): Promise<Context> {
-    console.log('doLoadContext: ' + query)
+    // Let query wait until next page is finished
+    if (this.contextPromises.size >= MAX_CONCURRENT_CONTEXTS) {
+      await new Promise(resolver => this.loadersWaiting.push(resolver))
+    }
+
+    // Open the next page
     const page = await browser.newPage()
     await page.setCacheEnabled(true)
 
@@ -171,7 +181,6 @@ export class Analyzer {
   }
 
   private async doCloseContext(query: string): Promise<void> {
-    console.log('doCloseContext: ' + query)
     // This should be a resolved promise!
     const { page, client, serviceWorkers } = await this.contextPromises.get(query)
 
@@ -187,5 +196,11 @@ export class Analyzer {
 
     // Close the page
     await page.close()
+
+    // Are there loaders waiting? Allow the next one
+    if (this.loadersWaiting.length) {
+      const next = this.loadersWaiting.shift()!
+      next()
+    }
   }
 }
