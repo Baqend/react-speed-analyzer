@@ -1,7 +1,8 @@
 import { resolve } from 'path'
 import { Page } from 'puppeteer'
 import { parse } from 'url'
-import { filePutContents, generateHash } from '../helpers'
+import { generateHash } from '../helpers'
+import { filePutContents } from '../io'
 
 export async function analyzeScreenshot(page: Page, dir: string, host: string | undefined) {
   const { hostname } = parse(page.url())

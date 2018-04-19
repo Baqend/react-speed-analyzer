@@ -4,16 +4,15 @@ import morgan from 'morgan'
 import { resolve } from 'path'
 import puppeteer from 'puppeteer'
 import { analyzePdf, analyzeScreenshot, analyzeSpeedKit, analyzeStats, analyzeTimings, analyzeType } from './analyzers'
-import { deleteDirectory } from './deleteDirectory'
+import { deleteDirectory } from './io'
 import {
   filterServiceWorkerRegistrationsByUrl,
   getDomainsOfResources,
-  normalizeUrl,
-  tailHead,
-  urlToUnicode,
+  tailFoot,
 } from './helpers'
 import { listenForResources } from './listenForResources'
 import { listenForServiceWorkerRegistrations } from './listenForServiceWorkerRegistrations'
+import { normalizeUrl, urlToUnicode } from './urls'
 
 const screenshotDir = resolve(__dirname, 'public', 'screenshots')
 
@@ -81,7 +80,7 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
   app.use(express.static('public'))
 
   app.use(async (req, res) => {
-    const [segments, rest] = tailHead(req.url.substr(1).split(/;/g))
+    const [segments, rest] = tailFoot(req.url.substr(1).split(/;/g))
     const request = normalizeUrl(rest)
 
     const { timings, speedKit, type, stats, screenshot, pdf } = getEnabledSegments(segments)
