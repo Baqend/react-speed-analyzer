@@ -1,10 +1,10 @@
 import { Request } from 'express'
-import { CDPSession, Page } from 'puppeteer'
+import { Browser, CDPSession, Page } from 'puppeteer'
+import * as analyzers from './analyzers'
 import { filterServiceWorkerRegistrationsByUrl, getDomainsOfResources, tailFoot } from './helpers'
 import { listenForResources } from './listenForResources'
 import { listenForServiceWorkerRegistrations } from './listenForServiceWorkerRegistrations'
 import { normalizeUrl, urlToUnicode } from './urls'
-import * as analyzers from './analyzers'
 
 export interface AnalyzeEvent {
   client: CDPSession
@@ -21,9 +21,22 @@ declare type AnalyzeResult = SpeedKit | Timings | Type | JSON | ((req: Request) 
 
 type AnalyzerFunction = (event: AnalyzeEvent) => Promise<AnalyzeResult>
 
+interface Context {
+  page: Page
+  client: CDPSession
+  documentResource: Resource
+  serviceWorkers: ServiceWorkerRegistrationMap
+  domains: Set<string>
+  resources: ResourceMap
+  url: string
+  displayUrl: string
+}
+
 export class Analyzer {
   private readonly analyzerFunctions: Map<string, AnalyzerFunction>
   private readonly screenshotDir: string
+  private readonly contextListeners: Map<string, number> = new Map()
+  private readonly contextPromises: Map<string, Promise<Context>> = new Map()
 
   constructor(screenshotDir: string) {
     this.screenshotDir = screenshotDir
@@ -37,9 +50,105 @@ export class Analyzer {
     ])
   }
 
-  async handleRequest(page: Page, client: CDPSession, req: Request): Promise<JSON> {
+  /**
+   * Handles an incoming request.
+   */
+  async handleRequest(browser: Browser, req: Request): Promise<JSON> {
     const [segments, query] = tailFoot(req.url.substr(1).split(/;/g))
     const normalizedQuery = normalizeUrl(query)
+
+    const { client, page, url, displayUrl, documentResource, domains, resources, serviceWorkers } = await this.loadContext(browser, normalizedQuery)
+    try {
+
+      // Get the protocol
+      const protocol = documentResource.protocol
+
+      const event: AnalyzeEvent = {
+        client,
+        page,
+        documentResource,
+        domains,
+        resources: resources.values(),
+        screenshotDir: this.screenshotDir,
+        serviceWorkers: serviceWorkers.values(),
+      }
+
+      // Start analysis of each requested segment
+      const promises: Promise<{ [key: string]: JSON }>[] = []
+      for (const segment of segments) {
+        if (this.analyzerFunctions.has(segment)) {
+          promises.push(this.analyzerFunctions.get(segment)!.call(null, event).then((result) => {
+            if (typeof result === 'function') {
+              return { [segment]: result(req) }
+            }
+
+            return { [segment]: result }
+          }))
+        }
+      }
+
+      // Wait for analyses to finish
+      const analyses = await Promise.all(promises)
+
+      return Object.assign({
+        query,
+        segments,
+        url,
+        displayUrl,
+        protocol,
+        domains: [...domains],
+      }, ...analyses)
+    } finally {
+      // Close the context
+      await this.closeContext(normalizedQuery)
+    }
+  }
+
+  /**
+   * Loads the context for a given query in a given browser.
+   */
+  loadContext(browser: Browser, query: string): Promise<Context> {
+    // Increase the number of listeners
+    const l = (this.contextListeners.get(query) || 0) + 1
+    this.contextListeners.set(query, l)
+
+    if (!this.contextPromises.has(query)) {
+      this.contextPromises.set(query, this.doLoadContext(browser, query))
+    }
+
+    return this.contextPromises.get(query)!
+  }
+
+  /**
+   * Closes the context for a given browser.
+   */
+  closeContext(query: string): Promise<void> {
+    // Decrease the number of listeners
+    const l = this.contextListeners.get(query)! - 1
+    this.contextListeners.set(query, l)
+
+    if (l <= 0) {
+      return this.doCloseContext(query)
+    }
+  }
+
+  private async doLoadContext(browser: Browser, query: string): Promise<Context> {
+    console.log('doLoadContext: ' + query)
+    const page = await browser.newPage()
+    await page.setCacheEnabled(true)
+
+    // Get CDP client
+    const client = await page.target().createCDPSession()
+
+    // Activate CDP controls
+    await Promise.all([
+      // Enable network control
+      client.send('Network.enable'),
+      // Enable ServiceWorker control
+      client.send('ServiceWorker.enable'),
+      // Enable performance statistics
+      client.send('Performance.enable'),
+    ])
 
     // Listen for Network
     const resources = await listenForResources(client)
@@ -48,7 +157,7 @@ export class Analyzer {
     const serviceWorkers = await listenForServiceWorkerRegistrations(client)
 
     // Load the document
-    const response = await page.goto(normalizedQuery)
+    const response = await page.goto(query)
     const url = response.url()
     const displayUrl = urlToUnicode(url)
     const domains = getDomainsOfResources(resources.values())
@@ -58,49 +167,25 @@ export class Analyzer {
 
     const documentResource = [...resources.values()].find(it => it.url === url)
 
-    // Get the protocol
-    const protocol = documentResource.protocol
+    return { client, page, url, displayUrl, documentResource, serviceWorkers, domains, resources }
+  }
 
-    const event: AnalyzeEvent = {
-      client,
-      page,
-      documentResource,
-      domains,
-      resources: resources.values(),
-      screenshotDir: this.screenshotDir,
-      serviceWorkers: serviceWorkers.values(),
-    }
+  private async doCloseContext(query: string): Promise<void> {
+    console.log('doCloseContext: ' + query)
+    // This should be a resolved promise!
+    const { page, client, serviceWorkers } = await this.contextPromises.get(query)
 
-    // Start analysis of each requested segment
-    const promises: Promise<{ [key: string]: JSON }>[] = []
-    for (const segment of segments) {
-      if (this.analyzerFunctions.has(segment)) {
-        promises.push(this.analyzerFunctions.get(segment)!.call(null, event).then((result) => {
-          if (typeof result === 'function') {
-            return { [segment]: result(req) }
-          }
+    // Do not provide this promise anymore
+    this.contextPromises.delete(query)
+    this.contextListeners.set(query, 0)
 
-          return { [segment]: result }
-        }))
-      }
-    }
-
-    // Wait for analyses to finish
-    const analyses = await Promise.all(promises)
-
-    // Stop all service workers in the end
+    // Stop all service workers on that page
     for (const sw of serviceWorkers.values()) {
       const { scopeURL } = sw
       await client.send('ServiceWorker.unregister', { scopeURL })
     }
 
-    return Object.assign({
-      query,
-      segments,
-      url,
-      displayUrl,
-      protocol,
-      domains: [...domains],
-    }, ...analyses)
+    // Close the page
+    await page.close()
   }
 }

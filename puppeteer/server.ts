@@ -58,39 +58,15 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
 
   app.use(async (req, res) => {
     try {
-      const page = await browser.newPage()
+      // Let the analyzer handle the request
+      const json = await analyzer.handleRequest(browser, req)
 
-      try {
-        await page.setCacheEnabled(caching)
-
-        // Get CDP client
-        const client = await page.target().createCDPSession()
-
-        // Activate CDP controls
-        await Promise.all([
-          // Enable network control
-          client.send('Network.enable'),
-          // Enable ServiceWorker control
-          client.send('ServiceWorker.enable'),
-          // Enable performance statistics
-          client.send('Performance.enable'),
-        ])
-
-        // Let the analyzer handle the request
-        const json = await analyzer.handleRequest(page, client, req)
-
-        res.status(200)
-        res.json(json)
-      } catch (e) {
-        const status = getErrorStatusCode(e)
-        res.status(status)
-        res.json({ message: e.message, status, stack: e.stack })
-      } finally {
-        await page.close()
-      }
+      res.status(200)
+      res.json(json)
     } catch (e) {
-      res.status(500)
-      res.json({ message: e.message, status: 500, stack: e.stack })
+      const status = getErrorStatusCode(e)
+      res.status(status)
+      res.json({ message: e.message, status, stack: e.stack })
     }
   })
 
