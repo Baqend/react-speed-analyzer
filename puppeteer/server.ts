@@ -60,6 +60,11 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
     try {
       // Let the analyzer handle the request
       const json = await analyzer.handleRequest(browser, req)
+      if (json === null) {
+        res.status(404)
+        res.json({ error: 'URL does not exist.', status: 404 })
+        return
+      }
 
       res.status(200)
       res.json(json)

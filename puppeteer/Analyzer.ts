@@ -4,8 +4,7 @@ import { Browser, CDPSession, Page } from 'puppeteer'
 import { parse } from 'url'
 import * as analyzers from './analyzers'
 import { filterServiceWorkerRegistrationsByUrl, getDomainsOfResources, tailFoot } from './helpers'
-import { listenForResources } from './listenForResources'
-import { listenForServiceWorkerRegistrations } from './listenForServiceWorkerRegistrations'
+import { listenForPermanentRedirects, listenForResources, listenForServiceWorkerRegistrations } from './listeners'
 import { urlToUnicode } from './urls'
 
 export interface AnalyzeEvent {
@@ -32,6 +31,8 @@ interface Context {
   resources: ResourceMap
   url: string
   displayUrl: string
+  scheme: string
+  host: string
 }
 
 const MAX_CONCURRENT_CONTEXTS = 20
@@ -42,7 +43,9 @@ export class Analyzer {
   private readonly contextListeners: Map<string, number> = new Map()
   private readonly contextPromises: Map<string, Promise<Context>> = new Map()
   private readonly loadersWaiting: Array<() => void> = []
-  private readonly protocolMap: Map<string, string> = new Map()
+  private readonly permanentRedirects: Map<string, string> = new Map()
+  private readonly schemeMap: Map<string, string> = new Map()
+  private readonly candidateBlacklist: Set<string> = new Set()
 
   constructor(screenshotDir: string) {
     this.screenshotDir = screenshotDir
@@ -59,12 +62,23 @@ export class Analyzer {
   /**
    * Handles an incoming request.
    */
-  async handleRequest(browser: Browser, req: Request): Promise<JSON> {
+  async handleRequest(browser: Browser, req: Request): Promise<any> {
     const [segments, encodedQuery] = tailFoot(req.url.substr(1).split(/;/g))
     const query = decodeURIComponent(encodedQuery)
-    const normalizedQuery = this.normalizeUrl(query)
 
-    const { client, page, url, displayUrl, documentResource, domains, resources, serviceWorkers } = await this.loadContext(browser, normalizedQuery)
+    // Get possible candidates to navigate to and find best result
+    const candidates = this.normalizeUrl(query)
+    const result = await this.raceBestResult(browser, req, segments, candidates)
+    if (result) {
+      return Object.assign({ query, candidates }, result)
+    }
+
+    return null
+  }
+
+  async handleQuery(browser: Browser, req: Request, segments: string[], query: string) {
+    const context = await this.loadContext(browser, query)
+    const { client, page, url, displayUrl, scheme, host, documentResource, domains, resources, serviceWorkers } = context
     try {
 
       // Get the protocol
@@ -98,16 +112,16 @@ export class Analyzer {
       const analyses = await Promise.all(promises)
 
       return Object.assign({
-        query,
-        segments,
         url,
         displayUrl,
+        scheme,
+        host,
         protocol,
         domains: [...domains],
       }, ...analyses)
     } finally {
       // Close the context
-      await this.closeContext(normalizedQuery)
+      await this.closeContext(query)
     }
   }
 
@@ -141,6 +155,45 @@ export class Analyzer {
     }
   }
 
+  /**
+   * Races for the best result.
+   */
+  private raceBestResult(browser: Browser, req: Request, segments: string[], candidates: string[]) {
+    if (candidates.length === 0) {
+      return null
+    }
+
+    if (candidates.length === 1) {
+      return this.handleQuery(browser, req, segments, candidates[0])
+    }
+
+    return new Promise((resolveOuter) => {
+      const promises = candidates.map(async (candidate) => {
+        try {
+          const result = await this.handleQuery(browser, req, segments, candidate)
+          if (result && result.scheme === 'https:') {
+            resolveOuter(result)
+            return null
+          }
+
+          return result
+        } catch (error) {
+          // Does this candidate cause an error? Blacklist it
+          this.candidateBlacklist.add(candidate)
+
+          return null
+        }
+      })
+
+      // Fallback to best matching result
+      Promise.all(promises)
+        // Find a candidate which does not evaluate to null
+        .then(results => results.reduce((p, r) => p || r, null))
+        // Return it as the result
+        .then(resolveOuter)
+    })
+  }
+
   private async doLoadContext(browser: Browser, query: string): Promise<Context> {
     // Let query wait until next page is finished
     if (this.contextPromises.size >= MAX_CONCURRENT_CONTEXTS) {
@@ -170,14 +223,19 @@ export class Analyzer {
     // Collect all service worker registrations
     const serviceWorkers = await listenForServiceWorkerRegistrations(client)
 
+    // Collect all permanent redirects
+    await listenForPermanentRedirects(client, this.permanentRedirects, this.schemeMap)
+
     // Load the document
     const response = await page.goto(query)
     const url = response.url()
     const displayUrl = urlToUnicode(url)
 
-    // Save protocol for given host
-    const { protocol, host } = parse(url)
-    this.protocolMap.set(host, protocol)
+    // Save scheme for given host
+    const { protocol: scheme, host } = parse(url)
+    if (!this.schemeMap.has(host) || scheme === 'https:') {
+      this.schemeMap.set(host, scheme)
+    }
 
     const domains = getDomainsOfResources(resources.values())
 
@@ -186,7 +244,7 @@ export class Analyzer {
 
     const documentResource = [...resources.values()].find(it => it.url === url)
 
-    return { client, page, url, displayUrl, documentResource, serviceWorkers, domains, resources }
+    return { client, page, url, displayUrl, scheme, host, documentResource, serviceWorkers, domains, resources }
   }
 
   private async doCloseContext(query: string): Promise<void> {
@@ -216,17 +274,41 @@ export class Analyzer {
   /**
    * Normalize the given URL.
    */
-  private normalizeUrl(url: string): string {
+  private normalizeUrl(url: string): string[] {
     const match = url.match(/^(https?:|)(?:\/\/|)(\[[^\]]+]|[^/:]+)(:\d+|)(.*)$/)
     if (match) {
-      const [, explicitProtocol, utf8Hostname, port, path] = match
+      const [, explicitScheme, utf8Hostname, port, path] = match
       const hostname = toASCII(utf8Hostname)
       const host = `${hostname}${port}`
-      const protocol = this.protocolMap.get(host) || explicitProtocol || 'http:'
+      const hierarchicalPart = `//${host}${path || '/'}`
+      const scheme = this.schemeMap.get(host) || explicitScheme || null
 
-      return `${protocol}//${host}${path}`
+      // No scheme available? Look for redirect
+      if (!scheme) {
+        return this.selectUrls(`https:${hierarchicalPart}`, `http:${hierarchicalPart}`)
+      }
+
+      return this.selectUrls(`${scheme}${hierarchicalPart}`)
     }
 
     throw new Error(`Invalid URL queried: ${url}`)
+  }
+
+  /**
+   * Selects normalized URLs as possible candidates.
+   */
+  private selectUrls(...urls: string[]): string[] {
+    const set = new Set<string>()
+    for (let url of urls) {
+      while (this.permanentRedirects.has(url)) {
+        url = this.permanentRedirects.get(url)
+      }
+
+      if (!this.candidateBlacklist.has(url)) {
+        set.add(url)
+      }
+    }
+
+    return [...set]
   }
 }
