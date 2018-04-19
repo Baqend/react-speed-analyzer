@@ -49,6 +49,18 @@ function deleteDirectory(dir: string): Promise<void> {
   })
 }
 
+function getErrorStatusCode({ message }: Error): number {
+  if (message.startsWith('Navigation Timeout Exceeded')) {
+    return 504
+  }
+
+  if (message.startsWith('net::ERR_NAME_NOT_RESOLVED')) {
+    return 404
+  }
+
+  return 500
+}
+
 export async function server(port: number, { caching, userDataDir, noSandbox }: Options) {
   if (caching && !userDataDir) {
     throw new Error('Please provide a userDataDir to enable caching')
@@ -236,14 +248,15 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
           domains: [...domains],
         }, ...analyses))
       } catch (e) {
-        res.status(404)
-        res.json({ message: e.message, stack: e.stack, url: request, segments })
+        const status = getErrorStatusCode(e)
+        res.status(status)
+        res.json({ message: e.message, status, stack: e.stack, url: request, segments })
       } finally {
         await page.close()
       }
     } catch (e) {
       res.status(500)
-      res.json({ message: e.message, stack: e.stack, url: request, segments })
+      res.json({ message: e.message, status: 500, stack: e.stack, url: request, segments })
     }
   })
 
