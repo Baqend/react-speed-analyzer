@@ -1,5 +1,5 @@
 import { CDPSession, Page } from 'puppeteer'
-import { difference, kebabToCamelCase, lcFirst, mergeMaps, objectToMap, optionalNumber } from './helpers'
+import { difference, kebabToCamelCase, lcFirst, mergeMaps, objectToMap, optionalNumber } from '../helpers'
 
 export async function analyzeTimings(client: CDPSession, page: Page, document: Resource): Promise<{ timings: Timings }> {
   const metricsMap = await getPerformanceMetrics(client)

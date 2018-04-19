@@ -3,12 +3,7 @@ import express from 'express'
 import morgan from 'morgan'
 import { resolve } from 'path'
 import puppeteer from 'puppeteer'
-import { analyzePdf } from './analyzePdf'
-import { analyzeScreenshot } from './analyzeScreenshot'
-import { analyzeSpeedKit } from './analyzeSpeedKit'
-import { analyzeStats } from './analyzeStats'
-import { analyzeTimings } from './analyzeTimings'
-import { analyzeType } from './analyzeType'
+import { analyzePdf, analyzeScreenshot, analyzeSpeedKit, analyzeStats, analyzeTimings, analyzeType } from './analyzers'
 import { deleteDirectory } from './deleteDirectory'
 import {
   filterServiceWorkerRegistrationsByUrl,

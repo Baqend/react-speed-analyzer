@@ -1,7 +1,7 @@
 import { resolve } from 'path'
 import { Page } from 'puppeteer'
 import { parse } from 'url'
-import { filePutContents, generateHash } from './helpers'
+import { filePutContents, generateHash } from '../helpers'
 
 export async function analyzePdf(page: Page, dir: string, host: string | undefined) {
   const { hostname } = parse(page.url())
