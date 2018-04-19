@@ -1,10 +1,12 @@
 import { Request } from 'express'
+import { toASCII } from 'punycode'
 import { Browser, CDPSession, Page } from 'puppeteer'
+import { parse } from 'url'
 import * as analyzers from './analyzers'
 import { filterServiceWorkerRegistrationsByUrl, getDomainsOfResources, tailFoot } from './helpers'
 import { listenForResources } from './listenForResources'
 import { listenForServiceWorkerRegistrations } from './listenForServiceWorkerRegistrations'
-import { normalizeUrl, urlToUnicode } from './urls'
+import { urlToUnicode } from './urls'
 
 export interface AnalyzeEvent {
   client: CDPSession
@@ -40,6 +42,7 @@ export class Analyzer {
   private readonly contextListeners: Map<string, number> = new Map()
   private readonly contextPromises: Map<string, Promise<Context>> = new Map()
   private readonly loadersWaiting: Array<() => void> = []
+  private readonly protocolMap: Map<string, string> = new Map()
 
   constructor(screenshotDir: string) {
     this.screenshotDir = screenshotDir
@@ -57,8 +60,9 @@ export class Analyzer {
    * Handles an incoming request.
    */
   async handleRequest(browser: Browser, req: Request): Promise<JSON> {
-    const [segments, query] = tailFoot(req.url.substr(1).split(/;/g))
-    const normalizedQuery = normalizeUrl(query)
+    const [segments, encodedQuery] = tailFoot(req.url.substr(1).split(/;/g))
+    const query = decodeURIComponent(encodedQuery)
+    const normalizedQuery = this.normalizeUrl(query)
 
     const { client, page, url, displayUrl, documentResource, domains, resources, serviceWorkers } = await this.loadContext(browser, normalizedQuery)
     try {
@@ -170,6 +174,11 @@ export class Analyzer {
     const response = await page.goto(query)
     const url = response.url()
     const displayUrl = urlToUnicode(url)
+
+    // Save protocol for given host
+    const { protocol, host } = parse(url)
+    this.protocolMap.set(host, protocol)
+
     const domains = getDomainsOfResources(resources.values())
 
     // Filter out all registrations which are not against this URL
@@ -202,5 +211,22 @@ export class Analyzer {
       const next = this.loadersWaiting.shift()!
       next()
     }
+  }
+
+  /**
+   * Normalize the given URL.
+   */
+  private normalizeUrl(url: string): string {
+    const match = url.match(/^(https?:|)(?:\/\/|)(\[[^\]]+]|[^/:]+)(:\d+|)(.*)$/)
+    if (match) {
+      const [, explicitProtocol, utf8Hostname, port, path] = match
+      const hostname = toASCII(utf8Hostname)
+      const host = `${hostname}${port}`
+      const protocol = this.protocolMap.get(host) || explicitProtocol || 'http:'
+
+      return `${protocol}//${host}${path}`
+    }
+
+    throw new Error(`Invalid URL queried: ${url}`)
   }
 }
