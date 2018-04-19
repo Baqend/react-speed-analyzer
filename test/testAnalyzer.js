@@ -80,10 +80,10 @@ function reportError(msg, err) {
 
 function checkAnalyzeResult(result, expectedResult){
   try {
-    assert.equal(result.url, expectedResult.url, 'Url not matching')
-    assert.equal(result.displayUrl, expectedResult.displayUrl, 'Display url not matching')
-    assert.equal(result.type, expectedResult.type, 'Type not matching')
-    assert.equal(result.isSecured, expectedResult.isSecured, 'SSL information not matching')
+    assert.equal(result.url, expectedResult.url, 'Attribute "url" not matching')
+    assert.equal(result.displayUrl, expectedResult.displayUrl, 'Attribute "displayUrl" not matching')
+    assert.equal(result.type, expectedResult.type, 'Attribute "type" not matching')
+    assert.equal(result.isSecured, expectedResult.isSecured, 'Attribute "isSecured" not matching')
   } catch(err) {
     console.log(err)
     reportError(`Analyse url params not valid. Id: ${result.id}`, err)
@@ -93,12 +93,12 @@ function checkAnalyzeResult(result, expectedResult){
 function checkTestParams(result, expectedResult){
   try {
     if (expectedResult.speedKitConfig) {
-      assert.equal(result.speedKitConfig, expectedResult.speedKitConfig, 'Speed Kit Config not matching')
+      assert.equal(result.speedKitConfig, expectedResult.speedKitConfig, 'Attribute "speedKitConfig" not matching')
     }
 
-    assert.equal(result.mobile, expectedResult.mobile, 'Mobile flag not matching')
-    assert.equal(result.isSpeedKitComparison, expectedResult.isSpeedKitComparison, 'Speed Kit Comparison flag not matching')
-    assert.equal(result.speedKitVersion, expectedResult.speedKitVersion, 'Speed Kit version not matching')
+    assert.equal(result.mobile, expectedResult.mobile, 'Attribute "mobile" not matching')
+    assert.equal(result.isSpeedKitComparison, expectedResult.isSpeedKitComparison, 'Attribute "isSpeedKitComparison" not matching')
+    assert.equal(result.speedKitVersion, expectedResult.speedKitVersion, 'Attribute "speedKitVersion" not matching')
   } catch(err) {
     console.log(err)
     reportError(`Test params not valid. Id: ${result.id}`, err)
@@ -107,10 +107,10 @@ function checkTestParams(result, expectedResult){
 
 function checkConfigAnalysis(result, expectedResult) {
   try{
-    assert.equal(result.configAnalysis.configMissing, expectedResult.configAnalysis.configMissing, 'Config missing not matching')
-    assert.equal(result.configAnalysis.swPath, expectedResult.configAnalysis.swPath, 'Sw path not matching')
-    assert.equal(result.configAnalysis.isDisabled, expectedResult.configAnalysis.isDisabled, 'Is disabled not matching')
-    assert.equal(result.configAnalysis.swPathMatches, expectedResult.configAnalysis.swPathMatches, 'SW path matching not matching')
+    assert.equal(result.configAnalysis.configMissing, expectedResult.configAnalysis.configMissing, 'Attribute "configMissing" not matching')
+    assert.equal(result.configAnalysis.swPath, expectedResult.configAnalysis.swPath, 'Attribute "swPath" not matching')
+    assert.equal(result.configAnalysis.isDisabled, expectedResult.configAnalysis.isDisabled, 'Attribute "isDisabled" not matching')
+    assert.equal(result.configAnalysis.swPathMatches, expectedResult.configAnalysis.swPathMatches, 'Attribute "swPathMatching" not matching')
   } catch(err) {
     console.log(err)
     reportError(`Config analysis not valid. Id: ${result.id}`, err)
