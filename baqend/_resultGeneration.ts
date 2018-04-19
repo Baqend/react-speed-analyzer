@@ -230,19 +230,20 @@ function countContentSize(requests: any[]): any {
  * @param runIndex The index of the run to choose the FMP for.
  */
 async function chooseFMP(db: baqend, data: WptView, testId: string, runIndex: string): Promise<number> {
+  // Search First Meaningful Paint from timing
+  const { chromeUserTiming = [] } = data
+  const firstMeaningfulPaintObject =
+    chromeUserTiming
+      .reverse()
+      .find(entry => entry.name === 'firstMeaningfulPaint' || entry.name === 'firstMeaningfulPaintCandidate')
+
+  const firstMeaningfulPaint = firstMeaningfulPaintObject ? firstMeaningfulPaintObject.time : 0
   try {
-    return await getFMP(testId, runIndex)
+    const calculatedFM = await getFMP(testId, runIndex)
+    return Math.abs(calculatedFM - firstMeaningfulPaint) <= 100 ? firstMeaningfulPaint : calculatedFM
   } catch (error) {
     db.log.warn(`Could not calculate FMP for test ${testId}. Use FMP from wepPageTest instead!`, { error: error.stack })
-
-    // Search First Meaningful Paint from timing
-    const { chromeUserTiming = [] } = data
-    const firstMeaningfulPaintObject =
-      chromeUserTiming
-        .reverse()
-        .find(entry => entry.name === 'firstMeaningfulPaint' || entry.name === 'firstMeaningfulPaintCandidate')
-
-    return firstMeaningfulPaintObject ? firstMeaningfulPaintObject.time : 0
+    return firstMeaningfulPaint
   }
 }
 

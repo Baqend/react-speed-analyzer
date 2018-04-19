@@ -35,7 +35,7 @@ export const DEFAULT_TEST_OPTIONS: Partial<model.TestOptions> = {
   domains: false,
   saveResponseBodies: false,
   tcpDump: false,
-  timeline: false,
+  timeline: true,
   minimumDuration: 1, // capture at least one second
   chromeTrace: false,
   netLog: false,
