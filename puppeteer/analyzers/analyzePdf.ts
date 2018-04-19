@@ -1,16 +1,19 @@
+import { Request } from 'express'
 import { resolve } from 'path'
-import { Page } from 'puppeteer'
 import { parse } from 'url'
+import { AnalyzeEvent } from '../Analyzer'
 import { generateHash } from '../helpers'
 import { filePutContents } from '../io'
 
-export async function analyzePdf(page: Page, dir: string, host: string | undefined) {
+export async function analyzePdf({ page, screenshotDir }: AnalyzeEvent) {
   const { hostname } = parse(page.url())
   const filename = `${hostname.replace(/\W+/g, '-')}-${generateHash()}.pdf`
-  const path = resolve(dir, filename)
-  const wwwPath = `${host ? `http://${host}` : ''}/screenshots/${filename}`
+  const path = resolve(screenshotDir, filename)
   const pdf = await page.pdf({ format: 'A4' })
   await filePutContents(path, pdf)
 
-  return { pdf: wwwPath }
+  return (req: Request) => {
+    const host = req.get('host')
+    return `${host ? `http://${host}` : ''}/screenshots/${filename}`
+  }
 }

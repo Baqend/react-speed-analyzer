@@ -1,22 +1,23 @@
 import fetch from 'node-fetch'
 import { Page } from 'puppeteer'
 import { parse } from 'url'
+import { AnalyzeEvent } from '../Analyzer'
 
 const etagCache = new Map<string, string>()
 const speedKitCache = new Map<string, SpeedKit | null>()
 
-export async function analyzeSpeedKit(serviceWorkers: Iterable<ServiceWorkerRegistration>, page: Page) {
+export async function analyzeSpeedKit({ serviceWorkers, page }: AnalyzeEvent) {
   for (const serviceWorker of serviceWorkers) {
     const swUrl = serviceWorker.scriptURL
     const etag = etagCache.get(swUrl)
 
     const speedKit = await loadSpeedKit(swUrl, etag, page)
     if (speedKit) {
-      return { speedKit }
+      return speedKit
     }
   }
 
-  return { speedKit: null }
+  return null
 }
 
 async function loadSpeedKit(swUrl: string, etag: string | undefined, page: Page): Promise<SpeedKit | null> {

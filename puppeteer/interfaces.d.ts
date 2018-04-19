@@ -66,6 +66,12 @@ declare interface Timings {
   fullyLoaded: number
 }
 
+declare interface Type {
+  framework: string | null
+  language: string | null
+  server: string | null
+}
+
 declare interface ServiceWorkerRegistration {
   registrationId: string
   scopeURL: string

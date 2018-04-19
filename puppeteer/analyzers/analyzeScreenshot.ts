@@ -1,16 +1,19 @@
+import { Request } from 'express'
 import { resolve } from 'path'
-import { Page } from 'puppeteer'
 import { parse } from 'url'
+import { AnalyzeEvent } from '../Analyzer'
 import { generateHash } from '../helpers'
 import { filePutContents } from '../io'
 
-export async function analyzeScreenshot(page: Page, dir: string, host: string | undefined) {
+export async function analyzeScreenshot({ page, screenshotDir }: AnalyzeEvent) {
   const { hostname } = parse(page.url())
   const filename = `${hostname.replace(/\W+/g, '-')}-${generateHash()}.png`
-  const path = resolve(dir, filename)
-  const wwwPath = `${host ? `http://${host}` : ''}/screenshots/${filename}`
+  const path = resolve(screenshotDir, filename)
   const screenshot = await page.screenshot()
   await filePutContents(path, screenshot)
 
-  return { screenshot: wwwPath }
+  return (req: Request) => {
+    const host = req.get('host')
+    return `${host ? `http://${host}` : ''}/screenshots/${filename}`
+  }
 }

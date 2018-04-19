@@ -3,38 +3,15 @@ import express from 'express'
 import morgan from 'morgan'
 import { resolve } from 'path'
 import puppeteer from 'puppeteer'
-import { analyzePdf, analyzeScreenshot, analyzeSpeedKit, analyzeStats, analyzeTimings, analyzeType } from './analyzers'
+import { Analyzer } from './Analyzer'
 import { deleteDirectory } from './io'
-import {
-  filterServiceWorkerRegistrationsByUrl,
-  getDomainsOfResources,
-  tailFoot,
-} from './helpers'
-import { listenForResources } from './listenForResources'
-import { listenForServiceWorkerRegistrations } from './listenForServiceWorkerRegistrations'
-import { normalizeUrl, urlToUnicode } from './urls'
 
 const screenshotDir = resolve(__dirname, 'public', 'screenshots')
+const analyzer = new Analyzer(screenshotDir)
 
-function getEnabledSegments(segments: string[]): Segments {
-  const defaults: Segments = {
-    timings: false,
-    speedKit: false,
-    type: false,
-    stats: false,
-    screenshot: false,
-    pdf: false,
-  }
-  for (const segment of segments) {
-    if (segment in defaults) {
-      defaults[segment] = true
-    }
-  }
-
-  return defaults
-}
-
-
+/**
+ * Returns the status code for a given error.
+ */
 function getErrorStatusCode({ message }: Error): number {
   if (message.startsWith('Navigation Timeout Exceeded')) {
     return 504
@@ -80,12 +57,9 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
   app.use(express.static('public'))
 
   app.use(async (req, res) => {
-    const [segments, rest] = tailFoot(req.url.substr(1).split(/;/g))
-    const request = normalizeUrl(rest)
-
-    const { timings, speedKit, type, stats, screenshot, pdf } = getEnabledSegments(segments)
     try {
       const page = await browser.newPage()
+
       try {
         await page.setCacheEnabled(caching)
 
@@ -93,97 +67,30 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
         const client = await page.target().createCDPSession()
 
         // Activate CDP controls
-        const cdpControls: Array<Promise<any>> = [
+        await Promise.all([
           // Enable network control
           client.send('Network.enable'),
-
           // Enable ServiceWorker control
           client.send('ServiceWorker.enable'),
-        ]
-        if (timings) {
           // Enable performance statistics
-          cdpControls.push(client.send('Performance.enable'))
-        }
-        await Promise.all(cdpControls)
+          client.send('Performance.enable'),
+        ])
 
-        // Listen for Network
-        const resources = await listenForResources(client)
-        const domains = getDomainsOfResources(resources.values())
-
-        // Collect all service worker registrations
-        const swRegistrations = await listenForServiceWorkerRegistrations(client)
-
-        // Load the document
-        const response = await page.goto(request)
-        const url = response.url()
-
-        // Filter out all registrations which are not against this URL
-        filterServiceWorkerRegistrationsByUrl(swRegistrations, url)
-
-        const displayUrl = urlToUnicode(url)
-        const documentResource = [...resources.values()].find(it => it.url === url)
-
-        // Get the protocol
-        const protocol = documentResource.protocol
-
-        // Concurrently analyze
-        const promises: Array<any | Promise<any>> = []
-        if (type) {
-          // Type analysis
-          promises.push(analyzeType(page, documentResource))
-        }
-
-        if (stats) {
-          // Calculate statistics
-          promises.push(analyzeStats(resources.values(), domains))
-        }
-
-        if (speedKit) {
-          // Service Worker and Speed Kit detection
-          promises.push(analyzeSpeedKit(swRegistrations.values(), page))
-        }
-
-        if (timings) {
-          // Timings analysis
-          promises.push(analyzeTimings(client, page, documentResource))
-        }
-
-        if (screenshot) {
-          // Screenshot analysis
-          promises.push(analyzeScreenshot(page, screenshotDir, req.get('host')))
-        }
-
-        if (pdf) {
-          // Pdf analysis
-          promises.push(analyzePdf(page, screenshotDir, req.get('host')))
-        }
-        const analyses = await Promise.all(promises)
-
-        // Stop all service workers in the end
-        for (const sw of swRegistrations.values()) {
-          const { scopeURL } = sw
-          await client.send('ServiceWorker.unregister', { scopeURL })
-        }
+        // Let the analyzer handle the request
+        const json = await analyzer.handleRequest(page, client, req)
 
         res.status(200)
-        res.json(Object.assign({
-          request,
-          segments,
-          url,
-          displayUrl,
-          protocol,
-          domains: [...domains],
-        }, ...analyses))
+        res.json(json)
       } catch (e) {
         const status = getErrorStatusCode(e)
         res.status(status)
-        res.json({ message: e.message, status, stack: e.stack, url: request, segments })
+        res.json({ message: e.message, status, stack: e.stack })
       } finally {
         await page.close()
       }
     } catch (e) {
       res.status(500)
-      res.json({ message: e.message, status: 500, stack: e.stack, url: request, segments })
+      res.json({ message: e.message, status: 500, stack: e.stack })
     }
   })
 

@@ -1,10 +1,5 @@
 import { Page } from 'puppeteer'
-
-export interface Type {
-  framework: Framework | null
-  language: Language | null
-  server: Server | null
-}
+import { AnalyzeEvent } from '../Analyzer'
 
 export enum Framework {
   BAQEND = 'baqend',
@@ -31,24 +26,20 @@ export enum Server {
 
 const typeCache = new Map<string, Type>()
 
-export async function analyzeType(page: Page, documentResource: Resource): Promise<{ type: Type }> {
+export async function analyzeType({ page, documentResource }: AnalyzeEvent): Promise<Type> {
   const etag = documentResource.headers.get('etag')
   if (etag) {
     if (typeCache.has(etag)) {
-      const type = typeCache.get(etag)
-
-      return { type }
+      return typeCache.get(etag)
     }
 
     const type = await retrieveType(page, documentResource)
     typeCache.set(etag, type)
 
-    return { type }
+    return type
   }
 
-  const type = await retrieveType(page, documentResource)
-
-  return { type }
+  return retrieveType(page, documentResource)
 }
 
 async function retrieveType(page: Page, documentResource: Resource): Promise<Type> {

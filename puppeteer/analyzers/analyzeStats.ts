@@ -1,4 +1,6 @@
-function count(resources: Iterable<Resource>) {
+import { AnalyzeEvent } from '../Analyzer'
+
+function count(resources: Iterable<Resource>): { [key: string]: number } {
   let requests = 0
   let size = 0
   let errors = 0
@@ -65,9 +67,6 @@ function count(resources: Iterable<Resource>) {
   }
 }
 
-export function analyzeStats(resourceSet: Iterable<Resource>, domainSet: Set<string>) {
-  const domains = domainSet.size
-  const stats = Object.assign(count(resourceSet), { domains })
-
-  return { stats }
+export function analyzeStats({ resources, domains }: AnalyzeEvent): Promise<{ [key: string]: number }> {
+  return Promise.resolve(Object.assign(count(resources), { domains: domains.size }))
 }
