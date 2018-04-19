@@ -110,3 +110,26 @@ export function filePutContents(path: string, data: Buffer): Promise<void> {
     })
   })
 }
+
+/**
+ * Extracts all domains of some resources
+ */
+export function getDomainsOfResources(resources: Iterable<Resource>): Set<string> {
+  const domains = new Set<string>()
+  for (const { host } of resources) {
+    domains.add(host)
+  }
+
+  return domains
+}
+
+/**
+ * Filters out all ServiceWorker registrations whose scope does not match a given URL.
+ */
+export function filterServiceWorkerRegistrationsByUrl(map: ServiceWorkerRegistrationMap, url: string) {
+  for (const [registrationId, registration] of map) {
+    if (!url.startsWith(registration.scopeURL)) {
+      map.delete(registrationId)
+    }
+  }
+}

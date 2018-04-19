@@ -87,3 +87,6 @@ declare interface Segments {
   screenshot: boolean
   pdf: boolean
 }
+
+type ResourceMap = Map<string, Resource>
+type ServiceWorkerRegistrationMap = Map<string, ServiceWorkerRegistration>

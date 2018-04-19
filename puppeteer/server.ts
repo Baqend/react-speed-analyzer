@@ -3,18 +3,24 @@ import express from 'express'
 import morgan from 'morgan'
 import { resolve } from 'path'
 import puppeteer from 'puppeteer'
-import rimraf from 'rimraf'
-import { parse } from 'url'
 import { analyzePdf } from './analyzePdf'
 import { analyzeScreenshot } from './analyzeScreenshot'
 import { analyzeSpeedKit } from './analyzeSpeedKit'
 import { analyzeStats } from './analyzeStats'
 import { analyzeTimings } from './analyzeTimings'
 import { analyzeType } from './analyzeType'
-import { normalizeUrl, tailHead, urlToUnicode } from './helpers'
+import { deleteDirectory } from './deleteDirectory'
+import {
+  filterServiceWorkerRegistrationsByUrl,
+  getDomainsOfResources,
+  normalizeUrl,
+  tailHead,
+  urlToUnicode,
+} from './helpers'
+import { listenForResources } from './listenForResources'
+import { listenForServiceWorkerRegistrations } from './listenForServiceWorkerRegistrations'
 
 const screenshotDir = resolve(__dirname, 'public', 'screenshots')
-const sizeCache = new Map<string, number>()
 
 function getEnabledSegments(segments: string[]): Segments {
   const defaults: Segments = {
@@ -34,20 +40,6 @@ function getEnabledSegments(segments: string[]): Segments {
   return defaults
 }
 
-/**
- * Deletes a directory.
- */
-function deleteDirectory(dir: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    rimraf(dir, (err) => {
-      if (err) {
-        reject(err)
-      } else {
-        resolve()
-      }
-    })
-  })
-}
 
 function getErrorStatusCode({ message }: Error): number {
   if (message.startsWith('Navigation Timeout Exceeded')) {
@@ -61,6 +53,9 @@ function getErrorStatusCode({ message }: Error): number {
   return 500
 }
 
+/**
+ * Starts the puppeteer server
+ */
 export async function server(port: number, { caching, userDataDir, noSandbox }: Options) {
   if (caching && !userDataDir) {
     throw new Error('Please provide a userDataDir to enable caching')
@@ -100,9 +95,6 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
       try {
         await page.setCacheEnabled(caching)
 
-        const resources = new Map<string, Resource>()
-        const domains = new Set<string>()
-
         // Get CDP client
         const client = await page.target().createCDPSession()
 
@@ -120,78 +112,19 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
         }
         await Promise.all(cdpControls)
 
-        // Track domains and resources being loaded
-        await client.on('Network.responseReceived', ({ requestId, type, timestamp, response }) => {
-          const { url, headers: bareHeaders, status, mimeType, protocol, fromServiceWorker, fromDiskCache, timing } = response
-
-          const headers = new Map(Object.entries(bareHeaders).map(([key, value]) => [key.toLowerCase(), value] as [string, string]))
-
-          const { host, protocol: scheme, pathname } = parse(url)
-          domains.add(host)
-
-          const compressed: boolean = headers.has('content-encoding') && headers.get('content-encoding').toLowerCase() !== 'identity'
-
-          const loadStart = timing ? timing.requestTime : -1
-          resources.set(requestId, {
-            requestId,
-            url,
-            headers,
-            compressed,
-            type,
-            host,
-            scheme,
-            pathname,
-            status,
-            mimeType,
-            protocol,
-            fromServiceWorker,
-            fromDiskCache,
-            timing,
-            loadStart,
-            loadEnd: -1,
-            size: sizeCache.get(url),
-          })
-        })
-
-        await client.on('Network.loadingFinished', ({ requestId, timestamp, encodedDataLength }) => {
-          const resource = resources.get(requestId)
-          if (resource) {
-            if (!resource.fromDiskCache && !resource.fromServiceWorker) {
-              sizeCache.set(resource.url, encodedDataLength)
-              resource.size = encodedDataLength
-            }
-            resource.loadEnd = timestamp
-          }
-        })
+        // Listen for Network
+        const resources = await listenForResources(client)
+        const domains = getDomainsOfResources(resources.values())
 
         // Collect all service worker registrations
-        const swRegistrations = new Map<string, ServiceWorkerRegistration>()
-        await client.on('ServiceWorker.workerRegistrationUpdated', ({ registrations }) => {
-          for (const registration of registrations) {
-            swRegistrations.set(registration.registrationId, registration)
-          }
-        })
-
-        // Collect all script URLs
-        if (speedKit) {
-          await client.on('ServiceWorker.workerVersionUpdated', ({ versions }) => {
-            for (const { registrationId, scriptURL } of versions) {
-              const registration = swRegistrations.get(registrationId)
-              if (registration) {
-                registration.scriptURL = scriptURL
-              }
-            }
-          })
-        }
+        const swRegistrations = await listenForServiceWorkerRegistrations(client)
 
         // Load the document
         const response = await page.goto(request)
         const url = response.url()
-        for (const [registrationId, registration] of swRegistrations) {
-          if (!url.startsWith(registration.scopeURL)) {
-            swRegistrations.delete(registrationId)
-          }
-        }
+
+        // Filter out all registrations which are not against this URL
+        filterServiceWorkerRegistrationsByUrl(swRegistrations, url)
 
         const displayUrl = urlToUnicode(url)
         const documentResource = [...resources.values()].find(it => it.url === url)
