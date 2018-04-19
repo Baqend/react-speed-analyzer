@@ -67,6 +67,7 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
       const status = getErrorStatusCode(e)
       res.status(status)
       res.json({ message: e.message, status, stack: e.stack })
+      console.error(e.stack)
     }
   })
 
