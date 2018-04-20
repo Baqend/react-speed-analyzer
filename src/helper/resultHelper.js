@@ -6,6 +6,10 @@ import { roundToTenths, roundToHundredths, zeroSafeDiv, formatPercentage } from 
  * @return {number}
  */
 export function calculateFactor(competitorMetric, speedKitMetric) {
+  if (!competitorMetric || !speedKitMetric) {
+    return null
+  }
+
   return roundToTenths(zeroSafeDiv(competitorMetric, speedKitMetric))
 }
 
@@ -15,6 +19,10 @@ export function calculateFactor(competitorMetric, speedKitMetric) {
  * @return {number}
  */
 export function calculateAbsolute(competitorMetric, speedKitMetric) {
+  if (!competitorMetric || !speedKitMetric) {
+    return null
+  }
+
   const improvement = competitorMetric - speedKitMetric
   if (improvement > 99) {
     return `${Math.round(improvement / 1000 * 10) / 10} s`
