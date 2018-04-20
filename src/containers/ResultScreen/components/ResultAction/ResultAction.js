@@ -27,52 +27,58 @@ class ResultAction extends Component {
   }
 
   getCTAContent = () => {
-    const content = []
+    const improvements = []
+    const applied = []
 
     // Request Latency
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
+    const ttfbFact = ['Request Latency']
+
     if (competitorData.ttfb > speedKitData.ttfb) {
-      const ttfbFact = [
-        'Request Latency',
-        `Speed Kit will cache your HTML in a CDN and thereby reduce the <strong>time-to-first-byte</strong> (<i>TTFB</i>) from <strong>${competitorData.ttfb} ms</strong> to <strong>${speedKitData.ttfb} ms</strong>.`
-      ]
-      content.push(ttfbFact)
+      ttfbFact.push(`Speed Kit will cache your HTML in a CDN and thereby reduce the <strong>time-to-first-byte</strong> (<i>TTFB</i>) from <strong>${competitorData.ttfb} ms</strong> to <strong>${speedKitData.ttfb} ms</strong>.`)
+      improvements.push(ttfbFact)
+    } else {
+      ttfbFact.push(`Your website displays a low <strong>time-to-first-byte</strong> of <strong>${competitorData.ttfb} ms</strong>.`)
+      applied.push(ttfbFact)
     }
 
+    // Image Optimization
     const { contentSize: competitorContentSize = null } = competitorData
     const { contentSize: speedKitContentSize = null } = speedKitData
+    const imageOptFact = ['Image Optimization']
 
-    // Image Optimization
     if (competitorContentSize && speedKitContentSize) {
       const imageSizeDiff = competitorContentSize.images - speedKitContentSize.images
       if (imageSizeDiff > 0) {
-        const imageOptFact = [
-          'Image Optimization',
-          `By optimizing <strong>images</strong> in size (<i>responsiveness</i>) and encoding (<i>WebP</i> & <i>Progessive JPEG</i>), Speed Kit will save <strong>${formatFileSize(imageSizeDiff)}</strong> of data.`
-        ]
-        content.push(imageOptFact)
+        imageOptFact.push(`By resizing (<i>responsiveness</i>) and encoding (<i>WebP</i> & <i>Progessive JPEG</i>) <strong>images</strong>, Speed Kit will save <strong>${formatFileSize(imageSizeDiff)}</strong> of data.`)
+        improvements.push(imageOptFact)
+      } else {
+        imageOptFact.push('Your website serves sufficiently compressed image files.')
+        applied.push(imageOptFact)
       }
     }
 
     // SSL information
+    const sslFact = ['HTTP/2']
     if (!this.props.testOverview.isSecured) {
-      const sslFact = [
-        'HTTP/2',
-        `Your website is currently using <strong>HTTP/1.1</strong>. With Speed Kit, everything will be fetched over an encrypted <strong>HTTP/2</strong> connection.`
-      ]
-      content.push(sslFact)
+      sslFact.push(`Your website is currently using <strong>HTTP/1.1</strong>. With Speed Kit, everything will be fetched over an encrypted <strong>HTTP/2</strong> connection.`)
+      improvements.push(sslFact)
+    } else {
+      sslFact.push(`Your website uses HTTP/2.`)
+      applied.push(sslFact)
     }
 
     // Compression
+    const compressionFact = ['Compression']
     if (competitorContentSize && speedKitContentSize) {
       const textSizeDiff = competitorContentSize.text - speedKitContentSize.text
       if (textSizeDiff > 0) {
-        const compressionFact = [
-          'Compression',
-          `By compressing text resources with GZip, Speed Kit will reduce page weight by <strong>${formatFileSize(textSizeDiff)}</strong>.`
-        ]
-        content.push(compressionFact)
+        compressionFact.push(`By compressing text resources with GZip, Speed Kit will reduce page weight by <strong>${formatFileSize(textSizeDiff)}</strong>.`)
+        improvements.push(compressionFact)
+      } else {
+        compressionFact.push('Text-based HTTP resources on your website are compressed.')
+        applied.push(compressionFact)
       }
     }
 
@@ -83,12 +89,13 @@ class ResultAction extends Component {
     const speedKitCaching = speedKitData.hits.withCaching
     const speedKitAmount = speedKitCaching ? Math.round((100 / speedKitData.requests) * speedKitCaching) : 0
 
+    const cachingFact = ['HTTP Caching']
     if ( speedKitAmount > competitorAmount) {
-      const cachingFact = [
-        'HTTP Caching',
-        `Your website serves <strong>${competitorAmount}%</strong> of resources with correct <strong>caching headers</strong>. Speed Kit will cache <strong>${speedKitAmount}%</strong> and keep the cache up-to-date.`
-      ]
-      content.push(cachingFact)
+      cachingFact.push(`Currently, <strong>${competitorAmount}%</strong> of resources are served with correct <strong>caching headers</strong>. Speed Kit will cache <strong>${speedKitAmount}%</strong> and keep the cache fresh.`)
+      improvements.push(cachingFact)
+    } else {
+      cachingFact.push(`Your website serves <strong>${competitorAmount}%</strong> of resources with correct <strong>caching headers</strong>.`)
+      applied.push(cachingFact)
     }
 
     // Progressive Web App
@@ -96,7 +103,7 @@ class ResultAction extends Component {
       'Progressive Web App',
       `Without Internet connection, users cannot open your website, whereas Speed Kit will show the last-seen version (<i>offline mode</i>).`
     ]
-    content.push(offlineFact)
+    improvements.push(offlineFact)
 
     // Faster Dependencies
     /*    const thirdPartyDomains = this.props.speedKitTest.thirdPartyDomains
@@ -113,9 +120,9 @@ class ResultAction extends Component {
       'Client Caching',
       `Speed Kit will serve data from fast caches and <i>make sure you never see stale content</i> (Bloom filter-based cache coherence).`
     ]
-    content.push(clientFact)
+    improvements.push(clientFact)
 
-    if(content.length % 2 !== 0) {
+    if((improvements.length + applied.length) % 2 !== 0) {
       // User-Perceived Performance
       const siImprovement = Math.round((competitorData.speedIndex - speedKitData.speedIndex) / competitorData.speedIndex * 100)
       const fmpImprovement = Math.round((competitorData.firstMeaningfulPaint - speedKitData.firstMeaningfulPaint) / competitorData.firstMeaningfulPaint * 100)
@@ -124,11 +131,11 @@ class ResultAction extends Component {
           'User-Perceived Performance',
           `Speed Kit will improve <strong>Speed Index</strong> by <strong>${siImprovement}%</strong> and <strong>First Meaningful Paint</strong> by <strong>${fmpImprovement}%</strong>.`
         ]
-        content.splice(content.length - 4, 0, performanceFact)
+        improvements.push(performanceFact)
       }
     }
 
-    return content
+    return { improvements, applied}
   }
 
   // all Tests failed
@@ -267,18 +274,31 @@ class ResultAction extends Component {
       <div>
         <div className="text-center pb2 pt2" style={{ maxWidth: 700, margin: '0 auto' }}>
           <h2 className="dn db-ns mb0">
-            Optimizations to Reduce Page Load Time by <span style={{ color: '#F27354' }}>{absolute}</span>.
+            Optimization Potential: <span style={{ color: '#F27354' }}>{absolute}</span>
           </h2>
           <h3 className="dn-ns mb0">
-            Optimizations to Reduce Page Load Time by <span style={{ color: '#F27354' }}>{absolute}</span>.
+            Optimization Potential: <span style={{ color: '#F27354' }}>{absolute}</span>
           </h3>
         </div>
-        <div className="flex flex-wrap">
-          {ctaContent.map((content, index) => (
+        <div className="flex flex-wrap mb2">
+          {ctaContent.improvements.map((content, index) => (
             <div key={index} className="w-100 w-50-ns mt2 mb2">
               <div className="flex ml2 mr2">
                 <div className="w-20 w-10-ns">
                   <img src={ cancel } alt="speed kit feature" style={{ height: 30}} />
+                </div>
+                <div className="w-80 w-90-ns">
+                  <h4 className="mb0 mt0 fw6">{ content[0] }</h4>
+                  <span className="font-small">{ renderHTML(content[1]) }</span>
+                </div>
+              </div>
+            </div>
+          ))}
+          {ctaContent.applied.map((content, index) => (
+            <div key={index} className="w-100 w-50-ns mt2 mb2">
+              <div className="flex ml2 mr2">
+                <div className="w-20 w-10-ns">
+                  <img src={ check } alt="speed kit feature" style={{ height: 30}} />
                 </div>
                 <div className="w-80 w-90-ns">
                   <h4 className="mb0 mt0 fw6">{ content[0] }</h4>
