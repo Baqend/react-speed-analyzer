@@ -36,6 +36,7 @@ interface Context {
 }
 
 const MAX_CONCURRENT_CONTEXTS = 20
+const ONE_DAY = 86_400_000 /*ms*/
 
 export class Analyzer {
   private readonly analyzerFunctions: Map<string, AnalyzerFunction>
@@ -45,7 +46,7 @@ export class Analyzer {
   private readonly loadersWaiting: Array<() => void> = []
   private readonly permanentRedirects: Map<string, string> = new Map()
   private readonly schemeMap: Map<string, string> = new Map()
-  private readonly candidateBlacklist: Set<string> = new Set()
+  private readonly candidateBlacklist: Map<string, number> = new Map()
 
   constructor(screenshotDir: string) {
     this.screenshotDir = screenshotDir
@@ -180,7 +181,7 @@ export class Analyzer {
         } catch (error) {
           // Does this candidate cause an error? Blacklist it if is https:
           if (candidate.startsWith('https:')) {
-            this.candidateBlacklist.add(candidate)
+            this.candidateBlacklist.set(candidate, Date.now())
           }
 
           return null
@@ -306,7 +307,8 @@ export class Analyzer {
         url = this.permanentRedirects.get(url)
       }
 
-      if (!this.candidateBlacklist.has(url)) {
+      // Cache blacklist for one day maximum
+      if (!this.candidateBlacklist.has(url) || this.candidateBlacklist.get(url) < Date.now() - ONE_DAY) {
         set.add(url)
       }
     }
