@@ -21,30 +21,45 @@
       "type": "/db/String",
       "order": 1
     },
+    "scheme": {
+      "name": "scheme",
+      "type": "/db/String",
+      "order": 2
+    },
+    "host": {
+      "name": "host",
+      "type": "/db/String",
+      "order": 3
+    },
     "protocol": {
       "name": "protocol",
       "type": "/db/String",
-      "order": 2
+      "order": 4
     },
     "domains": {
       "name": "domains",
       "type": "/db/collection.List[/db/String]",
-      "order": 3
+      "order": 5
     },
     "type": {
       "name": "type",
       "type": "/db/PuppeteerType",
-      "order": 4
+      "order": 6
     },
     "stats": {
       "name": "stats",
       "type": "/db/PuppeteerStats",
-      "order": 5
+      "order": 7
     },
     "speedKit": {
       "name": "speedKit",
       "type": "/db/PuppeteerSpeedKit",
-      "order": 6
+      "order": 8
+    },
+    "screenshot": {
+      "name": "screenshot",
+      "type": "/db/String",
+      "order": 9
     }
   }
 }
