@@ -1,9 +1,9 @@
-import 'mocha'
 import DB from 'baqend'
 import { expect } from 'chai'
+import 'mocha'
+import { sleep } from '../_sleep'
+import { Priority } from '../_TestParams'
 import { call } from '../startBulkComparison'
-import { sleep } from '../_sleep';
-import { Priority } from '../_TestParams';
 
 describe('startBulkComparison', () => {
   before(async () => {
@@ -14,17 +14,15 @@ describe('startBulkComparison', () => {
 
   it('starts bulk comparisons correctly', async () => {
     // Check call result
-    const result = await call(DB, [{ url: 'obama.org', runs: 3, priority: Priority.HIGH }])
+    const result = call(DB, [{ url: 'obama.org', runs: 3, priority: Priority.HIGH }])
     expect(result).to.be.ok
-    expect(result.comparisonsToStart).to.have.length(1)
-    expect(result.hasFinished).to.be.false
+    expect(result.tests).to.have.length(1)
+    expect(result.createdBy).to.be.null
+    expect(result.id).to.be.ok
 
     // Check remote
-    const id = result.id
-    expect(id.substr(0, 19)).to.eql('/db/BulkComparison/')
-
     await sleep(5000)
-    const bulkComparison = await DB.BulkComparison.load(id, { depth: 3 })
+    const bulkComparison = await DB.BulkComparison.load(result.id, { depth: 3 })
 
     const bulkTest = bulkComparison.multiComparisons[0]
     expect(bulkTest).to.be.ok

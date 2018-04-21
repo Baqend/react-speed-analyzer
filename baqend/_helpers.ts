@@ -94,3 +94,24 @@ export function appendItem<T>(array: T[] | null | undefined, item: T): T[] {
 
   return [item]
 }
+
+/**
+ * Generate a hash with 6 chars.
+ */
+export function generateHash(): string {
+  const chars = 'ABCDEFGHIJKLMOPQRSTUVWXYZabcdefghijklmopqrstuvwxyz0123456789'
+  let result = ''
+  for (let i = 0; i < 6; i += 1) {
+    result += chars[Math.floor(Math.random() * chars.length)]
+  }
+
+  return result
+}
+
+/**
+ * Generates a date string.
+ */
+export function getDateString(): string {
+  const date = new Date().toISOString()
+  return date.substr(0, 10) + '-' + date.substr(11, 8).replace(/:/g, '')
+}
