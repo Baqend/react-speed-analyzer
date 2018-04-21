@@ -178,8 +178,10 @@ export class Analyzer {
 
           return result
         } catch (error) {
-          // Does this candidate cause an error? Blacklist it
-          this.candidateBlacklist.add(candidate)
+          // Does this candidate cause an error? Blacklist it if is https:
+          if (candidate.startsWith('https:')) {
+            this.candidateBlacklist.add(candidate)
+          }
 
           return null
         }
