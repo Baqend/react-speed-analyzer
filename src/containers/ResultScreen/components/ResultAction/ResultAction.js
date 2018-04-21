@@ -319,9 +319,9 @@ class ResultAction extends Component {
   }
 
   render() {
-    const { competitorError, speedKitError, competitorTest, testOverview } = this.props.result
+    const { competitorError, speedKitError, testOverview } = this.props.result
     // const speedKitError = this.props.speedKitError
-    const isWordPress = competitorTest.isWordPress
+    const isWordPress = testOverview.type === 'wordpress'
     const { isSpeedKitComparison, speedKitVersion, configAnalysis } = testOverview
 
     if (competitorError) {
