@@ -39,7 +39,7 @@ export function bootstrap(db: baqend) {
 
   // Create factories
   const testFactory = new TestFactory(db, testBuilder)
-  const comparisonFactory = new ComparisonFactory(db, testFactory, testBuilder, configCache, serializer)
+  const comparisonFactory = new ComparisonFactory(db, testFactory, testBuilder, configCache, configGenerator, serializer)
   const multiComparisonFactory = new MultiComparisonFactory(db, testBuilder)
   const bulkComparisonFactory = new BulkComparisonFactory(db, testBuilder)
 

@@ -1,6 +1,7 @@
 import { baqend, model } from 'baqend'
 import { AsyncFactory } from './_AsyncFactory'
 import { ConfigCache } from './_ConfigCache'
+import { ConfigGenerator } from './_ConfigGenerator'
 import { getRootPath, getTLD } from './_getSpeedKitUrl'
 import { DataType, Serializer } from './_Serializer'
 import { TestBuilder } from './_TestBuilder'
@@ -18,6 +19,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
     private testFactory: TestFactory,
     private testBuilder: TestBuilder,
     private configCache: ConfigCache,
+    private configGenerator: ConfigGenerator,
     private serializer: Serializer,
   ) {
   }
@@ -45,7 +47,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
   /**
    * Builds the Speed Kit config to use for this test.
    */
-  private async buildSpeedKitConfig({ url, speedKit }: model.Puppeteer, { mobile, speedKitConfig }: TestParams): Promise<string | null> {
+  private async buildSpeedKitConfig({ url, speedKit, domains }: model.Puppeteer, { mobile, speedKitConfig }: TestParams): Promise<string | null> {
     // Has the user set a config as a test parameter?
     if (speedKitConfig) {
       return speedKitConfig
@@ -62,12 +64,16 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
     }
 
     // Create a default Speed Kit config for the URL
-    const config = await this.configCache.get(url, mobile!)
-    if (config) {
-      return this.serializer.serialize(config, DataType.JAVASCRIPT)
+    const cachedConfig = await this.configCache.get(url, mobile!)
+    if (cachedConfig) {
+      return this.serializer.serialize(cachedConfig, DataType.JAVASCRIPT)
     }
 
-    return null
+    // Generate smart config and cache it
+    const smartConfig = await this.configGenerator.generateSmart(url, domains, mobile)
+    await this.configCache.put(url, mobile!, smartConfig)
+
+    return this.serializer.serialize(smartConfig, DataType.JAVASCRIPT)
   }
 
   /**
