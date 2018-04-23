@@ -39,8 +39,9 @@ const MAX_CONCURRENT_CONTEXTS = 20
 const ONE_DAY = 86_400_000 /*ms*/
 
 export class Analyzer {
-  private readonly analyzerFunctions: Map<string, AnalyzerFunction>
+  private readonly browser: Browser
   private readonly screenshotDir: string
+  private readonly analyzerFunctions: Map<string, AnalyzerFunction>
   private readonly contextListeners: Map<string, number> = new Map()
   private readonly contextPromises: Map<string, Promise<Context>> = new Map()
   private readonly loadersWaiting: Array<() => void> = []
@@ -48,7 +49,8 @@ export class Analyzer {
   private readonly schemeMap: Map<string, string> = new Map()
   private readonly candidateBlacklist: Map<string, number> = new Map()
 
-  constructor(screenshotDir: string) {
+  constructor(browser: Browser, screenshotDir: string) {
+    this.browser = browser
     this.screenshotDir = screenshotDir
     this.analyzerFunctions = new Map<string, AnalyzerFunction>([
       ['pdf', analyzers.analyzePdf],
@@ -63,13 +65,13 @@ export class Analyzer {
   /**
    * Handles an incoming request.
    */
-  async handleRequest(browser: Browser, req: Request): Promise<any> {
+  async handleRequest(req: Request): Promise<any> {
     const [segments, encodedQuery] = tailFoot(req.url.substr(1).split(/;/g))
     const query = decodeURIComponent(encodedQuery)
 
     // Get possible candidates to navigate to and find best result
     const candidates = this.normalizeUrl(query)
-    const result = await this.raceBestResult(browser, req, segments, candidates)
+    const result = await this.raceBestResult(req, segments, candidates)
     if (result) {
       return Object.assign({ query, candidates }, result)
     }
@@ -77,8 +79,8 @@ export class Analyzer {
     return null
   }
 
-  async handleQuery(browser: Browser, req: Request, segments: string[], query: string) {
-    const context = await this.loadContext(browser, query)
+  async handleQuery(req: Request, segments: string[], query: string) {
+    const context = await this.loadContext(query)
     const { client, page, url, displayUrl, scheme, host, documentResource, domains, resources, serviceWorkers } = context
     try {
 
@@ -129,14 +131,14 @@ export class Analyzer {
   /**
    * Loads the context for a given query in a given browser.
    */
-  loadContext(browser: Browser, query: string): Promise<Context> {
+  loadContext(query: string): Promise<Context> {
     // Increase the number of listeners
     const l = (this.contextListeners.get(query) || 0) + 1
     this.contextListeners.set(query, l)
 
     // Is query not loading yet?
     if (!this.contextPromises.has(query)) {
-      this.contextPromises.set(query, this.doLoadContext(browser, query))
+      this.contextPromises.set(query, this.doLoadContext(query))
     }
 
     return this.contextPromises.get(query)!
@@ -159,19 +161,19 @@ export class Analyzer {
   /**
    * Races for the best result.
    */
-  private raceBestResult(browser: Browser, req: Request, segments: string[], candidates: string[]) {
+  private raceBestResult(req: Request, segments: string[], candidates: string[]) {
     if (candidates.length === 0) {
       return null
     }
 
     if (candidates.length === 1) {
-      return this.handleQuery(browser, req, segments, candidates[0])
+      return this.handleQuery(req, segments, candidates[0])
     }
 
     return new Promise((resolveOuter) => {
       const promises = candidates.map(async (candidate) => {
         try {
-          const result = await this.handleQuery(browser, req, segments, candidate)
+          const result = await this.handleQuery(req, segments, candidate)
           if (result && result.scheme === 'https:') {
             resolveOuter(result)
             return null
@@ -200,14 +202,14 @@ export class Analyzer {
   /**
    * Actually load the context for a given query.
    */
-  private async doLoadContext(browser: Browser, query: string): Promise<Context> {
+  private async doLoadContext(query: string): Promise<Context> {
     // Let query wait until next page is finished
     if (this.contextPromises.size >= MAX_CONCURRENT_CONTEXTS) {
       await new Promise(resolver => this.loadersWaiting.push(resolver))
     }
 
     // Open the next page
-    const page = await browser.newPage()
+    const page = await this.browser.newPage()
     try {
       await page.setCacheEnabled(true)
 

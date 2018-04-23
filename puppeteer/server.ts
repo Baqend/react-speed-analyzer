@@ -6,8 +6,7 @@ import puppeteer from 'puppeteer'
 import { Analyzer } from './Analyzer'
 import { deleteDirectory } from './io'
 
-const screenshotDir = resolve(__dirname, 'public', 'screenshots')
-const analyzer = new Analyzer(screenshotDir)
+const SCREENSHOT_DIR = resolve(__dirname, 'public', 'screenshots')
 
 /**
  * Returns the status code for a given error.
@@ -39,6 +38,7 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
 
   const args = noSandbox ? ['--no-sandbox'] : []
   const browser = await puppeteer.launch({ args, userDataDir })
+  const analyzer = new Analyzer(browser, SCREENSHOT_DIR)
   const app = express()
 
   morgan.token('status', (req, res) => {
@@ -59,7 +59,7 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
   app.use(async (req, res) => {
     try {
       // Let the analyzer handle the request
-      const json = await analyzer.handleRequest(browser, req)
+      const json = await analyzer.handleRequest(req)
       if (json === null) {
         res.status(404)
         res.json({ error: 'URL does not exist.', status: 404 })
