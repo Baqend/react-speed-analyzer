@@ -18,21 +18,28 @@ type StartBulkComparisonParams = BulkTestParams[] | {
   createdBy?: string
 }
 
-async function buildTest(puppeteer: Puppeteer, testParams: BulkTestParams): Promise<BulkComparisonTestParams> {
+async function buildTest(db: baqend, puppeteer: Puppeteer, testParams: BulkTestParams): Promise<BulkComparisonTestParams | null> {
   const { url, ...params } = testParams
-  const puppeteerInfo = await puppeteer.analyze(url)
+  try {
+    const puppeteerInfo = await puppeteer.analyze(url)
 
-  return Object.assign({}, params, { puppeteer: puppeteerInfo })
+    return Object.assign({}, params, { puppeteer: puppeteerInfo })
+  } catch ({ message, stack }) {
+    db.log.error(`Puppeteer failed for ${url}: ${message}`, { stack })
+    return null
+  }
 }
 
-function buildTests(puppeteer: Puppeteer, params: BulkTestParams[]): Promise<BulkComparisonTestParams[]> {
-  return Promise.all(params.map(param => buildTest(puppeteer, param)))
+async function buildTests(db: baqend, puppeteer: Puppeteer, params: BulkTestParams[]): Promise<BulkComparisonTestParams[]> {
+  const promises = params.map(param => buildTest(db, puppeteer, param))
+
+  return (await Promise.all(promises)).filter(param => param !== null) as BulkComparisonTestParams[]
 }
 
 export async function startBulkComparison(db: baqend, id: string, createdBy: string | null, data: BulkTestParams[]): Promise<model.BulkComparison> {
   const { bulkComparisonWorker, bulkComparisonFactory, puppeteer } = bootstrap(db)
 
-  const tests = await buildTests(puppeteer, data)
+  const tests = await buildTests(db, puppeteer, data)
   const bulkComparison = await bulkComparisonFactory.create(id, createdBy, tests)
   await bulkComparisonWorker.next(bulkComparison)
 
