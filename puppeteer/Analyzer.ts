@@ -73,11 +73,11 @@ export class Analyzer {
     // Get possible candidates to navigate to and find best result
     const candidates = this.normalizeUrl(query)
     const result = await this.raceBestResult(req, segments, candidates)
-    if (result) {
-      return Object.assign({ query, candidates }, result)
+    if (!result) {
+      throw new Error(`URL does not exist: ${query}`)
     }
 
-    return null
+    return Object.assign({ query, candidates }, result)
   }
 
   async handleQuery(req: Request, segments: string[], query: string) {

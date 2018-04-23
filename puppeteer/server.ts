@@ -16,7 +16,11 @@ function getErrorStatusCode({ message }: Error): number {
     return 504
   }
 
-  if (message.startsWith('net::ERR_NAME_NOT_RESOLVED')) {
+  if (message.includes('URL does not exist')) {
+    return 404
+  }
+
+  if (message.includes('net::ERR_NAME_NOT_RESOLVED')) {
     return 404
   }
 
@@ -62,7 +66,7 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
       const json = await analyzer.handleRequest(req)
       if (json === null) {
         res.status(404)
-        res.json({ error: 'URL does not exist.', status: 404 })
+        res.json({ message: 'URL does not exist.', status: 404 })
         return
       }
 
