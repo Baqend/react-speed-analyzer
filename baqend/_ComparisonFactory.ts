@@ -117,6 +117,12 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
     comparison.speedKitVersion = speedKitVersion
     comparison.isSecured = url.startsWith('https://')
     comparison.type = puppeteer.type.framework
+    comparison.psiDomains = puppeteer.stats.domains
+    comparison.psiRequests = puppeteer.stats.requests
+    comparison.psiResponseSize = puppeteer.stats.size.toString()
+    if (puppeteer.screenshot) {
+      comparison.psiScreenshot = { data: puppeteer.screenshot, width: 800, height: 600, mime_type: 'image/png' }
+    }
 
     // Copy params
     comparison.caching = params.caching

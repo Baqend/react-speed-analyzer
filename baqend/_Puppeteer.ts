@@ -12,11 +12,19 @@ export class Puppeteer {
   }
 
   async analyze(url: string): Promise<model.Puppeteer> {
-    const data = await this.fetchData(url, 'stats', 'type', 'speedKit')
+    const data = await this.fetchData(url, 'stats', 'type', 'speedKit', 'screenshot')
     this.db.log.info(`Received puppeteer data for ${url}`, { data })
     data.stats = new this.db.PuppeteerStats(data.stats)
     data.type = new this.db.PuppeteerType(data.type)
     data.speedKit = data.speedKit ? new this.db.PuppeteerSpeedKit(data.speedKit) : null
+
+    // Get screenshot as base64
+    try {
+      data.screenshot = await this.urlToBase64(data.screenshot)
+    } catch ({ message }) {
+      this.db.log.warn(`Could not download screenshot from puppeteer: ${message}`)
+      data.screenshot = null
+    }
 
     return new this.db.Puppeteer(data)
   }
@@ -36,5 +44,15 @@ export class Puppeteer {
     }
 
     return response.json()
+  }
+
+  /**
+   * Download an asset and output it to a Base64 string.
+   */
+  private async urlToBase64(url: string): Promise<string> {
+    const response = await fetch(url)
+    const buffer = await response.buffer()
+
+    return buffer.toString('base64')
   }
 }

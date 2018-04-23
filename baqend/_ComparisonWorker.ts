@@ -120,6 +120,9 @@ export class ComparisonWorker implements TestListener {
   }
 
   shouldStartPageSpeedInsights(testOverview: model.TestOverview): boolean {
+    if (testOverview.psiDomains && testOverview.psiRequests && testOverview.psiResponseSize && testOverview.psiScreenshot) {
+      return false
+    }
     if (!testOverview.tasks || !testOverview.tasks.length) {
       return true
     }

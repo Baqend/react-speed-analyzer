@@ -182,7 +182,7 @@ declare module 'baqend' {
       psiDomains: number;
       psiRequests: number;
       psiResponseSize: string;
-      psiScreenshot: {};
+      psiScreenshot: { data: string, width: number, height: number, mime_type: string };
       location: string;
       caching: boolean;
       mobile: boolean;
@@ -336,6 +336,7 @@ declare module 'baqend' {
       type: PuppeteerType;
       stats: PuppeteerStats;
       speedKit: PuppeteerSpeedKit | null;
+      screenshot: string;
     }
 
     interface PuppeteerType extends binding.Managed {
