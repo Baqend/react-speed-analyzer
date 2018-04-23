@@ -349,6 +349,11 @@ export class Analyzer {
    * Selects normalized URLs as possible candidates.
    */
   private selectUrls(...urls: string[]): string[] {
+    if (!urls.length) {
+      throw new Error('You must at least select one URL.')
+    }
+
+    const failedCandidates: string[] = []
     const set = new Set<string>()
     for (let url of urls) {
       while (this.permanentRedirects.has(url)) {
@@ -358,7 +363,18 @@ export class Analyzer {
       // Cache blacklist for one day maximum
       if (!this.candidateBlacklist.has(url) || this.candidateBlacklist.get(url) < Date.now() - ONE_DAY) {
         set.add(url)
+      } else {
+        failedCandidates.push(url)
       }
+    }
+
+    // Was the set empty? Delete the candidate blacklist and try again
+    if (!set.size) {
+      for (const url of failedCandidates) {
+        this.logQuery(url, 'Removing from blacklist due to deadlock')
+        this.candidateBlacklist.delete(url)
+      }
+      return this.selectUrls(...urls)
     }
 
     return [...set]
