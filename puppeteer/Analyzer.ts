@@ -197,6 +197,9 @@ export class Analyzer {
     })
   }
 
+  /**
+   * Actually load the context for a given query.
+   */
   private async doLoadContext(browser: Browser, query: string): Promise<Context> {
     // Let query wait until next page is finished
     if (this.contextPromises.size >= MAX_CONCURRENT_CONTEXTS) {
@@ -205,72 +208,90 @@ export class Analyzer {
 
     // Open the next page
     const page = await browser.newPage()
-    await page.setCacheEnabled(true)
+    try {
+      await page.setCacheEnabled(true)
 
-    // Get CDP client
-    const client = await page.target().createCDPSession()
+      // Get CDP client
+      const client = await page.target().createCDPSession()
 
-    // Activate CDP controls
-    await Promise.all([
-      // Enable network control
-      client.send('Network.enable'),
-      // Enable ServiceWorker control
-      client.send('ServiceWorker.enable'),
-      // Enable performance statistics
-      client.send('Performance.enable'),
-    ])
+      // Activate CDP controls
+      await Promise.all([
+        // Enable network control
+        client.send('Network.enable'),
+        // Enable ServiceWorker control
+        client.send('ServiceWorker.enable'),
+        // Enable performance statistics
+        client.send('Performance.enable'),
+      ])
 
-    // Listen for Network
-    const resources = await listenForResources(client)
+      // Listen for Network
+      const resources = await listenForResources(client)
 
-    // Collect all service worker registrations
-    const serviceWorkers = await listenForServiceWorkerRegistrations(client)
+      // Collect all service worker registrations
+      const serviceWorkers = await listenForServiceWorkerRegistrations(client)
 
-    // Collect all permanent redirects
-    await listenForPermanentRedirects(client, this.permanentRedirects, this.schemeMap)
+      // Collect all permanent redirects
+      await listenForPermanentRedirects(client, this.permanentRedirects, this.schemeMap)
 
-    // Load the document
-    const response = await page.goto(query)
-    const url = response.url()
-    const displayUrl = urlToUnicode(url)
+      // Load the document
+      const response = await page.goto(query, { timeout: 30_000 })
+      const url = response.url()
+      const displayUrl = urlToUnicode(url)
 
-    // Save scheme for given host
-    const { protocol: scheme, host } = parse(url)
-    if (!this.schemeMap.has(host) || scheme === 'https:') {
-      this.schemeMap.set(host, scheme)
+      // Save scheme for given host
+      const { protocol: scheme, host } = parse(url)
+      if (!this.schemeMap.has(host) || scheme === 'https:') {
+        this.schemeMap.set(host, scheme)
+      }
+
+      const domains = getDomainsOfResources(resources.values())
+
+      // Filter out all registrations which are not against this URL
+      filterServiceWorkerRegistrationsByUrl(serviceWorkers, url)
+
+      // Find the document resource
+      const documentResource = [...resources.values()].find(it => it.url === url)
+
+      return { client, page, url, displayUrl, scheme, host, documentResource, serviceWorkers, domains, resources }
+    } catch (e) {
+      await this.cleanupContext(query, page)
+      throw new Error(`Could not goto ${query}: ${e.message}`)
     }
-
-    const domains = getDomainsOfResources(resources.values())
-
-    // Filter out all registrations which are not against this URL
-    filterServiceWorkerRegistrationsByUrl(serviceWorkers, url)
-
-    const documentResource = [...resources.values()].find(it => it.url === url)
-
-    return { client, page, url, displayUrl, scheme, host, documentResource, serviceWorkers, domains, resources }
   }
 
+  /**
+   * Actually closes the opened context for a given query.
+   */
   private async doCloseContext(query: string): Promise<void> {
     // This should be a resolved promise!
     const { page, client, serviceWorkers } = await this.contextPromises.get(query)
 
+    // Clean up context after success
+    await this.cleanupContext(query, page)
+
+    // Stop all service workers on that page
+    for (const { scopeURL } of serviceWorkers.values()) {
+      await client.send('ServiceWorker.unregister', { scopeURL })
+    }
+  }
+
+  /**
+   * Ensures that a page is closed and the next waiting loader will be executed.
+   */
+  private async cleanupContext(query: string, page: Page) {
     // Do not provide this promise anymore
     this.contextPromises.delete(query)
     this.contextListeners.set(query, 0)
 
-    // Stop all service workers on that page
-    for (const sw of serviceWorkers.values()) {
-      const { scopeURL } = sw
-      await client.send('ServiceWorker.unregister', { scopeURL })
-    }
-
-    // Close the page
-    await page.close()
-
-    // Are there loaders waiting? Allow the next one
-    if (this.loadersWaiting.length) {
-      const next = this.loadersWaiting.shift()!
-      next()
+    try {
+      // Close the page
+      await page.close()
+    } finally {
+      // Are there loaders waiting? Allow the next one
+      if (this.loadersWaiting.length) {
+        const resolve = this.loadersWaiting.shift()!
+        resolve()
+      }
     }
   }
 

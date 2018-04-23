@@ -13,7 +13,7 @@ const analyzer = new Analyzer(screenshotDir)
  * Returns the status code for a given error.
  */
 function getErrorStatusCode({ message }: Error): number {
-  if (message.startsWith('Navigation Timeout Exceeded')) {
+  if (message.includes('Navigation Timeout Exceeded')) {
     return 504
   }
 
@@ -72,7 +72,8 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
       const status = getErrorStatusCode(e)
       res.status(status)
       res.json({ message: e.message, status, stack: e.stack })
-      console.error(e.stack)
+      process.stderr.write(e.stack)
+      process.stderr.write('\n')
     }
   })
 
