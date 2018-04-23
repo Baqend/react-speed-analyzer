@@ -1,6 +1,6 @@
 {
   "name": "psa-puppeteer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Puppeteer server for Page Speed Analyzer",
   "main": "index.ts",
   "scripts": {

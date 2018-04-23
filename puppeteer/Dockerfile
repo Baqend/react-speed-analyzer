@@ -31,6 +31,9 @@ RUN chmod +x /usr/local/bin/dumb-init
 WORKDIR "/srv/www/puppeteer/"
 COPY . "/srv/www/puppeteer/"
 
+# Output build information
+RUN echo "{\"buildDate\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}" > /srv/www/puppeteer/build.json
+
 # Add user so we don't need --no-sandbox.
 RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
     && mkdir -p /home/pptruser/Downloads \
