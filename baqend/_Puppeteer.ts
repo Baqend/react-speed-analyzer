@@ -25,6 +25,15 @@ export class Puppeteer {
     const host = credentials.puppeteer_host
     const segmentStr = segments.length ? `${segments.join(';')};` : ''
     const response = await fetch(`http://${host}/${segmentStr}${url}`)
+    if (response.status !== 200) {
+      const { message, status, stack } = await response.json()
+      this.db.log.error(`Puppeteer Error: ${message}`, { message, status, stack })
+
+      const error = new Error(`Puppeteer failed with status ${status}: ${message}`)
+      Object.defineProperty(error, 'status', { value: status })
+
+      throw error
+    }
 
     return response.json()
   }
