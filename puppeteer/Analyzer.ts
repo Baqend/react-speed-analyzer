@@ -226,6 +226,7 @@ export class Analyzer {
     const page = await this.browser.newPage()
     try {
       await page.setCacheEnabled(true)
+      await page.setViewport({ width: 1200, height: 675, isLandscape: true, deviceScaleFactor: 1, isMobile: false })
 
       // Get CDP client
       const client = await page.target().createCDPSession()
