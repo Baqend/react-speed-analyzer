@@ -247,7 +247,13 @@ export class Analyzer {
       const serviceWorkers = await listenForServiceWorkerRegistrations(client)
 
       // Collect all permanent redirects
-      await listenForPermanentRedirects(client, this.permanentRedirects, this.schemeMap)
+      await listenForPermanentRedirects(client, (fromURL, toURL) => {
+        this.logQuery(query, `Caching permanent redirect from ${fromURL} to ${toURL}`)
+        return this.permanentRedirects.set(fromURL, toURL)
+      }, (host) => {
+        this.logQuery(query, `Caching SSL available for ${host}`)
+        return this.schemeMap.set(host, 'https:')
+      })
 
       // Load the document
       const now = Date.now()
@@ -259,6 +265,7 @@ export class Analyzer {
       // Save scheme for given host
       const { protocol: scheme, host } = parse(url)
       if (!this.schemeMap.has(host) || scheme === 'https:') {
+        this.logQuery(query, `Caching ${scheme === 'https:' ? 'SSL available' : 'SSL missing'} for ${host}`)
         this.schemeMap.set(host, scheme)
       }
 
