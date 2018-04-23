@@ -33,7 +33,7 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
 
   if (userDataDir) {
     await deleteDirectory(userDataDir)
-    console.log(`Deleted ${userDataDir}`)
+    process.stderr.write(`Deleted ${userDataDir}\n`)
   }
 
   const args = noSandbox ? ['--no-sandbox'] : []
@@ -72,15 +72,13 @@ export async function server(port: number, { caching, userDataDir, noSandbox }: 
       const status = getErrorStatusCode(e)
       res.status(status)
       res.json({ message: e.message, status, stack: e.stack })
-      process.stderr.write(e.stack)
-      process.stderr.write('\n')
     }
   })
 
   const hostname = '0.0.0.0'
   app.listen(port, () => {
-    console.log(`Server is listening on http://${hostname}:${port}/config`)
-    console.log(`Caching is ${caching ? `enabled, caching to ${userDataDir}` : 'disabled'}`)
+    process.stderr.write(`Server is listening on http://${hostname}:${port}/config\n`)
+    process.stderr.write(`Caching is ${caching ? `enabled, caching to ${userDataDir}` : 'disabled'}\n`)
     noSandbox && console.log('Running chrome in no-sandbox mode')
   })
 

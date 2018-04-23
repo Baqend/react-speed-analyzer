@@ -37,6 +37,7 @@ interface Context {
 
 const MAX_CONCURRENT_CONTEXTS = 20
 const ONE_DAY = 86_400_000 /*ms*/
+const NAVIGATION_TIMEOUT = 30_000 /*ms*/
 
 export class Analyzer {
   private readonly browser: Browser
@@ -171,19 +172,26 @@ export class Analyzer {
     }
 
     return new Promise((resolveOuter) => {
+      let winner: string | null = null
       const promises = candidates.map(async (candidate) => {
         try {
           const result = await this.handleQuery(req, segments, candidate)
-          if (result && result.scheme === 'https:') {
+          if (!winner && result && result.scheme === 'https:') {
+            this.logQuery(candidate, `Won the race`)
+            winner = candidate
             resolveOuter(result)
             return null
           }
 
           return result
-        } catch (error) {
+        } catch ({ message, stack }) {
+          this.logQuery(candidate, `Error while racing: ${message}`, stack)
+
           // Does this candidate cause an error? Blacklist it if is https:
           if (candidate.startsWith('https:')) {
-            this.candidateBlacklist.set(candidate, Date.now())
+            const now = Date.now()
+            this.logQuery(candidate, `Put on blacklist until ${new Date(now + ONE_DAY).toISOString()}`)
+            this.candidateBlacklist.set(candidate, now)
           }
 
           return null
@@ -191,11 +199,13 @@ export class Analyzer {
       })
 
       // Fallback to best matching result
-      Promise.all(promises)
+      if (!winner) {
+        Promise.all(promises)
         // Find a candidate which does not evaluate to null
-        .then(results => results.reduce((p, r) => p || r, null))
-        // Return it as the result
-        .then(resolveOuter)
+          .then(results => results.reduce((p, r) => p || r, null))
+          // Return it as the result
+          .then(resolveOuter)
+      }
     })
   }
 
@@ -205,8 +215,12 @@ export class Analyzer {
   private async doLoadContext(query: string): Promise<Context> {
     // Let query wait until next page is finished
     if (this.contextPromises.size >= MAX_CONCURRENT_CONTEXTS) {
+      const now = Date.now()
+      this.logQuery(query, `Enqueuing (${this.loadersWaiting.length + 1} waiting)`)
       await new Promise(resolver => this.loadersWaiting.push(resolver))
+      this.logQuery(query, `Dequeuing after ${Date.now() - now}ms (${this.loadersWaiting.length} waiting)`)
     }
+    this.logQuery(query, `Executing (${this.contextPromises.size - this.loadersWaiting.length} loading)`)
 
     // Open the next page
     const page = await this.browser.newPage()
@@ -236,7 +250,9 @@ export class Analyzer {
       await listenForPermanentRedirects(client, this.permanentRedirects, this.schemeMap)
 
       // Load the document
-      const response = await page.goto(query, { timeout: 30_000 })
+      const now = Date.now()
+      const response = await page.goto(query, { timeout: NAVIGATION_TIMEOUT })
+      this.logQuery(query, `Page loaded with status code ${response.status()} after ${Date.now() -  now}ms`)
       const url = response.url()
       const displayUrl = urlToUnicode(url)
 
@@ -256,6 +272,8 @@ export class Analyzer {
 
       return { client, page, url, displayUrl, scheme, host, documentResource, serviceWorkers, domains, resources }
     } catch (e) {
+      this.logQuery(query, `Loading context failed: ${e.message}`, e.stack)
+
       await this.cleanupContext(query, page)
       throw new Error(`Could not goto ${query}: ${e.message}`)
     }
@@ -268,13 +286,13 @@ export class Analyzer {
     // This should be a resolved promise!
     const { page, client, serviceWorkers } = await this.contextPromises.get(query)
 
-    // Clean up context after success
-    await this.cleanupContext(query, page)
-
     // Stop all service workers on that page
     for (const { scopeURL } of serviceWorkers.values()) {
       await client.send('ServiceWorker.unregister', { scopeURL })
     }
+
+    // Clean up context after success
+    await this.cleanupContext(query, page)
   }
 
   /**
@@ -337,5 +355,13 @@ export class Analyzer {
     }
 
     return [...set]
+  }
+
+  private logQuery(query: string, message: string, stack: string = '') {
+    const date = new Date()
+    process.stderr.write(`[${date.toISOString()}] ${message} - "${query}"\n`)
+    if (stack) {
+      process.stderr.write(`${stack}\n`)
+    }
   }
 }
