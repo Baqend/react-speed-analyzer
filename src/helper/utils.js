@@ -15,8 +15,6 @@ export const formatFileSize = (bytes, decimals) => {
 }
 
 export const trackURL = (name, url, factors) => {
-  console.log(`Track ${name} with ${url} and ${factors}`)
-
   if (typeof fbq !== 'undefined') {
     fbq('trackCustom', name, { url, factors })
   }
