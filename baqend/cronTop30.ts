@@ -1,5 +1,6 @@
 import { baqend, model } from 'baqend'
 import fetch from 'node-fetch'
+import { generateHash, getDateString } from './_helpers'
 import { BulkTestParams, startBulkComparison } from './startBulkComparison'
 
 // The maximum number of iterations to check the status of given bulk tests (4 hours).
@@ -256,6 +257,7 @@ function startCheckStateInterval(db: baqend, bulkComparison: model.BulkCompariso
  * @param db The Baqend instance.
  */
 export async function call(db: baqend): Promise<void> {
-  const bulkComparison = await startBulkComparison(db, 'cronjob', TOP_LIST)
+  const id = `${getDateString()}-cronjob`
+  const bulkComparison = await startBulkComparison(db,  id, 'cronjob', TOP_LIST)
   startCheckStateInterval(db, bulkComparison)
 }

@@ -1,8 +1,9 @@
 import { baqend, model } from 'baqend'
 import { BulkComparisonTestParams } from './_BulkComparisonFactory'
 import { bootstrap } from './_compositionRoot'
+import { generateHash, getDateString } from './_helpers'
+import { Puppeteer } from './_Puppeteer'
 import { TestParams } from './_TestParams'
-import { UrlAnalyzer } from './_UrlAnalyzer'
 
 /**
  * The params which are allowed per test.
@@ -17,26 +18,30 @@ type StartBulkComparisonParams = BulkTestParams[] | {
   createdBy?: string
 }
 
-async function buildTest(urlAnalyzer: UrlAnalyzer, testParams: BulkTestParams): Promise<BulkComparisonTestParams> {
+async function buildTest(db: baqend, puppeteer: Puppeteer, testParams: BulkTestParams): Promise<BulkComparisonTestParams | null> {
   const { url, ...params } = testParams
-  const urlInfo = await urlAnalyzer.analyzeUrl(url, params.mobile)
-  if (!urlInfo) {
-    throw new Error(`Could not analyze URL: ${url}`)
+  try {
+    const puppeteerInfo = await puppeteer.analyze(url)
+
+    return Object.assign({}, params, { puppeteer: puppeteerInfo })
+  } catch ({ message, stack }) {
+    db.log.error(`Puppeteer failed for ${url}: ${message}`, { stack })
+    return null
   }
-
-  return Object.assign({}, params, { urlInfo })
 }
 
-function buildTests(urlAnalyzer: UrlAnalyzer, params: BulkTestParams[]): Promise<BulkComparisonTestParams[]> {
-  return Promise.all(params.map(param => buildTest(urlAnalyzer, param)))
+async function buildTests(db: baqend, puppeteer: Puppeteer, params: BulkTestParams[]): Promise<BulkComparisonTestParams[]> {
+  const promises = params.map(param => buildTest(db, puppeteer, param))
+
+  return (await Promise.all(promises)).filter(param => param !== null) as BulkComparisonTestParams[]
 }
 
-export async function startBulkComparison(db: baqend, createdBy: string | null, data: BulkTestParams[]): Promise<model.BulkComparison> {
-  const { bulkComparisonWorker, bulkComparisonFactory, urlAnalyzer } = bootstrap(db)
+export async function startBulkComparison(db: baqend, id: string, createdBy: string | null, data: BulkTestParams[]): Promise<model.BulkComparison> {
+  const { bulkComparisonWorker, bulkComparisonFactory, puppeteer } = bootstrap(db)
 
-  const tests = await buildTests(urlAnalyzer, data)
-  const bulkComparison = await bulkComparisonFactory.create(createdBy, tests)
-  bulkComparisonWorker.next(bulkComparison)
+  const tests = await buildTests(db, puppeteer, data)
+  const bulkComparison = await bulkComparisonFactory.create(id, createdBy, tests)
+  await bulkComparisonWorker.next(bulkComparison)
 
   return bulkComparison
 }
@@ -44,11 +49,18 @@ export async function startBulkComparison(db: baqend, createdBy: string | null, 
 /**
  * Baqend code API call.
  */
-export async function call(db: baqend, data: StartBulkComparisonParams): Promise<model.BulkComparison> {
+export function call(db: baqend, data: StartBulkComparisonParams): any {
+  const id = `${getDateString()}-${generateHash()}`
   if (data instanceof Array) {
-    return startBulkComparison(db, null, data)
+    startBulkComparison(db, id, null, data)
+      .catch((error) => console.error(`Error while starting bulk comparison: ${error.message}`, { stack: error.stack, tests, createdBy }))
+
+    return { id, tests: data, createdBy: null }
   }
 
   const { tests, createdBy = null } = data
-  return startBulkComparison(db, createdBy, tests)
+  startBulkComparison(db, id, createdBy, tests)
+    .catch((error) => console.error(`Error while starting bulk comparison: ${error.message}`, { stack: error.stack, tests, createdBy }))
+
+  return { id, tests, createdBy }
 }

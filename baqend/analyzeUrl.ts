@@ -1,6 +1,12 @@
-import { baqend } from 'baqend'
+import { baqend, model } from 'baqend'
 import { bootstrap } from './_compositionRoot'
-import { OptUrlInfo } from './_UrlInfo'
+
+/**
+ * Wraps a promise to be used in a map.
+ */
+function forMap<K, V>(key: K, deferredValue: Promise<V>): Promise<[K, V]> {
+  return deferredValue.then(value => [key, value] as [K, V])
+}
 
 /**
  * Analyzes a bunch of URLs.
@@ -12,10 +18,13 @@ import { OptUrlInfo } from './_UrlInfo'
  * @return A promise which resolves with the analysis's result map.
  * @template Result
  */
-export async function analyzeUrls(queries: string[], db: baqend, mobile: boolean = false): Promise<Map<string, OptUrlInfo>> {
-  const { urlAnalyzer } = bootstrap(db)
+export async function analyzeUrls(queries: string[], db: baqend, mobile: boolean = false): Promise<Map<string, model.Puppeteer>> {
+  const { puppeteer } = bootstrap(db)
 
-  return urlAnalyzer.analyzeUrls(queries, mobile)
+  const analyses = queries.map(query => forMap(query, puppeteer.analyze(query)))
+  const map = await Promise.all(analyses)
+
+  return new Map(map)
 }
 
 /**

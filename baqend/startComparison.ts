@@ -1,4 +1,5 @@
 import { baqend } from 'baqend'
+import { Request, Response } from 'express'
 import { bootstrap } from './_compositionRoot'
 import { TestParams } from './_TestParams'
 
@@ -9,18 +10,20 @@ interface StartComparisonParams extends TestParams {
 /**
  * Baqend code API call.
  */
-export async function call(db: baqend, data: StartComparisonParams) {
-  const { comparisonWorker, comparisonFactory, urlAnalyzer } = bootstrap(db)
+export async function post(db: baqend, req: Request, res: Response) {
+  const { comparisonWorker, comparisonFactory, puppeteer } = bootstrap(db)
 
-  // Get necessary options
-  const { url, ...params } = data
-  const urlInfo = await urlAnalyzer.analyzeUrl(url, params.mobile)
-  if (!urlInfo) {
-    throw new Error(`Could not analyze URL: ${url}`)
+  try {
+    // Get necessary options
+    const { url, ...params } = req.body as StartComparisonParams
+    const puppeteerInfo = await puppeteer.analyze(url)
+    const comparison = await comparisonFactory.create(puppeteerInfo, params)
+    comparisonWorker.next(comparison).catch((err) => db.log.error(err.message, err))
+
+    res.status(200)
+    res.send(comparison)
+  } catch ({ message, stack, status = 500 }) {
+    res.status(status)
+    res.send({ message, stack, status })
   }
-
-  const comparison = await comparisonFactory.create(urlInfo, params)
-  comparisonWorker.next(comparison).catch((err) => db.log.error(err.message, err))
-
-  return comparison
 }

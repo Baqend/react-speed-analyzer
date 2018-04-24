@@ -15,6 +15,8 @@ export async function run(db: baqend) {
   const now = Date.now()
   const tests = await db.TestResult.find()
     .equal('hasFinished', false)
+    .notEqual('url', null)
+    .lessThanOrEqualTo('retries', 10)
     .lessThanOrEqualTo('updatedAt', new Date(now - ONE_MINUTE))
     .greaterThanOrEqualTo('updatedAt', new Date(now - ONE_DAY))
     .isNotNull('webPagetests')

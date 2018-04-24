@@ -123,6 +123,11 @@
       "name": "type",
       "type": "/db/String",
       "order": 21
+    },
+    "puppeteer": {
+      "name": "puppeteer",
+      "type": "/db/Puppeteer",
+      "order": 22
     }
   }
 }

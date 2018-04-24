@@ -23,6 +23,10 @@ declare module 'baqend' {
     UrlAnalysis: binding.ManagedFactory<model.UrlAnalysis>;
     Tasks: binding.ManagedFactory<model.Tasks>;
     Means: binding.ManagedFactory<model.Means>;
+    Puppeteer: binding.ManagedFactory<model.Puppeteer>;
+    PuppeteerType: binding.ManagedFactory<model.PuppeteerType>;
+    PuppeteerStats: binding.ManagedFactory<model.PuppeteerStats>;
+    PuppeteerSpeedKit: binding.ManagedFactory<model.PuppeteerSpeedKit>;
   }
 
   namespace model {
@@ -31,7 +35,7 @@ declare module 'baqend' {
     }
 
     interface ComparisonInfo {
-      urlInfo: any
+      puppeteer: Puppeteer
       isStarted: boolean
       runs: number
       location: string
@@ -70,6 +74,7 @@ declare module 'baqend' {
       priority: number;
       urlAnalysis: UrlAnalysis;
       params: any;
+      puppeteer: Puppeteer | null;
     }
 
     interface Role extends binding.Entity {
@@ -177,7 +182,7 @@ declare module 'baqend' {
       psiDomains: number;
       psiRequests: number;
       psiResponseSize: string;
-      psiScreenshot: {};
+      psiScreenshot: { data: string, width: number, height: number, mime_type: string };
       location: string;
       caching: boolean;
       mobile: boolean;
@@ -196,6 +201,8 @@ declare module 'baqend' {
       speedKitConfig: string | null;
       tasks: Array<Task>;
       configAnalysis: ConfigAnalysis | null;
+      puppeteer: Puppeteer | null;
+      hasMultiComparison: boolean;
     }
 
     interface Hits extends binding.Managed {
@@ -266,6 +273,19 @@ declare module 'baqend' {
       p100: number;
     }
 
+    interface Hits extends binding.Managed {
+      hit: number;
+      miss: number;
+      other: number;
+      size: number;
+      withCaching: number;
+    }
+
+    interface ContentSize extends binding.Managed {
+      text: number;
+      images: number;
+    }
+
     interface Mean extends binding.Managed {
       speedIndex: number;
       firstMeaningfulPaint: number;
@@ -309,5 +329,49 @@ declare module 'baqend' {
       testseries: model.Testseries
     }
 
+    interface Puppeteer extends binding.Managed {
+      url: string;
+      displayUrl: string;
+      protocol: string;
+      domains: string[];
+      type: PuppeteerType;
+      stats: PuppeteerStats;
+      speedKit: PuppeteerSpeedKit | null;
+      screenshot: string;
+    }
+
+    interface PuppeteerType extends binding.Managed {
+      framework: string | null;
+      language: string | null;
+      server: string | null;
+    }
+
+    interface PuppeteerStats extends binding.Managed {
+      requests: number;
+      size: number;
+      errors: number;
+      redirects: number;
+      successful: number;
+      compressed: number;
+      images: number;
+      scripts: number;
+      stylesheets: number;
+      fonts: number;
+      fromDiskCache: number;
+      fromServiceWorker: number;
+      domains: number;
+    }
+
+    interface PuppeteerSpeedKit extends binding.Managed {
+      major: number;
+      minor: number;
+      patch: number;
+      stability: string | null;
+      swUrl: string;
+      swPath: string;
+      appName: string;
+      appDomain: string | null;
+      config: any;
+    }
   }
 }

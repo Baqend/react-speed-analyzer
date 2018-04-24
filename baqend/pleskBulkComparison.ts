@@ -1,5 +1,6 @@
 import { baqend, model } from 'baqend'
 import { Request, Response } from 'express'
+import { generateHash, getDateString } from './_helpers'
 import { startBulkComparison } from './startBulkComparison'
 import { DEFAULT_PLESK_PRIORITY } from './_TestBuilder'
 
@@ -84,10 +85,11 @@ export async function post(db: baqend, request: Request, response: Response) {
 
   const domainNames: string[] = body
   try {
+    const id = `${getDateString()}-plesk-${generateHash()}`
     const tests = domainNames.map(domainName => ({ url: domainName, priority: DEFAULT_PLESK_PRIORITY, runs: 2 }))
-    const bulkComparison = await startBulkComparison(db, 'plesk', tests)
+    const bulkComparison = await startBulkComparison(db, id, 'plesk', tests)
 
-    const domainMap = bulkComparison.comparisonsToStart.map((comparison, index) => [domainNames[index], comparison.urlInfo.url] as [string, string])
+    const domainMap = bulkComparison.comparisonsToStart.map((comparison, index) => [domainNames[index], comparison.puppeteer.url] as [string, string])
     const bulkComparisonId = bulkComparison.id
 
     response.send({ bulkComparisonId, domainMap })

@@ -1,7 +1,7 @@
 import { baqend, model } from 'baqend'
 import { Config } from './_Config'
 import { ConfigGenerator } from './_ConfigGenerator'
-import { Pagetest, WptTestResultOptions } from './_Pagetest'
+import { Pagetest, WptTestResult, WptTestResultOptions } from './_Pagetest'
 import { generateTestResult } from './_resultGeneration'
 import { ConfigCache } from './_ConfigCache'
 import { DataType, Serializer } from './_Serializer'
@@ -101,9 +101,8 @@ export class WebPagetestResultHandler {
 
     try {
       const result = await this.api.getTestResults(testId, options)
-      const domains = result.data
       this.db.log.info('Generating Smart Config', { url, mobile })
-      const config = await this.configGenerator.generateSmart(url, domains, mobile)
+      const config = await this.configGenerator.generateSmart(url, this.getDomains(result.data), mobile)
       // Save cached config
       await this.configCache.put(url, mobile, config)
 
@@ -124,5 +123,24 @@ export class WebPagetestResultHandler {
    */
   private getWebPagetestInfo(test: model.TestResult, wptTestId: string): model.WebPagetest | undefined {
     return test.webPagetests.find(wpt => wpt.testId === wptTestId)
+  }
+
+  private getDomains(testResult: WptTestResult): string[] {
+    if (!testResult || !testResult.runs || !testResult.runs['1'] || !testResult.runs['1'].firstView || !testResult.runs['1'].firstView.domains) {
+      throw new Error(`No testdata to analyze domains ${testResult.url}`)
+    }
+
+    const domains = Object.keys(testResult.runs['1'].firstView.domains)
+    if (domains.length < 1) {
+      this.db.log.warn(`Analyzed domains empty.`, { testResult })
+      throw new Error(`No testdata to analyze domains ${testResult.url}`)
+    }
+
+    if (domains.length === 1) {
+      this.db.log.warn(`Analyzed domains limited.`, { testResult })
+      throw new Error(`Only one domain to analyse ${testResult.url}`)
+    }
+
+    return domains
   }
 }

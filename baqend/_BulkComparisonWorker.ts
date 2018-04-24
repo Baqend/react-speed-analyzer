@@ -24,8 +24,8 @@ export class BulkComparisonWorker implements MultiComparisonListener {
         return
       }
 
-      const nextMultiComparison = this.getNextMultiComparison(bulkComparison)
-      if (!nextMultiComparison) {
+      const nextIndex = this.getNextIndex(bulkComparison)
+      if (nextIndex < 0) {
         this.db.log.info(`BulkComparison ${bulkComparison.key} is finished.`, { bulkComparison })
         if (bulkComparison.hasFinished) {
           this.db.log.warn(`BulkComparison ${bulkComparison.key} was already finished.`, { bulkComparison })
@@ -43,12 +43,13 @@ export class BulkComparisonWorker implements MultiComparisonListener {
       }
 
       // Start next multi comparison
-      const { urlInfo, runs, ...params } = nextMultiComparison
-      const multiComparison = await this.multiComparisonFactory.create(urlInfo, params, createdBy, runs)
+      const { puppeteer, runs, ...params } = bulkComparison.comparisonsToStart[nextIndex]
+      const multiComparison = await this.multiComparisonFactory.create(puppeteer, params, createdBy, runs)
 
       await bulkComparison.ready()
       await bulkComparison.optimisticSave((it: model.BulkComparison) => {
         it.multiComparisons.push(multiComparison)
+        Object.assign(it.comparisonsToStart[nextIndex], { isStarted: true })
       })
 
       this.multiComparisonWorker.next(multiComparison)
@@ -65,11 +66,9 @@ export class BulkComparisonWorker implements MultiComparisonListener {
     }
   }
 
-  private getNextMultiComparison(bulkComparison: model.BulkComparison): model.ComparisonInfo | undefined {
-    const { multiComparisons, comparisonsToStart } = bulkComparison
+  private getNextIndex(bulkComparison: model.BulkComparison): number {
+    const { comparisonsToStart } = bulkComparison
 
-    return comparisonsToStart.find(comparison => {
-      return !multiComparisons.some(multiComparison => multiComparison.url === comparison.urlInfo.url)
-    })
+    return comparisonsToStart.findIndex(comparison => !comparison.isStarted)
   }
 }

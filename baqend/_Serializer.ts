@@ -22,12 +22,55 @@ export class Serializer {
    * Deserializes given data as the given type.
    */
   deserialize(data: string, type: DataType): any {
+    const decoded = this.decode(data, type)
+    return this.denormalize(decoded)
+  }
+
+  /**
+   * Decodes given data from the given type.
+   */
+  decode(data: string, type: DataType): any {
     switch (type) {
       case DataType.JSON:
-        return this.deserializeJson(data)
+        return JSON.parse(data)
       default:
         throw new Error(`Invalid type specified: ${type}. Must be one of ${DataType}`)
     }
+  }
+
+  /**
+   * Denormalizes the data of a JSON.
+   */
+  denormalize(data: any): any {
+    if (typeof data === 'string') {
+      // Is it an encoded regular expression?
+      const match = /^regexp:\/(.*)\/([\w]*)$/.exec(data)
+      if (match) {
+        const [, source, flags] = match
+        return new RegExp(source, flags)
+      }
+
+      return data
+    }
+
+    if (typeof data !== 'object') {
+      return data
+    }
+
+    if (data === null) {
+      return data
+    }
+
+    if (data instanceof Array) {
+      return data.map(item => this.denormalize(item))
+    }
+
+    const obj = Object.create(null)
+    for (const [key, value] of Object.entries(data)) {
+      obj[key] = this.denormalize(value)
+    }
+
+    return obj
   }
 
   /**
@@ -72,23 +115,6 @@ export class Serializer {
     return JSON.stringify(thing, ((key, value) => {
       if (value instanceof RegExp) {
         return `regexp:/${value.source}/${value.flags || ''}`
-      }
-
-      return value
-    }))
-  }
-
-  /**
-   * Converts something from JSON.
-   */
-  private deserializeJson(thing: string): any {
-    return JSON.parse(thing, ((key, value) => {
-      if (typeof value === 'string') {
-        const match = /^regexp:\/(.*)\/([\w]*)$/.exec(value)
-        if (match) {
-          const [, source, flags] = match
-          return new RegExp(source, flags)
-        }
       }
 
       return value

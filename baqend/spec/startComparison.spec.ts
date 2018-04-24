@@ -1,7 +1,24 @@
 import 'mocha'
 import DB from 'baqend'
 import { expect } from 'chai'
-import { call } from '../startComparison'
+import { Request, Response } from 'express'
+import { post } from '../startComparison'
+
+function mockReqRes(body: any = {}, query: any = {}): { req: Request, res: Response & { data: any, statusCode: number } } {
+  const req = { body, query } as any
+  const res = {
+    statusCode: 200,
+    data: {},
+    status(code) {
+      this.statusCode = code
+    },
+    send(data) {
+      this.data = data
+    },
+  } as any
+
+  return { req, res }
+}
 
 describe('startComparison', () => {
   before(async () => {
@@ -11,8 +28,13 @@ describe('startComparison', () => {
   })
 
   it('starts comparisons correctly', async () => {
+    const url = 'google.de'
+    const { req, res } = mockReqRes({ url })
     // Check call result
-    const result = await call(DB, { url: 'google.de' })
+    await post(DB, req, res)
+
+    expect(res.statusCode).to.eql(200)
+    const result = res.data
     expect(result).to.be.ok
     expect(result.url).to.eql('https://www.google.de/')
     expect(result.displayUrl).to.eql('https://www.google.de/')

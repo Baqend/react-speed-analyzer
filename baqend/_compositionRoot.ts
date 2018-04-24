@@ -8,12 +8,12 @@ import { ConfigGenerator } from './_ConfigGenerator'
 import { MultiComparisonFactory } from './_MultiComparisonFactory'
 import { MultiComparisonWorker } from './_MultiComparisonWorker'
 import { Pagetest } from './_Pagetest'
+import { Puppeteer } from './_Puppeteer'
 import { Serializer } from './_Serializer'
 import { TestBuilder } from './_TestBuilder'
 import { TestFactory } from './_TestFactory'
 import { TestScriptBuilder } from './_TestScriptBuilder'
 import { TestWorker } from './_TestWorker'
-import { UrlAnalyzer } from './_UrlAnalyzer'
 import { WebPagetestResultHandler } from './_WebPagetestResultHandler'
 
 /**
@@ -32,14 +32,14 @@ export function bootstrap(db: baqend) {
   const testScriptBuilder = new TestScriptBuilder()
   const configCache = new ConfigCache(db, serializer)
   const configGenerator = new ConfigGenerator(db)
-  const urlAnalyzer = new UrlAnalyzer(db)
   const pagetest = new Pagetest()
   const webPagetestResultHandler = new WebPagetestResultHandler(db, pagetest, configGenerator, configCache, serializer)
   const testBuilder = new TestBuilder()
+  const puppeteer = new Puppeteer(db)
 
   // Create factories
   const testFactory = new TestFactory(db, testBuilder)
-  const comparisonFactory = new ComparisonFactory(db, testFactory, testBuilder, configCache, serializer)
+  const comparisonFactory = new ComparisonFactory(db, testFactory, testBuilder, configCache, configGenerator, serializer)
   const multiComparisonFactory = new MultiComparisonFactory(db, testBuilder)
   const bulkComparisonFactory = new BulkComparisonFactory(db, testBuilder)
 
@@ -54,10 +54,10 @@ export function bootstrap(db: baqend) {
     testScriptBuilder,
     configCache,
     configGenerator,
-    urlAnalyzer,
     pagetest,
     webPagetestResultHandler,
     testBuilder,
+    puppeteer,
 
     testFactory,
     bulkComparisonFactory,

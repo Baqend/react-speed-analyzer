@@ -68,11 +68,13 @@ class ResultMetrics extends Component {
                 {index !== 0 && <hr/>}
                 <div className="flex items-center pt1 pb1 border-top">
                   <div className="w-third text-center">
-                    <div className="metricValue">{competitorData[metric.name]}ms</div>
+                    {competitorData[metric.name] ? (
+                      <div className="metricValue">{competitorData[metric.name]}ms</div>
+                    ):(<div className="metricValue">-</div>)}
                   </div>
                   <div className="w-third text-center">
                     <div data-tip data-for={metric.name}>
-                      <div className="factor">{absolute} {factor > 1 ? 'Faster' : ''} ({factor}x)</div>
+                      {(absolute && factor) && <div className="factor">{absolute} {factor > 1 ? 'Faster' : ''} ({factor}x)</div>}
                       <div className="metricLabel">{metric.label}</div>
                     </div>
                     <ReactTooltip id={metric.name} type='dark' place='top' effect='solid'>
@@ -80,7 +82,9 @@ class ResultMetrics extends Component {
                     </ReactTooltip>
                   </div>
                   <div className="w-third text-center">
-                    <div className="metricValue">{speedKitData[metric.name]}ms</div>
+                    {speedKitData[metric.name] ? (
+                      <div className="metricValue">{speedKitData[metric.name]}ms</div>
+                    ):(<div className="metricValue">-</div>)}
                   </div>
                 </div>
               </div>
@@ -97,11 +101,13 @@ class ResultMetrics extends Component {
                 {index !== 0 && <hr/>}
                 <div className="flex items-center pt1 pb1 border-top">
                   <div className="w-third text-center">
-                    <div className="metricValue">{competitorData[metric.name]}ms</div>
+                    {competitorData[metric.name] ? (
+                      <div className="metricValue">{competitorData[metric.name]}ms</div>
+                    ):(<div className="metricValue">-</div>)}
                   </div>
                   <div className="w-third text-center">
                     <div data-tip data-for={metric.name}>
-                      <div className="factor">{absolute} {factor > 1 ? 'Faster' : ''} ({factor}x)</div>
+                      {(absolute && factor) && <div className="factor">{absolute} {factor > 1 ? 'Faster' : ''} ({factor}x)</div>}
                       <div className="metricLabel">{metric.label}</div>
                     </div>
                     <ReactTooltip id={metric.name} type='dark' place='top' effect='solid'>
@@ -109,7 +115,9 @@ class ResultMetrics extends Component {
                     </ReactTooltip>
                   </div>
                   <div className="w-third text-center">
-                    <div className="metricValue">{speedKitData[metric.name]}ms</div>
+                    {speedKitData[metric.name] ? (
+                      <div className="metricValue">{speedKitData[metric.name]}ms</div>
+                    ):(<div className="metricValue">-</div>)}
                   </div>
                 </div>
               </div>
@@ -152,7 +160,9 @@ class ResultMetrics extends Component {
                     <div className="metricValue faded">{metric.label}</div>
                   </div>
                   <div className="w-50 tl pt2 pb2 pl2 speedKitVideo">
-                    <div className="metricValue">{competitorData[metric.name]}ms</div>
+                    {competitorData[metric.name] ? (
+                      <div className="metricValue">{competitorData[metric.name]}ms</div>
+                    ):(<div className="metricValue">-</div>)}
                   </div>
                 </div>
               </div>
@@ -175,7 +185,9 @@ class ResultMetrics extends Component {
                     <div className="metricValue faded">{metric.label}</div>
                   </div>
                   <div className="w-50 tl pt2 pb2 pl2 speedKitVideo">
-                    <div className="metricValue">{competitorData[metric.name]}ms</div>
+                    {competitorData[metric.name] ? (
+                      <div className="metricValue">{competitorData[metric.name]}ms</div>
+                    ):(<div className="metricValue">-</div>)}
                   </div>
                 </div>
               </div>
@@ -190,8 +202,7 @@ class ResultMetrics extends Component {
         <hr />
         <div className="flex items-center border-top">
           <div className="w-100 tc pt1 pb1">
-            {/*<a href={this.props.competitorTest.summaryUrl} className="">{this.props.competitorTest.url}</a>*/}
-            <a href={this.props.competitorTest.summaryUrl} className="">Your Website</a>
+            <a href={createWaterfallLink(this.props.competitorTest)} target="_blank" className="">Your Website</a>
           </div>
         </div>
         <hr />

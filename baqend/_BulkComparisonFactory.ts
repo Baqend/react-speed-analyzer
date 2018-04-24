@@ -2,13 +2,12 @@ import { baqend, model } from 'baqend'
 import { AsyncFactory } from './_AsyncFactory'
 import { TestBuilder } from './_TestBuilder'
 import { TestParams } from './_TestParams'
-import { UrlInfo } from './_UrlInfo'
 
 /**
  * The params which are allowed per test.
  */
 export interface BulkComparisonTestParams extends TestParams {
-  urlInfo: UrlInfo
+  puppeteer: model.Puppeteer
   runs?: number
 }
 
@@ -27,8 +26,8 @@ export class BulkComparisonFactory implements AsyncFactory<model.BulkComparison>
    *
    * @return A promise which resolves with the created object.
    */
-  create(createdBy: string | null, tests: BulkComparisonTestParams[]): Promise<model.BulkComparison> {
-    const bulkComparison: model.BulkComparison = new this.db.BulkComparison()
+  create(id: string, createdBy: string | null, tests: BulkComparisonTestParams[]): Promise<model.BulkComparison> {
+    const bulkComparison: model.BulkComparison = new this.db.BulkComparison({ id })
     bulkComparison.comparisonsToStart = tests.map(this.buildParams.bind(this))
     bulkComparison.createdBy = createdBy
     bulkComparison.multiComparisons = []
@@ -41,9 +40,9 @@ export class BulkComparisonFactory implements AsyncFactory<model.BulkComparison>
    * Builds the final test params.
    */
   buildParams(test: BulkComparisonTestParams): model.ComparisonInfo {
-    const { urlInfo, ...params } = test
+    const { puppeteer, ...params } = test
     const isStarted = false
 
-    return Object.assign(this.testBuilder.buildBulkParams(params), { urlInfo, isStarted })
+    return Object.assign(this.testBuilder.buildBulkParams(params), { puppeteer, isStarted })
   }
 }

@@ -29,7 +29,11 @@ export async function generateTestResult(wptTestId: string, pendingTest: model.T
     pendingTest.summaryUrl = rawData.summary
     pendingTest.testDataMissing = false
 
-    const runIndex = getValidTestRun(db, rawData)
+    const runIndex = getValidTestRuns(db, rawData).reduce((a, b) => {
+      return rawData.runs[a].firstView.SpeedIndex > rawData.runs[b].firstView.SpeedIndex ? a : b
+    })
+
+    db.log.info('Run index', {runIndex})
     const [testResult, videos] = await Promise.all([
       createTestResult(db, rawData, wptTestId, runIndex),
       createVideos(db, wptTestId, runIndex),
@@ -131,13 +135,13 @@ function isValidRun(run: WptRun): boolean {
 }
 
 
-function getValidTestRun(db: baqend, wptData: WptTestResult): string {
-  const runIndex = Object.keys(wptData.runs).find(index => isValidRun(wptData.runs[index]))
-  if (!runIndex) {
+function getValidTestRuns(db: baqend, wptData: WptTestResult): string[] {
+  const validRuns = Object.keys(wptData.runs).filter(index => isValidRun(wptData.runs[index]))
+  if (validRuns.length === 0) {
     throw new Error(`No valid test run found in ${wptData.id}`)
   }
 
-  return runIndex
+  return validRuns
 }
 
 /**
@@ -225,20 +229,23 @@ function countContentSize(requests: any[]): any {
  * @param testId The id of the test to choose the FMP for.
  * @param runIndex The index of the run to choose the FMP for.
  */
-async function chooseFMP(db: baqend, data: WptView, testId: string, runIndex: string): Promise<number> {
+async function chooseFMP(db: baqend, data: WptView, testId: string, runIndex: string): Promise<number|null> {
+  // Search First Meaningful Paint from timing
+  const { chromeUserTiming = [] } = data
+  const firstMeaningfulPaintObject =
+    chromeUserTiming
+      .reverse()
+      .find(entry => entry.name === 'firstMeaningfulPaint' || entry.name === 'firstMeaningfulPaintCandidate')
+
+  const firstMeaningfulPaint = firstMeaningfulPaintObject ? firstMeaningfulPaintObject.time : 0
   try {
-    return await getFMP(testId, runIndex)
+    db.log.info('Start FMP calculation')
+    const calculatedFM = await getFMP(db, testId, runIndex)
+    db.log.info('FMP calculation successful', {calculatedFM})
+    return Math.abs(calculatedFM - firstMeaningfulPaint) <= 100 ? firstMeaningfulPaint : calculatedFM
   } catch (error) {
     db.log.warn(`Could not calculate FMP for test ${testId}. Use FMP from wepPageTest instead!`, { error: error.stack })
-
-    // Search First Meaningful Paint from timing
-    const { chromeUserTiming = [] } = data
-    const firstMeaningfulPaintObject =
-      chromeUserTiming
-        .reverse()
-        .find(entry => entry.name === 'firstMeaningfulPaint' || entry.name === 'firstMeaningfulPaintCandidate')
-
-    return firstMeaningfulPaintObject ? firstMeaningfulPaintObject.time : 0
+    return firstMeaningfulPaint > 0 ? firstMeaningfulPaint : null
   }
 }
 

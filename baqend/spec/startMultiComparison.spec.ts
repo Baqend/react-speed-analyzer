@@ -4,7 +4,6 @@ import { expect } from 'chai'
 import { call } from '../startMultiComparison'
 import { sleep } from '../_sleep';
 import { Priority } from '../_TestParams';
-import { UrlType } from '../_UrlInfo';
 
 describe('startMultiComparison', () => {
   before(async () => {
@@ -18,9 +17,9 @@ describe('startMultiComparison', () => {
     const result = await call(DB, { url: 'obama.org', runs: 3, priority: Priority.HIGH })
     expect(result).to.be.ok
     expect(result.url).to.eql('https://www.obama.org/')
-    expect(result.urlAnalysis.url).to.eql('https://www.obama.org/')
-    expect(result.urlAnalysis.displayUrl).to.eql('https://www.obama.org/')
-    expect(result.urlAnalysis.type).to.eql(UrlType.WORDPRESS)
+    expect(result.puppeteer.url).to.eql('https://www.obama.org/')
+    expect(result.puppeteer.displayUrl).to.eql('https://www.obama.org/')
+    expect(result.puppeteer.type.framework).to.eql('wordpress')
     expect(result.hasFinished).to.be.false
 
     // Check remote
@@ -31,7 +30,7 @@ describe('startMultiComparison', () => {
     const bulkTest = await DB.BulkTest.load(id, { depth: 2 })
 
     expect(bulkTest).to.be.ok
-    expect(bulkTest.urlAnalysis).to.be.ok
+    expect(bulkTest.puppeteer).to.be.ok
     expect(bulkTest.url).to.eql('https://www.obama.org/')
     expect(bulkTest.priority).to.eql(Priority.HIGH)
 
@@ -39,7 +38,7 @@ describe('startMultiComparison', () => {
     expect(comparison).to.be.ok
     expect(comparison.url).to.eql('https://www.obama.org/')
     expect(comparison.displayUrl).to.eql('https://www.obama.org/')
-    expect(comparison.type).to.eql(UrlType.WORDPRESS)
+    expect(comparison.type).to.eql('wordpress')
 
     // Check comparison's tests
     expect(comparison.speedKitTestResult).to.be.ok

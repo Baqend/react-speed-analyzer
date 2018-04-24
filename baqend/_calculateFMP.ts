@@ -64,11 +64,12 @@ function calculateFMP(data: Array<[number, number]>): number {
 /**
  * Gets the first meaningful paint for a given test run.
  */
-export async function getFMP(testId: string, runIndex: string): Promise<number> {
+export async function getFMP(db: baqend, testId: string, runIndex: string): Promise<number> {
   const url = `http://${credentials.wpt_dns}/video/compare.php?tests=${testId}-r:${runIndex}-c:0`
   const response = await fetch(url)
   const htmlString = await response.text()
   const data = getDataFromHtml(htmlString)
+  db.log.info('Found data for FMP calculation', {data})
 
   return calculateFMP(data)
 }

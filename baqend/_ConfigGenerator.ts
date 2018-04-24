@@ -1,4 +1,4 @@
-import { baqend } from 'baqend'
+import { baqend, model } from 'baqend'
 import fetch from 'node-fetch'
 import { getAdSet } from './_adBlocker'
 import { Config } from './_Config'
@@ -46,8 +46,7 @@ export class ConfigGenerator {
   /**
    * Analyzes the given domains and creates a Speed Kit config with a suggested whitelist.
    */
-  async generateSmart(url: string, testResult: WptTestResult, mobile: boolean = false): Promise<Config> {
-    const domains = this.getDomains(testResult)
+  async generateSmart(url: string, domains: string[], mobile: boolean = false): Promise<Config> {
     this.db.log.info(`Analyzing domains: ${url}`, { domains })
 
     const cdnDomainsWithAds = await this.selectCdnDomains(domains)
@@ -66,25 +65,6 @@ export class ConfigGenerator {
       whitelist: [{ host: [domainRegex, ...whitelistedHosts] }],
       userAgentDetection: mobile,
     }
-  }
-
-  private getDomains(testResult: WptTestResult): string[] {
-    if (!testResult || !testResult.runs || !testResult.runs['1'] || !testResult.runs['1'].firstView || !testResult.runs['1'].firstView.domains) {
-      throw new Error(`No testdata to analyze domains ${testResult.url}`)
-    }
-
-    const domains = Object.keys(testResult.runs['1'].firstView.domains)
-    if (domains.length < 1) {
-      this.db.log.warn(`Analyzed domains empty.`, { testResult })
-      throw new Error(`No testdata to analyze domains ${testResult.url}`)
-    }
-
-    if (domains.length === 1) {
-      this.db.log.warn(`Analyzed domains limited.`, { testResult })
-      throw new Error(`Only one domain to analyse ${testResult.url}`)
-    }
-
-    return domains
   }
 
   /**
