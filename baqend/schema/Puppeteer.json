@@ -50,16 +50,6 @@
       "name": "stats",
       "type": "/db/PuppeteerStats",
       "order": 7
-    },
-    "speedKit": {
-      "name": "speedKit",
-      "type": "/db/PuppeteerSpeedKit",
-      "order": 8
-    },
-    "screenshot": {
-      "name": "screenshot",
-      "type": "/db/String",
-      "order": 9
     }
   }
 }

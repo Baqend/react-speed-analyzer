@@ -126,9 +126,6 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
     comparison.psiDomains = puppeteer.stats.domains
     comparison.psiRequests = puppeteer.stats.requests
     comparison.psiResponseSize = puppeteer.stats.size.toString()
-    if (puppeteer.screenshot) {
-      comparison.psiScreenshot = { data: puppeteer.screenshot, width: 800, height: 600, mime_type: 'image/png' }
-    }
 
     // Copy params
     comparison.caching = params.caching
