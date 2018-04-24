@@ -1,9 +1,0 @@
-version: "3"
-
-services:
-  puppeteer:
-    build: "."
-    restart: always
-    tty: true
-    ports:
-      - "80:8080"

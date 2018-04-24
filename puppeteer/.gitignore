@@ -1,5 +1,0 @@
-/node_modules/
-*.js
-/public/screenshots/*
-!/public/screenshots/.gitkeep
-benchmark.ts
