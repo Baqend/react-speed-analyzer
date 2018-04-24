@@ -10,7 +10,7 @@ import {
   RESET_TEST_RESULT,
 } from './types'
 
-import { isURL } from '../helper/utils'
+import { isURL, trackURL } from '../helper/utils'
 import stringifyObject from 'lib/stringify-object'
 
 /**
@@ -46,13 +46,13 @@ export const startTest = (useAdvancedConfig = true) => ({
     dispatch({
       type: RESET_TEST_RESULT
     })
+    const { url, location, caching, mobile, activityTimeout } = getState().config
     try {
       dispatch({
         type: START_TEST,
       })
       const { testOverview } = getState().result
       const speedKit = testOverview.isSpeedKitComparison
-      const { url, location, caching, mobile, activityTimeout } = getState().config
       let speedKitConfig = !speedKit || (speedKit && useAdvancedConfig) ? getState().config.speedKitConfig : null
 
       if (mobile && speedKitConfig) {
@@ -63,6 +63,9 @@ export const startTest = (useAdvancedConfig = true) => ({
       }
 
       // const testOverview = await db.modules.post('runComparison', {
+
+      trackURL('startComparison', url)
+
       const comparison = await db.modules.post('startComparison', {
         url,
         location,
@@ -80,6 +83,8 @@ export const startTest = (useAdvancedConfig = true) => ({
 
       return comparison
     } catch(e) {
+      trackURL('failedComparison', url)
+
       dispatch({
         type: RESET_TEST_RESULT,
       })
@@ -115,7 +120,13 @@ const subscribeToTestOverview = ({ testId, onAfterFinish }) => ({
       const testOverviewSubscription = testOverviewStream.subscribe((res) => {
         const testOverview = res[0] ? res[0].toJSON() : null
         if (testOverview) {
+          const trackUnload = () => {
+            trackURL('leaveDuringTest', testOverview.url)
+          }
+          window.addEventListener('beforeunload', trackUnload)
+
           if (testOverview.hasFinished) {
+            window.removeEventListener('beforeunload', trackUnload)
             testOverviewSubscription && testOverviewSubscription.unsubscribe()
             onAfterFinish && onAfterFinish({ testId })
           }
