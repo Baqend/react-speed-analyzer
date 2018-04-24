@@ -373,5 +373,10 @@ declare module 'baqend' {
       appDomain: string | null;
       config: any;
     }
+
+    interface Monitoring extends binding.Managed {
+      date: Date;
+      meanValues: model.Mean;
+    }
   }
 }
