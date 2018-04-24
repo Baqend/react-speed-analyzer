@@ -202,8 +202,7 @@ class ResultMetrics extends Component {
         <hr />
         <div className="flex items-center border-top">
           <div className="w-100 tc pt1 pb1">
-            {/*<a href={this.props.competitorTest.summaryUrl} className="">{this.props.competitorTest.url}</a>*/}
-            <a href={this.props.competitorTest.summaryUrl} className="">Your Website</a>
+            <a href={createWaterfallLink(this.props.competitorTest)} target="_blank" className="">Your Website</a>
           </div>
         </div>
         <hr />
