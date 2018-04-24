@@ -19,6 +19,8 @@
     "utf-8-validate": "^4.0.0"
   },
   "scripts": {
-    "local-proxy": "docker-compose -f docker-compose.local-proxy.yml up"
+    "local-proxy": "docker-compose -f docker-compose.local-proxy.yml up",
+    "build": "docker build . -t docker.baqend.com/makefast/makefast-proxy:latest",
+    "publish": "docker push docker.baqend.com/makefast/makefast-proxy:latest"
   }
 }
