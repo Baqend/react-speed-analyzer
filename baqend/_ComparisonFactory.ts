@@ -29,7 +29,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
    *
    * @return A promise which resolves with the created object.
    */
-  async create(puppeteer: model.Puppeteer, params: TestParams): Promise<model.TestOverview> {
+  async create(puppeteer: model.Puppeteer, params: TestParams, hasMultiComparison: boolean = false): Promise<model.TestOverview> {
     const config = await this.buildSpeedKitConfig(puppeteer, params)
     const requiredParams = this.testBuilder.buildSingleTestParams(params, config)
     const configAnalysis = puppeteer.speedKit ? this.createConfigAnalysis(puppeteer.url, puppeteer.speedKit) : null
@@ -41,7 +41,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
     ])
 
     // Create the comparison object
-    return this.createComparison(puppeteer, requiredParams, configAnalysis, competitorTest, speedKitTest)
+    return this.createComparison(puppeteer, requiredParams, configAnalysis, competitorTest, speedKitTest, hasMultiComparison)
   }
 
   /**
@@ -100,7 +100,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
   /**
    * Create the comparison object itself.
    */
-  private async createComparison(puppeteer: model.Puppeteer, params: Required<TestParams>, configAnalysis: model.ConfigAnalysis | null, competitorTest: model.TestResult, speedKitTest: model.TestResult): Promise<model.TestOverview> {
+  private async createComparison(puppeteer: model.Puppeteer, params: Required<TestParams>, configAnalysis: model.ConfigAnalysis | null, competitorTest: model.TestResult, speedKitTest: model.TestResult, hasMultiComparison: boolean = false): Promise<model.TestOverview> {
     const { url, displayUrl, speedKit } = puppeteer
     const uniqueId = await generateUniqueId(this.db, 'TestOverview')
     const tld = getTLD(this.db, url)
@@ -136,6 +136,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
     comparison.mobile = params.mobile
     comparison.activityTimeout = params.activityTimeout
     comparison.speedKitConfig = params.speedKitConfig
+    comparison.hasMultiComparison = hasMultiComparison
 
     return comparison.save()
   }

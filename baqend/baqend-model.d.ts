@@ -202,6 +202,7 @@ declare module 'baqend' {
       tasks: Array<Task>;
       configAnalysis: ConfigAnalysis | null;
       puppeteer: Puppeteer | null;
+      hasMultiComparison: boolean;
     }
 
     interface Hits extends binding.Managed {
