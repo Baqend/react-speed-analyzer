@@ -67,16 +67,10 @@ export class TestScriptBuilder {
    * Adds to a test script the logic to clear the browser's content.
    */
   private clearBrowserContent(testScript: TestScript, location: string) {
-    if (location.includes('-win') || location.includes('-linux')) {
+    if (location.includes('eu-central-1-')) {
       return testScript
         .navigate(`http://localhost:8888/orange.html`)
-    }
-
-    // Handle test script for new WPT agent
-    if (location.includes('-docker')) {
-      return testScript
-        .navigate(`https://${credentials.app}.app.baqend.com/test-init.html`)
-        .exec(`document.write('<body style="background-color: white"></body>')`)
+        .sleep(15)
     }
 
     return testScript

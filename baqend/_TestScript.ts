@@ -96,6 +96,16 @@ export class TestScript {
     return this.push(`setDns ${hostname} ${ip}`)
   }
 
+  /**
+   * Sleeps for the given amount of seconds
+   *
+   * @param seconds The sleep time to pause the test in seconds.
+   * @return This is a chainable method.
+   */
+  sleep(seconds: number): this {
+    return this.push(`sleep ${seconds}`)
+  }
+
   private push(line: string): this {
     this.lines.push(line)
     return this
