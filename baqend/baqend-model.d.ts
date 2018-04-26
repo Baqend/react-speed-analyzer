@@ -376,6 +376,16 @@ declare module 'baqend' {
     interface Monitoring extends binding.Managed {
       date: Date;
       meanValues: model.Mean;
+      resultDistribution: ResultDistribution;
+    }
+
+    interface ResultDistribution extends binding.Managed {
+      total: number;
+      veryGood: number;
+      good: number;
+      ok: number;
+      bad: number;
+      failed: number;
     }
   }
 }
