@@ -12,21 +12,26 @@ export class Puppeteer {
   }
 
   async analyze(url: string): Promise<model.Puppeteer> {
-    const data = await this.fetchData(url, 'stats', 'type', 'speedKit', 'screenshot', 'domains')
-    this.db.log.info(`Received puppeteer data for ${url}`, { data })
-    data.stats = new this.db.PuppeteerStats(data.stats)
-    data.type = new this.db.PuppeteerType(data.type)
-    data.speedKit = data.speedKit ? new this.db.PuppeteerSpeedKit(data.speedKit) : null
+    try {
+      const data = await this.fetchData(url, 'stats', 'type', 'speedKit', 'screenshot', 'domains')
+      this.db.log.info(`Received puppeteer data for ${url}`, { data })
+      data.stats = new this.db.PuppeteerStats(data.stats)
+      data.type = new this.db.PuppeteerType(data.type)
+      data.speedKit = data.speedKit ? new this.db.PuppeteerSpeedKit(data.speedKit) : null
 
-    // TODO: stream the screenshot to our file backend and save a file reference here
-    // try {
-    //  data.screenshot = await this.urlToBase64(data.screenshot)
-    // } catch ({ message }) {
-    //  this.db.log.warn(`Could not download screenshot from puppeteer: ${message}`)
-    //  data.screenshot = null
-    // }
+      // TODO: stream the screenshot to our file backend and save a file reference here
+      // try {
+      //  data.screenshot = await this.urlToBase64(data.screenshot)
+      // } catch ({ message }) {
+      //  this.db.log.warn(`Could not download screenshot from puppeteer: ${message}`)
+      //  data.screenshot = null
+      // }
 
-    return new this.db.Puppeteer(data)
+      return new this.db.Puppeteer(data)
+    } catch (error) {
+      this.db.log.error('Puppeteer error', { error: error.stack, url });
+      throw error;
+    }
   }
 
   private async fetchData(url: string, ...segments: PuppeteerSegment[]): Promise<any> {
