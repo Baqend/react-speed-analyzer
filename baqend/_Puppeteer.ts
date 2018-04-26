@@ -2,7 +2,7 @@ import { baqend, model } from 'baqend'
 import fetch from 'node-fetch'
 import credentials from './credentials'
 
-export type PuppeteerSegment = 'timings' | 'stats' | 'type' | 'speedKit' | 'screenshot' | 'pdf'
+export type PuppeteerSegment = 'timings' | 'stats' | 'type' | 'speedKit' | 'screenshot' | 'pdf' | 'domains'
 
 export class Puppeteer {
 
@@ -12,7 +12,7 @@ export class Puppeteer {
   }
 
   async analyze(url: string): Promise<model.Puppeteer> {
-    const data = await this.fetchData(url, 'stats', 'type', 'speedKit', 'screenshot')
+    const data = await this.fetchData(url, 'stats', 'type', 'speedKit', 'screenshot', 'domains')
     this.db.log.info(`Received puppeteer data for ${url}`, { data })
     data.stats = new this.db.PuppeteerStats(data.stats)
     data.type = new this.db.PuppeteerType(data.type)
