@@ -55,7 +55,7 @@ export class TestBuilder {
   buildSingleTestParams(params: TestParams, speedKitConfig: string | null = null, priority: Priority = DEFAULT_SINGLE_PRIORITY): Required<TestParams> {
     return Object.assign({}, DEFAULT_PARAMS, params, {
       speedKitConfig: params.speedKitConfig || speedKitConfig,
-      priority: params.priority || priority,
+      priority: typeof params.priority !== 'number' ? priority : params.priority,
     })
   }
 
@@ -65,7 +65,7 @@ export class TestBuilder {
   buildBulkParams(params: MultiTestParams, runs: number = 1, speedKitConfig: string | null = null, priority: Priority = DEFAULT_BULK_PRIORITY): Required<MultiTestParams> {
     return Object.assign({}, DEFAULT_PARAMS, params, {
       speedKitConfig: params.speedKitConfig || speedKitConfig,
-      priority: params.priority || priority,
+      priority: typeof params.priority !== 'number' ? priority : params.priority,
       runs: params.runs || runs,
     })
   }

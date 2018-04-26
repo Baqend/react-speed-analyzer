@@ -248,10 +248,10 @@ export class TestWorker {
    */
   private buildScriptForTestWithConfig(test: model.TestResult): string {
     const { testInfo, location } = test
-    const { url, isTestWithSpeedKit, activityTimeout } = testInfo
+    const { url, isTestWithSpeedKit, activityTimeout, appName } = testInfo
     const config = this.getConfigForTest(test)
 
-    return this.testScriptBuilder.createTestScript(url, isTestWithSpeedKit, config, location, activityTimeout)
+    return this.testScriptBuilder.createTestScript(url, isTestWithSpeedKit, config, location, activityTimeout, appName)
   }
 
   /**

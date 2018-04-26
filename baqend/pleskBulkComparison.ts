@@ -4,6 +4,17 @@ import { generateHash, getDateString } from './_helpers'
 import { startBulkComparison } from './startBulkComparison'
 import { DEFAULT_PLESK_PRIORITY } from './_TestBuilder'
 
+const defaultComparison = {
+  caching: false,
+  mobile: false,
+  competitorTestResult: '',
+  speedKitTestResult: '',
+  factors: { speedIndex: null },
+  hasFinished: true,
+  speedKitVersion: null,
+  isSpeedKitComparison: false,
+}
+
 /**
  * Sorts the comparisons of a multi comparison and finds the one with the best Speed Index.
  */
@@ -62,7 +73,19 @@ export async function get(db: baqend, request: Request, response: Response) {
   const bulkComparison = await db.BulkComparison.load(bulkComparisonId, { depth: 2 })
 
   // Find bulk test for URL
-  const bulkTest = bulkComparison.multiComparisons.find((multiComparison) => multiComparison.url === url)
+  const comparisonToStart = bulkComparison.comparisonsToStart.find((comparison) => comparison.url === url)
+  if (!comparisonToStart) {
+    const comparison = Object.assign(defaultComparison, { url })
+    response.send({
+      bulkComparisonId,
+      url,
+      comparison,
+    })
+    return
+  }
+
+  const { multiComparisonId } = comparisonToStart
+  const bulkTest = bulkComparison.multiComparisons.find((multiComparison) => multiComparison.id === multiComparisonId)
   if (!bulkTest || !bulkTest.hasFinished) {
     response.send({ bulkComparisonId, url, comparison: null })
     return
@@ -84,15 +107,14 @@ export async function post(db: baqend, request: Request, response: Response) {
   }
 
   const domainNames: string[] = body
+  const domainMap = domainNames.map((domain, index) => [domainNames[index], domain] as [string, string])
+
   try {
     const id = `${getDateString()}-plesk-${generateHash()}`
     const tests = domainNames.map(domainName => ({ url: domainName, priority: DEFAULT_PLESK_PRIORITY, runs: 2 }))
-    const bulkComparison = await startBulkComparison(db, id, 'plesk', tests)
+    startBulkComparison(db, id, 'plesk', tests)
 
-    const domainMap = bulkComparison.comparisonsToStart.map((comparison, index) => [domainNames[index], comparison.puppeteer.url] as [string, string])
-    const bulkComparisonId = bulkComparison.id
-
-    response.send({ bulkComparisonId, domainMap })
+    response.send({ bulkComparisonId: `/db/BulkComparison/${id}`, domainMap })
   } catch (e) {
     response.status(500)
     response.send({ error: e.message, stack: e.stack, domainNames })

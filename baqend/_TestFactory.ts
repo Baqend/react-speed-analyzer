@@ -58,14 +58,18 @@ export class TestFactory implements AsyncFactory<model.TestResult> {
    * Create a test info object.
    */
   createTestInfo(puppeteer: model.Puppeteer, isClone: boolean, params: Required<TestParams>): model.TestInfo {
-    const commandLine = this.createCommandLineFlags(puppeteer.url, isClone)
+    const { url, speedKit } = puppeteer
+    const appName = speedKit && speedKit.config ? speedKit.config.appName : null
+
+    const commandLine = this.createCommandLineFlags(url, isClone)
     if (commandLine) {
       this.db.log.info('flags: %s', commandLine)
     }
 
     return {
-      url: puppeteer.url,
-      isSpeedKitComparison: puppeteer.speedKit !== null,
+      url,
+      appName,
+      isSpeedKitComparison: speedKit !== null,
       isTestWithSpeedKit: isClone,
       activityTimeout: params.activityTimeout,
       skipPrewarm: params.skipPrewarm,

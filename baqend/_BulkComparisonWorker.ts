@@ -49,7 +49,7 @@ export class BulkComparisonWorker implements MultiComparisonListener {
       await bulkComparison.ready()
       await bulkComparison.optimisticSave((it: model.BulkComparison) => {
         it.multiComparisons.push(multiComparison)
-        Object.assign(it.comparisonsToStart[nextIndex], { isStarted: true })
+        Object.assign(it.comparisonsToStart[nextIndex], { isStarted: true, multiComparisonId: multiComparison.id })
       })
 
       this.multiComparisonWorker.next(multiComparison)

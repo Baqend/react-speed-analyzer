@@ -39,7 +39,8 @@ declare module 'baqend' {
       isStarted: boolean
       runs: number
       location: string
-      mobile: boolean
+      url: string
+      multiComparisonId: string | null
     }
 
     interface Domain extends UrlAware {
@@ -141,6 +142,7 @@ declare module 'baqend' {
       activityTimeout: number
       skipPrewarm: boolean
       testOptions: TestOptions
+      appName: string | null
     }
 
     interface TestResult extends binding.Entity {

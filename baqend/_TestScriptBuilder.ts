@@ -6,13 +6,17 @@ import credentials from './credentials'
 export class TestScriptBuilder {
   /**
    * @param url             The competitor's URL to test.
-   * @param speedKitConfig  The Speed Kit config.
+   * @param appName         The name of the app to be blocked.
    * @param activityTimeout The activity timeout.
    * @param timeout         The timeout.
    * @return                The created Web Page Test script.
    */
-  private buildForCompetitorTest(url: string, speedKitConfig: string, activityTimeout: number, timeout: number): TestScript {
+  private buildForCompetitorTest(url: string, appName: string|null, activityTimeout: number, timeout: number): TestScript {
     const blockDomains: string[] = []
+    if (appName) {
+      blockDomains.push(`${appName}.app.baqend.com`)
+    }
+
     /*if (speedKitConfig !== null && typeof speedKitConfig !== 'string') {
       if (speedKitConfig.appDomain) {
         blockDomains.push(speedKitConfig.appDomain)
@@ -85,6 +89,7 @@ export class TestScriptBuilder {
    * @param speedKitConfig        The serialized speedkit config string.
    * @param location              The location where the test is executed.
    * @param activityTimeout       The activity timeout.
+   * @param appName               The name of the baqend app.
    * @param timeout               The timeout.
    * @return                      The created Web Page Test script.
    */
@@ -94,6 +99,7 @@ export class TestScriptBuilder {
     speedKitConfig: string,
     location: string,
     activityTimeout = DEFAULT_ACTIVITY_TIMEOUT,
+    appName: string|null = null,
     timeout = DEFAULT_TIMEOUT,
   ): string {
     // Resolve Speed Kit config
@@ -101,6 +107,6 @@ export class TestScriptBuilder {
       return this.buildForSpeedKitTest(url, speedKitConfig, location, activityTimeout, timeout).toString()
     }
 
-    return this.buildForCompetitorTest(url, speedKitConfig, activityTimeout, timeout).toString()
+    return this.buildForCompetitorTest(url, appName, activityTimeout, timeout).toString()
   }
 }
