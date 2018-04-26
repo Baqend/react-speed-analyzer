@@ -75,7 +75,8 @@ app.get('*/sw.js', (req, res) => {
     res.sendFile(require.resolve('speed-kit/build/speedkit/sw.js'));
     return;
   }
-  request('https://www.baqend.com/speed-kit/latest/sw.js').pipe(res);
+  const { url } = req.query || {};
+  request(url || 'https://www.baqend.com/speed-kit/latest/sw.js').pipe(res);
 });
 
 app.get('*/install-speed-kit', (req, res) => {
