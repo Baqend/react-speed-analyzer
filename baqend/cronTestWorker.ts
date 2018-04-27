@@ -1,5 +1,6 @@
 import { baqend } from 'baqend'
 import { bootstrap } from './_compositionRoot'
+import { sleep } from './_sleep'
 
 const ONE_MINUTE = 1000 * 60
 const ONE_DAY = ONE_MINUTE * 60 * 24
@@ -28,5 +29,6 @@ export async function run(db: baqend) {
 
     await test.save()
     await testWorker.next(test)
+    await sleep(1000)
   }
 }
