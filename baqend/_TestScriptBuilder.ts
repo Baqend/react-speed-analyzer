@@ -7,11 +7,12 @@ export class TestScriptBuilder {
   /**
    * @param url             The competitor's URL to test.
    * @param appName         The name of the app to be blocked.
+   * @param location        The location where the test is executed.
    * @param activityTimeout The activity timeout.
    * @param timeout         The timeout.
    * @return                The created Web Page Test script.
    */
-  private buildForCompetitorTest(url: string, appName: string|null, activityTimeout: number, timeout: number): TestScript {
+  private buildForCompetitorTest(url: string, appName: string|null, location: string, activityTimeout: number, timeout: number): TestScript {
     const blockDomains: string[] = []
     if (appName) {
       blockDomains.push(`${appName}.app.baqend.com`)
@@ -61,9 +62,12 @@ export class TestScriptBuilder {
       .setDns(hostname!, credentials.makefast_ip)
       .navigate(installSpeedKitUrl)
 
-    return this.clearBrowserContent(ts, location)
+    if (!location.includes('eu-central-1-')) {
+      ts.navigate('about:blank')
+    }
+
+    return ts
       .logData(true)
-      .setTimeout(timeout)
       .navigate(url)
   }
 
@@ -74,7 +78,7 @@ export class TestScriptBuilder {
     if (location.includes('eu-central-1-')) {
       return testScript
         .navigate(`http://localhost:8888/orange.html`)
-        .sleep(15)
+        .sleep(10)
     }
 
     return testScript
@@ -107,6 +111,6 @@ export class TestScriptBuilder {
       return this.buildForSpeedKitTest(url, speedKitConfig, location, activityTimeout, timeout).toString()
     }
 
-    return this.buildForCompetitorTest(url, appName, activityTimeout, timeout).toString()
+    return this.buildForCompetitorTest(url, appName, location, activityTimeout, timeout).toString()
   }
 }
