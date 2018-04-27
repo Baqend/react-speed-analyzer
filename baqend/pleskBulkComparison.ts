@@ -66,11 +66,28 @@ function isNotStringArray(it: any) {
 export async function get(db: baqend, request: Request, response: Response) {
   const bulkComparisonId = request.query.bulkComparisonId
   const url = request.query.url
-  if (!bulkComparisonId || !url) {
-    throw new Abort('You have to provide bulkComparisonId and url.')
+  if (!bulkComparisonId) {
+    throw new Abort('You have to provide bulkComparisonId.')
   }
 
   const bulkComparison = await db.BulkComparison.load(bulkComparisonId, { depth: 2 })
+  if (!url) {
+    const comparisons: any = {};
+    bulkComparison.multiComparisons.forEach((multiComparison) => {
+      if (multiComparison.hasFinished) {
+        const comparison = bulkComparison.comparisonsToStart.find((comparison) => comparison.puppeteer.url === multiComparison.url)
+        if (comparison) {
+          comparisons[comparison.url] = findBestComparison(multiComparison)
+        }
+      }
+    })
+
+    response.send({
+      bulkComparisonId,
+      comparisons,
+    })
+    return
+  }
 
   // Find bulk test for URL
   const comparisonToStart = bulkComparison.comparisonsToStart.find((comparison) => comparison.url === url)
