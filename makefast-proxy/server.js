@@ -34,12 +34,17 @@ function createPage(config, snippet) {
 <head>
 <meta charset="UTF-8">
 <title>Makefast Speed-Kit Installer</title>
+<style>
+body {background-color: white; margin: 0;}
+#wptorange {width:100%; height: 100%; background-color: #DE640D;}
+</style>
 <script type="application/javascript">
   var config = ${config};
   ${snippet}
 </script>
 </head>
 <body>
+<div id='wptorange'></div>
 </body>
 </html>`;
 }
