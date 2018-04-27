@@ -4,20 +4,15 @@ const fs = require('fs');
 const http = require('http');
 const https = require('https');
 const express = require('express');
-const queue = require('express-queue');
 const chalk = require('chalk');
 const request = require('request');
 const path = require('path');
 const WebSocket = require('ws');
-const { chrome } = require('./chrome');
-const { analyzeSpeedKit } = require('./analyzeSpeedKit');
 
 const httpPort = 80;
 const sslPort = 443;
-const chromeConcurrency = 1;
 
 const app = express();
-const analyzeSpeedKitPromises = new Map();
 
 const httpServer = http.createServer(app);
 const sslServer = https.createServer({
@@ -29,13 +24,11 @@ const ws = new WebSocket.Server({ server: httpServer });
 const wss = new WebSocket.Server({ server: sslServer });
 
 function createPage(config, snippet) {
-  return `<!DOCTYPE html>
-<html lang="en">
+  return `<html>
 <head>
-<meta charset="UTF-8">
 <title>Makefast Speed-Kit Installer</title>
-<style>
-body {background-color: white; margin: 0;}
+<style type="text/css">
+body {background-color: white; margin: 0; height: 100%; }
 #wptorange {width:100%; height: 100%; background-color: #DE640D;}
 </style>
 <script type="application/javascript">
@@ -101,55 +94,6 @@ app.get('*/install-speed-kit', (req, res) => {
   request('https://www.baqend.com/speed-kit/latest/snippet.js', (err, response, body) => {
     res.send(createPage(config, body));
   });
-});
-
-// Try to get an already existing promise
-app.get('/config', async (req, res, next) => {
-  const { url = null } = req.query;
-  if (url === null) {
-    res.status(400).json({ error: 'You have to provide `url` as query parameter.', status: 400 });
-    return;
-  }
-
-  try {
-    if (!analyzeSpeedKitPromises.has(url)) {
-      next();
-      return;
-    }
-
-    const { config, http2, speedKit } = await analyzeSpeedKitPromises.get(url);
-
-    res.json({
-      config, url, http2, speedKit,
-    });
-  } catch (e) {
-    res.status(404).json({ error: e.message, status: 404 });
-  }
-});
-
-// Make the operation concurrency safe
-app.get('/config', queue({ activeLimit: chromeConcurrency, queuedLimit: -1 }));
-
-// Access the Chrome
-app.get('/config', async (req, res) => {
-  const { url } = req.query;
-
-  try {
-    // Combine promises against same URL
-    const promise = chrome(client => analyzeSpeedKit(client, url));
-    analyzeSpeedKitPromises.set(url, promise);
-
-    const { config, http2, speedKit } = await promise;
-
-    res.json({
-      config, url, http2, speedKit,
-    });
-  } catch (e) {
-    res.status(404).json({ error: e.message, status: 404 });
-  } finally {
-    // Delete map entry after resolving
-    analyzeSpeedKitPromises.delete(url);
-  }
 });
 
 app.use((req, res) => {
