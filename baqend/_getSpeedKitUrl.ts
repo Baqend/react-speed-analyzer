@@ -9,14 +9,23 @@ import { baqend } from 'baqend'
  * @return The extracted hostname.
  */
 export function getTLD(db: baqend, url: string): string {
-  try {
-    const { hostname } = URL.parse(url)
-    const domainFilter = /^(?:[\w-]*\.){0,3}([\w-]*\.)[\w]*$/
-    const [, domain] = domainFilter.exec(hostname!)!
+  if (!url.startsWith('http')) {
+    url = `https://${url}`
+  }
 
-    return domain
+  try {
+    const { hostname } = URL.parse(url);
+
+    const domainCount = hostname!.split('.').length - 1;
+
+    if (domainCount === 1) {
+      return hostname!;
+    }
+
+    return /.*\.([\w-]+\.[\w]*)$/.exec(hostname!)![1]
+
   } catch (e) {
-    db.log.warn(`Get TLD for url ${url} failed.`)
+    db.log.warn(`Get TLD for url ${url} failed.`, {error: e.stack});
     return ''
   }
 }

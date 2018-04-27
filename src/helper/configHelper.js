@@ -1,23 +1,3 @@
-export function getHost(url) {
-  try {
-    if(url.indexOf('http') === -1 && url.indexOf('https') === -1) {
-      url = `http://${url}`
-    }
-
-    const dummyElement = document.createElement('a')
-    dummyElement.href = url
-
-    let { hostname } = dummyElement
-    // Remove "www" in the beginning
-    if (hostname.indexOf('www.') !== -1) {
-      hostname = hostname.substr(hostname.indexOf('www.') + 4)
-    }
-    return hostname
-  } catch(e) {
-    return ''
-  }
-}
-
 /**
  * Extracts the top level domain of a URL.
  *
@@ -30,20 +10,16 @@ export function getTLD(url) {
       url = `http://${url}`
     }
 
-    const dummyElement = document.createElement('a')
-    dummyElement.href = url
+    const urlObj = new URL(url)
 
-    let { hostname } = dummyElement
-    // Remove "www" in the beginning
-    if (hostname.indexOf('www.') !== -1) {
-      hostname = hostname.substr(hostname.indexOf('www.') + 4)
+    let { hostname } = urlObj
+
+    const domainCount = hostname.split('.').length - 1
+    if (domainCount === 1) {
+      return hostname
     }
 
-    const domainFilter = /^(?:[\w-]*\.){0,3}([\w-]*\.)[\w]*$/
-    const [, domain] = domainFilter.exec(hostname)
-
-    // remove the dot at the end of the string
-    return domain
+    return /.*\.([\w-]+\.[\w]*)$/.exec(hostname)[1]
   } catch(e) {
     return ''
   }
@@ -70,7 +46,7 @@ export function generateRules(originalUrl, whitelist) {
   const domain = getTLD(originalUrl)
 
   // Create parts for the regexp
-  return `/^(?:[\\w-]*\\.){0,3}(?:${[domain, ...whitelist].map(item => escapeRegExp(item)).join('|')})/`
+  return `/.*(${[domain, ...whitelist].map(item => escapeRegExp(item)).join('|')})/`
 }
 
 /**

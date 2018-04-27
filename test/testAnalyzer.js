@@ -156,7 +156,7 @@ async function executeAnalyzerTest() {
 
 async function execNonSpeedKit() {
   const url = 'kicker.de'
-  const speedKitConfigString = '{"appName": "makefast", "whitelist": [{ "host": [ /^(?:[\\w-]*\\.){0,3}(?:kicker\\.)/ ] }], "userAgentDetection": false }'
+  const speedKitConfigString = '{"appName": "makefast", "whitelist": [{ "host": [ /.*kicker\\.de/ ] }], "userAgentDetection": false }'
   const expectedParams = {
     url: 'http://www.kicker.de/',
     displayUrl: 'http://www.kicker.de/',

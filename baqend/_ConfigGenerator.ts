@@ -20,7 +20,7 @@ export class ConfigGenerator {
    */
   generateMinimal(url: string, mobile: boolean = false): Config {
     const tld = getTLD(this.db, url)
-    const domainRegex = new RegExp(`^(?:[\\w-]*\\.){0,3}(?:${escapeRegExp(tld)})`)
+    const domainRegex = new RegExp(`.*${escapeRegExp(tld)}`)
 
     return {
       appName: credentials.app,
@@ -34,7 +34,7 @@ export class ConfigGenerator {
    */
   generateFallback(url: string, mobile: boolean = false): Config {
     const tld = getTLD(this.db, url)
-    const domainRegex = new RegExp(`^(?:[\\w-]*\\.){0,3}(?:${escapeRegExp(tld)})`)
+    const domainRegex = new RegExp(`.*${escapeRegExp(tld)}`)
 
     return {
       appName: credentials.app,
@@ -58,7 +58,7 @@ export class ConfigGenerator {
     const whitelistedHosts = cdnDomainsWithoutAds.map(toRegExp)
 
     const tld = getTLD(this.db, url)
-    const domainRegex = new RegExp(`^(?:[\\w-]*\\.){0,3}(?:${escapeRegExp(tld)})`)
+    const domainRegex = new RegExp(`.*${escapeRegExp(tld)}`)
 
     return {
       appName: credentials.app,
