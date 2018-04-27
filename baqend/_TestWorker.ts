@@ -144,17 +144,19 @@ export class TestWorker {
       .filter(wpt => !wpt.hasFinished)
       .map(async wpt => {
         const wptTestId = wpt.testId
-        if (await this.isWebPagetestFinished(wptTestId)) {
-          try {
+
+        try {
+          const isFinished = await this.isWebPagetestFinished(wptTestId)
+          if (isFinished) {
             await this.handleWebPagetestResult(wptTestId)
-          } catch (err) {
-            this.db.log.warn(`Could not find status of test ${wptTestId}`, err)
+            return true
           }
 
-          return true
+          return false
+        } catch (err) {
+          this.db.log.warn(`Could not find status of test ${wptTestId}`, err)
+          return false
         }
-
-        return false
       })
 
     const results = await Promise.all(checks)
