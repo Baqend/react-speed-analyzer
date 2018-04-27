@@ -10,9 +10,10 @@ export function getTLD(url) {
       url = `http://${url}`
     }
 
-    const urlObj = new URL(url)
+    const dummyElement = document.createElement('a')
+    dummyElement.href = url
 
-    let { hostname } = urlObj
+    const { hostname } = dummyElement
 
     const domainCount = hostname.split('.').length - 1
     if (domainCount === 1) {
