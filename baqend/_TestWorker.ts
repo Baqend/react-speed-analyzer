@@ -140,7 +140,7 @@ export class TestWorker {
    */
   private async checkWebPagetestsStatus(test: model.TestResult): Promise<void> {
     this.db.log.debug(`TestWorker.checkWebPagetestsStatus("${test.key}")`, { test })
-    const checks = test.webPagetests
+    test.webPagetests
       .filter(wpt => !wpt.hasFinished)
       .map(async wpt => {
         const wptTestId = wpt.testId
@@ -158,17 +158,6 @@ export class TestWorker {
           return false
         }
       })
-
-    const results = await Promise.all(checks)
-    const areAllWebPagetestsFinished = results.reduce((prev, it) => prev && it, true)
-    if (areAllWebPagetestsFinished) {
-      return
-    }
-
-    // We are not finished: check again after sleep
-    await sleep(1000)
-
-    return this.checkWebPagetestsStatus(test)
   }
 
   /**
