@@ -53,12 +53,13 @@ class ConfigFormComponent extends Component {
   }
 
   handleUrlChange = (changeEvent) => {
-    this.props.onUrlChange(changeEvent.target.value)
+    const url = changeEvent.target.value.trim()
+    this.props.onUrlChange(url)
 
     // if(splitUrl(this.props.config.url)[1] !== splitUrl(changeEvent.target.value)[1]) {
     let speedKitConfig
     if (this.state.showAdvancedConfig) {
-      speedKitConfig = stringifyObject(getDefaultSpeedKitConfig(changeEvent.target.value, this.props.config.mobile), { indent: '  ' })
+      speedKitConfig = stringifyObject(getDefaultSpeedKitConfig(url, this.props.config.mobile), { indent: '  ' })
     } else {
       speedKitConfig = null
     }
