@@ -336,6 +336,7 @@ declare module 'baqend' {
       displayUrl: string;
       protocol: string;
       domains: string[];
+      screenshot: File;
       type: PuppeteerType;
       stats: PuppeteerStats;
       speedKit: PuppeteerSpeedKit | null;
