@@ -184,7 +184,7 @@ declare module 'baqend' {
       psiDomains: number;
       psiRequests: number;
       psiResponseSize: string;
-      psiScreenshot: { data: string, width: number, height: number, mime_type: string };
+      psiScreenshot: File;
       location: string;
       caching: boolean;
       mobile: boolean;

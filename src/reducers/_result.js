@@ -19,7 +19,7 @@ import { resultIsValid, shouldShowFirstMeaningfulPaint } from '../helper/resultH
 
 const createScreenshot = (psiScreenshot) => {
   if (psiScreenshot) {
-    return `data:${psiScreenshot.mime_type};base64,${psiScreenshot.data.replace(/_/g, '/').replace(/-/g, '+')}`
+    return `https://${process.env.REACT_APP_BAQEND}.app.baqend.com/v1${psiScreenshot}`
   }
   return null
 }

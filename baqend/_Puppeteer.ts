@@ -1,5 +1,6 @@
 import { baqend, model } from 'baqend'
 import fetch from 'node-fetch'
+import { toFile } from './_toFile'
 import credentials from './credentials'
 
 export type PuppeteerSegment = 'timings' | 'stats' | 'type' | 'speedKit' | 'screenshot' | 'pdf' | 'domains'
@@ -18,14 +19,7 @@ export class Puppeteer {
       data.stats = new this.db.PuppeteerStats(data.stats)
       data.type = new this.db.PuppeteerType(data.type)
       data.speedKit = data.speedKit ? new this.db.PuppeteerSpeedKit(data.speedKit) : null
-
-      // TODO: stream the screenshot to our file backend and save a file reference here
-      // try {
-      //  data.screenshot = await this.urlToBase64(data.screenshot)
-      // } catch ({ message }) {
-      //  this.db.log.warn(`Could not download screenshot from puppeteer: ${message}`)
-      //  data.screenshot = null
-      // }
+      data.screenshot = await toFile(this.db, data.screenshot, `/www/screenshots/${ Date.now() }.png`)
 
       return new this.db.Puppeteer(data)
     } catch (error) {

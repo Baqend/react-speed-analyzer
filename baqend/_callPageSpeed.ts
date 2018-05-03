@@ -6,28 +6,22 @@ import credentials from './credentials'
 const API_KEY = credentials.google_api_key;
 const API_URL = 'https://www.googleapis.com/pagespeedonline/v1/runPagespeed?';
 
-export interface PageSpeedScreenshot {
-  data: string
-  height: number
-  mime_type: string
-  width: number
-}
-
 export interface PageSpeedResult {
   url: string
   mobile: boolean
   domains: number
   requests: number
   bytes: number
-  screenshot: PageSpeedScreenshot
+  screenshot: File
 }
 
 /**
+ * @param db The Baqend instance.
  * @param url The URL to run the Page Speed tests on.
  * @param mobile Run the test as a mobile client.
  * @return
  */
-export async function callPageSpeed(url: string, mobile: boolean): Promise<PageSpeedResult> {
+export async function callPageSpeed(db: baqend, url: string, mobile: boolean): Promise<PageSpeedResult> {
   const query = [
     `url=${encodeURIComponent(url)}`,
     'screenshot=true',
@@ -51,5 +45,12 @@ export async function callPageSpeed(url: string, mobile: boolean): Promise<PageS
   bytes += parseInt(pageStats.javascriptResponseBytes, 10) || 0
   bytes += parseInt(pageStats.otherResponseBytes, 10) || 0
 
-  return { url, mobile, domains, requests, bytes, screenshot }
+  const file = await new db.File({
+    data: screenshot.data,
+    type: 'base64',
+    mimeType: screenshot.mime_type,
+    path: `/www/screenshots/${ Date.now() }.jpg`
+  }).upload()
+
+  return { url, mobile, domains, requests, bytes, screenshot: file }
 }

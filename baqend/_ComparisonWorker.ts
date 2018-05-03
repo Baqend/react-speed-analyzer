@@ -106,7 +106,7 @@ export class ComparisonWorker implements TestListener {
   private async setPsiMetrics(testOverview: model.TestOverview): Promise<void> {
     const { url, mobile } = testOverview
     try {
-      const pageSpeedInsights = await callPageSpeed(url, mobile)
+      const pageSpeedInsights = await callPageSpeed(this.db, url, mobile)
       await testOverview.ready()
       await testOverview.optimisticSave((test: model.TestOverview) => {
         test.psiDomains = pageSpeedInsights.domains
@@ -123,9 +123,11 @@ export class ComparisonWorker implements TestListener {
     if (testOverview.psiDomains && testOverview.psiRequests && testOverview.psiResponseSize && testOverview.psiScreenshot) {
       return false
     }
+
     if (!testOverview.tasks || !testOverview.tasks.length) {
       return true
     }
+
     return testOverview.tasks.map(task => task.taskType).indexOf(PSI_TYPE) === -1
   }
 
