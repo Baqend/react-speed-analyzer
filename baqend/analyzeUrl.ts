@@ -7,6 +7,7 @@ import fetch from 'node-fetch'
  * Info retrieved from pages.
  */
 interface SpeedKitInfo {
+  speedKitVersion: string | null,
   swUrl: string | null
 }
 
@@ -23,7 +24,7 @@ function forMap<K, V>(key: K, deferredValue: Promise<V>): Promise<[K, V]> {
  * @return An info object.
  */
 async function fetchServiceWorkerUrl(db: baqend, url: string): Promise<SpeedKitInfo> {
-  const error = { swUrl: null }
+  const error = { speedKitVersion: null, swUrl: null }
   const parsedUrl = parse(url)
   const swUrl = parsedUrl.protocol + '//' + parsedUrl.host + '/sw.js'
 
@@ -35,7 +36,14 @@ async function fetchServiceWorkerUrl(db: baqend, url: string): Promise<SpeedKitI
       return error
     }
 
-    return { swUrl }
+    const text = await res.text()
+    const matches = /\/\* ! speed-kit ([\d.]+) \|/.exec(text)
+    if (matches) {
+      const [, speedKitVersion] = matches
+      return { speedKitVersion, swUrl }
+    }
+
+    return error
   } catch (e) {
     db.log.error('Error while fetching sw url', { error: e.stack })
     return error
@@ -54,7 +62,7 @@ async function fetchServiceWorkerUrl(db: baqend, url: string): Promise<SpeedKitI
  * @template Result
  */
 export async function analyzeUrls(queries: string[], db: baqend, mobile: boolean = false, fetchSW = false): Promise<Map<string, model.Puppeteer | SpeedKitInfo>> {
-  if(!fetchSW) {
+  if(fetchSW) {
     const analyses = queries.map(query => forMap(query, fetchServiceWorkerUrl(db, query,)))
     const map = await Promise.all(analyses)
 
