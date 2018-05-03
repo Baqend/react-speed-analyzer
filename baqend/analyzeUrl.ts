@@ -7,8 +7,10 @@ import fetch from 'node-fetch'
  * Info retrieved from pages.
  */
 interface SpeedKitInfo {
-  speedKitVersion: string | null,
-  swUrl: string | null
+  speedKit: {
+    speedKitVersion: string | null,
+    swUrl: string | null
+  }
 }
 
 /**
@@ -24,9 +26,9 @@ function forMap<K, V>(key: K, deferredValue: Promise<V>): Promise<[K, V]> {
  * @return An info object.
  */
 async function fetchServiceWorkerUrl(db: baqend, url: string): Promise<SpeedKitInfo> {
-  const error = { speedKitVersion: null, swUrl: null }
-  const parsedUrl = parse(url)
-  const swUrl = parsedUrl.protocol + '//' + parsedUrl.host + '/sw.js'
+  const error = { speedKit: { speedKitVersion: null, swUrl: null } }
+  const parsedUrl = parse(url.indexOf('https://') !== -1 ? url : `https://${url}`)
+  const swUrl = `${parsedUrl.protocol}//${parsedUrl.host}/sw.js`
 
   db.log.info('Fetch sw url', { swUrl })
   try {
@@ -40,7 +42,7 @@ async function fetchServiceWorkerUrl(db: baqend, url: string): Promise<SpeedKitI
     const matches = /\/\* ! speed-kit ([\d.]+) \|/.exec(text)
     if (matches) {
       const [, speedKitVersion] = matches
-      return { speedKitVersion, swUrl }
+      return { speedKit: { speedKitVersion, swUrl } }
     }
 
     return error
