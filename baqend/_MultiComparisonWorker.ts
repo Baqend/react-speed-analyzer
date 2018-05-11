@@ -26,6 +26,11 @@ export class MultiComparisonWorker implements ComparisonListener {
       // Ensure multi comparison is loaded with depth 1
       await multiComparison.load({ depth: 1 })
 
+      // Is this multi comparison already finished?
+      if (multiComparison.hasFinished) {
+        return
+      }
+
       const { testOverviews, runs } = multiComparison
 
       // Are all comparisons finished?

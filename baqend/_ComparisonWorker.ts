@@ -32,6 +32,11 @@ export class ComparisonWorker implements TestListener {
     // Ensure comparison is loaded with depth 1
     await comparison.load({ depth: 1 })
 
+    // Is this comparison already finished?
+    if (comparison.hasFinished) {
+      return
+    }
+
     const { competitorTestResult: competitor, speedKitTestResult: speedKit } = comparison
 
     // Handle PageSpeed Insights

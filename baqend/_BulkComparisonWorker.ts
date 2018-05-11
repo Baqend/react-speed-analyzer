@@ -16,6 +16,12 @@ export class BulkComparisonWorker implements MultiComparisonListener {
     try {
       // Ensure bulk comparison is loaded with depth 1
       await bulkComparison.load({ depth: 1 })
+
+      // Is this bulk comparison already finished?
+      if (bulkComparison.hasFinished) {
+        return
+      }
+
       const { multiComparisons, createdBy } = bulkComparison
 
       // Is there an active multi comparison which is not finished?
