@@ -1,17 +1,18 @@
-import { baqend, model } from 'baqend'
+import { baqend } from 'baqend'
 import fetch from 'node-fetch'
 import { getAdSet } from './_adBlocker'
 import { Config } from './_Config'
 import { getTLD } from './_getSpeedKitUrl'
-import { escapeRegExp, toRegExp } from './_helpers'
-import { WptTestResult } from './_Pagetest'
+import { dollarRegExp, escapeRegExp, toRegExp } from './_helpers'
 import credentials from './credentials'
 
 export const CDN_LOCAL_URL = 'https://makefast.app.baqend.com/v1/file/www/selfMaintainedCDNList'
 
+type Conditions = (string | RegExp)[]
+
 export class ConfigGenerator {
   constructor(
-    private readonly db: baqend,
+    private readonly logger: Logger,
   ) {
   }
 
@@ -19,12 +20,13 @@ export class ConfigGenerator {
    * Returns the default Speed Kit config for the given URL.
    */
   generateMinimal(url: string, mobile: boolean = false): Config {
-    const tld = getTLD(this.db, url)
-    const domainRegex = new RegExp(`.*${escapeRegExp(tld)}`)
+    // Generate reg exp for URL's TLD
+    const tld = getTLD(url, this.logger)
+    const domainRegExp = new RegExp(`^[A-Za-z.-]*${escapeRegExp(tld)}$`)
 
     return {
       appName: credentials.app,
-      whitelist: [{ host: domainRegex }],
+      whitelist: [{ host: domainRegExp }],
       userAgentDetection: mobile,
     }
   }
@@ -33,38 +35,60 @@ export class ConfigGenerator {
    * Returns the fallback config for a URL.
    */
   generateFallback(url: string, mobile: boolean = false): Config {
-    const tld = getTLD(this.db, url)
-    const domainRegex = new RegExp(`.*${escapeRegExp(tld)}`)
-
-    return {
-      appName: credentials.app,
-      whitelist: [{ host: [domainRegex, /cdn/, /assets\./, /static\./] }],
-      userAgentDetection: mobile,
-    }
+    return this.generateBasic(
+      url,
+      mobile,
+      [/cdn/, /(?:^|\.)assets\./, /(?:^|\.)static\./, /(?:^|\.)images\./, 's3.amazonaws.com', 'ajax.googleapis.com'],
+      [/\.min\.(?:css|js)$/],
+      ['https://apis.google.com/js/plusone.js'],
+    )
   }
 
   /**
    * Analyzes the given domains and creates a Speed Kit config with a suggested whitelist.
    */
   async generateSmart(url: string, domains: string[], mobile: boolean = false): Promise<Config> {
-    this.db.log.info(`Analyzing domains: ${url}`, { domains })
+    this.logger.info(`Analyzing domains: ${url}`, { domains })
 
     const cdnDomainsWithAds = await this.selectCdnDomains(domains)
-    this.db.log.info(`CDN domains`, { cdnDomainsWithAds })
+    this.logger.info(`CDN domains`, { cdnDomainsWithAds })
 
     const cdnDomainsWithoutAds = await this.filterOutAdDomains(cdnDomainsWithAds)
-    this.db.log.info(`Domains without ads`, { cdnDomainsWithoutAds })
+    this.logger.info(`Domains without ads`, { cdnDomainsWithoutAds })
 
-    const whitelistedHosts = cdnDomainsWithoutAds.map(toRegExp)
+    const whitelistedHosts = cdnDomainsWithoutAds
+      .map(toRegExp)
+      .map(dollarRegExp)
 
-    const tld = getTLD(this.db, url)
-    const domainRegex = new RegExp(`.*${escapeRegExp(tld)}`)
+    return this.generateBasic(url, mobile, whitelistedHosts)
+  }
 
-    return {
-      appName: credentials.app,
-      whitelist: [{ host: [domainRegex, ...whitelistedHosts] }],
-      userAgentDetection: mobile,
+  /**
+   * Generates a basic config.
+   */
+  private generateBasic(
+    url: string,
+    mobile: boolean = false,
+    hosts: Conditions = [],
+    pathnames: Conditions = [],
+    urls: Conditions = [],
+  ): Config {
+    // Build minimal config
+    const minimal = this.generateMinimal(url, mobile)
+
+    if (hosts.length) {
+      minimal.whitelist!.push({ host: hosts })
     }
+
+    if (pathnames.length) {
+      minimal.whitelist!.push({ pathname: pathnames })
+    }
+
+    if (urls.length) {
+      minimal.whitelist!.push({ url: urls })
+    }
+
+    return minimal
   }
 
   /**

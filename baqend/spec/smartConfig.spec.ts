@@ -10,10 +10,10 @@ function mockReqRes(body: any = {}, query: any = {}): { req: Request, res: Respo
   const res = {
     statusCode: 200,
     data: {},
-    status(code) {
+    status(code: number) {
       this.statusCode = code
     },
-    send(data) {
+    send(data: any) {
       this.data = data
     },
   } as any
@@ -28,7 +28,7 @@ describe('smartConfig', () => {
     }
   })
 
-  let testId
+  let testId: string
   it('POSTs new smart config tests', async () => {
     const { req, res } = mockReqRes({ url: 'https://www.alibaba.com/' })
     await post(DB, req, res)

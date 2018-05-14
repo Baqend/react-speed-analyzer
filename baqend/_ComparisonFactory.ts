@@ -103,7 +103,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
   private async createComparison(puppeteer: model.Puppeteer, params: Required<TestParams>, configAnalysis: model.ConfigAnalysis | null, competitorTest: model.TestResult, speedKitTest: model.TestResult, hasMultiComparison: boolean = false): Promise<model.TestOverview> {
     const { url, displayUrl, speedKit } = puppeteer
     const uniqueId = await generateUniqueId(this.db, 'TestOverview')
-    const tld = getTLD(this.db, url)
+    const tld = getTLD(url, this.db.log)
     const id = uniqueId + tld.split('.')[0]
 
     // Initialize

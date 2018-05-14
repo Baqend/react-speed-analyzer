@@ -31,7 +31,7 @@ export function bootstrap(db: baqend) {
   const serializer = new Serializer()
   const testScriptBuilder = new TestScriptBuilder()
   const configCache = new ConfigCache(db, serializer)
-  const configGenerator = new ConfigGenerator(db)
+  const configGenerator = new ConfigGenerator(db.log)
   const pagetest = new Pagetest()
   const webPagetestResultHandler = new WebPagetestResultHandler(db, pagetest, configGenerator, configCache, serializer)
   const testBuilder = new TestBuilder()

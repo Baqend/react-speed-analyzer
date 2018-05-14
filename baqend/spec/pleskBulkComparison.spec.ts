@@ -9,10 +9,10 @@ function mockReqRes(body: any = {}, query: any = {}): { req: Request, res: Respo
   const res = {
     statusCode: 200,
     data: {},
-    status(code) {
+    status(code: number) {
       this.statusCode = code
     },
-    send(data) {
+    send(data: any) {
       this.data = data
     },
   } as any
@@ -27,7 +27,7 @@ describe('pleskBulkComparison', () => {
     }
   })
 
-  let bulkComparisonId
+  let bulkComparisonId: string
   it('POSTs new bulk comparisons', async () => {
     const { req, res } = mockReqRes(['moellers.systems'])
     await post(DB, req, res)

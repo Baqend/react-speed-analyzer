@@ -61,6 +61,13 @@ export function toRegExp(str: string): RegExp {
 }
 
 /**
+ * Adds a dollar to the end of a regular expression.
+ */
+export function dollarRegExp(regExp: RegExp): RegExp {
+  return new RegExp(`${regExp.source}$`, regExp.flags)
+}
+
+/**
  * Cleans all entries of an object which contain an empty value.
  */
 export function cleanObject<T extends { [key: string]: any }>(obj: T): Required<T> {
