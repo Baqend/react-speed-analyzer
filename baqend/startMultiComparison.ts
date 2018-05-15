@@ -16,7 +16,7 @@ export async function call(db: baqend, data: StartMultiComparisonParams): Promis
 
   // Get necessary options
   const { url, createdBy, runs, ...params } = data
-  const puppeteerInfo = await puppeteer.analyze(url)
+  const puppeteerInfo = await puppeteer.analyze(url, params.mobile)
   const multiComparison = await multiComparisonFactory.create(puppeteerInfo, params, createdBy, runs)
   multiComparisonWorker.next(multiComparison)
 

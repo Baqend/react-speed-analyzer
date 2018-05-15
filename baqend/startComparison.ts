@@ -16,7 +16,7 @@ export async function post(db: baqend, req: Request, res: Response) {
   try {
     // Get necessary options
     const { url, ...params } = req.body as StartComparisonParams
-    const puppeteerInfo = await puppeteer.analyze(url)
+    const puppeteerInfo = await puppeteer.analyze(url, params.mobile)
     const comparison = await comparisonFactory.create(puppeteerInfo, params)
     comparisonWorker.next(comparison).catch((err) => db.log.error(err.message, err))
 

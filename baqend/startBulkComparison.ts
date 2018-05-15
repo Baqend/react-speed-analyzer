@@ -19,9 +19,9 @@ type StartBulkComparisonParams = BulkTestParams[] | {
 }
 
 async function buildTest(db: baqend, puppeteer: Puppeteer, testParams: BulkTestParams): Promise<BulkComparisonTestParams | null> {
-  const { url } = testParams
+  const { url, mobile } = testParams
   try {
-    const puppeteerInfo = await puppeteer.analyze(url)
+    const puppeteerInfo = await puppeteer.analyze(url, mobile)
 
     return Object.assign({}, testParams, { puppeteer: puppeteerInfo })
   } catch ({ message, stack }) {
