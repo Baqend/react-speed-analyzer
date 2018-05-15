@@ -31,7 +31,7 @@
     },
     "psiScreenshot": {
       "name": "psiScreenshot",
-      "type": "/db/JsonObject",
+      "type": "/db/File",
       "order": 3
     },
     "location": {
@@ -128,6 +128,11 @@
       "name": "puppeteer",
       "type": "/db/Puppeteer",
       "order": 22
+    },
+    "hasMultiComparison": {
+      "name": "hasMultiComparison",
+      "type": "/db/Boolean",
+      "order": 23
     }
   }
 }
