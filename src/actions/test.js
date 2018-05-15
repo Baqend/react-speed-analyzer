@@ -112,6 +112,8 @@ export const monitorTest = (testId, onAfterFinish) => ({
   }
 })
 
+let trackUnload = null
+
 const subscribeToTestOverview = ({ testId, onAfterFinish }) => ({
   'BAQEND': async ({ dispatch, getState, db }) => {
     let isResolved = false
@@ -120,9 +122,9 @@ const subscribeToTestOverview = ({ testId, onAfterFinish }) => ({
       const testOverviewSubscription = testOverviewStream.subscribe((res) => {
         const testOverview = res[0] ? res[0].toJSON() : null
         if (testOverview) {
-          const trackUnload = () => {
+          trackUnload = trackUnload || (() => {
             trackURL('leaveDuringTest', testOverview.url)
-          }
+          })
           window.addEventListener('beforeunload', trackUnload)
 
           if (testOverview.hasFinished) {
