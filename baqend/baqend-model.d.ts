@@ -184,7 +184,7 @@ declare module 'baqend' {
       psiDomains: number;
       psiRequests: number;
       psiResponseSize: string;
-      psiScreenshot: File;
+      psiScreenshot: binding.File;
       location: string;
       caching: boolean;
       mobile: boolean;
@@ -336,7 +336,7 @@ declare module 'baqend' {
       displayUrl: string;
       protocol: string;
       domains: string[];
-      screenshot: File;
+      screenshot: binding.File;
       type: PuppeteerType;
       stats: PuppeteerStats;
       speedKit: PuppeteerSpeedKit | null;

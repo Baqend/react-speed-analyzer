@@ -53,7 +53,7 @@ describe('ConfigGenerator', () => {
       'ajax.googleapis.com',
       'foo.bar',
     ]
-    const minimal1 = await configGenerator.generateSmart('https://alibaba.com', domains, false)
+    const minimal1 = await configGenerator.generateSmart('https://alibaba.com', false, { domains })
     expect(minimal1).to.deep.equal({
       appName: 'makefast-dev',
       whitelist: [

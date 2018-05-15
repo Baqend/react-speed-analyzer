@@ -33,9 +33,9 @@ export function bootstrap(db: baqend) {
   const configCache = new ConfigCache(db, serializer)
   const configGenerator = new ConfigGenerator(db.log)
   const pagetest = new Pagetest()
-  const webPagetestResultHandler = new WebPagetestResultHandler(db, pagetest, configGenerator, configCache, serializer)
+  const webPagetestResultHandler = new WebPagetestResultHandler(db)
   const testBuilder = new TestBuilder()
-  const puppeteer = new Puppeteer(db)
+  const puppeteer = new Puppeteer(db, configGenerator, serializer)
 
   // Create factories
   const testFactory = new TestFactory(db, testBuilder)

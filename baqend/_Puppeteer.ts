@@ -1,6 +1,8 @@
 import { baqend, model } from 'baqend'
 import fetch, { Response } from 'node-fetch'
+import { ConfigGenerator } from './_ConfigGenerator'
 import { generateHash, urlToFilename } from './_helpers'
+import { DataType, Serializer } from './_Serializer'
 import { toFile } from './_toFile'
 import credentials from './credentials'
 
@@ -10,6 +12,8 @@ export class Puppeteer {
 
   constructor(
     private readonly db: baqend,
+    private readonly configGenerator: ConfigGenerator,
+    private readonly serializer: Serializer,
   ) {
   }
 
@@ -17,12 +21,23 @@ export class Puppeteer {
     try {
       const data = await this.postToServer(url, mobile, 'stats', 'type', 'speedKit', 'screenshotData', 'domains')
       this.db.log.info(`Received puppeteer data for ${url}`, { data })
-      data.stats = new this.db.PuppeteerStats(data.stats)
-      data.type = new this.db.PuppeteerType(data.type)
-      data.speedKit = data.speedKit ? new this.db.PuppeteerSpeedKit(data.speedKit) : null
-      data.screenshot = await toFile(this.db, data.screenshotData, `/www/screenshots/${urlToFilename(url)}/${mobile ? 'mobile' : 'desktop'}/${generateHash()}.jpg`)
 
-      return new this.db.Puppeteer(data)
+      // Generate smart config
+      const smartConfig = await this.configGenerator.generateSmart(data.url, mobile, data)
+
+      // Create persistable object
+      const puppeteer: model.Puppeteer = new this.db.Puppeteer()
+      puppeteer.url = data.url
+      puppeteer.displayUrl = data.displayUrl
+      puppeteer.protocol = data.protocol
+      puppeteer.domains = data.domains
+      puppeteer.screenshot = await toFile(this.db, data.screenshotData, `/www/screenshots/${urlToFilename(url)}/${mobile ? 'mobile' : 'desktop'}/${generateHash()}.jpg`)
+      puppeteer.type = new this.db.PuppeteerType(data.type)
+      puppeteer.stats = new this.db.PuppeteerStats(data.stats)
+      puppeteer.speedKit = data.speedKit ? new this.db.PuppeteerSpeedKit(data.speedKit) : null
+      puppeteer.smartConfig = this.serializer.serialize(smartConfig, DataType.JSON)
+
+      return puppeteer
     } catch (error) {
       this.db.log.error('Puppeteer error', { error: error.stack, url })
       throw error

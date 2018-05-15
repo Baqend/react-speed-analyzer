@@ -69,10 +69,6 @@ export class TestWorker {
       // Start the next test
       if /* test is against Speed Kit */ (test.isClone) {
         if (this.shouldStartPrewarmWebPagetest(test)) {
-          if (!test.speedKitConfig) {
-            this.startConfigWebPagetest(test)
-          }
-
           this.startPrewarmWebPagetest(test)
 
           return
@@ -181,18 +177,6 @@ export class TestWorker {
     const prewarmTestOptions = Object.assign({ pingback: PING_BACK_URL }, testOptions, prewarmOptions)
 
     return this.startWebPagetest(test, TestType.PREWARM, prewarmTestScript, prewarmTestOptions)
-  }
-
-  /**
-   * Starts a config test against WebPagetest.
-   */
-  private startConfigWebPagetest(test: model.TestResult): Promise<void> {
-    const { testInfo } = test
-    const { testOptions } = testInfo
-    const configTestScript = this.buildScriptWithMinimalWhitelist(testInfo)
-    const configTestOptions = Object.assign({ pingback: PING_BACK_URL }, testOptions, prewarmOptions, { runs: 1 })
-
-    return this.startWebPagetest(test, TestType.CONFIG, configTestScript, configTestOptions)
   }
 
   /**

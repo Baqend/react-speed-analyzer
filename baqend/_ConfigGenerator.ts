@@ -1,4 +1,4 @@
-import { baqend } from 'baqend'
+import { baqend, model } from 'baqend'
 import fetch from 'node-fetch'
 import { getAdSet } from './_adBlocker'
 import { Config } from './_Config'
@@ -47,7 +47,7 @@ export class ConfigGenerator {
   /**
    * Analyzes the given domains and creates a Speed Kit config with a suggested whitelist.
    */
-  async generateSmart(url: string, domains: string[], mobile: boolean = false): Promise<Config> {
+  async generateSmart(url: string, mobile: boolean, { domains }: { domains: string[] }): Promise<Config> {
     this.logger.info(`Analyzing domains: ${url}`, { domains })
 
     const cdnDomainsWithAds = await this.selectCdnDomains(domains)
