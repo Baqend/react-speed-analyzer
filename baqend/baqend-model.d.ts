@@ -340,6 +340,7 @@ declare module 'baqend' {
       type: PuppeteerType;
       stats: PuppeteerStats;
       speedKit: PuppeteerSpeedKit | null;
+      smartConfig: string;
     }
 
     interface PuppeteerType extends binding.Managed {
