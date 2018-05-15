@@ -20,7 +20,7 @@ export const trackURL = (name, url, factors) => {
   }
 
   if (typeof ga !== 'undefined') {
-    ga('send', 'speed-analyzer', name, name, url)
+    ga('send', 'event', 'speed-analyzer', name, name, url)
   }
 }
 
