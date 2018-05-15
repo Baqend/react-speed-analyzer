@@ -1,9 +1,10 @@
 import { baqend, model } from 'baqend'
 import fetch, { Response } from 'node-fetch'
+import { generateHash, urlToFilename } from './_helpers'
 import { toFile } from './_toFile'
 import credentials from './credentials'
 
-export type PuppeteerSegment = 'timings' | 'stats' | 'type' | 'speedKit' | 'screenshot' | 'pdf' | 'domains'
+export type PuppeteerSegment = 'timings' | 'stats' | 'type' | 'speedKit' | 'screenshot' | 'screenshotData' | 'pdf' | 'domains'
 
 export class Puppeteer {
 
@@ -14,12 +15,12 @@ export class Puppeteer {
 
   async analyze(url: string, mobile: boolean = false): Promise<model.Puppeteer> {
     try {
-      const data = await this.postToServer(url, mobile, 'stats', 'type', 'speedKit', 'screenshot', 'domains')
+      const data = await this.postToServer(url, mobile, 'stats', 'type', 'speedKit', 'screenshotData', 'domains')
       this.db.log.info(`Received puppeteer data for ${url}`, { data })
       data.stats = new this.db.PuppeteerStats(data.stats)
       data.type = new this.db.PuppeteerType(data.type)
       data.speedKit = data.speedKit ? new this.db.PuppeteerSpeedKit(data.speedKit) : null
-      data.screenshot = await toFile(this.db, data.screenshot, `/www/screenshots/${ Date.now() }.png`)
+      data.screenshot = await toFile(this.db, data.screenshotData, `/www/screenshots/${urlToFilename(url)}/${mobile ? 'mobile' : 'desktop'}/${generateHash()}.jpg`)
 
       return new this.db.Puppeteer(data)
     } catch (error) {

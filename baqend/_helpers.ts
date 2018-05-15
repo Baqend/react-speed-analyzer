@@ -116,6 +116,27 @@ export function generateHash(): string {
 }
 
 /**
+ * Makes a string URL-compatible.
+ */
+export function urlify(string: string): string {
+  string = string.toLocaleLowerCase()
+
+  return string.replace(/[^a-z]+/g, '-')
+}
+
+/**
+ * Creates a filename from a given URL.
+ */
+export function urlToFilename(url: string): string {
+  const prefix = url
+    .replace(/^https?:\/\//, '')
+
+  return urlify(prefix)
+    .replace(/^\W+/, '')
+    .replace(/\W+$/, '')
+}
+
+/**
  * Generates a date string.
  */
 export function getDateString(): string {
