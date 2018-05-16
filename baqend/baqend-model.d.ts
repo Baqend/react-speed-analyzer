@@ -51,15 +51,25 @@ declare module 'baqend' {
       isAdDomain: boolean
     }
 
+    enum Status {
+      QUEUED = 'QUEUED',
+      RUNNING = 'RUNNING',
+      SUCCESS = 'SUCCESS',
+      CANCELED = 'CANCELED',
+      FAILED = 'FAILED',
+    }
+
     interface BulkComparison extends binding.Entity {
+      status: Status;
+      hasFinished: boolean;
       comparisonsToStart: Array<ComparisonInfo>;
       createdBy: string | null;
       multiComparisons: Array<BulkTest>;
-      hasFinished: boolean;
     }
 
     interface BulkTest extends binding.Entity {
       url: string;
+      status: Status;
       hasFinished: boolean;
       testOverviews: Array<TestOverview>;
       speedKitMeanValues: Mean;
@@ -146,11 +156,13 @@ declare module 'baqend' {
     }
 
     interface TestResult extends binding.Entity {
+      url: string;
+      status: Status;
+      hasFinished: boolean;
       testId: string;
       location: string;
       firstView: Run | null;
       repeatView: Run | null;
-      url: string;
       summaryUrl: string;
       publishedSummaryUrl: string;
       videoIdFirstView: string;
@@ -158,7 +170,6 @@ declare module 'baqend' {
       videoFileFirstView: binding.File | null;
       testDataMissing: boolean;
       videoFileRepeatView: binding.File | null;
-      hasFinished: boolean;
       retryRequired: boolean;
       isWordPress: boolean;
       isClone: boolean;
@@ -181,6 +192,9 @@ declare module 'baqend' {
     }
 
     interface TestOverview extends binding.Entity {
+      url: string;
+      status: Status;
+      hasFinished: boolean;
       psiDomains: number;
       psiRequests: number;
       psiResponseSize: string;
@@ -188,12 +202,10 @@ declare module 'baqend' {
       location: string;
       caching: boolean;
       mobile: boolean;
-      url: string;
       displayUrl: string;
       competitorTestResult: TestResult;
       speedKitTestResult: TestResult;
       whitelist: string;
-      hasFinished: boolean;
       factors: Mean | null;
       isSpeedKitComparison: boolean;
       isSecured: boolean;
@@ -231,11 +243,12 @@ declare module 'baqend' {
     }
 
     interface WebPagetest extends binding.Managed {
+      status: Status;
+      hasFinished: boolean;
       testId: string;
       testType: string;
       testScript: string;
-      testOptions: {};
-      hasFinished: boolean;
+      testOptions: any;
     }
 
     interface Run extends binding.Managed {

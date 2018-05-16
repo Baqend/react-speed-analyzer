@@ -73,5 +73,7 @@ declare module 'webpagetest' {
     createVideo(testId: string, opts: any, callback: (err: Error | undefined, result: any) => void): void
     getEmbedVideoPlayer(testId: string, opts: any, callback: (err: Error | undefined, result: any) => void): void
     getTestResults(testId: string, opts: any, callback: (err: Error | undefined, result: any) => void): void
+    cancelTest(id: string, options: any, callback: (err: Error | undefined) => void): void
+    cancelTest(id: string, callback: (err: Error | undefined) => void): void
   }
 }

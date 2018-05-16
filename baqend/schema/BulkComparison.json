@@ -14,25 +14,30 @@
   },
   "metadata": {},
   "fields": {
-    "comparisonsToStart": {
-      "name": "comparisonsToStart",
-      "type": "/db/JsonArray",
-      "order": 0
-    },
-    "createdBy": {
-      "name": "createdBy",
+    "status": {
+      "name": "status",
       "type": "/db/String",
-      "order": 1
-    },
-    "multiComparisons": {
-      "name": "multiComparisons",
-      "type": "/db/collection.List[/db/BulkTest]",
-      "order": 2
+      "order": 0
     },
     "hasFinished": {
       "name": "hasFinished",
       "type": "/db/Boolean",
+      "order": 1
+    },
+    "comparisonsToStart": {
+      "name": "comparisonsToStart",
+      "type": "/db/JsonArray",
+      "order": 2
+    },
+    "createdBy": {
+      "name": "createdBy",
+      "type": "/db/String",
       "order": 3
+    },
+    "multiComparisons": {
+      "name": "multiComparisons",
+      "type": "/db/collection.List[/db/BulkTest]",
+      "order": 4
     }
   }
 }
