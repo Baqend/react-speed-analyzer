@@ -81,6 +81,26 @@ export class MultiComparisonWorker implements ComparisonListener {
     }
   }
 
+  /**
+   * Cancels the given multi comparison.
+   */
+  async cancel(multiComparison: model.BulkTest): Promise<boolean> {
+    if (multiComparison.hasFinished || multiComparison.status === 'CANCELED') {
+      return false
+    }
+
+    for (const comparison of multiComparison.testOverviews) {
+      if (!comparison.hasFinished) {
+        if (!await this.comparisonWorker.cancel(comparison)) {
+          return false
+        }
+      }
+    }
+
+    await multiComparison.optimisticSave(() => multiComparison.status = 'CANCELED')
+    return true
+  }
+
   async handleComparisonFinished(comparison: model.TestOverview): Promise<void> {
     const multiComparison = await this.db.BulkTest.find().in('testOverviews', comparison.id).singleResult()
     if (multiComparison) {

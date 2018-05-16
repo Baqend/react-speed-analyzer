@@ -89,6 +89,32 @@ export class TestWorker {
   }
 
   /**
+   * Cancels the given test.
+   */
+  async cancel(test: model.TestResult): Promise<boolean> {
+    if (test.hasFinished) {
+      return false
+    }
+
+    // Cancel each WebpageTest
+    const canceledWebPagetests = [] as model.WebPagetest[]
+    for (const webPagetest of test.webPagetests) {
+      if (!webPagetest.hasFinished) {
+        await this.api.cancelTest(webPagetest.testId)
+        canceledWebPagetests.push(webPagetest)
+      }
+    }
+
+    // Mark test and WebPagetests as canceled
+    await test.ready()
+    test.status = 'CANCELED'
+    canceledWebPagetests.forEach(test => test.status = 'CANCELED')
+    await test.save()
+
+    return true
+  }
+
+  /**
    * Handles the result of a test from WebPagetest.
    */
   async handleWebPagetestResult(wptTestId: string): Promise<void> {

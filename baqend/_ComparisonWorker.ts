@@ -84,6 +84,35 @@ export class ComparisonWorker implements TestListener {
     }
   }
 
+  /**
+   * Cancels the given comparison.
+   */
+  async cancel(comparison: model.TestOverview): Promise<boolean> {
+    if (comparison.hasFinished || comparison.status === 'CANCELED') {
+      return false
+    }
+
+    let success = true
+    if (!comparison.competitorTestResult.hasFinished) {
+      if (!await this.testWorker.cancel(comparison.competitorTestResult)) {
+        success = false
+      }
+    }
+
+    if (success && !comparison.speedKitTestResult.hasFinished) {
+      if (!await this.testWorker.cancel(comparison.speedKitTestResult)) {
+        success = false
+      }
+    }
+
+    if (success) {
+      await comparison.optimisticSave(() => comparison.status = 'CANCELED')
+      return true
+    }
+
+    return false
+  }
+
   async handleTestFinished(test: model.TestResult): Promise<void> {
     try {
       const comparison = await this.findComparisonByTest(test)

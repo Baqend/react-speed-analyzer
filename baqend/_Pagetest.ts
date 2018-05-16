@@ -156,6 +156,21 @@ export class Pagetest {
   }
 
   /**
+   * Cancels a given WebPageTest.
+   */
+  cancelTest(testId: string): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.wpt.cancelTest(testId, (err) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve()
+        }
+      })
+    })
+  }
+
+  /**
    * @param db The Baqend instance.
    * @param {string} testId The ID of the test to reject.
    * @param data
