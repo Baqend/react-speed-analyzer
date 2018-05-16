@@ -32,10 +32,11 @@ export class MultiComparisonFactory implements AsyncFactory<model.BulkTest> {
 
     const multiComparison: model.BulkTest = new this.db.BulkTest()
     multiComparison.url = puppeteer.url
+    multiComparison.status = 'QUEUED'
+    multiComparison.hasFinished = false
     multiComparison.puppeteer = puppeteer
     multiComparison.createdBy = createdBy
     multiComparison.testOverviews = []
-    multiComparison.hasFinished = false
     multiComparison.location = location
     multiComparison.mobile = mobile
     multiComparison.runs = runs

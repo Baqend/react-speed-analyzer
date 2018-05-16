@@ -10,6 +10,7 @@ const defaultComparison = {
   competitorTestResult: '',
   speedKitTestResult: '',
   factors: { speedIndex: null },
+  status: 'SUCCESS',
   hasFinished: true,
   speedKitVersion: null,
   isSpeedKitComparison: false,

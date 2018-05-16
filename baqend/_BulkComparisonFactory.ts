@@ -29,10 +29,11 @@ export class BulkComparisonFactory implements AsyncFactory<model.BulkComparison>
    */
   create(id: string, createdBy: string | null, tests: BulkComparisonTestParams[]): Promise<model.BulkComparison> {
     const bulkComparison: model.BulkComparison = new this.db.BulkComparison({ id })
+    bulkComparison.status = 'QUEUED'
+    bulkComparison.hasFinished = false
     bulkComparison.comparisonsToStart = tests.map(this.buildParams.bind(this))
     bulkComparison.createdBy = createdBy
     bulkComparison.multiComparisons = []
-    bulkComparison.hasFinished = false
 
     return bulkComparison.save()
   }

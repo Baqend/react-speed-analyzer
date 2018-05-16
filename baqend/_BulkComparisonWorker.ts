@@ -18,8 +18,13 @@ export class BulkComparisonWorker implements MultiComparisonListener {
       await bulkComparison.load({ depth: 1 })
 
       // Is this bulk comparison already finished?
-      if (bulkComparison.hasFinished) {
+      if (bulkComparison.hasFinished || bulkComparison.status === 'CANCELED') {
         return
+      }
+
+      // Set bulk comparison to running
+      if (bulkComparison.status !== 'RUNNING') {
+        await bulkComparison.optimisticSave(() => bulkComparison.status = 'RUNNING')
       }
 
       const { multiComparisons, createdBy } = bulkComparison
@@ -41,6 +46,7 @@ export class BulkComparisonWorker implements MultiComparisonListener {
         // Save is finished state
         await bulkComparison.ready()
         await bulkComparison.optimisticSave((it: model.BulkComparison) => {
+          it.status = 'SUCCESS'
           it.hasFinished = true
         })
 

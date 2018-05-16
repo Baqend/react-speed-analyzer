@@ -1,5 +1,12 @@
 import { binding } from 'baqend'
 
+declare type Status =
+  'QUEUED' |
+  'RUNNING' |
+  'SUCCESS' |
+  'CANCELED' |
+  'FAILED'
+
 declare module 'baqend' {
 
   interface baqend {
@@ -49,14 +56,6 @@ declare module 'baqend' {
       cdn_provider: string
       connections: number
       isAdDomain: boolean
-    }
-
-    enum Status {
-      QUEUED = 'QUEUED',
-      RUNNING = 'RUNNING',
-      SUCCESS = 'SUCCESS',
-      CANCELED = 'CANCELED',
-      FAILED = 'FAILED',
     }
 
     interface BulkComparison extends binding.Entity {

@@ -50,12 +50,17 @@ export class TestWorker {
       // Ensure test is loaded
       await test.load()
 
-      // Is the test finished?
-      if (test.hasFinished) {
+      // Is the test finished, canceled?
+      if (test.hasFinished || test.status === 'CANCELED') {
         this.db.log.info(`Test ${test.key} is finished.`, { test })
         this.listener && this.listener.handleTestFinished(test)
 
         return
+      }
+
+      // Set test to running
+      if (test.status !== 'RUNNING') {
+        await test.optimisticSave(() => test.status = 'RUNNING')
       }
 
       // Is WebPagetest still running this test? Check the status and start over.
@@ -95,8 +100,8 @@ export class TestWorker {
       }
 
       const webPagetest = this.getWebPagetestInfo(test, wptTestId)
-      if (webPagetest.hasFinished) {
-        this.db.log.debug(`WebPagetest ${wptTestId} was already finished`, { test })
+      if (webPagetest.hasFinished || webPagetest.status === 'CANCELED') {
+        this.db.log.debug(`WebPagetest ${wptTestId} was already finished pr canceled`, { test })
         return
       }
 
@@ -197,11 +202,12 @@ export class TestWorker {
     try {
       const testId = await this.api.runTestWithoutWait(testScript, testOptions)
       await this.pushWebPagetestToTestResult(test, new this.db.WebPagetest({
+        status: 'RUNNING',
+        hasFinished: false,
         testId,
         testType,
         testScript,
         testOptions,
-        hasFinished: false,
       }))
     } catch (error) {
       this.db.log.error(`Could not start "${testType}" WebPagetest test: ${error.message}`, { test: test.id, error: error.stack })

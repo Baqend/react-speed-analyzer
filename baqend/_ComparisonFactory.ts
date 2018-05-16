@@ -105,6 +105,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
 
     // Initialize
     const comparison = new this.db.TestOverview({ id })
+    comparison.status = 'QUEUED'
     comparison.hasFinished = false
     comparison.configAnalysis = configAnalysis
     comparison.competitorTestResult = competitorTest

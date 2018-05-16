@@ -27,8 +27,13 @@ export class MultiComparisonWorker implements ComparisonListener {
       await multiComparison.load({ depth: 1 })
 
       // Is this multi comparison already finished?
-      if (multiComparison.hasFinished) {
+      if (multiComparison.hasFinished || multiComparison.status === 'CANCELED') {
         return
+      }
+
+      // Set multi comparison to running
+      if (multiComparison.status !== 'RUNNING') {
+        await multiComparison.optimisticSave(() => multiComparison.status = 'RUNNING')
       }
 
       const { testOverviews, runs } = multiComparison
@@ -50,6 +55,7 @@ export class MultiComparisonWorker implements ComparisonListener {
         // Save is finished state
         await multiComparison.ready()
         await multiComparison.optimisticSave((it: model.BulkTest) => {
+          it.status = 'SUCCESS'
           it.hasFinished = true
         })
 

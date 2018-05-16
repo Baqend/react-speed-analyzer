@@ -50,6 +50,7 @@ export function handleTestError(test: model.TestResult, testScript: string, erro
     .then(() => {
       // Save that test has finished without data
       test.testDataMissing = true
+      test.status = 'FAILED'
       test.hasFinished = true
       return test.save()
     }).catch((error) => {

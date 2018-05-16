@@ -25,12 +25,13 @@ export class TestFactory implements AsyncFactory<model.TestResult> {
 
     const testResult = new this.db.TestResult({
       url,
+      status: 'QUEUED',
+      hasFinished: false,
       isClone,
       location,
       priority,
       speedKitConfig,
       testInfo,
-      hasFinished: false,
       webPagetests: [],
     })
 

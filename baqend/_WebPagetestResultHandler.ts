@@ -1,10 +1,5 @@
 import { baqend, model } from 'baqend'
-import { Config } from './_Config'
-import { ConfigGenerator } from './_ConfigGenerator'
-import { Pagetest, WptTestResult, WptTestResultOptions } from './_Pagetest'
 import { generateTestResult } from './_resultGeneration'
-import { ConfigCache } from './_ConfigCache'
-import { DataType, Serializer } from './_Serializer'
 
 export enum TestType {
   PERFORMANCE = 'performance',
@@ -30,11 +25,9 @@ export class WebPagetestResultHandler {
    * @return The updated test result.
    */
   async handleResult(test: model.TestResult, webPagetest: model.WebPagetest): Promise<model.TestResult> {
-    const wptTestId = webPagetest.testId
-    this.db.log.info(`[WPRH.handleResult] For ${wptTestId}`)
-
-    // Mark WebPagetest run as finished
+    // Mark WebPagetest run as successfully finished
     await test.ready()
+    webPagetest.status = 'SUCCESS'
     webPagetest.hasFinished = true
     await test.save()
 
@@ -50,10 +43,14 @@ export class WebPagetestResultHandler {
 
     switch (webPagetest.testType) {
       case TestType.PERFORMANCE: {
-        this.db.log.info(`[WPRH.handleResult] Performance Test successful: ${wptTestId}`, { testResult: test.id, wptTestId })
+        this.db.log.info(`[WPRH.handleResult] Performance Test successful: ${wptTestId}`, {
+          testResult: test.id,
+          wptTestId,
+        })
 
         return generateTestResult(wptTestId, test, this.db).then(() => {
           return test.optimisticSave((it: model.TestResult) => {
+            it.status = 'SUCCESS'
             it.hasFinished = true
           })
         })

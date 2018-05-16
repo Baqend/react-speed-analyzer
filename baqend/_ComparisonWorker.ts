@@ -33,8 +33,13 @@ export class ComparisonWorker implements TestListener {
     await comparison.load({ depth: 1 })
 
     // Is this comparison already finished?
-    if (comparison.hasFinished) {
+    if (comparison.hasFinished || comparison.status === 'CANCELED') {
       return
+    }
+
+    // Set comparison to running
+    if (comparison.status !== 'RUNNING') {
+      await comparison.optimisticSave(() => comparison.status = 'RUNNING')
     }
 
     const { competitorTestResult: competitor, speedKitTestResult: speedKit } = comparison
@@ -60,6 +65,7 @@ export class ComparisonWorker implements TestListener {
       await comparison.optimisticSave((testOverview: model.TestOverview) => {
         testOverview.speedKitConfig = speedKit.speedKitConfig
         testOverview.factors = this.calculateFactors(competitor, speedKit)
+        testOverview.status = 'SUCCESS'
         testOverview.hasFinished = true
       })
 

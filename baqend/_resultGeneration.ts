@@ -51,6 +51,7 @@ export async function generateTestResult(wptTestId: string, pendingTest: model.T
 
     // Now the test is finished with data
     pendingTest.testDataMissing = false
+    pendingTest.status = 'SUCCESS'
     pendingTest.hasFinished = true
 
     await pendingTest.ready()
@@ -60,6 +61,7 @@ export async function generateTestResult(wptTestId: string, pendingTest: model.T
 
     // Now the test is finished without data
     pendingTest.testDataMissing = true
+    pendingTest.status = 'FAILED'
     pendingTest.hasFinished = true
 
     await pendingTest.ready()
