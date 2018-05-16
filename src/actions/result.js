@@ -33,6 +33,9 @@ export const loadResult = (testId) => ({
       if (testOverview.hasFinished) {
         if (loadedSpeedKitTestResult && !loadedSpeedKitTestResult.testDataMissing) {
           trackURL('showTestResult', testOverview.url, testOverview.factors)
+          if (testOverview.factors.firstMeaningfulPaint >= 1.5) {
+            trackURL('goodTestResult', testOverview.url, testOverview.factors)
+          }
         } else {
           trackURL('errorTestResult', testOverview.url)
         }
