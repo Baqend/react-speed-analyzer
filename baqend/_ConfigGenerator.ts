@@ -1,9 +1,11 @@
-import { baqend, model } from 'baqend'
+import { baqend } from 'baqend'
 import fetch from 'node-fetch'
 import { getAdSet } from './_adBlocker'
 import { Config } from './_Config'
+import { ConfigBuilder } from './_ConfigBuilder'
 import { getTLD } from './_getSpeedKitUrl'
-import { dollarRegExp, escapeRegExp, toRegExp } from './_helpers'
+import { dollarRegExp, escapeRegExp, removeDuplicates, toRegExp } from './_helpers'
+import { PuppeteerResource } from './_Puppeteer'
 import credentials from './credentials'
 
 export const CDN_LOCAL_URL = 'https://makefast.app.baqend.com/v1/file/www/selfMaintainedCDNList'
@@ -47,20 +49,42 @@ export class ConfigGenerator {
   /**
    * Analyzes the given domains and creates a Speed Kit config with a suggested whitelist.
    */
-  async generateSmart(url: string, mobile: boolean, { domains }: { domains: string[] }): Promise<Config> {
-    this.logger.info(`Analyzing domains: ${url}`, { domains })
+  async generateSmart(url: string, mobile: boolean, { host, domains, resources }: { host: string, domains: string[], resources: PuppeteerResource[] }): Promise<Config> {
+    const configBuilder = new ConfigBuilder(credentials.app, mobile)
 
+    // Add host to whitelist
+    configBuilder
+      .whitelistHost(this.matchAllSubdomains(host))
+
+    // Get hosts to whitelist by CDN without ads
     const cdnDomainsWithAds = await this.selectCdnDomains(domains)
-    this.logger.info(`CDN domains`, { cdnDomainsWithAds })
-
     const cdnDomainsWithoutAds = await this.filterOutAdDomains(cdnDomainsWithAds)
-    this.logger.info(`Domains without ads`, { cdnDomainsWithoutAds })
-
-    const whitelistedHosts = cdnDomainsWithoutAds
+    cdnDomainsWithoutAds
       .map(toRegExp)
       .map(dollarRegExp)
+      .forEach(host => configBuilder.whitelistHost(host))
 
-    return this.generateBasic(url, mobile, whitelistedHosts)
+    // Whitelist .min.js and .min.css URLs without cookies
+    resources
+      .filter(resource => !resource.cookies.length)
+      .filter(resource => resource.url.match(/\.min\.(?:css|js)$/))
+      .map(resource => this.stripResourceUrl(resource))
+      .forEach(url => configBuilder.whitelistUrl(url))
+
+    // Whitelist https://apis.google.com/js/plusone.js if it is used
+    resources
+      .filter(resource => resource.url === 'https://apis.google.com/js/plusone.js')
+      .map(resource => this.stripResourceUrl(resource))
+      .forEach(url => configBuilder.whitelistUrl(url))
+
+    // Blacklist jQuery callback URLs
+    resources
+      .filter(resource => this.isJQueryCallback(resource))
+      .map(resource => this.stripResourceUrl(resource))
+      .filter(removeDuplicates)
+      .forEach(url => configBuilder.blacklistUrl(url))
+
+    return configBuilder.build()
   }
 
   /**
@@ -107,7 +131,10 @@ export class ConfigGenerator {
     const response = await fetch(CDN_LOCAL_URL)
     const text = await response.text()
 
-    return text.trim().split(/\s*(?:\r\n|[\r\n])\s*/).map(toRegExp)
+    return text.trim()
+      .split(/\s*(?:\r\n|[\r\n])\s*/)
+      .map(toRegExp)
+      .concat([/(?:\.|^)images\./, /(?:\.|^)static\./])
   }
 
   /**
@@ -118,5 +145,29 @@ export class ConfigGenerator {
     const regExps = [...ads].filter(it => !!it.length).map(toRegExp)
 
     return domains.filter(domain => !regExps.some(regExp => regExp.test(domain)))
+  }
+
+  /**
+   * Strip resource URL.
+   */
+  private stripResourceUrl(resource: PuppeteerResource) {
+    return resource.url
+      .replace(/^https?:\/\//, '')
+      .replace(/\?[^?]*$/, '')
+  }
+
+  /**
+   * Matches all subdomains of the given domain.
+   */
+  private matchAllSubdomains(domain: string): RegExp {
+    const match = /[\w-]+\.[\w-]+$/.test(domain) ? RegExp.lastMatch : domain
+    return dollarRegExp(toRegExp(match))
+  }
+
+  /**
+   * Determines whether a resource is a jQuery callback.
+   */
+  private isJQueryCallback(resource: PuppeteerResource): boolean {
+    return !!resource.url.match(/\?callback=jQuery/)
   }
 }

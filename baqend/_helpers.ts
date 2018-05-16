@@ -143,3 +143,10 @@ export function getDateString(): string {
   const date = new Date().toISOString()
   return date.substr(0, 10) + '-' + date.substr(11, 8).replace(/:/g, '')
 }
+
+/**
+ * Removes duplicates from an array. Put this callback into the `Array.prototype.filter` method.
+ */
+export function removeDuplicates<T>(value: T, index: number, array: T[]): boolean {
+  return array.indexOf(value) === index
+}

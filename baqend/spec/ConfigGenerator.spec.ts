@@ -1,6 +1,7 @@
 import { expect } from 'chai'
 import 'mocha'
 import { ConfigGenerator } from '../_ConfigGenerator'
+import { PuppeteerResource } from '../_Puppeteer'
 import { ConsoleLogger } from './ConsoleLogger'
 
 describe('ConfigGenerator', () => {
@@ -48,19 +49,19 @@ describe('ConfigGenerator', () => {
   })
 
   it('generates a smart config', async () => {
+    const host = 'alibaba.com'
     const domains = [
       's3.amazonaws.com',
       'ajax.googleapis.com',
       'foo.bar',
     ]
-    const minimal1 = await configGenerator.generateSmart('https://alibaba.com', false, { domains })
+    const resources: PuppeteerResource[] = []
+    const minimal1 = await configGenerator.generateSmart('https://alibaba.com', false, { host, resources, domains })
     expect(minimal1).to.deep.equal({
       appName: 'makefast-dev',
       whitelist: [
-        { host: /^[A-Za-z.-]*alibaba\.com$/ },
-        {
-          host: [
-            /s3\.amazonaws\.com$/,
+        { host: [
+            /alibaba\.com$/,
             /ajax\.googleapis\.com$/,
           ],
         },
