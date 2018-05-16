@@ -334,6 +334,8 @@ declare module 'baqend' {
     interface Puppeteer extends binding.Managed {
       url: string;
       displayUrl: string;
+      scheme: string;
+      host: string;
       protocol: string;
       domains: string[];
       screenshot: binding.File;

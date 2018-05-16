@@ -135,7 +135,7 @@ export class Puppeteer {
       this.db.log.info(`Received puppeteer data for ${url}`, { data })
 
       // Generate smart config
-      const { url: normalizedUrl, displayUrl, protocol, host } = data
+      const { url: normalizedUrl, displayUrl, protocol, host, scheme } = data
       const domains = data.domains!
       const resources = data.resources!
       const smartConfig = await this.configGenerator.generateSmart(normalizedUrl, mobile, { host, domains, resources })
@@ -144,6 +144,8 @@ export class Puppeteer {
       const puppeteer: model.Puppeteer = new this.db.Puppeteer()
       puppeteer.url = normalizedUrl
       puppeteer.displayUrl = displayUrl
+      puppeteer.scheme = scheme
+      puppeteer.host = host
       puppeteer.protocol = protocol
       puppeteer.domains = domains
       puppeteer.screenshot = await toFile(this.db, data.screenshotData!, `/www/screenshots/${urlToFilename(url)}/${mobile ? 'mobile' : 'desktop'}/${generateHash()}.jpg`)
