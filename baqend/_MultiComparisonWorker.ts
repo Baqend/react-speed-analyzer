@@ -1,6 +1,8 @@
 import { baqend, model } from 'baqend'
 import { ComparisonListener, ComparisonWorker } from './_ComparisonWorker'
 import { ComparisonFactory } from './_ComparisonFactory'
+import { parallelize } from './_helpers'
+import { isFinished, isUnfinished, setCanceled, setRunning, setSuccess, Status } from './_Status'
 import { updateMultiComparison } from './_updateMultiComparison'
 
 export interface MultiComparisonListener {
@@ -27,13 +29,13 @@ export class MultiComparisonWorker implements ComparisonListener {
       await multiComparison.load({ depth: 1 })
 
       // Is this multi comparison already finished?
-      if (multiComparison.hasFinished || multiComparison.status === 'CANCELED') {
+      if (isFinished(multiComparison)) {
         return
       }
 
       // Set multi comparison to running
-      if (multiComparison.status !== 'RUNNING') {
-        await multiComparison.optimisticSave(() => multiComparison.status = 'RUNNING')
+      if (multiComparison.status !== Status.RUNNING) {
+        await multiComparison.optimisticSave(() => setRunning(multiComparison))
       }
 
       const { testOverviews, runs } = multiComparison
@@ -53,11 +55,7 @@ export class MultiComparisonWorker implements ComparisonListener {
         }
 
         // Save is finished state
-        await multiComparison.ready()
-        await multiComparison.optimisticSave((it: model.BulkTest) => {
-          it.status = 'SUCCESS'
-          it.hasFinished = true
-        })
+        await multiComparison.optimisticSave(() => setSuccess(multiComparison))
 
         // Inform the listener that this multi comparison has finished
         this.listener && this.listener.handleMultiComparisonFinished(multiComparison)
@@ -85,19 +83,17 @@ export class MultiComparisonWorker implements ComparisonListener {
    * Cancels the given multi comparison.
    */
   async cancel(multiComparison: model.BulkTest): Promise<boolean> {
-    if (multiComparison.hasFinished || multiComparison.status === 'CANCELED') {
+    if (isFinished(multiComparison)) {
       return false
     }
 
-    for (const comparison of multiComparison.testOverviews) {
-      if (!comparison.hasFinished) {
-        if (!await this.comparisonWorker.cancel(comparison)) {
-          return false
-        }
-      }
-    }
+    // Cancel all unfinished comparisons
+    await multiComparison.testOverviews
+      .filter(comparison => isUnfinished(comparison))
+      .map(comparison => this.comparisonWorker.cancel(comparison))
+      .reduce(parallelize)
 
-    await multiComparison.optimisticSave(() => multiComparison.status = 'CANCELED')
+    await multiComparison.optimisticSave(() => setCanceled(multiComparison))
     return true
   }
 

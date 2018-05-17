@@ -1,13 +1,8 @@
 import { binding } from 'baqend'
 
-declare type Status =
-  'QUEUED' |
-  'RUNNING' |
-  'SUCCESS' |
-  'CANCELED' |
-  'FAILED'
-
 declare module 'baqend' {
+
+  export type StatusString = 'QUEUED' | 'RUNNING' | 'SUCCESS' | 'CANCELED' | 'FAILED'
 
   interface baqend {
     BulkComparison: binding.EntityFactory<model.BulkComparison>;
@@ -59,7 +54,7 @@ declare module 'baqend' {
     }
 
     interface BulkComparison extends binding.Entity {
-      status: Status;
+      status: StatusString;
       hasFinished: boolean;
       comparisonsToStart: Array<ComparisonInfo>;
       createdBy: string | null;
@@ -68,7 +63,7 @@ declare module 'baqend' {
 
     interface BulkTest extends binding.Entity {
       url: string;
-      status: Status;
+      status: StatusString;
       hasFinished: boolean;
       testOverviews: Array<TestOverview>;
       speedKitMeanValues: Mean;
@@ -156,7 +151,7 @@ declare module 'baqend' {
 
     interface TestResult extends binding.Entity {
       url: string;
-      status: Status;
+      status: StatusString;
       hasFinished: boolean;
       testId: string;
       location: string;
@@ -192,7 +187,7 @@ declare module 'baqend' {
 
     interface TestOverview extends binding.Entity {
       url: string;
-      status: Status;
+      status: StatusString;
       hasFinished: boolean;
       psiDomains: number;
       psiRequests: number;
@@ -242,7 +237,7 @@ declare module 'baqend' {
     }
 
     interface WebPagetest extends binding.Managed {
-      status: Status;
+      status: StatusString;
       hasFinished: boolean;
       testId: string;
       testType: string;

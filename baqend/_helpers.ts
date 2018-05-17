@@ -150,3 +150,10 @@ export function getDateString(): string {
 export function removeDuplicates<T>(value: T, index: number, array: T[]): boolean {
   return array.indexOf(value) === index
 }
+
+/**
+ * Parallelizes the given promise array.
+ */
+export function parallelize<T>(previous: Promise<T>, current: Promise<T>, currentIndex: number, array: Promise<T>[]): Promise<T> {
+  return Promise.all([previous, current]).then(([p]) => p)
+}

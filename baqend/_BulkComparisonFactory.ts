@@ -1,5 +1,6 @@
 import { baqend, model } from 'baqend'
 import { AsyncFactory } from './_AsyncFactory'
+import { setQueued } from './_Status'
 import { TestBuilder } from './_TestBuilder'
 import { TestParams } from './_TestParams'
 
@@ -29,8 +30,7 @@ export class BulkComparisonFactory implements AsyncFactory<model.BulkComparison>
    */
   create(id: string, createdBy: string | null, tests: BulkComparisonTestParams[]): Promise<model.BulkComparison> {
     const bulkComparison: model.BulkComparison = new this.db.BulkComparison({ id })
-    bulkComparison.status = 'QUEUED'
-    bulkComparison.hasFinished = false
+    setQueued(bulkComparison)
     bulkComparison.comparisonsToStart = tests.map(this.buildParams.bind(this))
     bulkComparison.createdBy = createdBy
     bulkComparison.multiComparisons = []

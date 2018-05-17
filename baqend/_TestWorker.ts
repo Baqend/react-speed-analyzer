@@ -1,9 +1,10 @@
 import { baqend, model } from 'baqend'
 import { ConfigGenerator } from './_ConfigGenerator'
+import { parallelize } from './_helpers'
 import { DataType, Serializer } from './_Serializer'
+import { isFinished, isUnfinished, setCanceled, setRunning, Status } from './_Status'
 import { TestScriptBuilder } from './_TestScriptBuilder'
 import { Pagetest } from './_Pagetest'
-import { sleep } from './_sleep'
 import { TestType, WebPagetestResultHandler } from './_WebPagetestResultHandler'
 import credentials from './credentials'
 
@@ -51,7 +52,7 @@ export class TestWorker {
       await test.load()
 
       // Is the test finished, canceled?
-      if (test.hasFinished || test.status === 'CANCELED') {
+      if (isFinished(test)) {
         this.db.log.info(`Test ${test.key} is finished.`, { test })
         this.listener && this.listener.handleTestFinished(test)
 
@@ -59,8 +60,8 @@ export class TestWorker {
       }
 
       // Set test to running
-      if (test.status !== 'RUNNING') {
-        await test.optimisticSave(() => test.status = 'RUNNING')
+      if (test.status !== Status.RUNNING) {
+        await test.optimisticSave(() => setRunning(test))
       }
 
       // Is WebPagetest still running this test? Check the status and start over.
@@ -92,24 +93,23 @@ export class TestWorker {
    * Cancels the given test.
    */
   async cancel(test: model.TestResult): Promise<boolean> {
-    if (test.hasFinished) {
+    if (isFinished(test)) {
       return false
     }
 
     // Cancel each WebpageTest
-    const canceledWebPagetests = [] as model.WebPagetest[]
-    for (const webPagetest of test.webPagetests) {
-      if (!webPagetest.hasFinished) {
-        await this.api.cancelTest(webPagetest.testId)
-        canceledWebPagetests.push(webPagetest)
-      }
-    }
+    await test.webPagetests
+      .filter(webPagetest => isUnfinished(webPagetest))
+      .map(webPagetest => this.api.cancelTest(webPagetest.testId))
+      .reduce(parallelize)
 
     // Mark test and WebPagetests as canceled
-    await test.ready()
-    test.status = 'CANCELED'
-    canceledWebPagetests.forEach(test => test.status = 'CANCELED')
-    await test.save()
+    await test.optimisticSave(() => {
+      setCanceled(test)
+      test.webPagetests
+        .filter(webPagetest => isUnfinished(webPagetest))
+        .forEach(webPagetest => setCanceled(webPagetest))
+    })
 
     return true
   }
@@ -126,7 +126,7 @@ export class TestWorker {
       }
 
       const webPagetest = this.getWebPagetestInfo(test, wptTestId)
-      if (webPagetest.hasFinished || webPagetest.status === 'CANCELED') {
+      if (isFinished(webPagetest)) {
         this.db.log.debug(`WebPagetest ${wptTestId} was already finished pr canceled`, { test })
         return
       }
@@ -228,8 +228,6 @@ export class TestWorker {
     try {
       const testId = await this.api.runTestWithoutWait(testScript, testOptions)
       await this.pushWebPagetestToTestResult(test, new this.db.WebPagetest({
-        status: 'RUNNING',
-        hasFinished: false,
         testId,
         testType,
         testScript,
@@ -244,8 +242,8 @@ export class TestWorker {
    * Saves a WebPagetest info in a test.
    */
   private async pushWebPagetestToTestResult(test: model.TestResult, webPagetest: model.WebPagetest): Promise<model.TestResult> {
-    await test.ready()
     return test.optimisticSave((it: model.TestResult) => {
+      setRunning(webPagetest)
       it.webPagetests.push(webPagetest)
     })
   }

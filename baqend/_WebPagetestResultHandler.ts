@@ -1,5 +1,6 @@
 import { baqend, model } from 'baqend'
 import { generateTestResult } from './_resultGeneration'
+import { setSuccess } from './_Status'
 
 export enum TestType {
   PERFORMANCE = 'performance',
@@ -26,10 +27,7 @@ export class WebPagetestResultHandler {
    */
   async handleResult(test: model.TestResult, webPagetest: model.WebPagetest): Promise<model.TestResult> {
     // Mark WebPagetest run as successfully finished
-    await test.ready()
-    webPagetest.status = 'SUCCESS'
-    webPagetest.hasFinished = true
-    await test.save()
+    await test.optimisticSave(() => setSuccess(webPagetest))
 
     // Handle the result by type
     return this.updateTestWithResult(test, webPagetest)
@@ -49,10 +47,7 @@ export class WebPagetestResultHandler {
         })
 
         return generateTestResult(wptTestId, test, this.db).then(() => {
-          return test.optimisticSave((it: model.TestResult) => {
-            it.status = 'SUCCESS'
-            it.hasFinished = true
-          })
+          return test.optimisticSave(() => setSuccess(test))
         })
       }
 

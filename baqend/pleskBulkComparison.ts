@@ -1,6 +1,7 @@
 import { baqend, model } from 'baqend'
 import { Request, Response } from 'express'
 import { generateHash, getDateString } from './_helpers'
+import { Status } from './_Status'
 import { startBulkComparison } from './startBulkComparison'
 import { DEFAULT_PLESK_PRIORITY } from './_TestBuilder'
 
@@ -10,7 +11,7 @@ const defaultComparison = {
   competitorTestResult: '',
   speedKitTestResult: '',
   factors: { speedIndex: null },
-  status: 'SUCCESS',
+  status: Status.SUCCESS,
   hasFinished: true,
   speedKitVersion: null,
   isSpeedKitComparison: false,

@@ -1,3 +1,4 @@
+import { setFailed, setSuccess } from './_Status'
 import { toFile } from './_toFile'
 import { getAdSet } from './_adBlocker'
 import credentials from './credentials'
@@ -51,8 +52,7 @@ export async function generateTestResult(wptTestId: string, pendingTest: model.T
 
     // Now the test is finished with data
     pendingTest.testDataMissing = false
-    pendingTest.status = 'SUCCESS'
-    pendingTest.hasFinished = true
+    setSuccess(pendingTest)
 
     await pendingTest.ready()
     return pendingTest.save()
@@ -61,8 +61,7 @@ export async function generateTestResult(wptTestId: string, pendingTest: model.T
 
     // Now the test is finished without data
     pendingTest.testDataMissing = true
-    pendingTest.status = 'FAILED'
-    pendingTest.hasFinished = true
+    setFailed(pendingTest)
 
     await pendingTest.ready()
     return pendingTest.save()

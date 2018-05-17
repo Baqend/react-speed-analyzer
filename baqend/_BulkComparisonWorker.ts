@@ -1,6 +1,7 @@
 import { baqend, model } from 'baqend'
 import { MultiComparisonFactory } from './_MultiComparisonFactory'
 import { MultiComparisonListener, MultiComparisonWorker } from './_MultiComparisonWorker'
+import { isFinished, setRunning, setSuccess, Status } from './_Status'
 
 export class BulkComparisonWorker implements MultiComparisonListener {
   constructor(
@@ -18,13 +19,13 @@ export class BulkComparisonWorker implements MultiComparisonListener {
       await bulkComparison.load({ depth: 1 })
 
       // Is this bulk comparison already finished?
-      if (bulkComparison.hasFinished || bulkComparison.status === 'CANCELED') {
+      if (isFinished(bulkComparison)) {
         return
       }
 
       // Set bulk comparison to running
-      if (bulkComparison.status !== 'RUNNING') {
-        await bulkComparison.optimisticSave(() => bulkComparison.status = 'RUNNING')
+      if (bulkComparison.status !== Status.RUNNING) {
+        await bulkComparison.optimisticSave(() => setRunning(bulkComparison))
       }
 
       const { multiComparisons, createdBy } = bulkComparison
@@ -44,11 +45,7 @@ export class BulkComparisonWorker implements MultiComparisonListener {
         }
 
         // Save is finished state
-        await bulkComparison.ready()
-        await bulkComparison.optimisticSave((it: model.BulkComparison) => {
-          it.status = 'SUCCESS'
-          it.hasFinished = true
-        })
+        await bulkComparison.optimisticSave(() => setSuccess(bulkComparison))
 
         // TODO: Add new listener here?
         return

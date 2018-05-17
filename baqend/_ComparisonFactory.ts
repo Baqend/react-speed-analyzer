@@ -4,6 +4,7 @@ import { ConfigCache } from './_ConfigCache'
 import { ConfigGenerator } from './_ConfigGenerator'
 import { getRootPath, getTLD } from './_getSpeedKitUrl'
 import { DataType, Serializer } from './_Serializer'
+import { setQueued, Status } from './_Status'
 import { TestBuilder } from './_TestBuilder'
 import { TestFactory } from './_TestFactory'
 import { TestParams } from './_TestParams'
@@ -105,8 +106,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
 
     // Initialize
     const comparison = new this.db.TestOverview({ id })
-    comparison.status = 'QUEUED'
-    comparison.hasFinished = false
+    setQueued(comparison)
     comparison.configAnalysis = configAnalysis
     comparison.competitorTestResult = competitorTest
     comparison.speedKitTestResult = speedKitTest
