@@ -49,17 +49,19 @@ export class ConfigGenerator {
   /**
    * Analyzes the given domains and creates a Speed Kit config with a suggested whitelist.
    */
-  async generateSmart(url: string, mobile: boolean, { host, domains, resources }: { host: string, domains: string[], resources: PuppeteerResource[] }): Promise<Config> {
+  async generateSmart(url: string, mobile: boolean, thirdParty: boolean, { host, domains, resources }: { host: string, domains: string[], resources: PuppeteerResource[] }): Promise<Config> {
     const configBuilder = new ConfigBuilder(credentials.app, mobile)
 
     // Add host to whitelist
+    const hostMatcher = this.matchAllSubdomains(host)
     configBuilder
-      .whitelistHost(this.matchAllSubdomains(host))
+      .whitelistHost(hostMatcher)
 
     // Get hosts to whitelist by CDN without ads
     const cdnDomainsWithAds = await this.selectCdnDomains(domains)
     const cdnDomainsWithoutAds = await this.filterOutAdDomains(cdnDomainsWithAds)
     cdnDomainsWithoutAds
+      .filter(host => thirdParty || host.match(hostMatcher))
       .map(toRegExp)
       .map(dollarRegExp)
       .forEach(host => configBuilder.whitelistHost(host))
@@ -68,18 +70,20 @@ export class ConfigGenerator {
     resources
       .filter(resource => !resource.cookies.length)
       .filter(resource => resource.url.match(/\.min\.(?:css|js)$/))
+      .filter(resource => thirdParty || resource.host.match(hostMatcher))
       .map(resource => this.stripResourceUrl(resource))
       .forEach(url => configBuilder.whitelistUrl(url))
 
     // Whitelist https://apis.google.com/js/plusone.js if it is used
     resources
-      .filter(resource => resource.url === 'https://apis.google.com/js/plusone.js')
+      .filter(resource => thirdParty && resource.url === 'https://apis.google.com/js/plusone.js')
       .map(resource => this.stripResourceUrl(resource))
       .forEach(url => configBuilder.whitelistUrl(url))
 
     // Blacklist jQuery callback URLs
     resources
       .filter(resource => this.isJQueryCallback(resource))
+      .filter(resource => thirdParty || resource.host.match(hostMatcher))
       .map(resource => this.stripResourceUrl(resource))
       .filter(removeDuplicates)
       .forEach(url => configBuilder.blacklistUrl(url))

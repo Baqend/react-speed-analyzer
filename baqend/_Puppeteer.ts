@@ -117,7 +117,7 @@ export class Puppeteer {
   ) {
   }
 
-  async analyze(url: string, mobile: boolean = false): Promise<model.Puppeteer> {
+  async analyze(url: string, mobile: boolean = false, thirdParty: boolean = true): Promise<model.Puppeteer> {
     try {
       const data = await this.postToServer(
         url,
@@ -138,7 +138,7 @@ export class Puppeteer {
       const { url: normalizedUrl, displayUrl, protocol, host, scheme } = data
       const domains = data.domains!
       const resources = data.resources!
-      const smartConfig = await this.configGenerator.generateSmart(normalizedUrl, mobile, { host, domains, resources })
+      const smartConfig = await this.configGenerator.generateSmart(normalizedUrl, mobile, thirdParty, { host, domains, resources })
 
       // Create persistable object
       const puppeteer: model.Puppeteer = new this.db.Puppeteer()

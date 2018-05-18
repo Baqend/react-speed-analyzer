@@ -56,7 +56,7 @@ describe('ConfigGenerator', () => {
       'foo.bar',
     ]
     const resources: PuppeteerResource[] = []
-    const minimal1 = await configGenerator.generateSmart('https://alibaba.com', false, { host, resources, domains })
+    const minimal1 = await configGenerator.generateSmart('https://alibaba.com', false, true, { host, resources, domains })
     expect(minimal1).to.deep.equal({
       appName: 'makefast-dev',
       whitelist: [
