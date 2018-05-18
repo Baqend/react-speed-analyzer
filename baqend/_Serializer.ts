@@ -76,7 +76,7 @@ export class Serializer {
   /**
    * Serializes data to executable JavaScript.
    */
-  private serializeJavascript(thing: any): string {
+  private serializeJavascript(thing: any, indent = ''): string {
     if (typeof thing == 'undefined') {
       return 'void 0'
     }
@@ -93,16 +93,17 @@ export class Serializer {
       return `/${thing.source}/${thing.flags || ''}`
     }
 
+    const innerIndent = `${indent}  `
     if (thing instanceof Array) {
-      return `[${thing.map(it => this.serializeJavascript(it)).join(', ')}]`
+      return `[\n${thing.map(it => `${innerIndent}${this.serializeJavascript(it, innerIndent)}`).join(',\n')}\n${indent}]`
     }
 
     // Handle as simple object
     const objectContents = Object
       .entries(thing)
-      .map(([key, value]) => `${this.escapeKey(key)}: ${this.serializeJavascript(value)}`)
-      .join(', ')
-    return `{ ${objectContents} }`
+      .map(([key, value]) => `${innerIndent}${this.escapeKey(key)}: ${this.serializeJavascript(value, innerIndent)}`)
+      .join(',\n')
+    return `{\n${objectContents}\n${indent}}`
   }
 
   /**
