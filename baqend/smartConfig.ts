@@ -12,6 +12,7 @@ export async function post(db: baqend, req: Request, res: Response) {
     res.status(400)
     res.send({ error: 'Please provide a URL.' })
   }
+  const { accept = null } = req.headers
 
   const { puppeteer, serializer } = bootstrap(db)
 
@@ -30,6 +31,15 @@ export async function post(db: baqend, req: Request, res: Response) {
   try {
     const puppeteerData = await puppeteer.analyze(url, mobile)
     const json = puppeteerData.smartConfig
+
+    if (accept === 'application/javascript') {
+      const config = convert(json, DataType.JAVASCRIPT)
+      res.header('content-type', 'application/javascript; charset=utf-8')
+      res.send(config)
+
+      return
+    }
+
     const config = convert(json, dataType)
 
     res.send({ url, mobile, config, dataType })
