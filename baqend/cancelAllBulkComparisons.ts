@@ -1,8 +1,8 @@
 import { baqend, model } from 'baqend'
 import { Request, Response } from 'express'
 import { bootstrap } from './_compositionRoot'
-import { Status } from "./_Status"
-import { BulkComparisonWorker } from "./_BulkComparisonWorker"
+import { Status } from './_Status'
+import { BulkComparisonWorker } from './_BulkComparisonWorker'
 
 /**
  * Baqend code API call.
@@ -10,13 +10,16 @@ import { BulkComparisonWorker } from "./_BulkComparisonWorker"
 export async function post(db: baqend, req: Request, res: Response) {
   const { bulkComparisonWorker } = bootstrap(db)
 
-  iterateBulkComparisons(db,(bulkComps) => killBulkComparisons(bulkComparisonWorker, bulkComps));
+  iterateBulkComparisons(db, bulkComps => killBulkComparisons(bulkComparisonWorker, bulkComps))
 }
 
 
 async function killBulkComparisons(bulkComparisonWorker: BulkComparisonWorker, bulkComparisons: model.BulkComparison[]): Promise<void> {
   for (const bulkComparison of bulkComparisons) {
-    await bulkComparisonWorker.cancel(bulkComparison)
+    try {
+      await bulkComparisonWorker.cancel(bulkComparison)
+    } catch (error) {
+    }
   }
 }
 
@@ -32,9 +35,10 @@ async function iterateBulkComparisons(db: baqend, callback: (chunk: model.BulkCo
     .limit(100)
     .resultList({ depth: 2 })
 
+  if (!result.length) {
+    return
+  }
   await callback(result)
 
-  if (result.length === 100) {
-    iterateBulkComparisons(db, callback, result[result.length - 1].id)
-  }
+  iterateBulkComparisons(db, callback, result[result.length - 1].id)
 }

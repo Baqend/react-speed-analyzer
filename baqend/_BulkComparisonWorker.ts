@@ -1,8 +1,8 @@
 import { baqend, model } from 'baqend'
 import { MultiComparisonFactory } from './_MultiComparisonFactory'
 import { MultiComparisonListener, MultiComparisonWorker } from './_MultiComparisonWorker'
-import {isFinished, isUnfinished, setCanceled, setRunning, setSuccess, Status} from './_Status'
-import { parallelize } from "./_helpers";
+import { isFinished, isUnfinished, setCanceled, setRunning, setSuccess, Status } from './_Status'
+import { parallelize } from './_helpers'
 
 export class BulkComparisonWorker implements MultiComparisonListener {
   constructor(
@@ -77,9 +77,9 @@ export class BulkComparisonWorker implements MultiComparisonListener {
     }
 
     // Cancel all unfinished multi comparisons
-    bulkComparison.multiComparisons
-      .filter((multiComparison) => isUnfinished(multiComparison))
-      .map((multiComparison) => this.multiComparisonWorker.cancel(multiComparison))
+    await bulkComparison.multiComparisons
+      .filter(multiComparison => isUnfinished(multiComparison))
+      .map(multiComparison => this.multiComparisonWorker.cancel(multiComparison))
       .reduce(parallelize)
 
     await bulkComparison.optimisticSave(() => setCanceled(bulkComparison))
