@@ -46,7 +46,7 @@ export function setRunning(entity: StatefulEntity) {
  */
 export function setCanceled(entity: StatefulEntity) {
   entity.status = Status.CANCELED
-  entity.hasFinished = false
+  entity.hasFinished = true
 }
 
 /**
