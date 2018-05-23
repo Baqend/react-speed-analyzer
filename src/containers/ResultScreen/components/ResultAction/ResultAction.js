@@ -328,17 +328,16 @@ class ResultAction extends Component {
     const isWordPress = testOverview.type === 'wordpress'
     const { isSpeedKitComparison, speedKitVersion, configAnalysis } = testOverview
 
-    if (competitorError) {
+    if (isSpeedKitComparison) {
+      return this.renderIsSpeedKitCta(speedKitVersion, configAnalysis)
+    } else if (competitorError) {
       return this.renderAllTestsFailed()
     } else if (!competitorError && speedKitError) {
       return this.renderSpeedKitFailed()
-    } else {
-      if (isSpeedKitComparison) {
-        return this.renderIsSpeedKitCta(speedKitVersion, configAnalysis)
-      } else if (isWordPress) {
-        return this.renderWordpressCta()
-      }
+    } else if (isWordPress){
+      return this.renderWordpressCta()
     }
+
     return this.renderCta()
   }
 }
