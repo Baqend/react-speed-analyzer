@@ -179,7 +179,7 @@ async function execSpeedKit() {
     displayUrl: 'https://www.fussballdaten.de/bundesliga/ewige-tabelle/',
     mobile: false,
     isSpeedKitComparison: true,
-    speedKitVersion: '1.4.0',
+    speedKitVersion: '1.6.0',
     speedKitConfig: null,
     configAnalysis: {
       configMissing: false,
