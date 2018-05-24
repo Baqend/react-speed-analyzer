@@ -13,6 +13,11 @@ export enum Priority {
 
 export interface TestParams {
   /**
+   * The not normalized input url.
+   */
+  url: string
+
+  /**
    * The activity timeout of the test.
    */
   activityTimeout?: number

@@ -54,8 +54,8 @@ export class BulkComparisonWorker implements MultiComparisonListener {
       }
 
       // Start next multi comparison
-      const { url, mobile, runs, ...params } = bulkComparison.comparisonsToStart[nextIndex]
-      const puppeteer = await this.getPuppeteerInfo(url, mobile) || new this.db.Puppeteer()
+      const { runs, ...params } = bulkComparison.comparisonsToStart[nextIndex]
+      const puppeteer = await this.getPuppeteerInfo(params.url, params.mobile)
 
       const multiComparison = await this.multiComparisonFactory.create(puppeteer, params, createdBy, runs)
 

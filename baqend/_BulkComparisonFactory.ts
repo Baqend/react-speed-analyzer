@@ -8,7 +8,6 @@ import { TestParams } from './_TestParams'
  * The params which are allowed per test.
  */
 export interface BulkComparisonTestParams extends TestParams {
-  url: string;
   runs?: number
 }
 
@@ -40,8 +39,8 @@ export class BulkComparisonFactory implements AsyncFactory<model.BulkComparison>
   /**
    * Builds the final test params.
    */
-  buildParams(test: BulkComparisonTestParams): model.ComparisonInfo {
-    const { url, ...params } = test
+  buildParams(params: BulkComparisonTestParams): model.ComparisonInfo {
+    const { url } = params
     const isStarted = false
     const multiComparisonId = null
     return Object.assign(this.testBuilder.buildBulkParams(params), { isStarted, url, multiComparisonId })

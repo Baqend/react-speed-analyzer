@@ -2,14 +2,12 @@ import { baqend, model } from 'baqend'
 import { BulkComparisonTestParams } from './_BulkComparisonFactory'
 import { bootstrap } from './_compositionRoot'
 import { generateHash, getDateString } from './_helpers'
-import { Puppeteer } from './_Puppeteer'
 import { TestParams } from './_TestParams'
 
 /**
  * The params which are allowed per test.
  */
 export interface BulkTestParams extends TestParams {
-  url: string
   runs?: number
 }
 

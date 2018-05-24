@@ -30,6 +30,9 @@ export class MultiComparisonWorker implements ComparisonListener {
 
       // Is this multi comparison already finished?
       if (isFinished(multiComparison)) {
+        // Inform the listener that this multi comparison has finished
+        this.listener && this.listener.handleMultiComparisonFinished(multiComparison)
+
         return
       }
 
