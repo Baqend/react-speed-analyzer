@@ -37,10 +37,10 @@ declare module 'baqend' {
     }
 
     interface ComparisonInfo {
-      puppeteer: Puppeteer
       isStarted: boolean
       runs: number
       location: string
+      mobile: boolean
       url: string
       multiComparisonId: string | null
     }

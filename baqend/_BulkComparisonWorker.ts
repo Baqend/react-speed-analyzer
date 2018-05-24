@@ -1,4 +1,5 @@
 import { baqend, model } from 'baqend'
+import { bootstrap } from './_compositionRoot'
 import { MultiComparisonFactory } from './_MultiComparisonFactory'
 import { MultiComparisonListener, MultiComparisonWorker } from './_MultiComparisonWorker'
 import { isFinished, isUnfinished, setCanceled, setRunning, setSuccess, Status } from './_Status'
@@ -53,7 +54,9 @@ export class BulkComparisonWorker implements MultiComparisonListener {
       }
 
       // Start next multi comparison
-      const { puppeteer, runs, ...params } = bulkComparison.comparisonsToStart[nextIndex]
+      const { url, mobile, runs, ...params } = bulkComparison.comparisonsToStart[nextIndex]
+      const puppeteer = await this.getPuppeteerInfo(url, mobile) || new this.db.Puppeteer()
+
       const multiComparison = await this.multiComparisonFactory.create(puppeteer, params, createdBy, runs)
 
       await bulkComparison.ready()
@@ -65,6 +68,19 @@ export class BulkComparisonWorker implements MultiComparisonListener {
       this.multiComparisonWorker.next(multiComparison)
     } catch (error) {
       this.db.log.warn(`Error while next iteration`, { id: bulkComparison.id, error: error.stack })
+    }
+  }
+
+  /**
+   * Gets the Puppeteer information of a given url
+   */
+  async getPuppeteerInfo(url: string, mobile: boolean): Promise<model.Puppeteer | null> {
+    const { puppeteer } = bootstrap(this.db)
+    try {
+      return await puppeteer.analyze(url, mobile)
+    } catch ({ message, stack }) {
+      this.db.log.error(`Puppeteer failed for ${url}: ${message}`, { stack })
+      return null
     }
   }
 
