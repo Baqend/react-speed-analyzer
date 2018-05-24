@@ -4,7 +4,7 @@ import { getAdSet } from './_adBlocker'
 import credentials from './credentials'
 import { API, WptRun, WptTestResult, WptTestResultOptions, WptView } from './_Pagetest'
 import { countHits } from './_countHits'
-import { getFMP } from './_calculateFMP'
+import { chooseFMP } from './_calculateFMP'
 import { baqend, binding, model } from 'baqend'
 
 /**
@@ -222,32 +222,6 @@ function countContentSize(requests: any[]): any {
   })
 
   return contentSize
-}
-
-/**
- * @param db The Baqend instance.
- * @param data The data to choose the FMP of.
- * @param testId The id of the test to choose the FMP for.
- * @param runIndex The index of the run to choose the FMP for.
- */
-async function chooseFMP(db: baqend, data: WptView, testId: string, runIndex: string): Promise<number|null> {
-  // Search First Meaningful Paint from timing
-  const { chromeUserTiming = [] } = data
-  const firstMeaningfulPaintObject =
-    chromeUserTiming
-      .reverse()
-      .find(entry => entry.name === 'firstMeaningfulPaint' || entry.name === 'firstMeaningfulPaintCandidate')
-
-  const firstMeaningfulPaint = firstMeaningfulPaintObject ? firstMeaningfulPaintObject.time : 0
-  try {
-    db.log.info('Start FMP calculation')
-    const calculatedFM = await getFMP(db, testId, runIndex)
-    db.log.info('FMP calculation successful', {calculatedFM})
-    return Math.abs(calculatedFM - firstMeaningfulPaint) <= 100 ? firstMeaningfulPaint : calculatedFM
-  } catch (error) {
-    db.log.warn(`Could not calculate FMP for test ${testId}. Use FMP from wepPageTest instead!`, { error: error.stack })
-    return firstMeaningfulPaint > 0 ? firstMeaningfulPaint : null
-  }
 }
 
 /**
