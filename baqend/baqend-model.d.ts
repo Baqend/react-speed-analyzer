@@ -38,6 +38,7 @@ declare module 'baqend' {
 
     interface ComparisonInfo {
       url: string
+      puppeteer?: Puppeteer
       isStarted: boolean
       runs: number
       location: string

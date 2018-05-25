@@ -77,7 +77,13 @@ export async function get(db: baqend, request: Request, response: Response) {
     const comparisons: any = {};
     bulkComparison.multiComparisons.forEach((multiComparison) => {
       if (multiComparison.hasFinished) {
-        const comparison = bulkComparison.comparisonsToStart.find((comparison) => comparison.puppeteer.url === multiComparison.url)
+        const comparison = bulkComparison.comparisonsToStart.find((comparison) => {
+          if (comparison.puppeteer) {
+            return comparison.puppeteer.url === multiComparison.url
+          }
+
+          return false
+        })
         if (comparison) {
           comparisons[comparison.url] = findBestComparison(multiComparison)
         }
