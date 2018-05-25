@@ -12,6 +12,7 @@ export const DEFAULT_TIMEOUT = 30
  * The default test params.
  */
 export const DEFAULT_PARAMS: Required<TestParams> = {
+  url: '',
   activityTimeout: DEFAULT_ACTIVITY_TIMEOUT,
   caching: false,
   location: DEFAULT_LOCATION,
