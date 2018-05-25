@@ -2,7 +2,10 @@ import { baqend, model } from 'baqend'
 import { bootstrap } from './_compositionRoot'
 import { MultiComparisonFactory } from './_MultiComparisonFactory'
 import { MultiComparisonListener, MultiComparisonWorker } from './_MultiComparisonWorker'
-import { isFinished, isUnfinished, setCanceled, setRunning, setSuccess, Status } from './_Status'
+import {
+  isFinished, isIncomplete, isUnfinished, setCanceled, setIncomplete, setRunning, setSuccess,
+  Status,
+} from './_Status'
 import { parallelize } from './_helpers'
 
 export class BulkComparisonWorker implements MultiComparisonListener {
@@ -47,7 +50,10 @@ export class BulkComparisonWorker implements MultiComparisonListener {
         }
 
         // Save is finished state
-        await bulkComparison.optimisticSave(() => setSuccess(bulkComparison))
+        const isIncomplete = await this.isBulkIncomplete(bulkComparison)
+        await bulkComparison.optimisticSave(() => {
+          isIncomplete ? setIncomplete(bulkComparison) : setSuccess(bulkComparison)
+        })
 
         // TODO: Add new listener here?
         return
@@ -69,6 +75,14 @@ export class BulkComparisonWorker implements MultiComparisonListener {
     } catch (error) {
       this.db.log.warn(`Error while next iteration`, { id: bulkComparison.id, error: error.stack })
     }
+  }
+
+  /**
+   * Checks whether one of the corresponding testOverview is incomplete
+   */
+  async isBulkIncomplete(bulkComparison: model.BulkComparison): Promise<boolean> {
+    const multiComparisons = await Promise.all(bulkComparison.multiComparisons.map(multiComparison => multiComparison.load()))
+    return multiComparisons.some(multiComparison => isIncomplete(multiComparison))
   }
 
   /**

@@ -9,6 +9,7 @@ export enum Status {
   RUNNING = 'RUNNING',
   SUCCESS = 'SUCCESS',
   CANCELED = 'CANCELED',
+  INCOMPLETE = 'INCOMPLETE',
   FAILED = 'FAILED',
 }
 
@@ -22,7 +23,11 @@ export function isUnfinished(entity: StatefulEntity) {
 }
 
 export function isFinished(entity: StatefulEntity) {
-  return entity.hasFinished || hasStatus(entity, Status.CANCELED, Status.SUCCESS, Status.FAILED)
+  return entity.hasFinished || hasStatus(entity, Status.CANCELED, Status.SUCCESS, Status.INCOMPLETE, Status.FAILED)
+}
+
+export function isIncomplete(entity: StatefulEntity) {
+  return entity.hasFinished && hasStatus(entity, Status.CANCELED, Status.INCOMPLETE, Status.FAILED)
 }
 
 /**
@@ -54,6 +59,14 @@ export function setCanceled(entity: StatefulEntity) {
  */
 export function setSuccess(entity: StatefulEntity) {
   entity.status = Status.SUCCESS
+  entity.hasFinished = true
+}
+
+/**
+ * Sets the given entity to the incomplete state.
+ */
+export function setIncomplete(entity: StatefulEntity) {
+  entity.status = Status.INCOMPLETE
   entity.hasFinished = true
 }
 

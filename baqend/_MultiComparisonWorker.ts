@@ -2,7 +2,10 @@ import { baqend, model } from 'baqend'
 import { ComparisonListener, ComparisonWorker } from './_ComparisonWorker'
 import { ComparisonFactory } from './_ComparisonFactory'
 import { parallelize } from './_helpers'
-import { isFinished, isUnfinished, setCanceled, setRunning, setSuccess, Status } from './_Status'
+import {
+  isFinished, isIncomplete, isUnfinished, setCanceled, setIncomplete, setRunning, setSuccess,
+  Status,
+} from './_Status'
 import { updateMultiComparison } from './_updateMultiComparison'
 
 export interface MultiComparisonListener {
@@ -52,13 +55,16 @@ export class MultiComparisonWorker implements ComparisonListener {
       // Are all planned comparisons finished?
       if (testOverviews.length >= runs) {
         this.db.log.info(`MultiComparison ${multiComparison.key} is finished.`, { multiComparison })
-        if (multiComparison.hasFinished) {
+        if (isFinished(multiComparison)) {
           this.db.log.warn(`MultiComparison ${multiComparison.key} was already finished.`, { multiComparison })
           return
         }
 
         // Save is finished state
-        await multiComparison.optimisticSave(() => setSuccess(multiComparison))
+        const isIncomplete = await this.isComparisonIncomplete(multiComparison)
+        await multiComparison.optimisticSave(() => {
+          isIncomplete ? setIncomplete(multiComparison) : setSuccess(multiComparison)
+        })
 
         // Inform the listener that this multi comparison has finished
         this.listener && this.listener.handleMultiComparisonFinished(multiComparison)
@@ -80,6 +86,14 @@ export class MultiComparisonWorker implements ComparisonListener {
     } catch (error) {
       this.db.log.warn(`Error while next iteration`, { id: multiComparison.id, error: error.stack })
     }
+  }
+
+  /**
+   * Checks whether one of the corresponding testOverview is incomplete
+   */
+  async isComparisonIncomplete(multiComparison: model.BulkTest): Promise<boolean> {
+    const testOverviews = await Promise.all(multiComparison.testOverviews.map(testOverview => testOverview.load()))
+    return testOverviews.some(testOverview => isIncomplete(testOverview))
   }
 
   /**

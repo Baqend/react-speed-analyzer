@@ -1,6 +1,9 @@
 import { baqend, model } from 'baqend'
 import { parallelize } from './_helpers'
-import { isFinished, isUnfinished, setCanceled, setRunning, setSuccess, Status } from './_Status'
+import {
+  isFinished, isIncomplete, isUnfinished, setCanceled, setIncomplete, setRunning, setSuccess,
+  Status,
+} from './_Status'
 import { factorize } from './_updateMultiComparison'
 import { callPageSpeed } from './_callPageSpeed'
 import { TestListener, TestWorker } from './_TestWorker'
@@ -56,15 +59,15 @@ export class ComparisonWorker implements TestListener {
     }
 
     // Is TestOverview finished?
-    if (competitor.hasFinished && speedKit.hasFinished) {
+    if (isFinished(competitor) && isFinished(speedKit)) {
       this.db.log.info(`Comparison ${comparison.key} is finished.`, { comparison })
-      if (comparison.hasFinished) {
+      if (isFinished(comparison)) {
         this.db.log.warn(`Comparison ${comparison.key} was already finished.`, { comparison })
         return
       }
 
       await comparison.optimisticSave(() => {
-        setSuccess(comparison)
+        isIncomplete(competitor) || isIncomplete(speedKit) ? setIncomplete(comparison) : setSuccess(comparison)
         comparison.speedKitConfig = speedKit.speedKitConfig
         comparison.factors = this.calculateFactors(competitor, speedKit)
       })
