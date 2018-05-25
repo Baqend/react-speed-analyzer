@@ -12,6 +12,7 @@ export enum PuppeteerSegment {
   RESOURCES = 'resources',
   SCREENSHOT = 'screenshot',
   SCREENSHOT_DATA = 'screenshotData',
+  SECURITY = 'security',
   SERVICE_WORKERS = 'serviceWorkers',
   SPEED_KIT = 'speedKit',
   STATS = 'stats',
@@ -138,7 +139,11 @@ export class Puppeteer {
       const { url: normalizedUrl, displayUrl, protocol, host, scheme } = data
       const domains = data.domains!
       const resources = data.resources!
-      const smartConfig = await this.configGenerator.generateSmart(normalizedUrl, mobile, thirdParty, { host, domains, resources })
+      const smartConfig = await this.configGenerator.generateSmart(normalizedUrl, mobile, thirdParty, {
+        host,
+        domains,
+        resources,
+      })
 
       // Create persistable object
       const puppeteer: model.Puppeteer = new this.db.Puppeteer()
@@ -169,9 +174,11 @@ export class Puppeteer {
     const response = await this.sendJsonRequest(`http://${host}/`, { query, mobile, segments })
     if (response.status !== 200) {
       const { message, status, stack } = await response.json()
-      this.db.log.error(`Puppeteer Error: ${message}`, { message, status, stack })
+      const reasonPhrase = this.reasonPhraseForStatus(status)
+      this.db.log.error(`Puppeteer Error: ${message}`, { message, status, reasonPhrase, stack })
 
-      const error = new Error(`Puppeteer failed with status ${status}: ${message}`)
+      const error = new Error(`${message} (${status} ${reasonPhrase})`)
+      error.name = 'PuppeteerError'
       Object.defineProperty(error, 'status', { value: status })
 
       throw error
@@ -189,5 +196,26 @@ export class Puppeteer {
     const body = JSON.stringify(bodyObj)
 
     return fetch(url, { method, headers, body })
+  }
+
+  /**
+   * Returns the reason phrase for a given status code.
+   */
+  private reasonPhraseForStatus(status: number): string {
+    const phrases = {
+      400: 'Bad Request',
+      404: 'Not Found',
+      405: 'Method Not Allowed',
+      502: 'Bad Gateway',
+      504: 'Gateway Timeout',
+      552: 'Gateway Insecure',
+    } as { [status: number]: string | undefined }
+
+    const phrase = phrases[status]
+    if (phrase) {
+      return phrase
+    }
+
+    return 'Internal Server Error'
   }
 }
