@@ -123,7 +123,7 @@ const subscribeToTestOverview = ({ testId, onAfterFinish }) => ({
         if (testOverview) {
           if (!trackUnload) {
             trackUnload = () => {
-              trackURL('leaveDuringTest', testOverview.url)
+              trackURL('leaveDuringTest', testOverview.url, { startTime: getState().result.startTime })
             }
             window.addEventListener('beforeunload', trackUnload)
           }

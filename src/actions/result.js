@@ -32,9 +32,13 @@ export const loadResult = (testId) => ({
 
       if (testOverview.hasFinished) {
         if (loadedSpeedKitTestResult && !loadedSpeedKitTestResult.testDataMissing) {
-          trackURL('showTestResult', testOverview.url, testOverview.factors)
-          if (testOverview.factors.firstMeaningfulPaint >= 1.5) {
-            trackURL('goodTestResult', testOverview.url, testOverview.factors.firstMeaningfulPaint)
+          if (getState().result.startTime) {
+            const fmp = testOverview.factors.firstMeaningfulPaint
+            trackURL('waitingTime', testOverview.url, { startTime: getState().result.startTime })
+            trackURL('showTestResult', testOverview.url, { fmp })
+            if (testOverview.factors.firstMeaningfulPaint >= 1.5) {
+              trackURL('goodTestResult', testOverview.url, { fmp })
+            }
           }
         } else {
           trackURL('errorTestResult', testOverview.url)

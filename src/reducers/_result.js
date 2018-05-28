@@ -99,6 +99,7 @@ const initialState = {
   mainMetric: 'speedIndex',
   secondaryMetric: 'firstMeaningfulPaint',
   whiteListCandidates: [],
+  startTime: null,
 }
 
 export default function result(state = initialState, action = {}) {
@@ -119,7 +120,7 @@ export default function result(state = initialState, action = {}) {
     case INIT_TEST:
       return { ...state, isInitiated: true }
     case START_TEST:
-      return { ...state, isStarted: true }
+      return { ...state, isStarted: true, startTime: new Date() }
     case CONTINUE_TEST:
       return { ...state, isInitiated: true, isStarted: true }
     case TEST_STATUS_GET:
