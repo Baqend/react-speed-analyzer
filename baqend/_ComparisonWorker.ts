@@ -4,7 +4,7 @@ import {
   isFinished, isIncomplete, isUnfinished, setCanceled, setIncomplete, setRunning, setSuccess,
   Status,
 } from './_Status'
-import { factorize } from './_updateMultiComparison'
+import { aggregateBulkTestFactors, factorize } from './_updateMultiComparison'
 import { callPageSpeed } from './_callPageSpeed'
 import { TestListener, TestWorker } from './_TestWorker'
 

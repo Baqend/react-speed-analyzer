@@ -1,5 +1,5 @@
 import { baqend, model } from 'baqend'
-import { aggregateFields } from './_helpers'
+import { aggregateFields, meanValue } from './_helpers'
 
 type TestResultFieldPrefix = 'competitor' | 'speedKit'
 
@@ -23,6 +23,33 @@ export function factorize(db: baqend, competitor: model.Mean, speedKit: model.Me
   }
 
   return result
+}
+
+/**
+ * Calculates the factors of a bulk test.
+ *
+ * @param db The Baqend instance.
+ * @param bulkTest The bulk test to calculate the factors for.
+ * @return A mean containing the factors.
+ */
+export function aggregateBulkTestFactors(db: baqend, bulkTest: model.BulkTest): model.Mean {
+  const result = {} as { [key: string]: number[] }
+  for (const testOverview of bulkTest.testOverviews) {
+    if (testOverview.factors) {
+      for (const field of fields) {
+        const value = testOverview.factors[field] as number
+        result[field] = result[field] || []
+        result[field].push(value)
+      }
+    }
+  }
+
+  const mean = new db.Mean()
+  for (const [field, values] of Object.entries(result)) {
+    mean[field] = meanValue(values)
+  }
+
+  return mean
 }
 
 /**
@@ -106,20 +133,6 @@ function calcWorstFactors(db: baqend, bulkTest: model.BulkTest): model.Mean {
 }
 
 /**
- * Checks whether a test overview is finished.
- */
-function hasTestOverviewFinished({ competitorTestResult, speedKitTestResult }: model.TestOverview): boolean {
-  return competitorTestResult.hasFinished === true && speedKitTestResult.hasFinished === true
-}
-
-/**
- * Returns whether a bulk test has finished.
- */
-function hasBulkTestFinished(bulkTest: model.BulkTest): boolean {
-  return bulkTest.testOverviews.every(it => hasTestOverviewFinished(it))
-}
-
-/**
  * Picks the test results with a given name from a bulk test.
  */
 function pickResults(bulkTest: model.BulkTest, prefix: TestResultFieldPrefix): model.Run[] {
@@ -140,12 +153,12 @@ export async function updateMultiComparison(db: baqend, bulkTestRef: model.BulkT
     // We must not use the refresh option because we have the same DB object when updating test results.
     await bulkTest.load({ depth: 2 })
 
-    bulkTest.speedKitMeanValues = new db.Mean(aggregateFields(pickResults(bulkTest, 'speedKit'), fields));
-    bulkTest.competitorMeanValues = new db.Mean(aggregateFields(pickResults(bulkTest, 'competitor'), fields));
-    bulkTest.factors = factorize(db, bulkTest.competitorMeanValues, bulkTest.speedKitMeanValues);
-    bulkTest.bestFactors = calcBestFactors(db, bulkTest);
-    bulkTest.worstFactors = calcWorstFactors(db, bulkTest);
-    bulkTest.completedRuns += 1;
+    bulkTest.speedKitMeanValues = new db.Mean(aggregateFields(pickResults(bulkTest, 'speedKit'), fields))
+    bulkTest.competitorMeanValues = new db.Mean(aggregateFields(pickResults(bulkTest, 'competitor'), fields))
+    bulkTest.factors = aggregateBulkTestFactors(db, bulkTest)
+    bulkTest.bestFactors = calcBestFactors(db, bulkTest)
+    bulkTest.worstFactors = calcWorstFactors(db, bulkTest)
+    bulkTest.completedRuns += 1
 
     return bulkTest.save()
   } catch (e) {
