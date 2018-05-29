@@ -5,7 +5,8 @@ import credentials from './credentials'
 
 interface Delta {
   deltaVC: number
-  time: number
+  start: number
+  end: number
 }
 
 /**
@@ -50,7 +51,7 @@ function getFMPFromWebPagetest(data: WptView): number {
 function firstDeviation(data: Array<[number, number]>): Delta[] {
   const diffs = [] as Delta[]
   if (data.length === 1) {
-    return [{ deltaVC: data[0][1], time: data[0][0] }]
+    return [{ deltaVC: data[0][1], start: 0, end: data[0][0] }]
   }
 
   let lastVisualProgress = data[0][1]
@@ -59,7 +60,7 @@ function firstDeviation(data: Array<[number, number]>): Delta[] {
     const diff = visualProgress - lastVisualProgress
     lastVisualProgress = visualProgress
 
-    diffs.push({ deltaVC: diff, time })
+    diffs.push({ deltaVC: diff, start: time - 0.1, end: time })
   }
 
   return diffs
@@ -83,8 +84,8 @@ async function prepareDeltas(db: baqend, testId: string, runIndex: string): Prom
  */
 function isWebPagetestFMPValid(db: baqend, wptFMP: number, deltas: Delta[]): boolean {
   if (deltas.length === 1) {
-    const { time } = deltas[0]
-    return Math.abs(time * 1000 - wptFMP) <= 100
+    const { start, end } = deltas[0]
+    return Math.abs(start * 1000 - wptFMP) <= 100 || Math.abs(end * 1000 - wptFMP) <= 100
   }
 
   // Find the three highest ΔVCs
@@ -93,25 +94,26 @@ function isWebPagetestFMPValid(db: baqend, wptFMP: number, deltas: Delta[]): boo
     .slice(0, 3)
 
   db.log.info('Candidates for FMP found', { highestDeltas })
-  return highestDeltas.some(candidate => Math.abs(candidate.time * 1000 - wptFMP) <= 100)
+  return highestDeltas.some(candidate => {
+    return Math.abs(candidate.start * 1000 - wptFMP) <= 100 ||
+      Math.abs(candidate.end * 1000 - wptFMP) <= 100
+  })
 }
 
 /**
  * Calculate first meaningful paint based on the given data.
- *
- * @param deltas An Array of visual progress raw data.
- * @return The first meaningful paint value.
  */
-function calculateFMPFromData(deltas: Delta[]): number {
-  let firstMeaningfulPaint = 0
+function calculateFMPFromData(deltas: Delta[], wptFMP: number): number {
+  let highestStart = 0
+  let highestEnd = 0
   let highestDelta = 0
 
   if (deltas.length === 1) {
-    return deltas[0].time * 1000
+    return deltas[0].end * 1000
   }
 
   for (let i = 1; i < deltas.length; i += 1) {
-    const { deltaVC, time } = deltas[i]
+    const { deltaVC, start, end } = deltas[i]
 
     // stop loop if the visual progress is negative => FMP is last highest diff
     if (deltaVC < 0) {
@@ -121,7 +123,8 @@ function calculateFMPFromData(deltas: Delta[]): number {
     // The current diff is the highest and the visual progress is at least 50%
     if (deltaVC > highestDelta) {
       highestDelta = deltaVC
-      firstMeaningfulPaint = time
+      highestStart = start * 1000
+      highestEnd = end * 1000
     }
 
     if (highestDelta >= 50) {
@@ -129,7 +132,7 @@ function calculateFMPFromData(deltas: Delta[]): number {
     }
   }
 
-  return firstMeaningfulPaint * 1000
+  return Math.abs(highestStart - wptFMP) <= 100 || Math.abs(highestEnd - wptFMP) <= 100 ? wptFMP : highestEnd
 }
 
 /**
@@ -147,13 +150,13 @@ export async function calculateFMP(db: baqend, wpt: WptView, testId: string, run
     const deltas = await prepareDeltas(db, testId, runIndex)
 
     if (wptFMP > 0 && isWebPagetestFMPValid(db, wptFMP, deltas)) {
-      db.log.info('FMP from WPT is valid', { wptFMP })
+      db.log.info('FMP from WPT is valid with one candidate', { wptFMP })
       return wptFMP
     }
 
-    const calculatedFMP = calculateFMPFromData(deltas)
-    db.log.info('FMP from WPT is not valid. FMP calculation successful', { calculatedFMP })
-    return Math.abs(calculatedFMP - wptFMP) <= 100 ? wptFMP : calculatedFMP
+    const calculatedFMP = calculateFMPFromData(deltas, wptFMP)
+    db.log.info('FMP from WPT is not valid with candidates', { calculatedFMP })
+    return calculatedFMP
   } catch (error) {
     db.log.warn(`Could not calculate FMP for test ${testId}. Use FMP from wepPageTest instead!`, { error: error.stack })
     return wptFMP > 0 ? wptFMP : null
