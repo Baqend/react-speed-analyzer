@@ -124,7 +124,7 @@ class ResultScaleComponent extends Component {
 
     const requests = competitorTest.firstView && competitorTest.firstView.requests
     const competitorTime = competitorTest.firstView && competitorTest.firstView[mainMetric]
-    const speedKitTime = (isSpeedKitComparison || (!speedKitError && speedKitTest.firstView)) && speedKitTest.firstView[mainMetric]
+    const speedKitTime = speedKitTest.firstView && (isSpeedKitComparison || !speedKitError) && speedKitTest.firstView[mainMetric]
 
     const timeDelta = Math.abs(competitorTime - speedKitTime)
 
