@@ -1,6 +1,17 @@
 import { baqend, model } from 'baqend'
-import { ComparisonListener, ComparisonWorker } from './_ComparisonWorker'
 import { ComparisonFactory } from './_ComparisonFactory'
+import { ComparisonListener, ComparisonWorker } from './_ComparisonWorker'
+import { parallelize } from './_helpers'
+import {
+  isFinished,
+  isIncomplete,
+  isUnfinished,
+  setCanceled,
+  setIncomplete,
+  setRunning,
+  setSuccess,
+  Status,
+} from './_Status'
 import { updateMultiComparison } from './_updateMultiComparison'
 
 export interface MultiComparisonListener {
@@ -27,35 +38,29 @@ export class MultiComparisonWorker implements ComparisonListener {
       await multiComparison.load({ depth: 1 })
 
       // Is this multi comparison already finished?
-      if (multiComparison.hasFinished) {
+      if (isFinished(multiComparison)) {
+        // Inform the listener that this multi comparison has finished
+        this.listener && this.listener.handleMultiComparisonFinished(multiComparison)
+
         return
+      }
+
+      // Set multi comparison to running
+      if (multiComparison.status !== Status.RUNNING) {
+        await multiComparison.optimisticSave(() => setRunning(multiComparison))
       }
 
       const { testOverviews, runs } = multiComparison
 
       // Are all comparisons finished?
       const currentComparison = testOverviews[testOverviews.length - 1]
-      if (currentComparison && !currentComparison.hasFinished) {
+      if (currentComparison && isUnfinished(currentComparison)) {
         return
       }
 
       // Are all planned comparisons finished?
       if (testOverviews.length >= runs) {
-        this.db.log.info(`MultiComparison ${multiComparison.key} is finished.`, { multiComparison })
-        if (multiComparison.hasFinished) {
-          this.db.log.warn(`MultiComparison ${multiComparison.key} was already finished.`, { multiComparison })
-          return
-        }
-
-        // Save is finished state
-        await multiComparison.ready()
-        await multiComparison.optimisticSave((it: model.BulkTest) => {
-          it.hasFinished = true
-        })
-
-        // Inform the listener that this multi comparison has finished
-        this.listener && this.listener.handleMultiComparisonFinished(multiComparison)
-
+        await this.finalize(multiComparison)
         return
       }
 
@@ -64,9 +69,8 @@ export class MultiComparisonWorker implements ComparisonListener {
 
       // Start next comparison
       const comparison = await this.comparisonFactory.create(multiComparison.puppeteer!, testParams, true)
-      await multiComparison.ready()
-      await multiComparison.optimisticSave((it: model.BulkTest) => {
-        it.testOverviews.push(comparison)
+      await multiComparison.optimisticSave(() => {
+        multiComparison.testOverviews.push(comparison)
       })
 
       this.comparisonWorker.next(comparison)
@@ -75,6 +79,27 @@ export class MultiComparisonWorker implements ComparisonListener {
     }
   }
 
+  /**
+   * Cancels the given multi comparison.
+   */
+  async cancel(multiComparison: model.BulkTest): Promise<boolean> {
+    if (isFinished(multiComparison)) {
+      return false
+    }
+
+    // Cancel all unfinished comparisons
+    await multiComparison.testOverviews
+      .filter(comparison => isUnfinished(comparison))
+      .map(comparison => this.comparisonWorker.cancel(comparison))
+      .reduce(parallelize)
+
+    await multiComparison.optimisticSave(() => setCanceled(multiComparison))
+    return true
+  }
+
+  /**
+   * Triggers the re-aggregation of a multi comparison.
+   */
   async handleComparisonFinished(comparison: model.TestOverview): Promise<void> {
     const multiComparison = await this.db.BulkTest.find().in('testOverviews', comparison.id).singleResult()
     if (multiComparison) {
@@ -84,5 +109,33 @@ export class MultiComparisonWorker implements ComparisonListener {
 
       this.next(multiComparison)
     }
+  }
+
+  /**
+   * Finalizes a finished multi comparison.
+   */
+  private async finalize(multiComparison: model.BulkTest): Promise<void> {
+    this.db.log.info(`MultiComparison ${multiComparison.key} is finished.`, { multiComparison })
+    if (isFinished(multiComparison)) {
+      this.db.log.warn(`MultiComparison ${multiComparison.key} was already finished.`, { multiComparison })
+      return
+    }
+
+    // Save is finished state
+    const isIncomplete = await this.isComparisonIncomplete(multiComparison)
+    await multiComparison.optimisticSave(() => {
+      isIncomplete ? setIncomplete(multiComparison) : setSuccess(multiComparison)
+    })
+
+    // Inform the listener that this multi comparison has finished
+    this.listener && this.listener.handleMultiComparisonFinished(multiComparison)
+  }
+
+  /**
+   * Checks whether one of the corresponding testOverview is incomplete
+   */
+  private async isComparisonIncomplete(multiComparison: model.BulkTest): Promise<boolean> {
+    const testOverviews = await Promise.all(multiComparison.testOverviews.map(testOverview => testOverview.load()))
+    return testOverviews.some(testOverview => isIncomplete(testOverview))
   }
 }

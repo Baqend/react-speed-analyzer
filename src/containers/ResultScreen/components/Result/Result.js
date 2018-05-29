@@ -21,8 +21,11 @@ const tooltipText = {
 class Result extends Component {
   constructor(props) {
     super(props)
+    const { speedKitError } = this.props.result
+    const { isSpeedKitComparison } = this.props.testOverview
+
     this.state = {
-      showDetails: props.showDetails
+      showDetails: isSpeedKitComparison && speedKitError ? true : props.showDetails
     }
   }
 
@@ -32,13 +35,14 @@ class Result extends Component {
 
   renderHeader() {
     const { mainMetric, speedKitError, testOverview } = this.props.result
+    const { isSpeedKitComparison } = this.props.testOverview
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
 
     return (
       <div>
         <div className="flex items-center relative">
-          {!speedKitError && (
+          {( isSpeedKitComparison || !speedKitError ) && (
             <div className="mainFactor text-center" title={tooltipText[mainMetric]} style={{ display: 'flex'}}>
               {calculateFactor(competitorData[mainMetric], speedKitData[mainMetric])}x
               <br/>
@@ -61,7 +65,7 @@ class Result extends Component {
               <span>{tooltipText[mainMetric]}</span>
             </ReactTooltip>
           </div>
-          {!speedKitError && (
+          {( isSpeedKitComparison || !speedKitError ) && (
             <div className="w-50 flex-auto text-center pa1 pl4 pl0-ns" style={{ background: '#f6f6f6' }}>
               <small>
                 {testOverview.speedKitVersion ? (
@@ -80,15 +84,6 @@ class Result extends Component {
             </div>
           )}
         </div>
-        {mainMetric !== "speedIndex" && (
-          <div>
-            <hr />
-            <div className="pa2 text-center" style={{ fontSize: 12 }}>
-              <span className="dn dib-ns">Because your website uses a lot of asynchrounous resources, w</span><span className="dib dn-ns">W</span>e replaced the speed index metric by the first meaningful paint!
-            </div>
-            <hr />
-          </div>
-        )}
       </div>
     )
   }

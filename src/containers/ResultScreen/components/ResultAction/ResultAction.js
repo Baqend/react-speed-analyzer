@@ -61,12 +61,14 @@ class ResultAction extends Component {
 
     // SSL information
     const sslFact = ['HTTP/2']
-    if (!this.props.testOverview.isSecured) {
-      sslFact.push(`Your website is currently using <strong>HTTP/1.1</strong>. With Speed Kit, everything will be fetched over an encrypted <strong>HTTP/2</strong> connection.`)
-      improvements.push(sslFact)
-    } else {
-      sslFact.push(`Your website uses HTTP/2.`)
-      applied.push(sslFact)
+    if (this.props.testOverview.puppeteer) {
+      if (this.props.testOverview.puppeteer.protocol !== 'h2') {
+        sslFact.push(`Your website is currently using <strong>HTTP/1.1</strong>. With Speed Kit, everything will be fetched over an encrypted <strong>HTTP/2</strong> connection.`)
+        improvements.push(sslFact)
+      } else {
+        sslFact.push(`Your website uses HTTP/2.`)
+        applied.push(sslFact)
+      }
     }
 
     // Compression
@@ -283,11 +285,11 @@ class ResultAction extends Component {
           </h3>
         </div>
         <div className="flex flex-wrap mb2">
-          {ctaContent.improvements.map((content, index) => (
+          {ctaContent.applied.map((content, index) => (
             <div key={index} className="w-100 w-50-ns mt2 mb2">
               <div className="flex ml2 mr2">
                 <div className="w-20 w-10-ns">
-                  <img src={ cancel } alt="speed kit feature" style={{ height: 30}} />
+                  <img src={ check } alt="speed kit feature" style={{ height: 30}} />
                 </div>
                 <div className="w-80 w-90-ns">
                   <h4 className="mb0 mt0 fw6">{ content[0] }</h4>
@@ -296,11 +298,11 @@ class ResultAction extends Component {
               </div>
             </div>
           ))}
-          {ctaContent.applied.map((content, index) => (
+          {ctaContent.improvements.map((content, index) => (
             <div key={index} className="w-100 w-50-ns mt2 mb2">
               <div className="flex ml2 mr2">
                 <div className="w-20 w-10-ns">
-                  <img src={ check } alt="speed kit feature" style={{ height: 30}} />
+                  <img src={ cancel } alt="speed kit feature" style={{ height: 30}} />
                 </div>
                 <div className="w-80 w-90-ns">
                   <h4 className="mb0 mt0 fw6">{ content[0] }</h4>
@@ -326,17 +328,16 @@ class ResultAction extends Component {
     const isWordPress = testOverview.type === 'wordpress'
     const { isSpeedKitComparison, speedKitVersion, configAnalysis } = testOverview
 
-    if (competitorError) {
+    if (isSpeedKitComparison) {
+      return this.renderIsSpeedKitCta(speedKitVersion, configAnalysis)
+    } else if (competitorError) {
       return this.renderAllTestsFailed()
     } else if (!competitorError && speedKitError) {
       return this.renderSpeedKitFailed()
-    } else {
-      if (isSpeedKitComparison) {
-        return this.renderIsSpeedKitCta(speedKitVersion, configAnalysis)
-      } else if (isWordPress) {
-        return this.renderWordpressCta()
-      }
+    } else if (isWordPress){
+      return this.renderWordpressCta()
     }
+
     return this.renderCta()
   }
 }

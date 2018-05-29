@@ -1,6 +1,12 @@
 import { baqend, model } from 'baqend'
+import { bootstrap } from './_compositionRoot'
 import { MultiComparisonFactory } from './_MultiComparisonFactory'
 import { MultiComparisonListener, MultiComparisonWorker } from './_MultiComparisonWorker'
+import {
+  isFinished, isIncomplete, isUnfinished, setCanceled, setIncomplete, setRunning, setSuccess,
+  Status,
+} from './_Status'
+import { parallelize } from './_helpers'
 
 export class BulkComparisonWorker implements MultiComparisonListener {
   constructor(
@@ -18,8 +24,13 @@ export class BulkComparisonWorker implements MultiComparisonListener {
       await bulkComparison.load({ depth: 1 })
 
       // Is this bulk comparison already finished?
-      if (bulkComparison.hasFinished) {
+      if (isFinished(bulkComparison)) {
         return
+      }
+
+      // Set bulk comparison to running
+      if (bulkComparison.status !== Status.RUNNING) {
+        await bulkComparison.optimisticSave(() => setRunning(bulkComparison))
       }
 
       const { multiComparisons, createdBy } = bulkComparison
@@ -39,9 +50,9 @@ export class BulkComparisonWorker implements MultiComparisonListener {
         }
 
         // Save is finished state
-        await bulkComparison.ready()
-        await bulkComparison.optimisticSave((it: model.BulkComparison) => {
-          it.hasFinished = true
+        const isIncomplete = await this.isBulkIncomplete(bulkComparison)
+        await bulkComparison.optimisticSave(() => {
+          isIncomplete ? setIncomplete(bulkComparison) : setSuccess(bulkComparison)
         })
 
         // TODO: Add new listener here?
@@ -49,7 +60,9 @@ export class BulkComparisonWorker implements MultiComparisonListener {
       }
 
       // Start next multi comparison
-      const { puppeteer, runs, ...params } = bulkComparison.comparisonsToStart[nextIndex]
+      const { runs, ...params } = bulkComparison.comparisonsToStart[nextIndex]
+      const puppeteer = await this.getPuppeteerInfo(params.url, params.mobile)
+
       const multiComparison = await this.multiComparisonFactory.create(puppeteer, params, createdBy, runs)
 
       await bulkComparison.ready()
@@ -62,6 +75,45 @@ export class BulkComparisonWorker implements MultiComparisonListener {
     } catch (error) {
       this.db.log.warn(`Error while next iteration`, { id: bulkComparison.id, error: error.stack })
     }
+  }
+
+  /**
+   * Checks whether one of the corresponding testOverview is incomplete
+   */
+  async isBulkIncomplete(bulkComparison: model.BulkComparison): Promise<boolean> {
+    const multiComparisons = await Promise.all(bulkComparison.multiComparisons.map(multiComparison => multiComparison.load()))
+    return multiComparisons.some(multiComparison => isIncomplete(multiComparison))
+  }
+
+  /**
+   * Gets the Puppeteer information of a given url
+   */
+  async getPuppeteerInfo(url: string, mobile: boolean): Promise<model.Puppeteer | null> {
+    const { puppeteer } = bootstrap(this.db)
+    try {
+      return await puppeteer.analyze(url, mobile)
+    } catch ({ message, stack }) {
+      this.db.log.error(`Puppeteer failed for ${url}: ${message}`, { stack })
+      return null
+    }
+  }
+
+  /**
+   * Cancels the given bulk comparison.
+   */
+  async cancel(bulkComparison: model.BulkComparison): Promise<boolean> {
+    if (isFinished(bulkComparison)) {
+      return false
+    }
+
+    // Cancel all unfinished multi comparisons
+    await bulkComparison.multiComparisons
+      .filter(multiComparison => isUnfinished(multiComparison))
+      .map(multiComparison => this.multiComparisonWorker.cancel(multiComparison))
+      .reduce(parallelize)
+
+    await bulkComparison.optimisticSave(() => setCanceled(bulkComparison))
+    return true
   }
 
   async handleMultiComparisonFinished(multiComparison: model.BulkTest): Promise<void> {

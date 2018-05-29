@@ -61,6 +61,13 @@ export function toRegExp(str: string): RegExp {
 }
 
 /**
+ * Adds a dollar to the end of a regular expression.
+ */
+export function dollarRegExp(regExp: RegExp): RegExp {
+  return new RegExp(`${regExp.source}$`, regExp.flags)
+}
+
+/**
  * Cleans all entries of an object which contain an empty value.
  */
 export function cleanObject<T extends { [key: string]: any }>(obj: T): Required<T> {
@@ -109,9 +116,44 @@ export function generateHash(): string {
 }
 
 /**
+ * Makes a string URL-compatible.
+ */
+export function urlify(string: string): string {
+  string = string.toLocaleLowerCase()
+
+  return string.replace(/[^a-z]+/g, '-')
+}
+
+/**
+ * Creates a filename from a given URL.
+ */
+export function urlToFilename(url: string): string {
+  const prefix = url
+    .replace(/^https?:\/\//, '')
+
+  return urlify(prefix)
+    .replace(/^\W+/, '')
+    .replace(/\W+$/, '')
+}
+
+/**
  * Generates a date string.
  */
 export function getDateString(): string {
   const date = new Date().toISOString()
   return date.substr(0, 10) + '-' + date.substr(11, 8).replace(/:/g, '')
+}
+
+/**
+ * Removes duplicates from an array. Put this callback into the `Array.prototype.filter` method.
+ */
+export function removeDuplicates<T>(value: T, index: number, array: T[]): boolean {
+  return array.indexOf(value) === index
+}
+
+/**
+ * Parallelizes the given promise array.
+ */
+export function parallelize<T>(previous: Promise<T>, current: Promise<T>, currentIndex: number, array: Promise<T>[]): Promise<T> {
+  return Promise.all([previous, current]).then(([p]) => p)
 }

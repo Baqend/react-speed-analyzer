@@ -1,9 +1,10 @@
+import { setFailed, setSuccess } from './_Status'
 import { toFile } from './_toFile'
 import { getAdSet } from './_adBlocker'
 import credentials from './credentials'
 import { API, WptRun, WptTestResult, WptTestResultOptions, WptView } from './_Pagetest'
 import { countHits } from './_countHits'
-import { getFMP } from './_calculateFMP'
+import { calculateFMP } from './_calculateFMP'
 import { baqend, binding, model } from 'baqend'
 
 /**
@@ -51,7 +52,7 @@ export async function generateTestResult(wptTestId: string, pendingTest: model.T
 
     // Now the test is finished with data
     pendingTest.testDataMissing = false
-    pendingTest.hasFinished = true
+    setSuccess(pendingTest)
 
     await pendingTest.ready()
     return pendingTest.save()
@@ -60,7 +61,7 @@ export async function generateTestResult(wptTestId: string, pendingTest: model.T
 
     // Now the test is finished without data
     pendingTest.testDataMissing = true
-    pendingTest.hasFinished = true
+    setFailed(pendingTest)
 
     await pendingTest.ready()
     return pendingTest.save()
@@ -188,7 +189,7 @@ async function createRun(db: baqend, data: WptView | undefined, testId: string, 
   completeness.p100 = data.visualComplete
   run.visualCompleteness = completeness
 
-  const [firstMeaningfulPaint, domains] = await Promise.all([chooseFMP(db, data, testId, runIndex), createDomainList(data)])
+  const [firstMeaningfulPaint, domains] = await Promise.all([calculateFMP(db, data, testId, runIndex), createDomainList(data)])
   run.firstMeaningfulPaint = firstMeaningfulPaint
   run.domains = domains
 
@@ -221,32 +222,6 @@ function countContentSize(requests: any[]): any {
   })
 
   return contentSize
-}
-
-/**
- * @param db The Baqend instance.
- * @param data The data to choose the FMP of.
- * @param testId The id of the test to choose the FMP for.
- * @param runIndex The index of the run to choose the FMP for.
- */
-async function chooseFMP(db: baqend, data: WptView, testId: string, runIndex: string): Promise<number|null> {
-  // Search First Meaningful Paint from timing
-  const { chromeUserTiming = [] } = data
-  const firstMeaningfulPaintObject =
-    chromeUserTiming
-      .reverse()
-      .find(entry => entry.name === 'firstMeaningfulPaint' || entry.name === 'firstMeaningfulPaintCandidate')
-
-  const firstMeaningfulPaint = firstMeaningfulPaintObject ? firstMeaningfulPaintObject.time : 0
-  try {
-    db.log.info('Start FMP calculation')
-    const calculatedFM = await getFMP(db, testId, runIndex)
-    db.log.info('FMP calculation successful', {calculatedFM})
-    return Math.abs(calculatedFM - firstMeaningfulPaint) <= 100 ? firstMeaningfulPaint : calculatedFM
-  } catch (error) {
-    db.log.warn(`Could not calculate FMP for test ${testId}. Use FMP from wepPageTest instead!`, { error: error.stack })
-    return firstMeaningfulPaint > 0 ? firstMeaningfulPaint : null
-  }
 }
 
 /**

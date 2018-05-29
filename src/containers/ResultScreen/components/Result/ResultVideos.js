@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import './Result.css'
-import { isDeviceIOS,isIE, isEdge } from 'helper/utils'
+import { isDeviceIOS, isIE, isEdge } from 'helper/utils'
 
 class ResultVideos extends Component {
   constructor(props) {
@@ -71,11 +71,6 @@ class ResultVideos extends Component {
   }
 
   componentDidMount() {
-    // setTimeout(() => {
-    //   this.playVideos('competitorVideo')
-    // }, 500)
-
-    // this.state.video.addEventListener('timeupdate', this.handleProgress)
     if (this.competitorVideo) {
       this.competitorVideo.addEventListener('playing', this.handleCompetitorStarted)
       this.competitorVideo.addEventListener('timeupdate', this.handleCompetitorProgress)
@@ -105,6 +100,7 @@ class ResultVideos extends Component {
 
   render() {
     const { speedKitError } = this.props.result
+    const { isSpeedKitComparison } = this.props.testOverview
     const competitorVideoPath = this.props.competitorTest.videoFileFirstView
     const speedKitVideoPath = this.props.speedKitTest.videoFileFirstView
     // const data = this.props.testOverview.psiScreenshot
@@ -119,6 +115,7 @@ class ResultVideos extends Component {
                 <video id="competitorVideo"
                   playsInline
                   controls={false}
+                  muted
                   autoPlay
                   className="embedVideo"
                   ref={(video) => {this.competitorVideo = video}}
@@ -145,7 +142,7 @@ class ResultVideos extends Component {
             </div>
           </div>
         </div>
-        {!speedKitError && (
+        {(isSpeedKitComparison || !speedKitError) && (
           <div className={`w-50 speedKitVideo pa2 pv4-ns ph6-ns ${this.props.testOverview.mobile ? 'mobile' : ''}`}>
             <div className="video__wrapper">
               <div className="video__wrapper-inner">
@@ -153,6 +150,7 @@ class ResultVideos extends Component {
                   <video id="speedKitVideo"
                     playsInline
                     controls={false}
+                    muted
                     autoPlay
                     className="embedVideo"
                     ref={(video) => {this.speedKitVideo = video}}

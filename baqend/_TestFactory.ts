@@ -1,5 +1,6 @@
 import { baqend, model } from 'baqend'
 import { AsyncFactory } from './_AsyncFactory'
+import { setQueued } from './_Status'
 import { TestBuilder } from './_TestBuilder'
 import { TestParams } from './_TestParams'
 
@@ -21,18 +22,10 @@ export class TestFactory implements AsyncFactory<model.TestResult> {
       this.db.log.info('flags: %s', commandLine)
     }
 
-    const testInfo = this.createTestInfo(puppeteer, isClone, params)
-
-    const testResult = new this.db.TestResult({
-      url,
-      isClone,
-      location,
-      priority,
-      speedKitConfig,
-      testInfo,
-      hasFinished: false,
-      webPagetests: [],
-    })
+    const testResult = new this.db.TestResult({ url, isClone, location, priority, speedKitConfig })
+    setQueued(testResult)
+    testResult.testInfo = this.createTestInfo(puppeteer, isClone, params)
+    testResult.webPagetests = []
 
     return testResult.save()
   }

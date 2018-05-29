@@ -1,0 +1,45 @@
+{
+  "class": "/db/ResultDistribution",
+  "acl": {
+    "schemaAdd": {
+      "/db/Role/1": "allow"
+    },
+    "schemaReplace": {
+      "/db/Role/1": "allow"
+    }
+  },
+  "embedded": true,
+  "metadata": {},
+  "fields": {
+    "total": {
+      "name": "total",
+      "type": "/db/Integer",
+      "order": 0
+    },
+    "veryGood": {
+      "name": "veryGood",
+      "type": "/db/Integer",
+      "order": 1
+    },
+    "good": {
+      "name": "good",
+      "type": "/db/Integer",
+      "order": 2
+    },
+    "ok": {
+      "name": "ok",
+      "type": "/db/Integer",
+      "order": 3
+    },
+    "bad": {
+      "name": "bad",
+      "type": "/db/Integer",
+      "order": 4
+    },
+    "failed": {
+      "name": "failed",
+      "type": "/db/Integer",
+      "order": 5
+    }
+  }
+}

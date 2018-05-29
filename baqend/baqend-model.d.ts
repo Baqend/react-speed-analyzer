@@ -2,6 +2,8 @@ import { binding } from 'baqend'
 
 declare module 'baqend' {
 
+  export type StatusString = 'QUEUED' | 'RUNNING' | 'SUCCESS' | 'CANCELED' | 'INCOMPLETE' |'FAILED'
+
   interface baqend {
     BulkComparison: binding.EntityFactory<model.BulkComparison>;
     BulkTest: binding.EntityFactory<model.BulkTest>;
@@ -35,11 +37,12 @@ declare module 'baqend' {
     }
 
     interface ComparisonInfo {
-      puppeteer: Puppeteer
+      url: string
+      puppeteer?: Puppeteer
       isStarted: boolean
       runs: number
       location: string
-      url: string
+      mobile: boolean
       multiComparisonId: string | null
     }
 
@@ -52,14 +55,16 @@ declare module 'baqend' {
     }
 
     interface BulkComparison extends binding.Entity {
+      status: StatusString;
+      hasFinished: boolean;
       comparisonsToStart: Array<ComparisonInfo>;
       createdBy: string | null;
       multiComparisons: Array<BulkTest>;
-      hasFinished: boolean;
     }
 
     interface BulkTest extends binding.Entity {
       url: string;
+      status: StatusString;
       hasFinished: boolean;
       testOverviews: Array<TestOverview>;
       speedKitMeanValues: Mean;
@@ -146,11 +151,13 @@ declare module 'baqend' {
     }
 
     interface TestResult extends binding.Entity {
+      url: string;
+      status: StatusString;
+      hasFinished: boolean;
       testId: string;
       location: string;
       firstView: Run | null;
       repeatView: Run | null;
-      url: string;
       summaryUrl: string;
       publishedSummaryUrl: string;
       videoIdFirstView: string;
@@ -158,7 +165,6 @@ declare module 'baqend' {
       videoFileFirstView: binding.File | null;
       testDataMissing: boolean;
       videoFileRepeatView: binding.File | null;
-      hasFinished: boolean;
       retryRequired: boolean;
       isWordPress: boolean;
       isClone: boolean;
@@ -181,19 +187,20 @@ declare module 'baqend' {
     }
 
     interface TestOverview extends binding.Entity {
+      url: string;
+      status: StatusString;
+      hasFinished: boolean;
       psiDomains: number;
       psiRequests: number;
       psiResponseSize: string;
-      psiScreenshot: File;
+      psiScreenshot: binding.File;
       location: string;
       caching: boolean;
       mobile: boolean;
-      url: string;
       displayUrl: string;
       competitorTestResult: TestResult;
       speedKitTestResult: TestResult;
       whitelist: string;
-      hasFinished: boolean;
       factors: Mean | null;
       isSpeedKitComparison: boolean;
       isSecured: boolean;
@@ -231,11 +238,12 @@ declare module 'baqend' {
     }
 
     interface WebPagetest extends binding.Managed {
+      status: StatusString;
+      hasFinished: boolean;
       testId: string;
       testType: string;
       testScript: string;
-      testOptions: {};
-      hasFinished: boolean;
+      testOptions: any;
     }
 
     interface Run extends binding.Managed {
@@ -334,12 +342,15 @@ declare module 'baqend' {
     interface Puppeteer extends binding.Managed {
       url: string;
       displayUrl: string;
+      scheme: string;
+      host: string;
       protocol: string;
       domains: string[];
-      screenshot: File;
+      screenshot: binding.File;
       type: PuppeteerType;
       stats: PuppeteerStats;
       speedKit: PuppeteerSpeedKit | null;
+      smartConfig: string;
     }
 
     interface PuppeteerType extends binding.Managed {

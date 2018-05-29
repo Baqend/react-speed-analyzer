@@ -1,9 +1,0 @@
-version: '3'
-services:
-  makefast:
-    image: "docker.baqend.com/makefast/makefast-proxy:latest"
-    restart: always
-    tty: true
-    ports:
-      - "80:80"
-      - "443:443"

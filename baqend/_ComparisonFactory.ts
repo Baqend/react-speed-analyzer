@@ -4,6 +4,7 @@ import { ConfigCache } from './_ConfigCache'
 import { ConfigGenerator } from './_ConfigGenerator'
 import { getRootPath, getTLD } from './_getSpeedKitUrl'
 import { DataType, Serializer } from './_Serializer'
+import { setQueued, Status } from './_Status'
 import { TestBuilder } from './_TestBuilder'
 import { TestFactory } from './_TestFactory'
 import { TestParams } from './_TestParams'
@@ -47,7 +48,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
   /**
    * Builds the Speed Kit config to use for this test.
    */
-  private async buildSpeedKitConfig({ url, speedKit, domains }: model.Puppeteer, { mobile, speedKitConfig }: TestParams): Promise<string | null> {
+  private async buildSpeedKitConfig({ url, speedKit, smartConfig }: model.Puppeteer, { mobile, speedKitConfig }: TestParams): Promise<string> {
     // Has the user set a config as a test parameter?
     if (speedKitConfig) {
       return speedKitConfig
@@ -63,17 +64,14 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
       return this.serializer.serialize(denormalize, DataType.JAVASCRIPT)
     }
 
-    // Create a default Speed Kit config for the URL
-    const cachedConfig = await this.configCache.get(url, mobile!)
-    if (cachedConfig) {
-      return this.serializer.serialize(cachedConfig, DataType.JAVASCRIPT)
+    // Take smart config from Puppeteer
+    if (smartConfig) {
+      const data = this.serializer.deserialize(smartConfig, DataType.JSON)
+
+      return this.serializer.serialize(data, DataType.JAVASCRIPT)
     }
 
-    // Generate smart config and cache it
-    const smartConfig = await this.configGenerator.generateSmart(url, domains, mobile)
-    await this.configCache.put(url, mobile!, smartConfig)
-
-    return this.serializer.serialize(smartConfig, DataType.JAVASCRIPT)
+    throw new Error(`Config is missing for ${url}`)
   }
 
   /**
@@ -103,12 +101,12 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
   private async createComparison(puppeteer: model.Puppeteer, params: Required<TestParams>, configAnalysis: model.ConfigAnalysis | null, competitorTest: model.TestResult, speedKitTest: model.TestResult, hasMultiComparison: boolean = false): Promise<model.TestOverview> {
     const { url, displayUrl, speedKit } = puppeteer
     const uniqueId = await generateUniqueId(this.db, 'TestOverview')
-    const tld = getTLD(this.db, url)
+    const tld = getTLD(url, this.db.log)
     const id = uniqueId + tld.split('.')[0]
 
     // Initialize
     const comparison = new this.db.TestOverview({ id })
-    comparison.hasFinished = false
+    setQueued(comparison)
     comparison.configAnalysis = configAnalysis
     comparison.competitorTestResult = competitorTest
     comparison.speedKitTestResult = speedKitTest

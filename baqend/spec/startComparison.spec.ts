@@ -9,10 +9,10 @@ function mockReqRes(body: any = {}, query: any = {}): { req: Request, res: Respo
   const res = {
     statusCode: 200,
     data: {},
-    status(code) {
+    status(code: number) {
       this.statusCode = code
     },
-    send(data) {
+    send(data: any) {
       this.data = data
     },
   } as any

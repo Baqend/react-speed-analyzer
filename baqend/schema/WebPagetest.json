@@ -11,30 +11,35 @@
   "embedded": true,
   "metadata": {},
   "fields": {
-    "testId": {
-      "name": "testId",
+    "status": {
+      "name": "status",
       "type": "/db/String",
       "order": 0
-    },
-    "testType": {
-      "name": "testType",
-      "type": "/db/String",
-      "order": 1
-    },
-    "testScript": {
-      "name": "testScript",
-      "type": "/db/String",
-      "order": 2
-    },
-    "testOptions": {
-      "name": "testOptions",
-      "type": "/db/JsonObject",
-      "order": 3
     },
     "hasFinished": {
       "name": "hasFinished",
       "type": "/db/Boolean",
+      "order": 1
+    },
+    "testId": {
+      "name": "testId",
+      "type": "/db/String",
+      "order": 2
+    },
+    "testType": {
+      "name": "testType",
+      "type": "/db/String",
+      "order": 3
+    },
+    "testScript": {
+      "name": "testScript",
+      "type": "/db/String",
       "order": 4
+    },
+    "testOptions": {
+      "name": "testOptions",
+      "type": "/db/JsonObject",
+      "order": 5
     }
   }
 }

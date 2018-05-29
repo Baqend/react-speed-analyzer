@@ -14,13 +14,23 @@ export const formatFileSize = (bytes, decimals) => {
   return `${parseFloat((bytes / (k ** i)).toFixed(dm))} ${sizes[i]}`
 }
 
-export const trackURL = (name, url, factors) => {
+export const trackURL = (name, url, { fmp, startTime } = {}) => {
+  if (fmp) {
+    fmp *= 100
+    fmp = Math.round(fmp)
+  }
+
+  let waitingTime
+  if (startTime) {
+    waitingTime = Math.round((new Date().getTime() - startTime.getTime()) / 1000)
+  }
+
   if (typeof fbq !== 'undefined') {
-    fbq('trackCustom', name, { url, factors })
+    fbq('trackCustom', name, { url, fmp, waitingTime })
   }
 
   if (typeof ga !== 'undefined') {
-    ga('send', 'speed-analyzer', name, name, url)
+    ga('send', 'event', 'speed-analyzer', name, url, fmp || waitingTime)
   }
 }
 

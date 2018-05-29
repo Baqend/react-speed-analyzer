@@ -1,5 +1,10 @@
 import { baqend, model } from 'baqend'
-import { factorize } from './_updateMultiComparison'
+import { parallelize } from './_helpers'
+import {
+  isFinished, isIncomplete, isUnfinished, setCanceled, setIncomplete, setRunning, setSuccess,
+  Status,
+} from './_Status'
+import { aggregateBulkTestFactors, factorize } from './_updateMultiComparison'
 import { callPageSpeed } from './_callPageSpeed'
 import { TestListener, TestWorker } from './_TestWorker'
 
@@ -33,8 +38,13 @@ export class ComparisonWorker implements TestListener {
     await comparison.load({ depth: 1 })
 
     // Is this comparison already finished?
-    if (comparison.hasFinished) {
+    if (isFinished(comparison)) {
       return
+    }
+
+    // Set comparison to running
+    if (comparison.status !== Status.RUNNING) {
+      await comparison.optimisticSave(() => setRunning(comparison))
     }
 
     const { competitorTestResult: competitor, speedKitTestResult: speedKit } = comparison
@@ -49,18 +59,17 @@ export class ComparisonWorker implements TestListener {
     }
 
     // Is TestOverview finished?
-    if (competitor.hasFinished && speedKit.hasFinished) {
+    if (isFinished(competitor) && isFinished(speedKit)) {
       this.db.log.info(`Comparison ${comparison.key} is finished.`, { comparison })
-      if (comparison.hasFinished) {
+      if (isFinished(comparison)) {
         this.db.log.warn(`Comparison ${comparison.key} was already finished.`, { comparison })
         return
       }
 
-      await comparison.ready()
-      await comparison.optimisticSave((testOverview: model.TestOverview) => {
-        testOverview.speedKitConfig = speedKit.speedKitConfig
-        testOverview.factors = this.calculateFactors(competitor, speedKit)
-        testOverview.hasFinished = true
+      await comparison.optimisticSave(() => {
+        isIncomplete(competitor) || isIncomplete(speedKit) ? setIncomplete(comparison) : setSuccess(comparison)
+        comparison.speedKitConfig = speedKit.speedKitConfig
+        comparison.factors = this.calculateFactors(competitor, speedKit)
       })
 
       // Inform the listener that this comparison has finished
@@ -76,6 +85,26 @@ export class ComparisonWorker implements TestListener {
     if (!speedKit.hasFinished) {
       this.testWorker.next(speedKit).catch((err) => this.db.log.error(err.message, err))
     }
+  }
+
+  /**
+   * Cancels the given comparison.
+   */
+  async cancel(comparison: model.TestOverview): Promise<boolean> {
+    if (isFinished(comparison)) {
+      return false
+    }
+
+    // Cancel all tests
+    await [comparison.competitorTestResult, comparison.speedKitTestResult]
+      .filter(test => isUnfinished(test))
+      .map(test => this.testWorker.cancel(test))
+      .reduce(parallelize)
+
+    // Mark comparison as cancelled
+    await comparison.optimisticSave(() => setCanceled(comparison))
+
+    return true
   }
 
   async handleTestFinished(test: model.TestResult): Promise<void> {

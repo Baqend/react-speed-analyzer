@@ -1,9 +1,10 @@
 import { baqend, model } from 'baqend'
 import { ConfigGenerator } from './_ConfigGenerator'
+import { parallelize } from './_helpers'
 import { DataType, Serializer } from './_Serializer'
+import { isFinished, isUnfinished, setCanceled, setRunning, Status } from './_Status'
 import { TestScriptBuilder } from './_TestScriptBuilder'
 import { Pagetest } from './_Pagetest'
-import { sleep } from './_sleep'
 import { TestType, WebPagetestResultHandler } from './_WebPagetestResultHandler'
 import credentials from './credentials'
 
@@ -50,12 +51,17 @@ export class TestWorker {
       // Ensure test is loaded
       await test.load()
 
-      // Is the test finished?
-      if (test.hasFinished) {
+      // Is the test finished, canceled?
+      if (isFinished(test)) {
         this.db.log.info(`Test ${test.key} is finished.`, { test })
         this.listener && this.listener.handleTestFinished(test)
 
         return
+      }
+
+      // Set test to running
+      if (test.status !== Status.RUNNING) {
+        await test.optimisticSave(() => setRunning(test))
       }
 
       // Is WebPagetest still running this test? Check the status and start over.
@@ -69,10 +75,6 @@ export class TestWorker {
       // Start the next test
       if /* test is against Speed Kit */ (test.isClone) {
         if (this.shouldStartPrewarmWebPagetest(test)) {
-          if (!test.speedKitConfig) {
-            this.startConfigWebPagetest(test)
-          }
-
           this.startPrewarmWebPagetest(test)
 
           return
@@ -88,6 +90,31 @@ export class TestWorker {
   }
 
   /**
+   * Cancels the given test.
+   */
+  async cancel(test: model.TestResult): Promise<boolean> {
+    if (isFinished(test)) {
+      return false
+    }
+
+    // Cancel each WebpageTest
+    await test.webPagetests
+      .filter(webPagetest => isUnfinished(webPagetest))
+      .map(webPagetest => this.api.cancelTest(webPagetest.testId))
+      .reduce(parallelize)
+
+    // Mark test and WebPagetests as canceled
+    await test.optimisticSave(() => {
+      setCanceled(test)
+      test.webPagetests
+        .filter(webPagetest => isUnfinished(webPagetest))
+        .forEach(webPagetest => setCanceled(webPagetest))
+    })
+
+    return true
+  }
+
+  /**
    * Handles the result of a test from WebPagetest.
    */
   async handleWebPagetestResult(wptTestId: string): Promise<void> {
@@ -99,12 +126,36 @@ export class TestWorker {
       }
 
       const webPagetest = this.getWebPagetestInfo(test, wptTestId)
-      if (webPagetest.hasFinished) {
-        this.db.log.debug(`WebPagetest ${wptTestId} was already finished`, { test })
+      if (isFinished(webPagetest)) {
+        this.db.log.debug(`WebPagetest ${wptTestId} was already finished or canceled`, { test })
         return
       }
 
       const updatedTest = await this.webPagetestResultHandler.handleResult(test, webPagetest)
+      this.next(updatedTest).catch((err) => this.db.log.error(err.message, err))
+    } catch (error) {
+      this.db.log.error(`Cannot handle WPT result: ${error.message}`, { wptTestId, error: error.stack })
+    }
+  }
+
+  /**
+   * Handles the failure of a test from WebPagetest.
+   */
+  async handleWebPagetestFailure(wptTestId: string): Promise<void> {
+    try {
+      const test = await this.db.TestResult.find().equal('webPagetests.testId', wptTestId).singleResult()
+      if (!test) {
+        this.db.log.warn('There was no testResult found for testId', { wptTestId })
+        return
+      }
+
+      const webPagetest = this.getWebPagetestInfo(test, wptTestId)
+      if (isFinished(webPagetest)) {
+        this.db.log.debug(`WebPagetest ${wptTestId} was already marked as failed`, { test })
+        return
+      }
+
+      const updatedTest = await this.webPagetestResultHandler.handleFailure(test, webPagetest)
       this.next(updatedTest).catch((err) => this.db.log.error(err.message, err))
     } catch (error) {
       this.db.log.error(`Cannot handle WPT result: ${error.message}`, { wptTestId, error: error.stack })
@@ -132,7 +183,7 @@ export class TestWorker {
    * Checks whether all WebPagetest tests have been finished or not.
    */
   private hasNotFinishedWebPagetests(test: model.TestResult): boolean {
-    return test.webPagetests.filter(wpt => !wpt.hasFinished).length > 0
+    return test.webPagetests.filter(wpt => !isFinished(wpt)).length > 0
   }
 
   /**
@@ -141,14 +192,20 @@ export class TestWorker {
   private async checkWebPagetestsStatus(test: model.TestResult): Promise<void> {
     this.db.log.debug(`TestWorker.checkWebPagetestsStatus("${test.key}")`, { test })
     test.webPagetests
-      .filter(wpt => !wpt.hasFinished)
+      .filter(wpt => !isFinished(wpt))
       .map(async wpt => {
         const wptTestId = wpt.testId
 
         try {
-          const isFinished = await this.isWebPagetestFinished(wptTestId)
-          if (isFinished) {
+          const test = await this.api.getTestStatus(wptTestId)
+
+          // status code 200 means the test has finished
+          if (test.statusCode === 200) {
             await this.handleWebPagetestResult(wptTestId)
+            return true
+            // status code >= 400 means there was an error
+          } else if (test.statusCode >= 400) {
+            await this.handleWebPagetestFailure(wptTestId)
             return true
           }
 
@@ -161,18 +218,6 @@ export class TestWorker {
   }
 
   /**
-   * Checks that the status from the API is 200.
-   *
-   * @param {string} wptTestId The WebPagetest test's ID.
-   * @return {Promise<void>}
-   */
-  private async isWebPagetestFinished(wptTestId: string): Promise<boolean> {
-    const test = await this.api.getTestStatus(wptTestId)
-
-    return test.statusCode === 200
-  }
-
-  /**
    * Starts a prewarm against WebPagetest.
    */
   private startPrewarmWebPagetest(test: model.TestResult): Promise<void> {
@@ -181,18 +226,6 @@ export class TestWorker {
     const prewarmTestOptions = Object.assign({ pingback: PING_BACK_URL }, testOptions, prewarmOptions)
 
     return this.startWebPagetest(test, TestType.PREWARM, prewarmTestScript, prewarmTestOptions)
-  }
-
-  /**
-   * Starts a config test against WebPagetest.
-   */
-  private startConfigWebPagetest(test: model.TestResult): Promise<void> {
-    const { testInfo } = test
-    const { testOptions } = testInfo
-    const configTestScript = this.buildScriptWithMinimalWhitelist(testInfo)
-    const configTestOptions = Object.assign({ pingback: PING_BACK_URL }, testOptions, prewarmOptions, { runs: 1 })
-
-    return this.startWebPagetest(test, TestType.CONFIG, configTestScript, configTestOptions)
   }
 
   /**
@@ -217,7 +250,6 @@ export class TestWorker {
         testType,
         testScript,
         testOptions,
-        hasFinished: false,
       }))
     } catch (error) {
       this.db.log.error(`Could not start "${testType}" WebPagetest test: ${error.message}`, { test: test.id, error: error.stack })
@@ -228,8 +260,8 @@ export class TestWorker {
    * Saves a WebPagetest info in a test.
    */
   private async pushWebPagetestToTestResult(test: model.TestResult, webPagetest: model.WebPagetest): Promise<model.TestResult> {
-    await test.ready()
     return test.optimisticSave((it: model.TestResult) => {
+      setRunning(webPagetest)
       it.webPagetests.push(webPagetest)
     })
   }

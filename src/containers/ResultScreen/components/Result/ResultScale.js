@@ -120,10 +120,11 @@ class ResultScaleComponent extends Component {
 
   render() {
     const { speedKitError, competitorTest, speedKitTest, mainMetric } = this.props.result
+    const { isSpeedKitComparison } = this.props.testOverview
 
     const requests = competitorTest.firstView && competitorTest.firstView.requests
     const competitorTime = competitorTest.firstView && competitorTest.firstView[mainMetric]
-    const speedKitTime = !speedKitError && speedKitTest.firstView && speedKitTest.firstView[mainMetric]
+    const speedKitTime = speedKitTest.firstView && (isSpeedKitComparison || !speedKitError) && speedKitTest.firstView[mainMetric]
 
     const timeDelta = Math.abs(competitorTime - speedKitTime)
 

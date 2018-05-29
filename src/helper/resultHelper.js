@@ -70,34 +70,6 @@ export function resultIsValid(competitorResult, speedKitResult, mainMetric, seco
 }
 
 /**
- * @param competitorResult Result from the competitor's site.
- * @param speedKitResult Result from Speed Kit.
- * @return {boolean}
- */
-export function shouldShowFirstMeaningfulPaint(competitorResult, speedKitResult) {
-  // Competitor fully loaded minus competitor time to first byte ist bigger than ten seconds
-  const firstCondition = competitorResult.fullyLoaded - competitorResult.ttfb > 10000
-
-  // Speed kit served requests are 20% less than competitors served requests (exclude failed requests)
-  const secondCondition = (speedKitResult.requests - speedKitResult.failedRequests)
-    / (competitorResult.requests - competitorResult.failedRequests) <= 0.75
-
-  // Speed kit's (fully loaded - last visual change ) - competitor's (fully loaded - last visual change ) is
-  // 20% bigger than the max of all four values
-  const competitorNum = Math.abs(competitorResult.fullyLoaded - competitorResult.lastVisualChange)
-  const speedKitNum = Math.abs(speedKitResult.fullyLoaded - speedKitResult.lastVisualChange)
-  const max = Math.max(
-    competitorResult.fullyLoaded,
-    competitorResult.lastVisualChange,
-    speedKitResult.fullyLoaded,
-    speedKitResult.lastVisualChange,
-  )
-  const thirdCondition = max / Math.abs(competitorNum - speedKitNum) <= 0.8
-
-  return firstCondition || secondCondition || thirdCondition
-}
-
-/**
  * @param {*} data
  * @return {string}
  */

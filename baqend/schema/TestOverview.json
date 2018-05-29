@@ -14,120 +14,130 @@
   },
   "metadata": {},
   "fields": {
-    "psiDomains": {
-      "name": "psiDomains",
-      "type": "/db/Integer",
-      "order": 0
-    },
-    "psiRequests": {
-      "name": "psiRequests",
-      "type": "/db/Integer",
-      "order": 1
-    },
-    "psiResponseSize": {
-      "name": "psiResponseSize",
-      "type": "/db/String",
-      "order": 2
-    },
-    "psiScreenshot": {
-      "name": "psiScreenshot",
-      "type": "/db/JsonObject",
-      "order": 3
-    },
-    "location": {
-      "name": "location",
-      "type": "/db/String",
-      "order": 4
-    },
-    "caching": {
-      "name": "caching",
-      "type": "/db/Boolean",
-      "order": 5
-    },
-    "mobile": {
-      "name": "mobile",
-      "type": "/db/Boolean",
-      "order": 6
-    },
     "url": {
       "name": "url",
       "type": "/db/String",
-      "order": 7
+      "order": 0
     },
-    "displayUrl": {
-      "name": "displayUrl",
+    "status": {
+      "name": "status",
       "type": "/db/String",
-      "order": 8
-    },
-    "competitorTestResult": {
-      "name": "competitorTestResult",
-      "type": "/db/TestResult",
-      "order": 9
-    },
-    "speedKitTestResult": {
-      "name": "speedKitTestResult",
-      "type": "/db/TestResult",
-      "order": 10
-    },
-    "whitelist": {
-      "name": "whitelist",
-      "type": "/db/String",
-      "order": 11
+      "order": 1
     },
     "hasFinished": {
       "name": "hasFinished",
       "type": "/db/Boolean",
+      "order": 2
+    },
+    "psiDomains": {
+      "name": "psiDomains",
+      "type": "/db/Integer",
+      "order": 3
+    },
+    "psiRequests": {
+      "name": "psiRequests",
+      "type": "/db/Integer",
+      "order": 4
+    },
+    "psiResponseSize": {
+      "name": "psiResponseSize",
+      "type": "/db/String",
+      "order": 5
+    },
+    "psiScreenshot": {
+      "name": "psiScreenshot",
+      "type": "/db/File",
+      "order": 6
+    },
+    "location": {
+      "name": "location",
+      "type": "/db/String",
+      "order": 7
+    },
+    "caching": {
+      "name": "caching",
+      "type": "/db/Boolean",
+      "order": 8
+    },
+    "mobile": {
+      "name": "mobile",
+      "type": "/db/Boolean",
+      "order": 9
+    },
+    "displayUrl": {
+      "name": "displayUrl",
+      "type": "/db/String",
+      "order": 10
+    },
+    "competitorTestResult": {
+      "name": "competitorTestResult",
+      "type": "/db/TestResult",
+      "order": 11
+    },
+    "speedKitTestResult": {
+      "name": "speedKitTestResult",
+      "type": "/db/TestResult",
       "order": 12
+    },
+    "whitelist": {
+      "name": "whitelist",
+      "type": "/db/String",
+      "order": 13
     },
     "factors": {
       "name": "factors",
       "type": "/db/Mean",
-      "order": 13
+      "order": 14
     },
     "isSpeedKitComparison": {
       "name": "isSpeedKitComparison",
       "type": "/db/Boolean",
-      "order": 14
+      "order": 15
     },
     "speedKitVersion": {
       "name": "speedKitVersion",
       "type": "/db/String",
-      "order": 15
+      "order": 16
     },
     "activityTimeout": {
       "name": "activityTimeout",
       "type": "/db/Integer",
-      "order": 16
+      "order": 17
     },
     "speedKitConfig": {
       "name": "speedKitConfig",
       "type": "/db/String",
-      "order": 17
+      "order": 18
     },
     "tasks": {
       "name": "tasks",
       "type": "/db/collection.List[/db/Task]",
-      "order": 18
+      "order": 19
     },
     "configAnalysis": {
       "name": "configAnalysis",
       "type": "/db/ConfigAnalysis",
-      "order": 19
+      "order": 20
     },
     "isSecured": {
       "name": "isSecured",
       "type": "/db/Boolean",
-      "order": 20
+      "order": 21
     },
     "type": {
       "name": "type",
       "type": "/db/String",
-      "order": 21
+      "order": 22
     },
     "puppeteer": {
       "name": "puppeteer",
       "type": "/db/Puppeteer",
-      "order": 22
+      "order": 23
+    },
+    "hasMultiComparison": {
+      "name": "hasMultiComparison",
+      "type": "/db/Boolean",
+      "order": 24
     }
   }
 }

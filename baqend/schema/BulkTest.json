@@ -19,85 +19,90 @@
       "type": "/db/String",
       "order": 0
     },
+    "status": {
+      "name": "status",
+      "type": "/db/String",
+      "order": 1
+    },
     "hasFinished": {
       "name": "hasFinished",
       "type": "/db/Boolean",
-      "order": 1
+      "order": 2
     },
     "testOverviews": {
       "name": "testOverviews",
       "type": "/db/collection.List[/db/TestOverview]",
-      "order": 2
+      "order": 3
     },
     "speedKitMeanValues": {
       "name": "speedKitMeanValues",
       "type": "/db/Mean",
-      "order": 3
+      "order": 4
     },
     "competitorMeanValues": {
       "name": "competitorMeanValues",
       "type": "/db/Mean",
-      "order": 4
+      "order": 5
     },
     "factors": {
       "name": "factors",
       "type": "/db/Mean",
-      "order": 5
+      "order": 6
     },
     "bestFactors": {
       "name": "bestFactors",
       "type": "/db/Mean",
-      "order": 6
+      "order": 7
     },
     "worstFactors": {
       "name": "worstFactors",
       "type": "/db/Mean",
-      "order": 7
+      "order": 8
     },
     "createdBy": {
       "name": "createdBy",
       "type": "/db/String",
-      "order": 8
+      "order": 9
     },
     "runs": {
       "name": "runs",
       "type": "/db/Integer",
-      "order": 9
+      "order": 10
     },
     "completedRuns": {
       "name": "completedRuns",
       "type": "/db/Integer",
-      "order": 10
+      "order": 11
     },
     "location": {
       "name": "location",
       "type": "/db/String",
-      "order": 11
+      "order": 12
     },
     "mobile": {
       "name": "mobile",
       "type": "/db/Boolean",
-      "order": 12
+      "order": 13
     },
     "priority": {
       "name": "priority",
       "type": "/db/Integer",
-      "order": 13
+      "order": 14
     },
     "urlAnalysis": {
       "name": "urlAnalysis",
       "type": "/db/UrlAnalysis",
-      "order": 14
+      "order": 15
     },
     "params": {
       "name": "params",
       "type": "/db/JsonObject",
-      "order": 15
+      "order": 16
     },
     "puppeteer": {
       "name": "puppeteer",
       "type": "/db/Puppeteer",
-      "order": 16
+      "order": 17
     }
   }
 }

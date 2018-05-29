@@ -14,115 +14,120 @@
   },
   "metadata": {},
   "fields": {
-    "testId": {
-      "name": "testId",
-      "type": "/db/String",
-      "order": 0
-    },
-    "location": {
-      "name": "location",
-      "type": "/db/String",
-      "order": 1
-    },
-    "firstView": {
-      "name": "firstView",
-      "type": "/db/Run",
-      "order": 2
-    },
-    "repeatView": {
-      "name": "repeatView",
-      "type": "/db/Run",
-      "order": 3
-    },
     "url": {
       "name": "url",
       "type": "/db/String",
-      "order": 4
+      "order": 0
     },
-    "summaryUrl": {
-      "name": "summaryUrl",
+    "status": {
+      "name": "status",
       "type": "/db/String",
-      "order": 5
-    },
-    "publishedSummaryUrl": {
-      "name": "publishedSummaryUrl",
-      "type": "/db/String",
-      "order": 6
-    },
-    "videoIdFirstView": {
-      "name": "videoIdFirstView",
-      "type": "/db/String",
-      "order": 7
-    },
-    "videoIdRepeatedView": {
-      "name": "videoIdRepeatedView",
-      "type": "/db/String",
-      "order": 8
-    },
-    "videoFileFirstView": {
-      "name": "videoFileFirstView",
-      "type": "/db/File",
-      "order": 9
-    },
-    "testDataMissing": {
-      "name": "testDataMissing",
-      "type": "/db/Boolean",
-      "order": 10
-    },
-    "videoFileRepeatView": {
-      "name": "videoFileRepeatView",
-      "type": "/db/File",
-      "order": 11
+      "order": 1
     },
     "hasFinished": {
       "name": "hasFinished",
       "type": "/db/Boolean",
+      "order": 2
+    },
+    "testId": {
+      "name": "testId",
+      "type": "/db/String",
+      "order": 3
+    },
+    "location": {
+      "name": "location",
+      "type": "/db/String",
+      "order": 4
+    },
+    "firstView": {
+      "name": "firstView",
+      "type": "/db/Run",
+      "order": 5
+    },
+    "repeatView": {
+      "name": "repeatView",
+      "type": "/db/Run",
+      "order": 6
+    },
+    "summaryUrl": {
+      "name": "summaryUrl",
+      "type": "/db/String",
+      "order": 7
+    },
+    "publishedSummaryUrl": {
+      "name": "publishedSummaryUrl",
+      "type": "/db/String",
+      "order": 8
+    },
+    "videoIdFirstView": {
+      "name": "videoIdFirstView",
+      "type": "/db/String",
+      "order": 9
+    },
+    "videoIdRepeatedView": {
+      "name": "videoIdRepeatedView",
+      "type": "/db/String",
+      "order": 10
+    },
+    "videoFileFirstView": {
+      "name": "videoFileFirstView",
+      "type": "/db/File",
+      "order": 11
+    },
+    "testDataMissing": {
+      "name": "testDataMissing",
+      "type": "/db/Boolean",
       "order": 12
+    },
+    "videoFileRepeatView": {
+      "name": "videoFileRepeatView",
+      "type": "/db/File",
+      "order": 13
     },
     "retryRequired": {
       "name": "retryRequired",
       "type": "/db/Boolean",
-      "order": 13
+      "order": 14
     },
     "isWordPress": {
       "name": "isWordPress",
       "type": "/db/Boolean",
-      "order": 14
+      "order": 15
     },
     "isClone": {
       "name": "isClone",
       "type": "/db/Boolean",
-      "order": 15
+      "order": 16
     },
     "priority": {
       "name": "priority",
       "type": "/db/Integer",
-      "order": 16
+      "order": 17
     },
     "speedKitConfig": {
       "name": "speedKitConfig",
       "type": "/db/String",
-      "order": 17
+      "order": 18
     },
     "testInfo": {
       "name": "testInfo",
       "type": "/db/JsonObject",
-      "order": 18
+      "order": 19
     },
     "webPagetests": {
       "name": "webPagetests",
       "type": "/db/collection.List[/db/WebPagetest]",
-      "order": 19
+      "order": 20
     },
     "retries": {
       "name": "retries",
       "type": "/db/Integer",
-      "order": 20
+      "order": 21
     },
     "checked": {
       "name": "checked",
       "type": "/db/DateTime",
-      "order": 21
+      "order": 22
     }
   }
 }

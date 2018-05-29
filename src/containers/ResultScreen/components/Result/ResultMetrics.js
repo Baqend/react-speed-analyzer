@@ -5,14 +5,14 @@ import { calculateFactor, calculateAbsolute } from 'helper/resultHelper'
 
 const userMetrics = [
   {
-    name: 'speedIndex',
-    label: 'Speed Index',
-    tooltip: 'Represents how quickly the page rendered the user-visible content.'
-  },
-  {
     name: 'firstMeaningfulPaint',
     label: '1st Meaningful Paint',
     tooltip: 'Represents the time when a page\'s primary content appears on the screen.'
+  },
+  {
+    name: 'speedIndex',
+    label: 'Speed Index',
+    tooltip: 'Represents how quickly the page rendered the user-visible content.'
   },
 ]
 
@@ -212,6 +212,12 @@ class ResultMetrics extends Component {
 
   render() {
     const { speedKitError } = this.props.result
+    const { isSpeedKitComparison } = this.props.testOverview
+
+    if (isSpeedKitComparison) {
+      return this.renderCompetitorSpeedKitTable()
+    }
+
     return speedKitError ? this.renderCompetitorTable() : this.renderCompetitorSpeedKitTable()
   }
 }

@@ -72,7 +72,7 @@ export async function analyzeUrls(queries: string[], db: baqend, mobile: boolean
   }
 
   const { puppeteer } = bootstrap(db)
-  const analyses = queries.map(query => forMap(query, puppeteer.analyze(query)))
+  const analyses = queries.map(query => forMap(query, puppeteer.analyze(query, mobile)))
   const map = await Promise.all(analyses)
 
   return new Map(map)

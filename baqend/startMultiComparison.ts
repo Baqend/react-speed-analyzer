@@ -5,7 +5,6 @@ import { TestParams } from './_TestParams'
 export interface StartMultiComparisonParams extends TestParams {
   runs?: number
   createdBy?: string
-  url: string
 }
 
 /**
@@ -15,8 +14,8 @@ export async function call(db: baqend, data: StartMultiComparisonParams): Promis
   const { multiComparisonWorker, multiComparisonFactory, puppeteer } = bootstrap(db)
 
   // Get necessary options
-  const { url, createdBy, runs, ...params } = data
-  const puppeteerInfo = await puppeteer.analyze(url)
+  const { createdBy, runs, ...params } = data
+  const puppeteerInfo = await puppeteer.analyze(params.url, params.mobile)
   const multiComparison = await multiComparisonFactory.create(puppeteerInfo, params, createdBy, runs)
   multiComparisonWorker.next(multiComparison)
 

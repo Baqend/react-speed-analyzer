@@ -1,31 +1,31 @@
-import URL from 'url'
 import { baqend } from 'baqend'
+import URL from 'url'
 
 /**
  * Extracts the first level domain of a URL.
  *
- * @param db The Baqend instance.
  * @param url The URL to extract the hostname of.
+ * @param logger An optional logger to use.
  * @return The extracted hostname.
  */
-export function getTLD(db: baqend, url: string): string {
+export function getTLD(url: string, logger?: Logger): string {
   if (!url.startsWith('http')) {
     url = `https://${url}`
   }
 
   try {
-    const { hostname } = URL.parse(url);
+    const { hostname } = URL.parse(url)
 
-    const domainCount = hostname!.split('.').length - 1;
+    const domainCount = hostname!.split('.').length - 1
 
     if (domainCount === 1) {
-      return hostname!;
+      return hostname!
     }
 
     return /.*\.([\w-]+\.[\w]*)$/.exec(hostname!)![1]
 
   } catch (e) {
-    db.log.warn(`Get TLD for url ${url} failed.`, {error: e.stack});
+    logger && logger.warn(`Get TLD for url ${url} failed.`, { error: e.stack })
     return ''
   }
 }

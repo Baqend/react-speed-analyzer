@@ -1,6 +1,7 @@
 import { baqend, model } from 'baqend'
 import { Request, Response } from 'express'
 import { generateHash, getDateString } from './_helpers'
+import { Status } from './_Status'
 import { startBulkComparison } from './startBulkComparison'
 import { DEFAULT_PLESK_PRIORITY } from './_TestBuilder'
 
@@ -10,6 +11,7 @@ const defaultComparison = {
   competitorTestResult: '',
   speedKitTestResult: '',
   factors: { speedIndex: null },
+  status: Status.SUCCESS,
   hasFinished: true,
   speedKitVersion: null,
   isSpeedKitComparison: false,
@@ -75,7 +77,13 @@ export async function get(db: baqend, request: Request, response: Response) {
     const comparisons: any = {};
     bulkComparison.multiComparisons.forEach((multiComparison) => {
       if (multiComparison.hasFinished) {
-        const comparison = bulkComparison.comparisonsToStart.find((comparison) => comparison.puppeteer.url === multiComparison.url)
+        const comparison = bulkComparison.comparisonsToStart.find((comparison) => {
+          if (comparison.puppeteer) {
+            return comparison.puppeteer.url === multiComparison.url
+          }
+
+          return false
+        })
         if (comparison) {
           comparisons[comparison.url] = findBestComparison(multiComparison)
         }

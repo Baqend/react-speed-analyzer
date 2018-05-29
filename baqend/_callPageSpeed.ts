@@ -1,6 +1,5 @@
 import fetch from 'node-fetch'
-import { Request, Response } from 'express'
-import { baqend } from 'baqend'
+import { baqend, binding } from 'baqend'
 import credentials from './credentials'
 
 const API_KEY = credentials.google_api_key;
@@ -12,7 +11,7 @@ export interface PageSpeedResult {
   domains: number
   requests: number
   bytes: number
-  screenshot: File
+  screenshot: binding.File
 }
 
 /**

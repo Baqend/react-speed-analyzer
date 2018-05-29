@@ -44,8 +44,8 @@ const verifyMainMetric = ({ competitorTest, speedKitTest, mainMetric, secondaryM
   const competitorData = competitorTest.firstView
   const speedKitData = speedKitTest.firstView
   if (competitorData && speedKitData) {
-    const mainMetric = shouldShowFirstMeaningfulPaint(competitorData, speedKitData) ? 'firstMeaningfulPaint' : 'speedIndex'
-    const secondaryMetric = shouldShowFirstMeaningfulPaint(competitorData, speedKitData) ? 'speedIndex' : 'firstMeaningfulPaint'
+    const mainMetric = 'firstMeaningfulPaint'
+    const secondaryMetric = 'speedIndex'
     return {
       mainMetric,
       secondaryMetric
@@ -99,6 +99,7 @@ const initialState = {
   mainMetric: 'speedIndex',
   secondaryMetric: 'firstMeaningfulPaint',
   whiteListCandidates: [],
+  startTime: null,
 }
 
 export default function result(state = initialState, action = {}) {
@@ -119,7 +120,7 @@ export default function result(state = initialState, action = {}) {
     case INIT_TEST:
       return { ...state, isInitiated: true }
     case START_TEST:
-      return { ...state, isStarted: true }
+      return { ...state, isStarted: true, startTime: new Date() }
     case CONTINUE_TEST:
       return { ...state, isInitiated: true, isStarted: true }
     case TEST_STATUS_GET:
