@@ -62,7 +62,7 @@ export class TestScriptBuilder {
       .setDns(hostname!, credentials.makefast_ip)
       .navigate(installSpeedKitUrl)
 
-    if (!location.includes('eu-central-1-')) {
+    if (!location.includes('-docker')) {
       ts.navigate('about:blank')
     }
 
