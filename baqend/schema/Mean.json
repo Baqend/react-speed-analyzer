@@ -40,6 +40,11 @@
       "name": "lastVisualChange",
       "type": "/db/Double",
       "order": 5
+    },
+    "load": {
+      "name": "load",
+      "type": "/db/Double",
+      "order": 6
     }
   }
 }

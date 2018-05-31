@@ -29,6 +29,8 @@ declare module 'baqend' {
     PuppeteerType: binding.ManagedFactory<model.PuppeteerType>;
     PuppeteerStats: binding.ManagedFactory<model.PuppeteerStats>;
     PuppeteerSpeedKit: binding.ManagedFactory<model.PuppeteerSpeedKit>;
+    Candidate: binding.ManagedFactory<model.Candidate>;
+    FMPData: binding.ManagedFactory<model.FMPData>;
   }
 
   namespace model {
@@ -266,6 +268,7 @@ declare module 'baqend' {
       visualCompleteness: Completeness;
       hits: Hits;
       contentSize: ContentSize;
+      fmpData: FMPData;
     }
 
     interface ConfigAnalysis extends binding.Managed {
@@ -303,6 +306,7 @@ declare module 'baqend' {
       domLoaded: number;
       fullyLoaded: number;
       lastVisualChange: number;
+      load: number;
     }
 
     interface UrlAnalysis extends binding.Managed {
@@ -400,6 +404,19 @@ declare module 'baqend' {
       ok: number;
       bad: number;
       failed: number;
+    }
+
+    interface Candidate extends binding.Managed {
+      visualCompleteness: number;
+      deltaVC: number;
+      startTime: number;
+      endTime: number;
+      wptFMP: number | null;
+    }
+
+    interface FMPData extends binding.Managed {
+      suggestedCandidate: Candidate;
+      candidates: Array<Candidate> | null;
     }
   }
 }

@@ -1,6 +1,6 @@
 import { baqend, model } from 'baqend'
 
-const fields: Array<keyof model.Mean> = ['speedIndex', 'firstMeaningfulPaint', 'ttfb', 'domLoaded', 'fullyLoaded', 'lastVisualChange']
+const fields: Array<keyof model.Mean> = ['speedIndex', 'firstMeaningfulPaint', 'ttfb', 'domLoaded', 'fullyLoaded', 'lastVisualChange', 'load']
 const VERY_GOOD_TEST_LOWER_LIMIT = 2;
 const GOOD_TEST_UPPER_LIMIT = 2;
 const GOOD_TEST_LOWER_LIMIT = 1.5;

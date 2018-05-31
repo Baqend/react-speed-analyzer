@@ -3,7 +3,7 @@ import { aggregateFields, meanValue } from './_helpers'
 
 type TestResultFieldPrefix = 'competitor' | 'speedKit'
 
-const fields: Array<keyof model.Mean> = ['speedIndex', 'firstMeaningfulPaint', 'ttfb', 'domLoaded', 'fullyLoaded', 'lastVisualChange']
+const fields: Array<keyof model.Mean> = ['speedIndex', 'firstMeaningfulPaint', 'ttfb', 'domLoaded', 'fullyLoaded', 'lastVisualChange', 'load']
 
 /**
  * Calculates the factors of two mean test result values.
