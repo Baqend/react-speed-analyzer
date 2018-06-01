@@ -4,7 +4,8 @@ import {
   isFinished, isIncomplete, isUnfinished, setCanceled, setIncomplete, setRunning, setSuccess,
   Status,
 } from './_Status'
-import { aggregateBulkTestFactors, factorize } from './_updateMultiComparison'
+import { factorize } from './_updateMultiComparison'
+import { chooseFMP } from './_chooseFMP'
 import { callPageSpeed } from './_callPageSpeed'
 import { TestListener, TestWorker } from './_TestWorker'
 
@@ -65,6 +66,8 @@ export class ComparisonWorker implements TestListener {
         this.db.log.warn(`Comparison ${comparison.key} was already finished.`, { comparison })
         return
       }
+
+      await chooseFMP(competitor, speedKit)
 
       await comparison.optimisticSave(() => {
         isIncomplete(competitor) || isIncomplete(speedKit) ? setIncomplete(comparison) : setSuccess(comparison)

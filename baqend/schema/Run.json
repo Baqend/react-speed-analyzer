@@ -105,6 +105,11 @@
       "name": "contentSize",
       "type": "/db/ContentSize",
       "order": 18
+    },
+    "FMPData": {
+      "name": "FMPData",
+      "type": "/db/FMPData",
+      "order": 19
     }
   }
 }

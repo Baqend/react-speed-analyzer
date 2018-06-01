@@ -1,0 +1,25 @@
+{
+  "class": "/db/FMPData",
+  "acl": {
+    "schemaAdd": {
+      "/db/Role/1": "allow"
+    },
+    "schemaReplace": {
+      "/db/Role/1": "allow"
+    }
+  },
+  "embedded": true,
+  "metadata": {},
+  "fields": {
+    "suggestedCandidate": {
+      "name": "suggestedCandidate",
+      "type": "/db/Candidate",
+      "order": 0
+    },
+    "candidates": {
+      "name": "candidates",
+      "type": "/db/collection.List[/db/Candidate]",
+      "order": 1
+    }
+  }
+}

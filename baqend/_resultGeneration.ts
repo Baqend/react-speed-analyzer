@@ -4,7 +4,7 @@ import { getAdSet } from './_adBlocker'
 import credentials from './credentials'
 import { API, WptRun, WptTestResult, WptTestResultOptions, WptView } from './_Pagetest'
 import { countHits } from './_countHits'
-import { calculateFMP } from './_calculateFMP'
+import { getFMPData } from './_getFMPData'
 import { baqend, binding, model } from 'baqend'
 
 /**
@@ -35,6 +35,7 @@ export async function generateTestResult(wptTestId: string, pendingTest: model.T
     })
 
     db.log.info('Run index', {runIndex})
+
     const [testResult, videos] = await Promise.all([
       createTestResult(db, rawData, wptTestId, runIndex),
       createVideos(db, wptTestId, runIndex),
@@ -189,8 +190,8 @@ async function createRun(db: baqend, data: WptView | undefined, testId: string, 
   completeness.p100 = data.visualComplete
   run.visualCompleteness = completeness
 
-  const [firstMeaningfulPaint, domains] = await Promise.all([calculateFMP(db, data, testId, runIndex), createDomainList(data)])
-  run.firstMeaningfulPaint = firstMeaningfulPaint
+  const [FMPData, domains] = await Promise.all([getFMPData(db, data, testId, runIndex), createDomainList(data)])
+  run.fmpData = FMPData
   run.domains = domains
 
   return run

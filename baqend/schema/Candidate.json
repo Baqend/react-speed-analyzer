@@ -1,0 +1,40 @@
+{
+  "class": "/db/Candidate",
+  "acl": {
+    "schemaAdd": {
+      "/db/Role/1": "allow"
+    },
+    "schemaReplace": {
+      "/db/Role/1": "allow"
+    }
+  },
+  "embedded": true,
+  "metadata": {},
+  "fields": {
+    "visualCompleteness": {
+      "name": "visualCompleteness",
+      "type": "/db/Integer",
+      "order": 0
+    },
+    "deltaVC": {
+      "name": "deltaVC",
+      "type": "/db/Integer",
+      "order": 1
+    },
+    "startTime": {
+      "name": "startTime",
+      "type": "/db/Integer",
+      "order": 2
+    },
+    "endTime": {
+      "name": "endTime",
+      "type": "/db/Integer",
+      "order": 3
+    },
+    "wptFMP": {
+      "name": "wptFMP",
+      "type": "/db/Integer",
+      "order": 4
+    }
+  }
+}
