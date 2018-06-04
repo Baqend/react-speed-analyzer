@@ -34,8 +34,6 @@ export async function generateTestResult(wptTestId: string, pendingTest: model.T
       return rawData.runs[a].firstView.SpeedIndex > rawData.runs[b].firstView.SpeedIndex ? a : b
     })
 
-    db.log.info('Run index', {runIndex})
-
     const [testResult, videos] = await Promise.all([
       createTestResult(db, rawData, wptTestId, runIndex),
       createVideos(db, wptTestId, runIndex),

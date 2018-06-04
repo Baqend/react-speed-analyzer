@@ -42,7 +42,7 @@ function getFMPFromWebPagetest(data: WptView): number {
 /**
  * Calculates the first deviation of the given data.
  */
-function firstDeviation(db: baqend, data: Array<[number, number]>): model.Candidate[] {
+function parseCandidates(db: baqend, data: Array<[number, number]>): model.Candidate[] {
   const diffs = [] as model.Candidate[]
   if (data.length === 1) {
     const candidate = new db.Candidate()
@@ -54,8 +54,8 @@ function firstDeviation(db: baqend, data: Array<[number, number]>): model.Candid
     return candidate
   }
 
-  let lastVisualProgress = data[0][1]
-  for (let i = 1; i < data.length; i += 1) {
+  let lastVisualProgress = 0
+  for (let i = 0; i < data.length; i += 1) {
     const [time, visualProgress] = data[i]
     const diff = visualProgress - lastVisualProgress
     lastVisualProgress = visualProgress
@@ -82,7 +82,7 @@ async function prepareCandidates(db: baqend, testId: string, runIndex: string): 
   const data = getDataFromHtml(htmlString)
   db.log.info('Found data for FMP calculation', { data })
 
-  return firstDeviation(db, data)
+  return parseCandidates(db, data)
 }
 
 /**
@@ -101,15 +101,9 @@ function chooseTopCandidates(db: baqend, candidates: model.Candidate[]): model.C
 /**
  * Gets a candidate that matches the WPT FMP or null.
  */
-function getValidCandidate(wptFMP: number, candidates: model.Candidate[]): model.Candidate|null {
+function getMatchingCandidate(wptFMP: number, candidates: model.Candidate[]): model.Candidate|null {
   if (wptFMP <= 0) {
     return null
-  }
-
-  if (candidates.length === 1) {
-    const { startTime, endTime } = candidates[0]
-    const matchesWPT = Math.abs(startTime - wptFMP) <= 100 || Math.abs(endTime - wptFMP) <= 100
-    return matchesWPT ? candidates[0] : null
   }
 
   const matchingCandidate = candidates.find(candidate => {
@@ -123,12 +117,8 @@ function getValidCandidate(wptFMP: number, candidates: model.Candidate[]): model
 /**
  * Calculates the candidate based on the given deltas.
  */
-function calculateCandidate(db: baqend, candidates: model.Candidate[], wptFMP: number): model.Candidate {
+function chooseSuggestedCandidate(db: baqend, candidates: model.Candidate[], wptFMP: number): model.Candidate {
   const suggestedCandidate = new db.Candidate()
-  if (candidates.length === 1) {
-    return candidates[0]
-  }
-
   for(const i in candidates) {
     const { deltaVC } = candidates[i]
 
@@ -139,10 +129,6 @@ function calculateCandidate(db: baqend, candidates: model.Candidate[], wptFMP: n
 
     if (typeof suggestedCandidate.deltaVC === 'undefined' || deltaVC > suggestedCandidate.deltaVC) {
       Object.assign(suggestedCandidate, candidates[i].toJSON())
-    }
-
-    if (suggestedCandidate.deltaVC >= 50) {
-      break
     }
   }
 
@@ -175,14 +161,14 @@ export async function getFMPData(db: baqend, wpt: WptView, testId: string, runIn
     const candidates = await prepareCandidates(db, testId, runIndex)
 
     const topCandidates = chooseTopCandidates(db, candidates);
-    const validCandidate = getValidCandidate(wptFMP, topCandidates)
+    const validCandidate = getMatchingCandidate(wptFMP, topCandidates)
     if (validCandidate) {
       validCandidate.wptFMP = wptFMP
       db.log.info('FMP from WPT is valid with one top candidate', { validCandidate })
       // update valid candidate in candidates
       for (const i in topCandidates) {
         if (topCandidates[i].endTime == validCandidate.endTime) {
-          Object.assign(topCandidates[i], validCandidate)
+          Object.assign(topCandidates[i], validCandidate.toJSON())
           break;
         }
       }
@@ -191,7 +177,7 @@ export async function getFMPData(db: baqend, wpt: WptView, testId: string, runIn
     }
 
     db.log.info('FMP from WPT is not valid with top candidates')
-    const calculatedCandidate = calculateCandidate(db, candidates, wptFMP)
+    const calculatedCandidate = chooseSuggestedCandidate(db, candidates, wptFMP)
     db.log.info('Candidate calculated based on all candidates', { calculatedCandidate })
     topCandidates.push(calculatedCandidate)
 

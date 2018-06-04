@@ -26,6 +26,20 @@ function isSpeedKitWinner(speedKitVC: number, competitorVC: number): boolean {
   return speedKitVC > competitorVC
 }
 
+function setLoserFMP(winnerVC: number, loser: model.TestResult) {
+  if (loser.firstView) {
+    const fMPData = loser.firstView.fmpData
+    const loserVC = fMPData.suggestedCandidate.visualCompleteness
+
+    if (winnerVC <= WINNER_THRESHOLD) {
+      loser.firstView.firstMeaningfulPaint = chooseLoserFMP(fMPData, winnerVC)
+      // winner is bigger than winner-threshold && smaller than or equal to loser-threshold
+    } else if (loserVC <= LOSER_THRESHOLD){
+      loser.firstView.firstMeaningfulPaint = chooseLoserFMP(fMPData, LOSER_THRESHOLD)
+    }
+  }
+}
+
 export async function chooseFMP(competitor: model.TestResult, speedKit: model.TestResult): Promise<Array<model.TestResult>> {
   if (competitor.firstView && competitor.firstView.fmpData) {
     const { endTime, wptFMP } = competitor.firstView.fmpData.suggestedCandidate
@@ -47,23 +61,7 @@ export async function chooseFMP(competitor: model.TestResult, speedKit: model.Te
     const competitorVC = competitorCandidate.visualCompleteness
     const speedKitVC = speedKitCandidate.visualCompleteness
 
-    // speed kit is the winner
-    if (isSpeedKitWinner(speedKitVC, competitorVC)) {
-      if (speedKitVC <= WINNER_THRESHOLD) {
-        competitor.firstView.firstMeaningfulPaint = chooseLoserFMP(competitorFMPData, speedKitVC)
-        // winner is bigger than winner-threshold && smaller than or equal to loser-threshold
-      } else if (competitorVC <= LOSER_THRESHOLD){
-        competitor.firstView.firstMeaningfulPaint = chooseLoserFMP(competitorFMPData, LOSER_THRESHOLD)
-      }
-      // competitor is the winner
-    } else {
-      if (competitorVC <= WINNER_THRESHOLD) {
-        speedKit.firstView.firstMeaningfulPaint = chooseLoserFMP(speedKitFMPData, competitorVC)
-        // winner is bigger than winner-threshold && smaller than or equal to loser-threshold
-      } else if (speedKitVC <= LOSER_THRESHOLD){
-        speedKit.firstView.firstMeaningfulPaint = chooseLoserFMP(speedKitFMPData, LOSER_THRESHOLD)
-      }
-    }
+    isSpeedKitWinner(speedKitVC, competitorVC) ? setLoserFMP(speedKitVC, competitor) : setLoserFMP(competitorVC, speedKit)
   }
 
   return await Promise.all([competitor.save(), speedKit.save()])
