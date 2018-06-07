@@ -30,7 +30,39 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
    *
    * @return A promise which resolves with the created object.
    */
-  async create(puppeteer: model.Puppeteer, params: TestParams, hasMultiComparison: boolean = false): Promise<model.TestOverview> {
+  async create(
+    puppeteer: model.Puppeteer,
+    params: TestParams,
+    hasMultiComparison: boolean = false): Promise<model.TestOverview>
+  {
+    // Create the comparison object
+    const comparison = await this.createComparison(puppeteer.url)
+
+    // Update the comparison object with detailed information
+    return this.updateComparison(comparison, puppeteer, params, hasMultiComparison)
+  }
+
+  /**
+   * Create the comparison object itself.
+   */
+  async createComparison(url: string) {
+    const uniqueId = await generateUniqueId(this.db, 'TestOverview')
+    const tld = getTLD(url, this.db.log)
+    const id = uniqueId + tld.split('.')[0]
+
+    // Initialize
+    const comparison = new this.db.TestOverview({ id })
+    setQueued(comparison)
+
+    return comparison.save()
+  }
+
+  async updateComparison(
+    comparison: model.TestOverview,
+    puppeteer: model.Puppeteer,
+    params: TestParams,
+    hasMultiComparison: boolean = false): Promise<model.TestOverview>
+  {
     const config = await this.buildSpeedKitConfig(puppeteer, params)
     const requiredParams = this.testBuilder.buildSingleTestParams(params, config)
     const configAnalysis = puppeteer.speedKit ? this.createConfigAnalysis(puppeteer.url, puppeteer.speedKit) : null
@@ -41,14 +73,46 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
       this.createSpeedKitTest(puppeteer, requiredParams),
     ])
 
-    // Create the comparison object
-    return this.createComparison(puppeteer, requiredParams, configAnalysis, competitorTest, speedKitTest, hasMultiComparison)
+    const { url, displayUrl, speedKit } = puppeteer
+    comparison.configAnalysis = configAnalysis
+    comparison.competitorTestResult = competitorTest
+    comparison.speedKitTestResult = speedKitTest
+    comparison.tasks = []
+
+    // Copy Puppeteer info
+    const speedKitVersion = speedKit !== null ? `${speedKit.major}.${speedKit.minor}.${speedKit.patch}` : null
+    comparison.url = url
+    comparison.displayUrl = displayUrl
+    comparison.puppeteer = puppeteer
+    comparison.isSpeedKitComparison = speedKit !== null
+    comparison.speedKitVersion = speedKitVersion
+    comparison.isSecured = url.startsWith('https://')
+    comparison.type = puppeteer.type.framework
+    comparison.psiDomains = puppeteer.stats.domains
+    comparison.psiRequests = puppeteer.stats.requests
+    comparison.psiResponseSize = puppeteer.stats.size.toString()
+    if (puppeteer.screenshot) {
+      comparison.psiScreenshot = puppeteer.screenshot
+    }
+
+    // Copy params
+    comparison.caching = requiredParams.caching
+    comparison.location = requiredParams.location
+    comparison.mobile = requiredParams.mobile
+    comparison.activityTimeout = requiredParams.activityTimeout
+    comparison.speedKitConfig = requiredParams.speedKitConfig
+    comparison.hasMultiComparison = hasMultiComparison
+
+    return comparison.save()
   }
 
   /**
    * Builds the Speed Kit config to use for this test.
    */
-  private async buildSpeedKitConfig({ url, speedKit, smartConfig }: model.Puppeteer, { mobile, speedKitConfig }: TestParams): Promise<string> {
+  private async buildSpeedKitConfig(
+    { url, speedKit, smartConfig }: model.Puppeteer,
+    { mobile, speedKitConfig }: TestParams): Promise<string>
+  {
     // Has the user set a config as a test parameter?
     if (speedKitConfig) {
       return speedKitConfig
@@ -93,50 +157,6 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
     configAnalysis.isDisabled = config.disabled === true
 
     return configAnalysis
-  }
-
-  /**
-   * Create the comparison object itself.
-   */
-  private async createComparison(puppeteer: model.Puppeteer, params: Required<TestParams>, configAnalysis: model.ConfigAnalysis | null, competitorTest: model.TestResult, speedKitTest: model.TestResult, hasMultiComparison: boolean = false): Promise<model.TestOverview> {
-    const { url, displayUrl, speedKit } = puppeteer
-    const uniqueId = await generateUniqueId(this.db, 'TestOverview')
-    const tld = getTLD(url, this.db.log)
-    const id = uniqueId + tld.split('.')[0]
-
-    // Initialize
-    const comparison = new this.db.TestOverview({ id })
-    setQueued(comparison)
-    comparison.configAnalysis = configAnalysis
-    comparison.competitorTestResult = competitorTest
-    comparison.speedKitTestResult = speedKitTest
-    comparison.tasks = []
-
-    // Copy Puppeteer info
-    const speedKitVersion = speedKit !== null ? `${speedKit.major}.${speedKit.minor}.${speedKit.patch}` : null
-    comparison.url = url
-    comparison.displayUrl = displayUrl
-    comparison.puppeteer = puppeteer
-    comparison.isSpeedKitComparison = speedKit !== null
-    comparison.speedKitVersion = speedKitVersion
-    comparison.isSecured = url.startsWith('https://')
-    comparison.type = puppeteer.type.framework
-    comparison.psiDomains = puppeteer.stats.domains
-    comparison.psiRequests = puppeteer.stats.requests
-    comparison.psiResponseSize = puppeteer.stats.size.toString()
-    if (puppeteer.screenshot) {
-      comparison.psiScreenshot = puppeteer.screenshot
-    }
-
-    // Copy params
-    comparison.caching = params.caching
-    comparison.location = params.location
-    comparison.mobile = params.mobile
-    comparison.activityTimeout = params.activityTimeout
-    comparison.speedKitConfig = params.speedKitConfig
-    comparison.hasMultiComparison = hasMultiComparison
-
-    return comparison.save()
   }
 
   /**
