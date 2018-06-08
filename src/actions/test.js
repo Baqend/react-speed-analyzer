@@ -73,6 +73,7 @@ export const startTest = (useAdvancedConfig = true) => ({
         mobile,
         speedKitConfig,
         activityTimeout,
+        withPuppeteer: false,
       })
 
       // dispatch to update the display URL
@@ -155,7 +156,7 @@ const subscribeToTestOverview = ({ testId, onAfterFinish }) => ({
   }
 })
 
-const checkTestStatus = (testId) => ({
+const checkTestStatus = () => ({
   'BAQEND': ({ dispatch, getState, db }) => {
     const pullTestStatus = (id) => ({
       'BAQEND': async ({ dispatch, db }) => {
@@ -172,13 +173,17 @@ const checkTestStatus = (testId) => ({
       }
     })
     const interval = setInterval(async () => {
-      try {
-        const { statusCode } = await dispatch(pullTestStatus(testId))
-        if (statusCode === 100 || statusCode === 200) {
+      const { testOverview } = getState().result
+      const testId = testOverview.competitorTestResult
+      if (testId) {
+        try {
+          const { statusCode } = await dispatch(pullTestStatus(testId))
+          if (statusCode === 100 || statusCode === 200) {
+            clearInterval(interval)
+          }
+        } catch (e) {
           clearInterval(interval)
         }
-      } catch (e) {
-        clearInterval(interval)
       }
     }, 2000)
     return interval
