@@ -16,25 +16,25 @@ export default function examples() {
     {
       name: 'Booking',
       id: 'j08EJNbooking',
-      speedup: '2.0 x Faster',
+      speedup: '2.5 x Faster',
       logo: bookingLogo,
     },
     {
       name: 'Braun',
       id: 'qwa9eUbraun',
-      speedup: '7.0 x Faster',
+      speedup: '8.6 x Faster',
       logo: braunLogo,
     },
     {
       name: 'Yelp',
       id: 'Fi0QMayelp',
-      speedup: '1.60 x Faster',
+      speedup: '1.5 x Faster',
       logo: yelpLogo,
     },
     {
       name: 'Spiegel',
       id: 'SRP8pispiegel',
-      speedup: '2.10 x Faster',
+      speedup: '2.1 x Faster',
       logo: spiegelLogo,
     },
     {
@@ -46,19 +46,19 @@ export default function examples() {
     {
       name: 'Molson Coors',
       id: 'lSnbbwmolsoncoors',
-      speedup: '1.90 x Faster',
+      speedup: '1.9 x Faster',
       logo: molsoncoorsLogo,
     },
     {
       name: 'Netflix',
       id: 'Kl64XDnetflix',
-      speedup: '2.40 x Faster',
+      speedup: '3.0 x Faster',
       logo: netflixLogo,
     },
     {
       name: 'Wells Fargo',
       id: 'vSfhpdwellsfargo',
-      speedup: '1.90 x Faster',
+      speedup: '1.6 x Faster',
       logo: wellsFargoLogo,
     },
     {
@@ -70,19 +70,19 @@ export default function examples() {
     {
       name: 'Kicker',
       id: 'rBSz0ikicker',
-      speedup: '1.90 x Faster',
+      speedup: '1.4 x Faster',
       logo: kickerLogo,
     },
     {
       name: 'Alibaba',
       id: 'e40aQKalibaba',
-      speedup: '2.30 x Faster',
+      speedup: '5.3 x Faster',
       logo: alibabaLogo,
     },
     {
       name: 'Computer Bild',
       id: 'PpBf2ocomputerbild',
-      speedup: '1.70 x Faster',
+      speedup: '2.1 x Faster',
       logo: computerBildLogo,
     }
   ]
