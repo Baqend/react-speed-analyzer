@@ -65,6 +65,7 @@ class ResultScreenComponent extends Component {
 
   renderResults() {
     const { competitorError, speedKitError} = this.props.result
+    const { isSpeedKitComparison } = this.props.testOverview
 
     return (
       <div className="flex-grow-1 results animated slideInUp" style={{ animationDuration: '0.5s' }}>
@@ -95,7 +96,7 @@ class ResultScreenComponent extends Component {
           </div>
         </div>
 
-        { !this.state.isIFrame && [
+        { !this.state.isIFrame && !isSpeedKitComparison && [
           <div key="speedKitAnalyzerInfo" className="pv4 pv7-ns">
             <div className="container ph4">
               <SpeedKitAnalyzer />
