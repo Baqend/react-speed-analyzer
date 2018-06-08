@@ -193,7 +193,7 @@ class ResultAction extends Component {
     return (
       <div>
         <div className="text-center pb2 pt2" style={{ maxWidth: 768, margin: '0 auto' }}>
-          <h2>Speed Kit Test Run Failed</h2>
+          <h2>Tuning Required</h2>
           <span className="faded">It looks like some fine-tuning or configuration is required to measure your site. Please contact our web performance experts to adjust and re-run the test!</span>
         </div>
         <div className="text-center">

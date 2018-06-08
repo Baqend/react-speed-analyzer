@@ -35,6 +35,7 @@ class SpeedKitBanner extends Component {
             <p className="faded" style={{ maxWidth: 500 }}>
               Watch this short video, to learn how Speed Kit can help you make fast page loads your competitive advantage.
             </p>
+            <a className="btn mt2 btn-orange btn-ghost" href="https://medium.baqend.com/the-technology-behind-fast-websites-2638196fa60a#d876" target="_blank">In-Depth Article</a>
           </div>
           <div className="w-100 pa1 w-40-ns">
             <div className="video__wrapper auto">

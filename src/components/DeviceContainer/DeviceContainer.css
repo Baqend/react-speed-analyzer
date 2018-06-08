@@ -36,6 +36,7 @@
     background-size: cover;
     background-position: center top;
     filter: blur(1px);
+    max-height: 600px;
   }
   .device-left {
     display: flex;
