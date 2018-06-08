@@ -63,7 +63,7 @@ async function fetchServiceWorkerUrl(db: baqend, url: string): Promise<SpeedKitI
  * @return A promise which resolves with the analysis's result map.
  * @template Result
  */
-export async function analyzeUrls(queries: string[], db: baqend, mobile: boolean = false, fetchSW = false): Promise<Map<string, model.Puppeteer | SpeedKitInfo>> {
+export async function analyzeUrls(queries: string[], db: baqend, mobile: boolean = false, fetchSW = false, location = 'eu'): Promise<Map<string, model.Puppeteer | SpeedKitInfo>> {
   if(fetchSW) {
     const analyses = queries.map(query => forMap(query, fetchServiceWorkerUrl(db, query,)))
     const map = await Promise.all(analyses)
@@ -72,7 +72,7 @@ export async function analyzeUrls(queries: string[], db: baqend, mobile: boolean
   }
 
   const { puppeteer } = bootstrap(db)
-  const analyses = queries.map(query => forMap(query, puppeteer.analyze(query, mobile)))
+  const analyses = queries.map(query => forMap(query, puppeteer.analyze(query, mobile, location)))
   const map = await Promise.all(analyses)
 
   return new Map(map)

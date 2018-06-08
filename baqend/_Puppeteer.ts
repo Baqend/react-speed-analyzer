@@ -118,11 +118,13 @@ export class Puppeteer {
   ) {
   }
 
-  async analyze(url: string, mobile: boolean = false, thirdParty: boolean = true): Promise<model.Puppeteer> {
+  async analyze(url: string, mobile: boolean = false, location: string = 'eu', thirdParty: boolean = true): Promise<model.Puppeteer> {
     try {
+      const language = location.startsWith('us') ? 'en-US' : 'de-DE'
       const data = await this.postToServer(
         url,
         mobile,
+        language,
 
         // The segments to request:
         PuppeteerSegment.RESOURCES,
@@ -169,9 +171,9 @@ export class Puppeteer {
   /**
    * Posts the request to the server.
    */
-  private async postToServer(query: string, mobile: boolean, ...segments: PuppeteerSegment[]): Promise<PuppeteerResponse> {
+  private async postToServer(query: string, mobile: boolean, language: string, ...segments: PuppeteerSegment[]): Promise<PuppeteerResponse> {
     const host = credentials.puppeteer_host
-    const response = await this.sendJsonRequest(`http://${host}/`, { query, mobile, segments })
+    const response = await this.sendJsonRequest(`http://${host}/`, { query, mobile, language, segments })
     if (response.status !== 200) {
       const { message, status, stack } = await response.json()
       const reasonPhrase = this.reasonPhraseForStatus(status)

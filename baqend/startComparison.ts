@@ -6,7 +6,7 @@ import { TestParams } from './_TestParams'
 async function updateWithPuppeteer(db: baqend, params: TestParams, comparison: model.TestOverview) {
   const { comparisonWorker, comparisonFactory, puppeteer } = bootstrap(db)
 
-  const puppeteerInfo = await puppeteer.analyze(params.url, params.mobile)
+  const puppeteerInfo = await puppeteer.analyze(params.url, params.mobile, params.location)
   const updatedComparison = await comparisonFactory.updateComparison(comparison, puppeteerInfo, params)
   comparisonWorker.next(updatedComparison).catch((err) => db.log.error(err.message, err))
 }

@@ -7,7 +7,7 @@ import { DataType } from './_Serializer'
  * POST: Start the smart config generation.
  */
 export async function post(db: baqend, req: Request, res: Response) {
-  const { body: { url, mobile = false, thirdParty = true, dataType = DataType.JAVASCRIPT } } = req
+  const { body: { url, mobile = false, location = 'eu', thirdParty = true, dataType = DataType.JAVASCRIPT } } = req
   if (!url) {
     res.status(400)
     res.send({ error: 'Please provide a URL.' })
@@ -29,7 +29,7 @@ export async function post(db: baqend, req: Request, res: Response) {
   }
 
   try {
-    const puppeteerData = await puppeteer.analyze(url, mobile, thirdParty)
+    const puppeteerData = await puppeteer.analyze(url, mobile, location, thirdParty)
     const json = puppeteerData.smartConfig
 
     if (accept === 'application/javascript') {
