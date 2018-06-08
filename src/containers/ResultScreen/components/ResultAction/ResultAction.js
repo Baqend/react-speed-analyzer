@@ -116,7 +116,7 @@ class ResultAction extends Component {
         cachingFact.push(`Currently, <strong>${competitorAmount}%</strong> of resources are served with correct <strong>caching headers</strong>. Speed Kit will cache <strong>${speedKitAmount}%</strong> and keep the cache fresh.`)
         improvements.push(cachingFact)
       }
-    } else {
+    } else if (competitorAmount > 0){
       cachingFact.push(`Your website serves <strong>${competitorAmount}%</strong> of resources with correct <strong>caching headers</strong>.`)
       applied.push(cachingFact)
     }
@@ -163,6 +163,7 @@ class ResultAction extends Component {
           performanceFact.push(`Speed Kit improves <strong>Speed Index</strong> by <strong>${siImprovement}%</strong> and <strong>First Meaningful Paint</strong> by <strong>${fmpImprovement}%</strong>.`)
           applied.push(performanceFact)
         } else {
+          performanceFact.push(`Speed Kit will improve <strong>Speed Index</strong> by <strong>${siImprovement}%</strong> and <strong>First Meaningful Paint</strong> by <strong>${fmpImprovement}%</strong>.`)
           performanceFact.push(`Speed Kit will improve <strong>Speed Index</strong> by <strong>${siImprovement}%</strong> and <strong>First Meaningful Paint</strong> by <strong>${fmpImprovement}%</strong>.`)
           improvements.push(performanceFact)
         }
