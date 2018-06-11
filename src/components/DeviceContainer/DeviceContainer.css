@@ -162,8 +162,7 @@
       /* enforces 16:9 aspect ratio */
       > .device__wrapper {
         position: relative;
-        display: block;
-        overflow: hidden;
+        display: inherit;
         &:before {
           content: "";
           display: block;
@@ -171,12 +170,8 @@
           padding-top: 56.25%;
         }
         > .device__screen {
-          position: absolute;
+          position: relative;
           z-index: 1;
-          top: 0;
-          right: 0;
-          bottom: 0;
-          left: 0;
           padding: var(--device-padding);
           .device__wrapper-outer, .device__wrapper, .device__inner {
             display: flex;

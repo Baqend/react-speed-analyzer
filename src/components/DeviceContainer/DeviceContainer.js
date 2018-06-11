@@ -24,7 +24,7 @@ export default class DeviceContainer extends Component {
       <div className={`${showDevice ? 'device' : 'no-device'}`}>
         <div className={`${mobile ? 'device__phone' : 'device__laptop'}`}>
           <DeviceNodes img={backgroundImage && mobile ? null : backgroundImage }>
-            <div className="flex-grow-1 flex flex-column" style={{ overflow: 'hidden' }}>
+            <div className="flex-grow-1 flex flex-column">
               <div className={`flex-grow-1 flex justify-center items-center ${showRight && 'loading'}`}>
                 <div className="device-left">
                   <DeviceNodes img={backgroundImage && mobile ? backgroundImage : null }>

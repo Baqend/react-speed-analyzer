@@ -21,7 +21,7 @@ class StartingScreenComponent extends Component {
 
   renderForm() {
     return (
-      <div className="flex-grow-1 flex flex-column justify-center" style={{ overflow: 'hidden' }}>
+      <div className="flex-grow-1 flex flex-column justify-center">
         <div className="text-center flex-grow-1 flex flex-column justify-end">
           <h1 className="mv2">Page Speed Analyzer</h1>
         </div>
