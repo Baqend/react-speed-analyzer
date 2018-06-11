@@ -10,6 +10,7 @@ async function testAnalyzer(siteUrl, expectedParams) {
     location: 'eu-central-1:Chrome.Native',
     mobile: false,
     speedKitConfig: expectedParams.speedKitConfig,
+    withPuppeteer: false,
   }
 
   const startComparison = await post(`${analyzerCodeUrl}/startComparison`, JSON.stringify(comparisonBody))
@@ -18,30 +19,29 @@ async function testAnalyzer(siteUrl, expectedParams) {
   }
 
   console.log('Start comparison ok')
-
   const comparisonResponse = await startComparison.json()
 
+  console.log('Waiting for Results')
+  await waitAndReport(240)
+
+  const testOverviewRes = await fetch(`${analyzerAPIUrl}${comparisonResponse.id}`)
+
   // Test analyzeUrl params
-  checkAnalyzeResult(comparisonResponse, expectedParams)
+  checkAnalyzeResult(testOverviewRes, expectedParams)
   console.log('Analyze url params ok')
 
   //Test the params to start the test with
-  checkTestParams(comparisonResponse, expectedParams)
+  checkTestParams(testOverviewRes, expectedParams)
   console.log('Test params ok')
 
   // Test config analysis if available
   if (expectedParams.configAnalysis) {
-    checkConfigAnalysis(comparisonResponse, expectedParams)
+    checkConfigAnalysis(testOverviewRes, expectedParams)
     console.log('Config analysis ok')
   }
 
-  const compId = comparisonResponse.competitorTestResult
-  const skId = comparisonResponse.speedKitTestResult
-
-  // Test Test Results
-  // Wait for tests to finish
-  console.log('Waiting for Results')
-  await waitAndReport(240)
+  const compId = testOverviewRes.competitorTestResult
+  const skId = testOverviewRes.speedKitTestResult
 
   const compResultRes = await fetch(`${analyzerAPIUrl}${compId}`)
 
