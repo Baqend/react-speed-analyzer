@@ -25,23 +25,28 @@ async function testAnalyzer(siteUrl, expectedParams) {
   await waitAndReport(240)
 
   const testOverviewRes = await fetch(`${analyzerAPIUrl}${comparisonResponse.id}`)
+  if (!testOverviewRes.ok) {
+    reportError(`TestOveriew Request failed with status: ${testOverviewRes.status}: ${testOverviewRes.statusText}`)
+  }
+
+  const testOverview = await testOverviewRes.json()
 
   // Test analyzeUrl params
-  checkAnalyzeResult(testOverviewRes, expectedParams)
+  checkAnalyzeResult(testOverview, expectedParams)
   console.log('Analyze url params ok')
 
   //Test the params to start the test with
-  checkTestParams(testOverviewRes, expectedParams)
+  checkTestParams(testOverview, expectedParams)
   console.log('Test params ok')
 
   // Test config analysis if available
   if (expectedParams.configAnalysis) {
-    checkConfigAnalysis(testOverviewRes, expectedParams)
+    checkConfigAnalysis(testOverview, expectedParams)
     console.log('Config analysis ok')
   }
 
-  const compId = testOverviewRes.competitorTestResult
-  const skId = testOverviewRes.speedKitTestResult
+  const compId = testOverview.competitorTestResult
+  const skId = testOverview.speedKitTestResult
 
   const compResultRes = await fetch(`${analyzerAPIUrl}${compId}`)
 
