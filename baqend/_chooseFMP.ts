@@ -6,9 +6,15 @@ const VC_THRESHOLD = 50
 
 function chooseLoserFMP(fmpData: model.FMPData, goalVC: number): number {
   if (fmpData.candidates) {
-    const closest = fmpData.candidates.reduce((prev, curr) => {
-      return (Math.abs(curr.visualCompleteness -  goalVC) <
-        Math.abs(prev.visualCompleteness - goalVC) ? curr : prev);
+    const closest = fmpData.candidates
+      .sort(({ startTime: a }, { startTime: b }) => a - b)
+      .reduce((prev, curr) => {
+        if (prev.visualCompleteness >= goalVC) {
+          return prev
+        }
+
+        return (Math.abs(curr.visualCompleteness - goalVC) <
+          Math.abs(prev.visualCompleteness - goalVC) ? curr : prev);
     });
 
     return closest.wptFMP || closest.endTime
