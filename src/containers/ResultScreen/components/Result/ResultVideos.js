@@ -100,7 +100,6 @@ class ResultVideos extends Component {
 
   render() {
     const { speedKitError } = this.props.result
-    const { isSpeedKitComparison } = this.props.testOverview
     const competitorVideoPath = this.props.competitorTest.videoFileFirstView
     const speedKitVideoPath = this.props.speedKitTest.videoFileFirstView
     // const data = this.props.testOverview.psiScreenshot
@@ -142,7 +141,7 @@ class ResultVideos extends Component {
             </div>
           </div>
         </div>
-        {(isSpeedKitComparison || !speedKitError) && (
+        { !speedKitError && (
           <div className={`w-50 speedKitVideo pa2 pv4-ns ph6-ns ${this.props.testOverview.mobile ? 'mobile' : ''}`}>
             <div className="video__wrapper">
               <div className="video__wrapper-inner">

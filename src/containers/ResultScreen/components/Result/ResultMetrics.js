@@ -212,12 +212,6 @@ class ResultMetrics extends Component {
 
   render() {
     const { speedKitError } = this.props.result
-    const { isSpeedKitComparison } = this.props.testOverview
-
-    if (isSpeedKitComparison) {
-      return this.renderCompetitorSpeedKitTable()
-    }
-
     return speedKitError ? this.renderCompetitorTable() : this.renderCompetitorSpeedKitTable()
   }
 }

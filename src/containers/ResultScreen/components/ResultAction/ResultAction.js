@@ -383,7 +383,7 @@ class ResultAction extends Component {
     const isWordPress = testOverview.type === 'wordpress'
     const { isSpeedKitComparison, speedKitVersion, configAnalysis } = testOverview
 
-    if (isSpeedKitComparison) {
+    if (isSpeedKitComparison && !speedKitError) {
       return this.renderIsSpeedKitCta(speedKitVersion, configAnalysis)
     } else if (competitorError) {
       return this.renderAllTestsFailed()

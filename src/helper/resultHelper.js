@@ -43,14 +43,21 @@ export function isMainMetricSatisfactory(competitorMetric, speedKitMetric) {
 }
 
 /**
- * @param competitorMetric Main metric from the competitor's site.
- * @param speedKitMetric Main metric from Speed Kit.
+ * @param competitorResult The test result from the competitor's site.
+ * @param speedKitResult The test result from the Speed Kit.
+ * @param mainMetric Main metric for the test.
+ * @param secondaryMetric Secondary metric for the test.
  * @return {boolean}
  */
 export function resultIsValid(competitorResult, speedKitResult, mainMetric, secondaryMetric) {
   if (!competitorResult.firstView || !speedKitResult.firstView) {
     return false
   }
+
+  if (speedKitResult.testInfo.isSpeedKitComparison) {
+    return true
+  }
+
   const mainCompetitor = competitorResult.firstView[mainMetric]
   const mainSpeedKit = speedKitResult.firstView[mainMetric]
   const secondaryCompetitor = competitorResult.firstView[secondaryMetric]

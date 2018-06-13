@@ -35,14 +35,13 @@ class Result extends Component {
 
   renderHeader() {
     const { mainMetric, speedKitError, testOverview } = this.props.result
-    const { isSpeedKitComparison } = this.props.testOverview
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
 
     return (
       <div>
         <div className="flex items-center relative">
-          {( isSpeedKitComparison || !speedKitError ) && (
+          {( !speedKitError ) && (
             <div className="mainFactor text-center" title={tooltipText[mainMetric]} style={{ display: 'flex'}}>
               {calculateFactor(competitorData[mainMetric], speedKitData[mainMetric])}x
               <br/>
@@ -65,7 +64,7 @@ class Result extends Component {
               <span>{tooltipText[mainMetric]}</span>
             </ReactTooltip>
           </div>
-          {( isSpeedKitComparison || !speedKitError ) && (
+          {( !speedKitError ) && (
             <div className="w-50 flex-auto text-center pa1 pl4 pl0-ns" style={{ background: '#f6f6f6' }}>
               <small>
                 {testOverview.speedKitVersion ? (

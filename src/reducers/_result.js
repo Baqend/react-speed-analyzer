@@ -15,7 +15,7 @@ import {
 } from '../actions/types'
 
 import { generateRules } from '../helper/configHelper'
-import { resultIsValid, shouldShowFirstMeaningfulPaint } from '../helper/resultHelper'
+import { resultIsValid } from '../helper/resultHelper'
 
 const createScreenshot = (psiScreenshot) => {
   if (psiScreenshot) {
@@ -33,6 +33,7 @@ const getResultErrors = ({ competitorTest, speedKitTest, mainMetric, secondaryMe
     result['competitorError'] = true
     result['speedKitError'] = true
   }
+
   const isValidResult = resultIsValid(competitorTest, speedKitTest, mainMetric, secondaryMetric)
   if(!speedKitTest || speedKitTest.testDataMissing || !isValidResult) {
     result['speedKitError'] = true
