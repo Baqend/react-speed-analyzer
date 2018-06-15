@@ -3,8 +3,12 @@ const assert = require('assert')
 const analyzerAPIUrl = 'https://makefast.app.baqend.com/v1'
 const analyzerCodeUrl = `${analyzerAPIUrl}/code`
 
+/**
+ * @param {string} siteUrl
+ * @param {*} expectedParams
+ * @return {Promise<void>}
+ */
 async function testAnalyzer(siteUrl, expectedParams) {
-
   const comparisonBody = {
     url: siteUrl,
     location: 'eu-central-1:Chrome.Native',
@@ -13,115 +17,131 @@ async function testAnalyzer(siteUrl, expectedParams) {
     withPuppeteer: false,
   }
 
-  const startComparison = await post(`${analyzerCodeUrl}/startComparison`, JSON.stringify(comparisonBody))
-  if (!startComparison.ok) {
-    reportError(`Start Comparison Request failed with status: ${startComparison.status}: ${startComparison.statusText}`)
-  }
+  const startComparisonResponse = await post(`${analyzerCodeUrl}/startComparison`, JSON.stringify(comparisonBody))
+  const startComparison = await getResponse(startComparisonResponse, '“startComparison” module')
 
-  console.log('Start comparison ok')
-  const comparisonResponse = await startComparison.json()
-
-  console.log('Waiting for Results')
+  writeln('Waiting for Results')
   await waitAndReport(240)
 
-  const testOverviewRes = await fetch(`${analyzerAPIUrl}${comparisonResponse.id}`)
-  if (!testOverviewRes.ok) {
-    reportError(`TestOveriew Request failed with status: ${testOverviewRes.status}: ${testOverviewRes.statusText}`)
-  }
-
-  const testOverview = await testOverviewRes.json()
+  const comparisonResponse = await fetch(`${analyzerAPIUrl}${startComparison.id}`)
+  const comparison = await getResponse(comparisonResponse, 'Comparison')
 
   // Test analyzeUrl params
-  checkAnalyzeResult(testOverview, expectedParams)
-  console.log('Analyze url params ok')
+  checkPuppeteerResult(comparison, expectedParams)
+  writeln('Puppeteer result OK')
 
   //Test the params to start the test with
-  checkTestParams(testOverview, expectedParams)
-  console.log('Test params ok')
+  checkTestParams(comparison, expectedParams)
+  writeln('Test params OK')
 
   // Test config analysis if available
   if (expectedParams.configAnalysis) {
-    checkConfigAnalysis(testOverview, expectedParams)
-    console.log('Config analysis ok')
+    checkConfigAnalysis(comparison, expectedParams)
+    writeln('Config analysis OK')
   }
 
-  const compId = testOverview.competitorTestResult
-  const skId = testOverview.speedKitTestResult
+  const ctID = comparison.competitorTestResult
+  const skID = comparison.speedKitTestResult
 
-  const compResultRes = await fetch(`${analyzerAPIUrl}${compId}`)
+  const ctTestResponse = await fetch(`${analyzerAPIUrl}${ctID}`)
+  const ctTest = await getResponse(ctTestResponse, 'Competitor Test')
 
-  if (!compResultRes.ok) {
-    reportError(`Competitor Test Result Request failed with status: ${compResultRes.status}: ${compResultRes.statusText}`)
-  }
+  const skTestResponse = await fetch(`${analyzerAPIUrl}${skID}`)
+  const skTest = await getResponse(skTestResponse, 'Speed Kit Test')
 
-  const skResultRes = await fetch(`${analyzerAPIUrl}${skId}`)
+  checkTestResult(ctTest, false)
+  writeln('Competitor Test OK')
 
-  if (!skResultRes.ok) {
-    reportError(`Speed Kit Test Result Request failed with status: ${skResultRes.status}: ${skResultRes.statusText}`)
-  }
+  checkTestResult(skTest, true)
+  writeln('Speed Kit Test OK')
 
-  const compResult = await compResultRes.json()
-  const skResult = await skResultRes.json()
-
-  checkTestResult(compResult, false)
-  console.log('Competitor Test OK')
-
-  checkTestResult(skResult, true)
-  console.log('Speed Kit Test OK')
-
-  console.log(`Test Successful. Speedup: ${(compResult.firstView.speedIndex - skResult.firstView.speedIndex)}ms SI -- ${(compResult.firstView.firstMeaningfulPaint - skResult.firstView.firstMeaningfulPaint)}ms FMP`)
+  process.stdout.write(`Test Successful. Speedup: ${(ctTest.firstView.speedIndex - skTest.firstView.speedIndex)}ms SI -- ${(ctTest.firstView.firstMeaningfulPaint - skTest.firstView.firstMeaningfulPaint)}ms FMP\n`)
 }
 
+/**
+ * @param {string} string
+ */
+function writeln(string) {
+  process.stderr.write(`${string}\n`)
+}
+
+/**
+ * @param {number} time
+ */
 async function waitAndReport(time) {
   for (let i = 0; i < time; i += 10) {
-    console.log(`${time - i}s to go`)
-    await (new Promise(resolve => setTimeout(resolve, 10000)))
+    writeln(`${time - i}s to go`)
+    await new Promise(resolve => setTimeout(resolve, 10000))
   }
 }
 
+/**
+ * @param {string} msg
+ * @param err
+ */
 function reportError(msg, err) {
+  process.stdout.write(`${msg}\n`)
   throw new Error(msg, err)
 }
 
-function checkAnalyzeResult(result, expectedResult){
+/**
+ * @param {Response} response
+ * @param {string} name
+ */
+async function getResponse(response, name) {
+  if (!response.ok) {
+    reportError(`${name} request failed with status ${response.status} ${response.statusText}.`)
+  }
+
+  const json = await response.json()
+  writeln(`${name} response OK`)
+
+  return json
+}
+
+function checkPuppeteerResult(result, expectedResult) {
   try {
-    assert.equal(result.url, expectedResult.url, 'Attribute "url" not matching')
-    assert.equal(result.displayUrl, expectedResult.displayUrl, 'Attribute "displayUrl" not matching')
-    assert.equal(result.type, expectedResult.type, 'Attribute "type" not matching')
-    assert.equal(result.isSecured, expectedResult.isSecured, 'Attribute "isSecured" not matching')
-  } catch(err) {
-    console.log(err)
-    reportError(`Analyse url params not valid. Id: ${result.id}`, err)
+    assert.strictEqual(result.url, expectedResult.url, 'Attribute "url" not matching')
+    assert.strictEqual(result.displayUrl, expectedResult.displayUrl, 'Attribute "displayUrl" not matching')
+    assert.strictEqual(result.type, expectedResult.type, 'Attribute "type" not matching')
+    assert.strictEqual(result.isSecured, expectedResult.isSecured, 'Attribute "isSecured" not matching')
+  } catch (err) {
+    writeln(err)
+    reportError(`Puppeteer Analysis not valid. ID: ${result.id}`, err)
   }
 }
 
-function checkTestParams(result, expectedResult){
+function checkTestParams(result, expectedResult) {
   try {
     if (expectedResult.speedKitConfig) {
       assert.equal(result.speedKitConfig, expectedResult.speedKitConfig, 'Attribute "speedKitConfig" not matching')
     }
 
-    assert.equal(result.mobile, expectedResult.mobile, 'Attribute "mobile" not matching')
-    assert.equal(result.isSpeedKitComparison, expectedResult.isSpeedKitComparison, 'Attribute "isSpeedKitComparison" not matching')
-    assert.equal(result.speedKitVersion, expectedResult.speedKitVersion, 'Attribute "speedKitVersion" not matching')
-  } catch(err) {
-    console.log(err)
-    reportError(`Test params not valid. Id: ${result.id}`, err)
+    assert.strictEqual(result.mobile, expectedResult.mobile, 'Attribute "mobile" not matching')
+    assert.strictEqual(result.isSpeedKitComparison, expectedResult.isSpeedKitComparison, 'Attribute "isSpeedKitComparison" not matching')
+    assert.strictEqual(result.speedKitVersion, expectedResult.speedKitVersion, 'Attribute "speedKitVersion" not matching')
+  } catch (err) {
+    writeln(err)
+    reportError(`Test params not valid. ID: ${result.id}`, err)
   }
 }
 
 function checkConfigAnalysis(result, expectedResult) {
   try{
-    assert.equal(result.configAnalysis.configMissing, expectedResult.configAnalysis.configMissing, 'Attribute "configMissing" not matching')
-    assert.equal(result.configAnalysis.swPath, expectedResult.configAnalysis.swPath, 'Attribute "swPath" not matching')
-    assert.equal(result.configAnalysis.isDisabled, expectedResult.configAnalysis.isDisabled, 'Attribute "isDisabled" not matching')
-    assert.equal(result.configAnalysis.swPathMatches, expectedResult.configAnalysis.swPathMatches, 'Attribute "swPathMatching" not matching')
+    assert.strictEqual(result.configAnalysis.configMissing, expectedResult.configAnalysis.configMissing, 'Attribute "configMissing" not matching')
+    assert.strictEqual(result.configAnalysis.swPath, expectedResult.configAnalysis.swPath, 'Attribute "swPath" not matching')
+    assert.strictEqual(result.configAnalysis.isDisabled, expectedResult.configAnalysis.isDisabled, 'Attribute "isDisabled" not matching')
+    assert.strictEqual(result.configAnalysis.swPathMatches, expectedResult.configAnalysis.swPathMatches, 'Attribute "swPathMatching" not matching')
   } catch(err) {
-    console.log(err)
-    reportError(`Config analysis not valid. Id: ${result.id}`, err)
+    writeln(err)
+    reportError(`Config analysis not valid. ID: ${result.id}`, err)
   }
 }
 
+/**
+ * @param {*} result
+ * @param {boolean} speedKit
+ */
 function checkTestResult(result, speedKit) {
   try {
     assert.ok(result.firstView, 'First View missing')
@@ -133,28 +153,33 @@ function checkTestResult(result, speedKit) {
     assert.ok(!result.testDataMissing, 'Test Data missing')
     assert.ok(result.hasFinished, 'Test not finished')
     assert.ok(!result.isWordPress, 'Testpage wrongly categoriezed as WordPress')
-    assert.equal(0, result.priority, 'Priority not 0')
+    assert.strictEqual(0, result.priority, 'Priority not 0')
   } catch(err) {
-    console.log(err)
-    reportError(`Testresult for ${speedKit? 'Speed Kit' : 'Competitor'} not valid. Id: ${result.id}`, err)
+    writeln(err)
+    reportError(`Test result for ${speedKit? 'Speed Kit' : 'Competitor'} not valid. ID: ${result.id}`, err)
   }
 }
 
+/**
+ * @param {string} url
+ * @param {*} body
+ * @return {Promise<Response>}
+ */
 async function post(url, body) {
   const headers = {}
-  headers['content-type'] = 'application/json;charset=UTF-8'
+  headers['content-type'] = 'application/json; charset=UTF-8'
 
   return fetch(url, { method: 'POST', headers, body})
 }
 
 async function executeAnalyzerTest() {
   try {
-    console.log('Testing kicker.de (no Speed Kit installed)')
+    writeln('Testing kicker.de (no Speed Kit installed)')
     await execNonSpeedKit()
-    console.log('Testing fussballdaten.de (with Speed Kit installed)')
+    writeln('Testing fussballdaten.de (with Speed Kit installed)')
     await execSpeedKit()
   } catch(err) {
-    console.error(err.stack, err.cause)
+    writeln(err.stack)
     process.exit(1)
   }
 }
@@ -199,4 +224,4 @@ async function execSpeedKit() {
   return testAnalyzer(url, expectedParams)
 }
 
-executeAnalyzerTest()
+executeAnalyzerTest().catch(console.error)
