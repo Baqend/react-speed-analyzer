@@ -23,8 +23,9 @@ class ResultScreen extends Component {
 
   loadTestResult = async (props) => {
     const testId = this.props.testId ? this.props.testId : this.props.match.params.testId
+    const isPlesk = this.props.isPlesk ? this.props.isPlesk : false
     try {
-      const testOverview = await this.props.actions.loadResult(testId)
+      const testOverview = await this.props.actions.loadResult(testId, isPlesk)
       this.props.onAfterFinish && this.props.onAfterFinish(testOverview)
     } catch(e) {
       console.log(e)

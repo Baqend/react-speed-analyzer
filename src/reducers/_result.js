@@ -24,7 +24,7 @@ const createScreenshot = (psiScreenshot) => {
   return null
 }
 
-const getResultErrors = ({ competitorTest, speedKitTest, mainMetric, secondaryMetric }) => {
+const getResultErrors = ({ competitorTest, speedKitTest, mainMetric, secondaryMetric, isPlesk }) => {
   const result = {
     competitorError: false,
     speedKitError: false,
@@ -34,7 +34,7 @@ const getResultErrors = ({ competitorTest, speedKitTest, mainMetric, secondaryMe
     result['speedKitError'] = true
   }
 
-  const isValidResult = resultIsValid(competitorTest, speedKitTest, mainMetric, secondaryMetric)
+  const isValidResult = resultIsValid(competitorTest, speedKitTest, mainMetric, secondaryMetric, isPlesk)
   if(!speedKitTest || speedKitTest.testDataMissing || !isValidResult) {
     result['speedKitError'] = true
   }
@@ -87,6 +87,7 @@ const initialState = {
   isRateLimited: false,
   isBaqendApp: false,
   isSpeedKitComparison: false,
+  isPlesk: false,
   speedKitVersion: null,
   testOverview: {},
   statusCode: null,
@@ -148,11 +149,13 @@ export default function result(state = initialState, action = {}) {
       return state
     case TERMINATE_TEST:
       const metrics = verifyMainMetric(state)
-      const errors = getResultErrors({ ...state, ...metrics })
+      const errors = getResultErrors({ ...state, ...metrics, ...action.payload })
+      const isPlesk = action.payload ? action.payload.isPlesk : false
       return {
         ...state,
         ...errors,
         ...metrics,
+        isPlesk,
         competitorSubscription: null,
         speedKitSubscription: null,
         isInitiated: false,

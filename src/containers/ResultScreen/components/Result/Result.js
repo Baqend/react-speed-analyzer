@@ -11,11 +11,12 @@ import ResultScale from './ResultScale'
 import ResultMetrics from './ResultMetrics'
 
 import { formatFileSize } from 'helper/utils'
-import { calculateFactor, calculateAbsolute } from 'helper/resultHelper'
+import { calculateFactor } from 'helper/resultHelper'
 
 const tooltipText = {
   'speedIndex': 'Speed Index',
   'firstMeaningfulPaint': 'First Meaningful Paint',
+  'ttfb': 'Time To First Byte',
 }
 
 class Result extends Component {
@@ -34,16 +35,25 @@ class Result extends Component {
   }
 
   renderHeader() {
-    const { mainMetric, speedKitError, testOverview } = this.props.result
+    const { speedKitError, testOverview } = this.props.result
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
+
+    // flags that can be passed in by plesk
+    const isPlesk = this.props.result.isPlesk
+    const showTTFB = this.props.showTTFB
+
+    // check whether the show TTFB flog was set by plesk
+    const mainMetric = showTTFB ? 'ttfb' : this.props.result.mainMetric
+    const factor = !speedKitError ? calculateFactor(competitorData[mainMetric], speedKitData[mainMetric]) : null
 
     return (
       <div>
         <div className="flex items-center relative">
-          {( !speedKitError ) && (
-            <div className="mainFactor text-center" title={tooltipText[mainMetric]} style={{ display: 'flex'}}>
-              {calculateFactor(competitorData[mainMetric], speedKitData[mainMetric])}x
+          {((isPlesk && factor > 1 && !showTTFB) || (!isPlesk && !speedKitError) ) && (
+            <div className="mainFactor text-center" title={tooltipText[mainMetric]}
+              style={{ display: 'flex'}}>
+              {factor}x
               <br/>
               Faster
             </div>

@@ -19,7 +19,7 @@ export const resetResult = () => ({
   }
 })
 
-export const loadResult = (testId) => ({
+export const loadResult = (testId, isPlesk = false) => ({
   'BAQEND': async ({ dispatch, getState, db }) => {
     let testOverview
     try {
@@ -44,7 +44,6 @@ export const loadResult = (testId) => ({
           trackURL('errorTestResult', testOverview.url)
         }
       }
-
       dispatch({
         type: COMPETITOR_RESULT_LOAD,
         payload: loadedCompetitorTestResult
@@ -54,7 +53,8 @@ export const loadResult = (testId) => ({
         payload: loadedSpeedKitTestResult
       })
       dispatch({
-        type: TERMINATE_TEST
+        type: TERMINATE_TEST,
+        payload: { isPlesk }
       })
     } catch(e) {
       throw new Error("Test Result could not be loaded")

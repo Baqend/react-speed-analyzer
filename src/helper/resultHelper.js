@@ -47,14 +47,15 @@ export function isMainMetricSatisfactory(competitorMetric, speedKitMetric) {
  * @param speedKitResult The test result from the Speed Kit.
  * @param mainMetric Main metric for the test.
  * @param secondaryMetric Secondary metric for the test.
+ * @param isPlesk Flag tha indicates whether the test was started by plesk.
  * @return {boolean}
  */
-export function resultIsValid(competitorResult, speedKitResult, mainMetric, secondaryMetric) {
+export function resultIsValid(competitorResult, speedKitResult, mainMetric, secondaryMetric, isPlesk) {
   if (!competitorResult.firstView || !speedKitResult.firstView) {
     return false
   }
 
-  if (speedKitResult.testInfo.isSpeedKitComparison) {
+  if (speedKitResult.testInfo.isSpeedKitComparison || isPlesk) {
     return true
   }
 
