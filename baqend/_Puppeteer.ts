@@ -211,6 +211,7 @@ export class Puppeteer {
       502: 'Bad Gateway',
       504: 'Gateway Timeout',
       552: 'Gateway Insecure',
+      555: 'Gateway Closed',
     } as { [status: number]: string | undefined }
 
     const phrase = phrases[status]
