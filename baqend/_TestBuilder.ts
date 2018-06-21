@@ -27,7 +27,7 @@ export const DEFAULT_PARAMS: Required<TestParams> = {
  * The default test options.
  */
 export const DEFAULT_TEST_OPTIONS: Partial<model.TestOptions> = {
-  runs: 2,
+  runs: 1,
   video: true,
   disableOptimization: true,
   pageSpeed: false,
