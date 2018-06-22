@@ -92,7 +92,7 @@ function chooseTopCandidates(db: baqend, candidates: model.Candidate[]): model.C
   // Find the five highest ΔVCs
   const topCandidates = candidates
     .sort(({ deltaVC: a }, { deltaVC: b }) => b - a)
-    .slice(0, 5)
+    .slice(0, 10)
 
   db.log.info('Candidates for FMP found', { topCandidates })
   return topCandidates
