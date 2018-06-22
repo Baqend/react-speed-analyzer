@@ -157,6 +157,10 @@ export class ComparisonWorker implements TestListener {
   }
 
   shouldStartPageSpeedInsights(testOverview: model.TestOverview): boolean {
+    if (!this.hasPuppeteerFinished(testOverview)) {
+      return false
+    }
+
     if (testOverview.psiDomains && testOverview.psiRequests && testOverview.psiResponseSize && testOverview.psiScreenshot) {
       return false
     }
@@ -168,6 +172,9 @@ export class ComparisonWorker implements TestListener {
     return testOverview.tasks.map(task => task.taskType).indexOf(PSI_TYPE) === -1
   }
 
+  private hasPuppeteerFinished(testOverview: model.TestOverview): boolean {
+    return testOverview.puppeteer !== null
+  }
 
   private async findComparisonByTest(test: model.TestResult): Promise<model.TestOverview> {
     const testId = test.id
