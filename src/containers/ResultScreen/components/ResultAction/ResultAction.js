@@ -196,9 +196,11 @@ class ResultAction extends Component {
           <h2>Tuning Required</h2>
           <span className="faded">It looks like some fine-tuning or configuration is required to measure your site. Please contact our web performance experts to adjust and re-run the test!</span>
         </div>
-        <div className="text-center">
-          <a className="btn btn-orange btn-ghost ma1" onClick={this.props.toggleModal}>Contact Us</a>
-        </div>
+        {this.props.toggleModal && (
+          <div className="text-center">
+            <a className="btn btn-orange btn-ghost ma1" onClick={this.props.toggleModal}>Contact Us</a>
+          </div>
+        )}
       </div>
     )
   }
@@ -306,9 +308,11 @@ class ResultAction extends Component {
           </h3>
         </div>
         {this.renderImprovements()}
-        <div className="text-center">
-          <a className="btn btn-orange btn-ghost ma1" onClick={this.props.toggleModal}>Contact Us</a>
-        </div>
+        {this.props.toggleModal && (
+          <div className="text-center">
+            <a className="btn btn-orange btn-ghost ma1" onClick={this.props.toggleModal}>Contact Us</a>
+          </div>
+        )}
       </div>
     )
   }
@@ -367,12 +371,14 @@ class ResultAction extends Component {
           </h3>
         </div>
         {this.renderImprovements()}
-        <div className="text-center">
-          <a className="btn btn-orange ma1"
-             target="_blank" rel="noopener noreferrer"
-             href="https://www.baqend.com/speedkit.html?_ga=2.224276178.858004496.1520933148-181229276.1509025941#sk-features">Learn more</a>
-          <a className="btn btn-orange btn-ghost ma1" onClick={this.props.toggleModal}>Contact Us</a>
-        </div>
+        {this.props.toggleModal && (
+          <div className="text-center">
+            <a className="btn btn-orange ma1"
+              target="_blank" rel="noopener noreferrer"
+              href="https://www.baqend.com/speedkit.html?_ga=2.224276178.858004496.1520933148-181229276.1509025941#sk-features">Learn more</a>
+            <a className="btn btn-orange btn-ghost ma1" onClick={this.props.toggleModal}>Contact Us</a>
+          </div>
+        )}
       </div>
     )
   }
@@ -381,6 +387,7 @@ class ResultAction extends Component {
     const { competitorError, speedKitError, testOverview } = this.props.result
     // const speedKitError = this.props.speedKitError
     const isWordPress = testOverview.type === 'wordpress'
+    const isPlesk = this.props.result.isPlesk
     const { isSpeedKitComparison, speedKitVersion, configAnalysis } = testOverview
 
     if (isSpeedKitComparison && !speedKitError) {
@@ -389,7 +396,7 @@ class ResultAction extends Component {
       return this.renderAllTestsFailed()
     } else if (!competitorError && speedKitError) {
       return this.renderSpeedKitFailed()
-    } else if (isWordPress){
+    } else if (!isPlesk && isWordPress){
       return this.renderWordpressCta()
     }
 

@@ -3,7 +3,9 @@ import React, { Component } from 'react'
 import styles from './ResultScreen.css'
 
 import ConfigForm from 'components/ConfigForm/ConfigForm'
+
 import Result from 'containers/ResultScreen/components/Result/Result'
+import ResultAction from '../../components/ResultAction/ResultAction'
 
 class ResultScreenComponent extends Component {
   constructor(props) {
@@ -12,7 +14,6 @@ class ResultScreenComponent extends Component {
       showDetails: props.showDetails,
       showConfig: props.showConfig,
       showAdvancedConfig: props.showAdvancedConfig,
-      showModal: false,
       isIFrame: props.isIFrame,
     }
   }
@@ -23,14 +24,6 @@ class ResultScreenComponent extends Component {
 
   toggleConfig = () => {
     this.setState({ showConfig: !this.state.showConfig })
-  }
-
-  toggleModal = () => {
-    this.setState({ showModal: !this.state.showModal })
-  }
-
-  closeModal = () => {
-    this.setState({ showModal: false })
   }
 
   renderForm() {
@@ -55,15 +48,14 @@ class ResultScreenComponent extends Component {
       <div className={`flex-grow-1 ${styles.results}`}>
         <div className="container pv2 pa2-ns">
           <div className="box-shadow results__box" style={{ marginTop: '-96px' }}>
-            {!competitorError ? (
+            {!competitorError && (
               <Result { ...this.props } />
-            ) : (
-              <div className="text-center pb4 pt2 pt4-ns" style={{ maxWidth: 768, margin: '0 auto' }}>
-                <h2 style={{ color: '#444' }}>Test Runs Failed</h2>
-                <span className="faded">An error occurred while running your tests. Please re-run the test and if the problem persists, contact us!</span>
-              </div>
             )}
           </div>
+        </div>
+
+        <div className="container pa2 pt0 pt2-ns pb4 pb6-ns animated slideInUp">
+          <ResultAction { ...this.props }/>
         </div>
       </div>
     )

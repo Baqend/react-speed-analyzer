@@ -1,5 +1,4 @@
 @import 'tachyons/src/_media-queries';
-
 .loading-screen {
   .spinner__wrapper {
     position:relative;
