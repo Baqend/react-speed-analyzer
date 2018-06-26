@@ -4,7 +4,7 @@ import { ConfigCache } from './_ConfigCache'
 import { ConfigGenerator } from './_ConfigGenerator'
 import { getRootPath, getTLD } from './_getSpeedKitUrl'
 import { DataType, Serializer } from './_Serializer'
-import { setQueued, Status } from './_Status'
+import { setFailed, setQueued, Status } from './_Status'
 import { TestBuilder } from './_TestBuilder'
 import { TestFactory } from './_TestFactory'
 import { TestParams } from './_TestParams'
@@ -106,6 +106,20 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
     return comparison.save()
   }
 
+  async updateComparisonWithError(comparison: model.TestOverview): Promise<model.TestOverview> {
+    // Create failed tests
+    const [competitorTest, speedKitTest] = await Promise.all([
+      this.createCompetitorTestWithError(),
+      this.createSpeedKitTestWithError(),
+    ])
+
+    comparison.competitorTestResult = competitorTest
+    comparison.speedKitTestResult = speedKitTest
+    setFailed(comparison)
+
+    return comparison.save()
+  }
+
   /**
    * Builds the Speed Kit config to use for this test.
    */
@@ -178,5 +192,26 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
    */
   private createTest(isClone: boolean, puppeteer: model.Puppeteer, params: Required<TestParams>) {
     return this.testFactory.create(puppeteer, isClone, params)
+  }
+
+  /**
+   * Creates a failed competitor test.
+   */
+  private createCompetitorTestWithError(): Promise<model.TestResult> {
+    return this.createTestWithError(false)
+  }
+
+  /**
+   * Creates a failed Speed Kit test.
+   */
+  private createSpeedKitTestWithError(): Promise<model.TestResult> {
+    return this.createTestWithError(true)
+  }
+
+  /**
+   * Creates a failed test.
+   */
+  private createTestWithError(isClone: boolean) {
+    return this.testFactory.createWithError(isClone)
   }
 }

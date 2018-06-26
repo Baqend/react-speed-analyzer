@@ -1,6 +1,6 @@
 import { baqend, model } from 'baqend'
 import { AsyncFactory } from './_AsyncFactory'
-import { setQueued } from './_Status'
+import { setFailed, setQueued } from './_Status'
 import { TestBuilder } from './_TestBuilder'
 import { TestParams } from './_TestParams'
 
@@ -26,6 +26,13 @@ export class TestFactory implements AsyncFactory<model.TestResult> {
     setQueued(testResult)
     testResult.testInfo = this.createTestInfo(puppeteer, isClone, params)
     testResult.webPagetests = []
+
+    return testResult.save()
+  }
+
+  createWithError(isClone: boolean) {
+    const testResult = new this.db.TestResult({ isClone, testDataMissing: true })
+    setFailed(testResult)
 
     return testResult.save()
   }

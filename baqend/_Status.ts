@@ -18,6 +18,10 @@ export interface StatefulEntity {
   hasFinished: boolean
 }
 
+export function isQueued(entity: StatefulEntity) {
+  return !entity.hasFinished && hasStatus(entity, Status.QUEUED)
+}
+
 export function isUnfinished(entity: StatefulEntity) {
   return !entity.hasFinished && hasStatus(entity, Status.QUEUED, Status.RUNNING)
 }

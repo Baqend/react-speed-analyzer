@@ -1,7 +1,8 @@
 import { baqend, model } from 'baqend'
+import { bootstrap } from './_compositionRoot'
 import { parallelize } from './_helpers'
 import {
-  isFinished, isIncomplete, isUnfinished, setCanceled, setIncomplete, setRunning, setSuccess,
+  isFinished, isIncomplete, isQueued, isUnfinished, setCanceled, setIncomplete, setRunning, setSuccess,
   Status,
 } from './_Status'
 import { factorize } from './_updateMultiComparison'
@@ -40,6 +41,14 @@ export class ComparisonWorker implements TestListener {
 
     // Is this comparison already finished?
     if (isFinished(comparison)) {
+      return
+    }
+
+    if(isQueued(comparison)) {
+      const { comparisonFactory } = bootstrap(this.db)
+      const updatedComparison = await comparisonFactory.updateComparisonWithError(comparison)
+      await updatedComparison.save()
+
       return
     }
 
