@@ -4,7 +4,7 @@ import { ConfigCache } from './_ConfigCache'
 import { ConfigGenerator } from './_ConfigGenerator'
 import { getRootPath, getTLD } from './_getSpeedKitUrl'
 import { DataType, Serializer } from './_Serializer'
-import { setFailed, setQueued, Status } from './_Status'
+import { setFailed, setQueued, setRunning, Status } from './_Status'
 import { TestBuilder } from './_TestBuilder'
 import { TestFactory } from './_TestFactory'
 import { TestParams } from './_TestParams'
@@ -102,6 +102,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
     comparison.activityTimeout = requiredParams.activityTimeout
     comparison.speedKitConfig = requiredParams.speedKitConfig
     comparison.hasMultiComparison = hasMultiComparison
+    setRunning(comparison)
 
     return comparison.save()
   }

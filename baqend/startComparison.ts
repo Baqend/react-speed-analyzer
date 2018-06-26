@@ -13,7 +13,7 @@ async function updateWithPuppeteer(db: baqend, params: TestParams, comparison: m
 
     return updatedComparison
   } catch ({ message, stack, status = 500 }) {
-    return await comparisonFactory.updateComparisonWithError(comparison)
+    return comparisonFactory.updateComparisonWithError(comparison)
   }
 }
 
