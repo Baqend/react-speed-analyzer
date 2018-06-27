@@ -85,7 +85,8 @@ export async function get(db: baqend, request: Request, response: Response) {
           return false
         })
         if (comparison) {
-          comparisons[comparison.url] = findBestComparison(multiComparison)
+          const bestComparison = findBestComparison(multiComparison)
+          comparisons[comparison.url] = bestComparison || Object.assign(defaultComparison, { url: comparison.url })
         }
       }
     })
@@ -117,7 +118,8 @@ export async function get(db: baqend, request: Request, response: Response) {
   }
 
   // Find best comparison and return it
-  const comparison = findBestComparison(bulkTest)
+  const bestComparison = findBestComparison(bulkTest)
+  const comparison = bestComparison || Object.assign(defaultComparison, { url })
   response.send({ bulkComparisonId, url, comparison })
 }
 

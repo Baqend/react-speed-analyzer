@@ -52,6 +52,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
 
     // Initialize
     const comparison = new this.db.TestOverview({ id })
+    comparison.url = url
     setQueued(comparison)
 
     return comparison.save()
@@ -108,6 +109,11 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
   }
 
   async updateComparisonWithError(comparison: model.TestOverview): Promise<model.TestOverview> {
+    // use default params => needed for plesk
+    comparison.caching = false
+    comparison.mobile = false
+    comparison.isSpeedKitComparison = false
+
     // Create failed tests
     const [competitorTest, speedKitTest] = await Promise.all([
       this.createCompetitorTestWithError(),
