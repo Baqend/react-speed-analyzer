@@ -2,12 +2,13 @@ import { baqend, model } from 'baqend'
 import { ConfigGenerator } from './_ConfigGenerator'
 import { parallelize } from './_helpers'
 import { DataType, Serializer } from './_Serializer'
-import { isFinished, isUnfinished, setCanceled, setRunning, Status } from './_Status'
+import { isFinished, isUnfinished, setCanceled, setFailed, setRunning, Status } from './_Status'
 import { TestScriptBuilder } from './_TestScriptBuilder'
 import { Pagetest } from './_Pagetest'
 import { TestType, WebPagetestResultHandler } from './_WebPagetestResultHandler'
 import credentials from './credentials'
 
+const ONE_HOUR = 1000 * 60 * 60
 const PING_BACK_URL = `https://${credentials.app}.app.baqend.com/v1/code/testResultPingback`
 
 const prewarmOptions = {
@@ -62,6 +63,15 @@ export class TestWorker {
       // Set test to running
       if (test.status !== Status.RUNNING) {
         await test.optimisticSave(() => setRunning(test))
+      }
+
+      // Check if the test was not updated within the last two hours
+      const isOlderThanTwoHours = (new Date().getTime() - test.updatedAt.getTime()) / ONE_HOUR > 2
+      if (test.status === Status.RUNNING && isOlderThanTwoHours) {
+        this.cancel(test)
+        setFailed(test)
+
+        return
       }
 
       // Is WebPagetest still running this test? Check the status and start over.
