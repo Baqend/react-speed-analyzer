@@ -252,6 +252,17 @@ export class TestWorker {
         testOptions,
       }))
     } catch (error) {
+      // do not retry prewarm tests
+      if (testType === TestType.PREWARM) {
+        await this.pushWebPagetestToTestResult(test, new this.db.WebPagetest({
+          status: Status.FAILED,
+          testId: null,
+          testType,
+          testScript,
+          testOptions,
+        }))
+      }
+
       this.db.log.error(`Could not start "${testType}" WebPagetest test: ${error.message}`, { test: test.id, error: error.stack })
     }
   }
