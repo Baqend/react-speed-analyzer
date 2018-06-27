@@ -24,7 +24,6 @@ export async function run(db: baqend) {
 
   for (const test of tests) {
     db.log.info(`Running cronTestWorker job for test ${test.key}`)
-    test.retries = test.retries === null ? 0 : test.retries + 1
 
     await test.save()
     await testWorker.next(test)

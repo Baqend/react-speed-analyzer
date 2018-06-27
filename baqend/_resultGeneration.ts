@@ -23,48 +23,35 @@ export async function generateTestResult(wptTestId: string, pendingTest: model.T
     return pendingTest
   }
 
-  try {
-    const rawData = await getResultRawData(wptTestId)
-    pendingTest.location = rawData.location
-    pendingTest.url = rawData.testUrl
-    pendingTest.summaryUrl = rawData.summary
-    pendingTest.testDataMissing = false
+  const rawData = await getResultRawData(wptTestId)
+  pendingTest.location = rawData.location
+  pendingTest.url = rawData.testUrl
+  pendingTest.summaryUrl = rawData.summary
+  pendingTest.testDataMissing = false
 
-    if (!isValidRun(rawData.runs['1'])) {
-      throw new Error(`No valid test run found in ${rawData.id}`)
-    }
-
-    const [testResult, videos] = await Promise.all([
-      createTestResult(db, rawData, wptTestId, '1'),
-      createVideos(db, wptTestId, '1'),
-    ])
-
-    // Copy view data
-    const [firstView, repeatView] = testResult
-    pendingTest.firstView = firstView
-    pendingTest.repeatView = repeatView
-
-    // Copy video data
-    const [videoFirstView, videoRepeatView] = videos
-    pendingTest.videoFileFirstView = videoFirstView
-    pendingTest.videoFileRepeatView = videoRepeatView
-
-    // Now the test is finished with data
-    pendingTest.testDataMissing = false
-    setSuccess(pendingTest)
-
-    await pendingTest.ready()
-    return pendingTest.save()
-  } catch (error) {
-    db.log.error(`Generating test result failed: ${error.message}`, { test: pendingTest.id, wptTestId, error: error.stack })
-
-    // Now the test is finished without data
-    pendingTest.testDataMissing = true
-    setFailed(pendingTest)
-
-    await pendingTest.ready()
-    return pendingTest.save()
+  if (!isValidRun(rawData.runs['1'])) {
+    throw new Error(`No valid test run found in ${rawData.id}`)
   }
+
+  const [testResult, videos] = await Promise.all([
+    createTestResult(db, rawData, wptTestId, '1'),
+    createVideos(db, wptTestId, '1'),
+  ])
+
+  // Copy view data
+  const [firstView, repeatView] = testResult
+  pendingTest.firstView = firstView
+  pendingTest.repeatView = repeatView
+
+  // Copy video data
+  const [videoFirstView, videoRepeatView] = videos
+  pendingTest.videoFileFirstView = videoFirstView
+  pendingTest.videoFileRepeatView = videoRepeatView
+
+  // Now the test is finished with data
+  pendingTest.testDataMissing = false
+
+  return pendingTest
 }
 
 function getResultRawData(wptTestId: string): Promise<WptTestResult> {

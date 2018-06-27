@@ -26,11 +26,8 @@ export class WebPagetestResultHandler {
    * @return The updated test result.
    */
   async handleResult(test: model.TestResult, webPagetest: model.WebPagetest): Promise<model.TestResult> {
-    // Mark WebPagetest run as successfully finished
-    await test.optimisticSave(() => setSuccess(webPagetest))
-
     // Handle the result by type
-    return this.updateTestWithResult(test, webPagetest)
+    return await this.updateTestWithResult(test, webPagetest)
   }
 
   /**
@@ -41,9 +38,6 @@ export class WebPagetestResultHandler {
    * @return The updated test result.
    */
   async handleFailure(test: model.TestResult, webPagetest: model.WebPagetest): Promise<model.TestResult> {
-    // Mark WebPagetest run as failed
-    await test.optimisticSave(() => setFailed(webPagetest))
-
     // Handle the failure by type
     return this.updateTestWithFailure(test, webPagetest)
   }
@@ -51,7 +45,7 @@ export class WebPagetestResultHandler {
   /**
    * Updates the test after a WebPagetest test is finished.
    */
-  private updateTestWithResult(test: model.TestResult, webPagetest: model.WebPagetest): Promise<model.TestResult> {
+  private async updateTestWithResult(test: model.TestResult, webPagetest: model.WebPagetest): Promise<model.TestResult> {
     const wptTestId = webPagetest.testId
 
     switch (webPagetest.testType) {
@@ -61,14 +55,27 @@ export class WebPagetestResultHandler {
           wptTestId,
         })
 
-        return generateTestResult(wptTestId, test, this.db).then(() => {
-          return test.optimisticSave(() => setSuccess(test))
-        })
+        try {
+          await generateTestResult(wptTestId, test, this.db)
+
+          return await test.optimisticSave(() => {
+            setSuccess(webPagetest);
+            setSuccess(test);
+          })
+
+        } catch(error) {
+          this.db.log.error(`Generating test result failed: ${error.message}`, { test: test.id, wptTestId, error: error.stack })
+
+          // Now the test is finished without data
+          return test.optimisticSave(() => {
+            setFailed(webPagetest);
+            setFailed(test);
+          })
+        }
       }
 
       case TestType.PREWARM: {
-        /* Do nothing */
-        return Promise.resolve(test)
+        return test.optimisticSave(() => setSuccess(webPagetest))
       }
 
       default: {
@@ -89,12 +96,16 @@ export class WebPagetestResultHandler {
           testResult: test.id,
           wptTestId,
         })
-        return test.optimisticSave(() => setFailed(test))
+
+        return test.optimisticSave(() => {
+          test.testDataMissing = true
+          setFailed(webPagetest);
+          setFailed(test);
+        })
       }
 
       case TestType.PREWARM: {
-        /* Do nothing */
-        return Promise.resolve(test)
+        return test.optimisticSave(() => setFailed(webPagetest))
       }
 
       default: {
