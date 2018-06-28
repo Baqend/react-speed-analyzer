@@ -194,7 +194,7 @@ export class ConfigGenerator {
    */
   private matchOtherTopLevelDomains(domain: string): RegExp {
     if (/([\w-]+\.)[\w-]+$/.test(domain)) {
-      return  new RegExp(`${escapeRegExp(RegExp.$1)}[\\w-]+$`)
+      return new RegExp(`${escapeRegExp(RegExp.$1)}[\\w-]+$`)
     }
 
     return dollarRegExp(toRegExp(domain))

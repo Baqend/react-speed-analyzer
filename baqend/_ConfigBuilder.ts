@@ -43,10 +43,6 @@ export class ConfigBuilder {
   }
 
   get isCapacityReached(): boolean {
-    if (this._maxCapacity === -1) {
-      return false
-    }
-
     return this.size >= this._maxCapacity;
   }
 
@@ -70,7 +66,7 @@ export class ConfigBuilder {
     if (this.isCapacityReached) {
       return this
     }
-    this._size = this._size + 1
+    this._size += 1
 
     for (const rule of this.whitelist) {
       const condition: Condition | undefined = rule[section]
@@ -103,7 +99,7 @@ export class ConfigBuilder {
     if (this.isCapacityReached) {
       return this
     }
-    this._size = this._size + 1
+    this._size += 1
 
     for (const rule of this.blacklist) {
       const condition: Condition | undefined = rule[section]
