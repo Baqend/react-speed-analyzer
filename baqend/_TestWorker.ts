@@ -264,8 +264,12 @@ export class TestWorker {
         testOptions,
       }))
     } catch (error) {
-      // do not retry prewarm tests
-      if (testType === TestType.PREWARM) {
+      this.db.log.error(`Could not start "${testType}" WebPagetest test: ${error.message}`, { test: test.id, error: error.stack })
+
+      // do not retry prewarm tests and performance tests with more than 2 retries
+      if (testType === TestType.PREWARM || (testType === TestType.PERFORMANCE && test.retries >= 2)) {
+        this.db.log.error(`Change status of test "${test.id}" to FAILED because of reaching retry limit`)
+
         await this.pushWebPagetestToTestResult(test, new this.db.WebPagetest({
           status: Status.FAILED,
           testId: null,
@@ -273,9 +277,14 @@ export class TestWorker {
           testScript,
           testOptions,
         }))
+
+        return
       }
 
-      this.db.log.error(`Could not start "${testType}" WebPagetest test: ${error.message}`, { test: test.id, error: error.stack })
+      if (testType === TestType.PERFORMANCE) {
+        const retries = test.retries || 0
+        await test.optimisticSave(() => test.retries = retries + 1)
+      }
     }
   }
 
