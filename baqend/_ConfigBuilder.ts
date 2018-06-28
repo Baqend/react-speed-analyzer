@@ -1,5 +1,7 @@
 import { Condition, Config, Rule } from './_Config'
 
+export const CONFIG_MAX_SIZE: number = 50
+
 export class ConfigBuilder {
 
   private appName: string
@@ -7,9 +9,16 @@ export class ConfigBuilder {
   private whitelist: Rule[] = []
   private blacklist: Rule[] = []
 
-  constructor(appName: string, userAgentDetection: boolean) {
+  /**
+   * The current size of the config counting all included conditions.
+   */
+  private _size: number = 0
+  private _maxCapacity: number
+
+  constructor(appName: string, userAgentDetection: boolean, maxCapacity: number = CONFIG_MAX_SIZE) {
     this.appName = appName
     this.userAgentDetection = userAgentDetection
+    this._maxCapacity = maxCapacity
   }
 
   build(): Config {
@@ -24,6 +33,17 @@ export class ConfigBuilder {
     }
 
     return config
+  }
+
+  /**
+   * Returns the size of the config counting all included conditions.
+   */
+  get size(): number {
+    return this._size
+  }
+
+  get isCapacityReached(): boolean {
+    return this.size >= this._maxCapacity;
   }
 
   whitelistHost(host: Condition): this {
@@ -43,6 +63,11 @@ export class ConfigBuilder {
   }
 
   private addToWhitelist(section: 'host' | 'pathname' | 'url', value: Condition): this {
+    if (this.isCapacityReached) {
+      return this
+    }
+    this._size += 1
+
     for (const rule of this.whitelist) {
       const condition: Condition | undefined = rule[section]
       // Add to existing entry
@@ -71,6 +96,11 @@ export class ConfigBuilder {
   }
 
   private addToBlacklist(section: 'host' | 'pathname' | 'url', value: Condition): this {
+    if (this.isCapacityReached) {
+      return this
+    }
+    this._size += 1
+
     for (const rule of this.blacklist) {
       const condition: Condition | undefined = rule[section]
       // Add to existing entry
