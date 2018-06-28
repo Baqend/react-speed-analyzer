@@ -3,7 +3,7 @@ import { bootstrap } from './_compositionRoot'
 import { sleep } from './_sleep'
 
 const ONE_MINUTE = 1000 * 60
-const ONE_DAY = ONE_MINUTE * 60 * 24
+const TWO_DAYS = ONE_MINUTE * 60 * 24 * 2
 
 /**
  * Executed by the Cronjob.
@@ -18,7 +18,7 @@ export async function run(db: baqend) {
     .equal('hasFinished', false)
     .notEqual('url', null)
     .lessThanOrEqualTo('updatedAt', new Date(now - ONE_MINUTE))
-    .greaterThanOrEqualTo('updatedAt', new Date(now - ONE_DAY))
+    .greaterThanOrEqualTo('updatedAt', new Date(now - TWO_DAYS))
     .isNotNull('webPagetests')
     .resultList()
 
