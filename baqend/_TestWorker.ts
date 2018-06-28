@@ -2,7 +2,7 @@ import { baqend, model } from 'baqend'
 import { ConfigGenerator } from './_ConfigGenerator'
 import { parallelize } from './_helpers'
 import { DataType, Serializer } from './_Serializer'
-import { isFinished, isUnfinished, setCanceled, setFailed, setRunning, Status } from './_Status'
+import { isFinished, isIncomplete, isUnfinished, setCanceled, setFailed, setRunning, Status } from './_Status'
 import { TestScriptBuilder } from './_TestScriptBuilder'
 import { Pagetest } from './_Pagetest'
 import { TestType, WebPagetestResultHandler } from './_WebPagetestResultHandler'
@@ -65,11 +65,17 @@ export class TestWorker {
         await test.optimisticSave(() => setRunning(test))
       }
 
+      if (this.isPerformanceRunFailed(test)) {
+        await test.optimisticSave(() => setFailed(test))
+
+        return
+      }
+
       // Check if the test was not updated within the last two hours
       const isOlderThanTwoHours = (new Date().getTime() - test.updatedAt.getTime()) / ONE_HOUR > 2
       if (test.status === Status.RUNNING && isOlderThanTwoHours) {
         this.cancel(test)
-        setFailed(test)
+        await test.optimisticSave(() => setFailed(test))
 
         return
       }
@@ -175,6 +181,19 @@ export class TestWorker {
   }
 
   /**
+   * Checks whether the performance run of a given test has failed.
+   */
+  private isPerformanceRunFailed(test: model.TestResult): boolean {
+    if (test.webPagetests.length === 0) {
+      return false
+    }
+
+    const performanceRun = test.webPagetests.find((test) => test.testType === TestType.PERFORMANCE)
+
+    return performanceRun ? isIncomplete(performanceRun) : false
+  }
+
+  /**
    * Determines whether a prewarm test against WebPagetest should be started.
    */
   private shouldStartPrewarmWebPagetest(test: model.TestResult): boolean {
@@ -259,6 +278,7 @@ export class TestWorker {
       const testId = await this.api.runTestWithoutWait(testScript, testOptions)
       await this.pushWebPagetestToTestResult(test, new this.db.WebPagetest({
         status: Status.RUNNING,
+        hasFinished: false,
         testId,
         testType,
         testScript,
@@ -273,6 +293,7 @@ export class TestWorker {
 
         await this.pushWebPagetestToTestResult(test, new this.db.WebPagetest({
           status: Status.FAILED,
+          hasFinished: true,
           testId: null,
           testType,
           testScript,
