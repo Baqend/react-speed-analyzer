@@ -7,9 +7,16 @@ export class ConfigBuilder {
   private whitelist: Rule[] = []
   private blacklist: Rule[] = []
 
-  constructor(appName: string, userAgentDetection: boolean) {
+  /**
+   * The current size of the config counting all included conditions.
+   */
+  private size: number = 0
+  private maxCapacity: number
+
+  constructor(appName: string, userAgentDetection: boolean, maxCapacity: number = -1) {
     this.appName = appName
     this.userAgentDetection = userAgentDetection
+    this.maxCapacity = maxCapacity
   }
 
   build(): Config {
@@ -24,6 +31,21 @@ export class ConfigBuilder {
     }
 
     return config
+  }
+
+  /**
+   * Returns the size of the config counting all included conditions.
+   */
+  getSize(): number {
+    return this.size
+  }
+
+  capacityReached(): boolean {
+    if (this.maxCapacity === -1) {
+      return false
+    }
+
+    return this.getSize() >= this.maxCapacity;
   }
 
   whitelistHost(host: Condition): this {
@@ -43,6 +65,11 @@ export class ConfigBuilder {
   }
 
   private addToWhitelist(section: 'host' | 'pathname' | 'url', value: Condition): this {
+    if (this.capacityReached()) {
+      return this
+    }
+    this.size++
+
     for (const rule of this.whitelist) {
       const condition: Condition | undefined = rule[section]
       // Add to existing entry
@@ -71,6 +98,11 @@ export class ConfigBuilder {
   }
 
   private addToBlacklist(section: 'host' | 'pathname' | 'url', value: Condition): this {
+    if (this.capacityReached()) {
+      return this
+    }
+    this.size++
+
     for (const rule of this.blacklist) {
       const condition: Condition | undefined = rule[section]
       // Add to existing entry
