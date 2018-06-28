@@ -258,6 +258,7 @@ export class TestWorker {
     try {
       const testId = await this.api.runTestWithoutWait(testScript, testOptions)
       await this.pushWebPagetestToTestResult(test, new this.db.WebPagetest({
+        status: Status.RUNNING,
         testId,
         testType,
         testScript,
@@ -293,7 +294,6 @@ export class TestWorker {
    */
   private async pushWebPagetestToTestResult(test: model.TestResult, webPagetest: model.WebPagetest): Promise<model.TestResult> {
     return test.optimisticSave((it: model.TestResult) => {
-      setRunning(webPagetest)
       it.webPagetests.push(webPagetest)
     })
   }

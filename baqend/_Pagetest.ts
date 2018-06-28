@@ -114,10 +114,6 @@ export class Pagetest {
         }
 
         const { testId } = result.data
-        if (!testId) {
-          reject(new Error('Received no test id from WPT'))
-          return
-        }
 
         this.waitPromises.set(testId, new Promise((nestedResolve, nestedReject) => {
           this.testResolver.set(testId, nestedResolve)
