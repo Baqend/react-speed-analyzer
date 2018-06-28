@@ -1,5 +1,7 @@
 import { Condition, Config, Rule } from './_Config'
 
+export const CONFIG_MAX_SIZE: number = 50
+
 export class ConfigBuilder {
 
   private appName: string
@@ -10,13 +12,13 @@ export class ConfigBuilder {
   /**
    * The current size of the config counting all included conditions.
    */
-  private size: number = 0
-  private maxCapacity: number
+  private _size: number = 0
+  private _maxCapacity: number
 
-  constructor(appName: string, userAgentDetection: boolean, maxCapacity: number = -1) {
+  constructor(appName: string, userAgentDetection: boolean, maxCapacity: number = CONFIG_MAX_SIZE) {
     this.appName = appName
     this.userAgentDetection = userAgentDetection
-    this.maxCapacity = maxCapacity
+    this._maxCapacity = maxCapacity
   }
 
   build(): Config {
@@ -36,16 +38,16 @@ export class ConfigBuilder {
   /**
    * Returns the size of the config counting all included conditions.
    */
-  getSize(): number {
-    return this.size
+  get size(): number {
+    return this._size
   }
 
-  capacityReached(): boolean {
-    if (this.maxCapacity === -1) {
+  get isCapacityReached(): boolean {
+    if (this._maxCapacity === -1) {
       return false
     }
 
-    return this.getSize() >= this.maxCapacity;
+    return this.size >= this._maxCapacity;
   }
 
   whitelistHost(host: Condition): this {
@@ -65,10 +67,10 @@ export class ConfigBuilder {
   }
 
   private addToWhitelist(section: 'host' | 'pathname' | 'url', value: Condition): this {
-    if (this.capacityReached()) {
+    if (this.isCapacityReached) {
       return this
     }
-    this.size++
+    this._size = this._size + 1
 
     for (const rule of this.whitelist) {
       const condition: Condition | undefined = rule[section]
@@ -98,10 +100,10 @@ export class ConfigBuilder {
   }
 
   private addToBlacklist(section: 'host' | 'pathname' | 'url', value: Condition): this {
-    if (this.capacityReached()) {
+    if (this.isCapacityReached) {
       return this
     }
-    this.size++
+    this._size = this._size + 1
 
     for (const rule of this.blacklist) {
       const condition: Condition | undefined = rule[section]

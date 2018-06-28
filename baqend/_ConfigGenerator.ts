@@ -9,7 +9,6 @@ import { PuppeteerResource } from './_Puppeteer'
 import credentials from './credentials'
 
 export const CDN_LOCAL_URL = 'https://makefast.app.baqend.com/v1/file/www/selfMaintainedCDNList'
-const CONFIG_MAX_SIZE = 50;
 
 type Conditions = (string | RegExp)[]
 
@@ -59,7 +58,7 @@ export class ConfigGenerator {
    * @return {Promise<Config>} A smart config for Speed Kit.
    */
   async generateSmart(url: string, mobile: boolean, thirdParty: boolean, { host, domains, resources }: { host: string, domains: string[], resources: PuppeteerResource[] }): Promise<Config> {
-    const configBuilder = new ConfigBuilder(credentials.app, mobile, CONFIG_MAX_SIZE)
+    const configBuilder = new ConfigBuilder(credentials.app, mobile)
 
     // Add host to whitelist
     const hostMatcher = this.matchAllSubdomains(host)
@@ -194,14 +193,17 @@ export class ConfigGenerator {
    * @return {RegExp} The regex that matches all subdomains of the given domain as well as other top level domains.
    */
   private matchOtherTopLevelDomains(domain: string): RegExp {
-    return /([\w-]+\.)[\w-]+$/.test(domain) ? new RegExp(`${escapeRegExp(RegExp.$1)}[\\w-]+$`)
-      : dollarRegExp(toRegExp(domain))
+    if (/([\w-]+\.)[\w-]+$/.test(domain)) {
+      return  new RegExp(`${escapeRegExp(RegExp.$1)}[\\w-]+$`)
+    }
+
+    return dollarRegExp(toRegExp(domain))
   }
 
   /**
    * Determines whether a resource is a jQuery callback.
    */
   private isJQueryCallback(resource: PuppeteerResource): boolean {
-    return !!resource.url.match(/[\?,\&]callback=/)
+    return !!resource.url.match(/[\?\&]callback=/)
   }
 }
