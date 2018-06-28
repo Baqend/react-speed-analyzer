@@ -65,7 +65,7 @@ export class TestWorker {
         await test.optimisticSave(() => setRunning(test))
       }
 
-      if (this.isPerformanceRunFailed(test)) {
+      if (this.isPerformanceRunIncomplete(test)) {
         await test.optimisticSave(() => setFailed(test))
 
         return
@@ -181,9 +181,9 @@ export class TestWorker {
   }
 
   /**
-   * Checks whether the performance run of a given test has failed.
+   * Checks whether the performance run of a given test is incomplete.
    */
-  private isPerformanceRunFailed(test: model.TestResult): boolean {
+  private isPerformanceRunIncomplete(test: model.TestResult): boolean {
     if (test.webPagetests.length === 0) {
       return false
     }
