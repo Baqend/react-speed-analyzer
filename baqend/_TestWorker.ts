@@ -107,11 +107,13 @@ export class TestWorker {
       return false
     }
 
-    // Cancel each WebpageTest
-    await test.webPagetests
-      .filter(webPagetest => isUnfinished(webPagetest))
-      .map(webPagetest => this.api.cancelTest(webPagetest.testId))
-      .reduce(parallelize)
+    if (test.webPagetests.length >= 1) {
+      // Cancel each WebpageTest
+      await test.webPagetests
+        .filter(webPagetest => isUnfinished(webPagetest))
+        .map(webPagetest => this.api.cancelTest(webPagetest.testId))
+        .reduce(parallelize, Promise.resolve())
+    }
 
     // Mark test and WebPagetests as canceled
     await test.optimisticSave(() => {
