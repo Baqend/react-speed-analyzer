@@ -41,12 +41,12 @@ export default function config(state = initialState, action = {}) {
     case TESTOVERVIEW_LOAD:
       return {
         ...state,
-        url: action.payload.url,
-        location: action.payload.location,
-        caching: action.payload.caching,
-        mobile: action.payload.mobile,
-        activityTimeout: action.payload.activityTimeout,
-        speedKitConfig: action.payload.speedKitConfig,
+        url: action.payload.url || state.url,
+        location: action.payload.location || state.location,
+        caching: action.payload.caching || state.caching,
+        mobile: action.payload.mobile || state.mobile,
+        activityTimeout: action.payload.activityTimeout || state.activityTimeout,
+        speedKitConfig: action.payload.speedKitConfig || state.speedKitConfig,
       }
     default:
       return state
