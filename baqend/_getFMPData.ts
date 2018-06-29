@@ -49,7 +49,7 @@ function parseCandidates(db: baqend, data: Array<[number, number]>): model.Candi
     candidate.visualCompleteness = 100
     candidate.deltaVC = data[0][1]
     candidate.startTime = 0
-    candidate.endTime = data[0][0] * 1000
+    candidate.endTime = Math.round(data[0][0] * 1000)
     candidate.wptFMP = null
     return candidate
   }
@@ -63,8 +63,8 @@ function parseCandidates(db: baqend, data: Array<[number, number]>): model.Candi
     const candidate = new db.Candidate()
     candidate.visualCompleteness = visualProgress
     candidate.deltaVC = diff
-    candidate.startTime = time * 1000 - 100
-    candidate.endTime = time * 1000
+    candidate.startTime = Math.round(time * 1000 - 100)
+    candidate.endTime = Math.round(time * 1000)
     candidate.wptFMP = null
     diffs.push(candidate)
   }
