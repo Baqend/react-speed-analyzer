@@ -9,7 +9,8 @@
     "downlevelIteration": true,
     "strict": true,
     "alwaysStrict": false,
-    "noImplicitUseStrict": true
+    "noImplicitUseStrict": true,
+    "skipLibCheck": true
   },
   "include": [
     "*.ts",

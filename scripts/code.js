@@ -60,7 +60,7 @@ async function main() {
 
   const compile = await execute(tsc, ['--project', codeDir])
   console.log(`TypeScript exited with status code ${compile}`)
-  if (compile !== 0 && compile !== 2) {
+  if (compile !== 0) {
     throw new Error(`TypeScript exited with bad status code: ${compile}`)
   }
 
