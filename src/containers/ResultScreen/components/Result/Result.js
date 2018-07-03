@@ -35,7 +35,7 @@ class Result extends Component {
   }
 
   renderHeader() {
-    const { speedKitError, testOverview } = this.props.result
+    const { competitorError, speedKitError, testOverview } = this.props.result
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
     const { speedKitVersion } = testOverview
@@ -54,22 +54,24 @@ class Result extends Component {
               Faster
             </div>
           )}
-          <div className="w-50 flex-auto text-center pa1 pr4 pr0-ns" style={{ background: '#f6f6f6' }}>
-            <small>
-              {speedKitVersion ? (
-                <b>Without Speed Kit</b>
-              ) : (
-                <b>Your Website</b>
-              )}
-            </small>
-            <br/>
-            <div data-tip data-for={mainMetric + 'CompetitorData'}>
-              <b>{ competitorData[mainMetric] }ms</b>
+          {( !competitorError ) && (
+            <div className="w-50 flex-auto text-center pa1 pr4 pr0-ns" style={{ background: '#f6f6f6' }}>
+              <small>
+                {speedKitVersion ? (
+                  <b>Without Speed Kit</b>
+                ) : (
+                  <b>Your Website</b>
+                )}
+              </small>
+              <br/>
+              <div data-tip data-for={mainMetric + 'CompetitorData'}>
+                <b>{ competitorData[mainMetric] }ms</b>
+              </div>
+              <ReactTooltip id={mainMetric + 'CompetitorData'} type='dark' place='top' effect='solid'>
+                <span>{tooltipText[mainMetric]}</span>
+              </ReactTooltip>
             </div>
-            <ReactTooltip id={mainMetric + 'CompetitorData'} type='dark' place='top' effect='solid'>
-              <span>{tooltipText[mainMetric]}</span>
-            </ReactTooltip>
-          </div>
+          )}
           {( !speedKitError ) && (
             <div className="w-50 flex-auto text-center pa1 pl4 pl0-ns" style={{ background: '#f6f6f6' }}>
               <small>

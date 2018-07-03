@@ -29,12 +29,13 @@ const getResultErrors = ({ competitorTest, speedKitTest, mainMetric, secondaryMe
     competitorError: false,
     speedKitError: false,
   }
-  if(!competitorTest || competitorTest.testDataMissing) {
+  if(!competitorTest || competitorTest.testDataMissing || !competitorTest.firstView) {
     result['competitorError'] = true
     result['speedKitError'] = true
   }
 
   const isValidResult = resultIsValid(competitorTest, speedKitTest, mainMetric, secondaryMetric, isPlesk)
+
   if(!speedKitTest || speedKitTest.testDataMissing || !isValidResult) {
     result['speedKitError'] = true
   }
