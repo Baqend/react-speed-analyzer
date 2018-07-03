@@ -19,7 +19,7 @@ export const resetResult = () => ({
   }
 })
 
-export const loadResult = (testId, isPlesk = false) => ({
+export const loadResult = (testId, isPlesk = false, mainMetric = null) => ({
   'BAQEND': async ({ dispatch, getState, db }) => {
     let testOverview
     try {
@@ -54,7 +54,7 @@ export const loadResult = (testId, isPlesk = false) => ({
       })
       dispatch({
         type: TERMINATE_TEST,
-        payload: { isPlesk }
+        payload: { isPlesk, mainMetric }
       })
     } catch(e) {
       throw new Error("Test Result could not be loaded")
@@ -65,8 +65,6 @@ export const loadResult = (testId, isPlesk = false) => ({
 
 /**
  * Loads a given testOverview from the baqend database.
- * @param dispatch Method to dispatch an action input.
- * @param db The baqend database instance.
  * @param testId The id of the test to be loaded.
  */
 const getTestOverview = (testId) => ({

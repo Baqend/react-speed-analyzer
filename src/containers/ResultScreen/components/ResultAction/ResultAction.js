@@ -248,7 +248,7 @@ class ResultAction extends Component {
             </span>
             {configAnalysis &&
             <span className="faded">To help you integrating Speed Kit on your website, you can find the status of your installation below.
-              </span>
+            </span>
             }
           </div>
           {configAnalysis &&

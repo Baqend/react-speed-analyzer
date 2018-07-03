@@ -24,7 +24,7 @@ const createScreenshot = (psiScreenshot) => {
   return null
 }
 
-const getResultErrors = ({ competitorTest, speedKitTest, mainMetric, secondaryMetric, isPlesk }) => {
+const getResultErrors = ({ competitorTest, speedKitTest, mainMetric, secondaryMetric }, isPlesk) => {
   const result = {
     competitorError: false,
     speedKitError: false,
@@ -41,20 +41,17 @@ const getResultErrors = ({ competitorTest, speedKitTest, mainMetric, secondaryMe
   return result
 }
 
-const verifyMainMetric = ({ competitorTest, speedKitTest, mainMetric, secondaryMetric }) => {
-  const competitorData = competitorTest.firstView
-  const speedKitData = speedKitTest.firstView
-  if (competitorData && speedKitData) {
-    const mainMetric = 'firstMeaningfulPaint'
-    const secondaryMetric = 'speedIndex'
+const verifyMainMetric = (passedMainMetric, { mainMetric, secondaryMetric }) => {
+  if (!passedMainMetric) {
     return {
       mainMetric,
       secondaryMetric
     }
   }
+
   return {
-    mainMetric,
-    secondaryMetric
+    mainMetric: passedMainMetric,
+    secondaryMetric: passedMainMetric === 'speedIndex' ? 'firstMeaningfulPaint' : 'speedIndex'
   }
 }
 
@@ -98,8 +95,8 @@ const initialState = {
   speedKitTest: {},
   competitorError: false,
   speedKitError: false,
-  mainMetric: 'speedIndex',
-  secondaryMetric: 'firstMeaningfulPaint',
+  mainMetric: 'firstMeaningfulPaint',
+  secondaryMetric: 'speedIndex',
   whiteListCandidates: [],
   startTime: null,
 }
@@ -148,9 +145,9 @@ export default function result(state = initialState, action = {}) {
       }
       return state
     case TERMINATE_TEST:
-      const metrics = verifyMainMetric(state)
-      const errors = getResultErrors({ ...state, ...metrics, ...action.payload })
-      const isPlesk = action.payload ? action.payload.isPlesk : false
+      const metrics = verifyMainMetric(action.payload.mainMetric, state)
+      const isPlesk = action.payload.isPlesk
+      const errors = getResultErrors({ ...state, ...metrics }, isPlesk)
       return {
         ...state,
         ...errors,

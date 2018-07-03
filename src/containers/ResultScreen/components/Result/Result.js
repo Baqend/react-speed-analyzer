@@ -38,21 +38,15 @@ class Result extends Component {
     const { speedKitError, testOverview } = this.props.result
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
-    const { speedKitVersion, isSpeedKitComparison } = testOverview
+    const { speedKitVersion } = testOverview
 
-    // flags that can be passed in by plesk
-    const isPlesk = this.props.result.isPlesk
-    const hideBobble = this.props.hideBobble || false
-    const showTTFB = this.props.showTTFB || false
-
-    // check whether the show TTFB flag was set by plesk
-    const mainMetric = showTTFB ? 'ttfb' : this.props.result.mainMetric
+    const { mainMetric } = this.props.result
     const factor = !speedKitError ? calculateFactor(competitorData[mainMetric], speedKitData[mainMetric]) : null
 
     return (
       <div>
         <div className="flex items-center relative">
-          {((isPlesk && factor > 1 && !showTTFB) || (!isPlesk && !speedKitError) || (isSpeedKitComparison && !hideBobble)) && (
+          {(factor >= 1.1 && mainMetric !== 'ttfb') && (
             <div className="mainFactor text-center" title={tooltipText[mainMetric]}
               style={{ display: 'flex'}}>
               {factor}x
