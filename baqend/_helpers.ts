@@ -157,3 +157,48 @@ export function removeDuplicates<T>(value: T, index: number, array: T[]): boolea
 export function parallelize<T>(previous: Promise<T>, current: Promise<T>, currentIndex: number, array: Promise<T>[]): Promise<T> {
   return Promise.all([previous, current]).then(([p]) => p)
 }
+
+/**
+ * Picks some fields of the given type.
+ */
+export function take<T, K extends keyof T>(obj: T, ...fields: K[]): Pick<T, K> {
+  const result = Object.create(null)
+  for (const field of fields) {
+    result[field] = obj[field]
+  }
+
+  return result
+}
+
+/**
+ * Maps a dictionary with a callback function.
+ */
+export function mapObj<U, V>(dic: { [key: string]: U }, cb: (u: U) => V): { [key: string]: V } {
+  const result = Object.create(null) as { [key: string]: V }
+  for (let i in dic) {
+    if (Object.prototype.hasOwnProperty.call(dic, i)) {
+      result[i] = cb(dic[i])
+    }
+  }
+
+  return result
+}
+
+/**
+ * Extracts the boolean value of the given input value.
+ */
+export function booleanOf(value: string | boolean): boolean {
+  if (typeof value === 'boolean') {
+    return value
+  }
+
+  if (value === 'true') {
+    return true
+  }
+
+  if (value === 'false') {
+    return false
+  }
+
+  throw new Error(`Invalid boolean value: "${value}".`)
+}
