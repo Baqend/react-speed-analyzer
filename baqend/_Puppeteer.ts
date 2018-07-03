@@ -141,7 +141,8 @@ export class Puppeteer {
       const { url: normalizedUrl, displayUrl, protocol, host, scheme } = data
       const domains = data.domains!
       const resources = data.resources!
-      const smartConfig = await this.configGenerator.generateSmart(normalizedUrl, mobile, thirdParty, {
+      const isImageOptimization = location.includes('-docker') // FIXME only active for new test setup
+      const smartConfig = await this.configGenerator.generateSmart(normalizedUrl, mobile, thirdParty, isImageOptimization,{
         host,
         domains,
         resources,

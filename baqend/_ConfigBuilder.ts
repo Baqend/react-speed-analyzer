@@ -1,4 +1,4 @@
-import { Condition, Config, Rule } from './_Config'
+import { Condition, Config, ImageRule, Rule } from './_Config'
 
 export const CONFIG_MAX_SIZE: number = 50
 
@@ -8,6 +8,7 @@ export class ConfigBuilder {
   private userAgentDetection: boolean
   private whitelist: Rule[] = []
   private blacklist: Rule[] = []
+  private image: ImageRule[] = []
 
   /**
    * The current size of the config counting all included conditions.
@@ -30,6 +31,10 @@ export class ConfigBuilder {
 
     if (this.blacklist.length) {
       config.blacklist = this.blacklist
+    }
+
+    if (this.image.length) {
+      config.image = this.image
     }
 
     return config
@@ -60,6 +65,10 @@ export class ConfigBuilder {
 
   blacklistUrl(host: Condition): this {
     return this.addToBlacklist('url', host)
+  }
+
+  addImageOptions(imageRule: ImageRule) {
+    this.image.push(imageRule)
   }
 
   private addToWhitelist(section: 'host' | 'pathname' | 'url', value: Condition): this {

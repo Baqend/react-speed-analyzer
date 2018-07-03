@@ -57,9 +57,14 @@ export class ConfigGenerator {
    * @param {PuppeteerResource[]} resources The resources loaded by the tested site.
    * @return {Promise<Config>} A smart config for Speed Kit.
    */
-  async generateSmart(url: string, mobile: boolean, thirdParty: boolean, { host, domains, resources }: { host: string, domains: string[], resources: PuppeteerResource[] }): Promise<Config> {
+  async generateSmart(url: string, mobile: boolean, thirdParty: boolean, imageOptimization: boolean, { host, domains, resources }: { host: string, domains: string[], resources: PuppeteerResource[] }): Promise<Config> {
     const configBuilder = new ConfigBuilder(credentials.app, mobile)
 
+    // Add image optimization
+    if (imageOptimization) {
+      // TODO implement actual IO
+      configBuilder.addImageOptions({ rules: [{ url: [''] }], options: { quality: 1, webp: true} });
+    }
     // Add host to whitelist
     const hostMatcher = this.matchAllSubdomains(host)
     configBuilder
