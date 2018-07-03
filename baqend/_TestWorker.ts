@@ -2,7 +2,7 @@ import { baqend, model } from 'baqend'
 import { ConfigGenerator } from './_ConfigGenerator'
 import { parallelize } from './_helpers'
 import { DataType, Serializer } from './_Serializer'
-import { isFinished, isUnfinished, setCanceled, setFailed, setRunning, Status } from './_Status'
+import { isFinished, isIncomplete, isUnfinished, setCanceled, setFailed, setRunning, Status } from './_Status'
 import { TestScriptBuilder } from './_TestScriptBuilder'
 import { Pagetest } from './_Pagetest'
 import { TestType, WebPagetestResultHandler } from './_WebPagetestResultHandler'
@@ -65,11 +65,17 @@ export class TestWorker {
         await test.optimisticSave(() => setRunning(test))
       }
 
+      if (this.isPerformanceRunIncomplete(test)) {
+        await test.optimisticSave(() => setFailed(test))
+
+        return
+      }
+
       // Check if the test was not updated within the last two hours
       const isOlderThanTwoHours = (new Date().getTime() - test.updatedAt.getTime()) / ONE_HOUR > 2
       if (test.status === Status.RUNNING && isOlderThanTwoHours) {
         this.cancel(test)
-        setFailed(test)
+        await test.optimisticSave(() => setFailed(test))
 
         return
       }
@@ -107,11 +113,13 @@ export class TestWorker {
       return false
     }
 
-    // Cancel each WebpageTest
-    await test.webPagetests
-      .filter(webPagetest => isUnfinished(webPagetest))
-      .map(webPagetest => this.api.cancelTest(webPagetest.testId))
-      .reduce(parallelize)
+    if (test.webPagetests.length >= 1) {
+      // Cancel each WebpageTest
+      await test.webPagetests
+        .filter(webPagetest => isUnfinished(webPagetest))
+        .map(webPagetest => this.api.cancelTest(webPagetest.testId))
+        .reduce(parallelize, Promise.resolve())
+    }
 
     // Mark test and WebPagetests as canceled
     await test.optimisticSave(() => {
@@ -170,6 +178,19 @@ export class TestWorker {
     } catch (error) {
       this.db.log.error(`Cannot handle WPT result: ${error.message}`, { wptTestId, error: error.stack })
     }
+  }
+
+  /**
+   * Checks whether the performance run of a given test is incomplete.
+   */
+  private isPerformanceRunIncomplete(test: model.TestResult): boolean {
+    if (test.webPagetests.length === 0) {
+      return false
+    }
+
+    const performanceRun = test.webPagetests.find((test) => test.testType === TestType.PERFORMANCE)
+
+    return performanceRun ? isIncomplete(performanceRun) : false
   }
 
   /**
@@ -256,24 +277,36 @@ export class TestWorker {
     try {
       const testId = await this.api.runTestWithoutWait(testScript, testOptions)
       await this.pushWebPagetestToTestResult(test, new this.db.WebPagetest({
+        status: Status.RUNNING,
+        hasFinished: false,
         testId,
         testType,
         testScript,
         testOptions,
       }))
     } catch (error) {
-      // do not retry prewarm tests
-      if (testType === TestType.PREWARM) {
+      this.db.log.error(`Could not start "${testType}" WebPagetest test: ${error.message}`, { test: test.id, error: error.stack })
+
+      // do not retry prewarm tests and performance tests with more than 2 retries
+      if (testType === TestType.PREWARM || (testType === TestType.PERFORMANCE && test.retries >= 2)) {
+        this.db.log.error(`Change status of test "${test.id}" to FAILED because of reaching retry limit`)
+
         await this.pushWebPagetestToTestResult(test, new this.db.WebPagetest({
           status: Status.FAILED,
+          hasFinished: true,
           testId: null,
           testType,
           testScript,
           testOptions,
         }))
+
+        return
       }
 
-      this.db.log.error(`Could not start "${testType}" WebPagetest test: ${error.message}`, { test: test.id, error: error.stack })
+      if (testType === TestType.PERFORMANCE) {
+        const retries = test.retries || 0
+        await test.optimisticSave(() => test.retries = retries + 1)
+      }
     }
   }
 
@@ -282,7 +315,6 @@ export class TestWorker {
    */
   private async pushWebPagetestToTestResult(test: model.TestResult, webPagetest: model.WebPagetest): Promise<model.TestResult> {
     return test.optimisticSave((it: model.TestResult) => {
-      setRunning(webPagetest)
       it.webPagetests.push(webPagetest)
     })
   }

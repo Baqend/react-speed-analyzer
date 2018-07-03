@@ -2,26 +2,26 @@ import { baqend } from 'baqend'
 import { bootstrap } from './_compositionRoot'
 
 const ONE_MINUTE = 1000 * 60
-const FIVE_MINUTES = ONE_MINUTE * 5
+const TWENTY_MINUTES = ONE_MINUTE * 20
 const TWO_DAYS = ONE_MINUTE * 60 * 24 * 2
 
 /**
  * Executed by the Cronjob.
  */
 export async function run(db: baqend) {
-  const { multiComparisonWorker } = bootstrap(db)
+  const { bulkComparisonWorker } = bootstrap(db)
 
   const now = Date.now()
-  const multiComparisons = await db.BulkTest.find()
+  const bulkComparisons = await db.BulkComparison.find()
     .equal('hasFinished', false)
-    .lessThanOrEqualTo('updatedAt', new Date(now - FIVE_MINUTES))
+    .lessThanOrEqualTo('updatedAt', new Date(now - TWENTY_MINUTES))
     .greaterThanOrEqualTo('updatedAt', new Date(now - TWO_DAYS))
     .resultList({ depth: 1 })
 
-  db.log.info('Running cronMultiComparisonWorker job', { multiComparisons: multiComparisons })
+  db.log.info('Running bulkComparisonWorker job', { count: bulkComparisons.length, bulkComparisons: bulkComparisons })
 
-  for (const multiComparison of multiComparisons) {
-    db.log.info(`Running cronMultiComparisonWorker job for comparison ${multiComparison.key}`)
-    await multiComparisonWorker.next(multiComparison)
+  for (const bulkComparison of bulkComparisons) {
+    db.log.info(`Running bulkComparisonWorker job for comparison ${bulkComparison.key}`)
+    await bulkComparisonWorker.next(bulkComparison)
   }
 }

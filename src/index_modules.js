@@ -9,8 +9,9 @@ import 'promise-polyfill'
 import 'whatwg-fetch'
 
 window.speedKitAnalyzer = {
-  renderResult: (testId, isPlesk = false, showTTFB = false) => {
-    ReactDOM.render(<Result testId={testId} isPlesk={isPlesk} showTTFB={showTTFB}/>, document.getElementById('speed-kit-analyzer'))
+  renderResult: (testId, isPlesk = false, showTTFB = false, hideBobble = false) => {
+    ReactDOM.render(<Result testId={testId} isPlesk={isPlesk} showTTFB={showTTFB} hideBobble={hideBobble}/>,
+      document.getElementById('speed-kit-analyzer'))
   },
   renderTest: (testId, callback) => {
     ReactDOM.render(<Loader testId={testId} onAfterFinish={callback} />, document.getElementById('speed-kit-analyzer'))

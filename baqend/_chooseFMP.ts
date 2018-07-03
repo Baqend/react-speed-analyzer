@@ -11,6 +11,10 @@ function chooseCandidate(fmpData: model.FMPData, goalVC: number): model.Candidat
     return fmpData.candidates
       .sort(({ startTime: a }, { startTime: b }) => a - b)
       .reduce((prev, curr) => {
+        if (curr.visualCompleteness === 0) {
+          return prev
+        }
+
         if (prev.visualCompleteness >= goalVC) {
           return prev
         }

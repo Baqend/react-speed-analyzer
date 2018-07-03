@@ -2,7 +2,7 @@ import { baqend } from 'baqend'
 import { bootstrap } from './_compositionRoot'
 
 const ONE_MINUTE = 1000 * 60
-const ONE_DAY = ONE_MINUTE * 60 * 24
+const TWO_DAYS = ONE_MINUTE * 60 * 24 * 2
 
 /**
  * Executed by the Cronjob.
@@ -14,7 +14,7 @@ export async function run(db: baqend) {
   const comparisons = await db.TestOverview.find()
     .equal('hasFinished', false)
     .lessThanOrEqualTo('updatedAt', new Date(now - ONE_MINUTE))
-    .greaterThanOrEqualTo('updatedAt', new Date(now - ONE_DAY))
+    .greaterThanOrEqualTo('updatedAt', new Date(now - TWO_DAYS))
     .resultList({ depth: 1 })
 
   db.log.info('Running cronComparisonWorker job', { comparisons })
