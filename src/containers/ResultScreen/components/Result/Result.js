@@ -38,19 +38,21 @@ class Result extends Component {
     const { speedKitError, testOverview } = this.props.result
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
+    const { speedKitVersion, isSpeedKitComparison } = testOverview
 
     // flags that can be passed in by plesk
     const isPlesk = this.props.result.isPlesk
-    const showTTFB = this.props.showTTFB
+    const hideBobble = this.props.hideBobble || false
+    const showTTFB = this.props.showTTFB || false
 
-    // check whether the show TTFB flog was set by plesk
+    // check whether the show TTFB flag was set by plesk
     const mainMetric = showTTFB ? 'ttfb' : this.props.result.mainMetric
     const factor = !speedKitError ? calculateFactor(competitorData[mainMetric], speedKitData[mainMetric]) : null
 
     return (
       <div>
         <div className="flex items-center relative">
-          {((isPlesk && factor > 1 && !showTTFB) || (!isPlesk && !speedKitError) ) && (
+          {((isPlesk && factor > 1 && !showTTFB) || (!isPlesk && !speedKitError) || (isSpeedKitComparison && !hideBobble)) && (
             <div className="mainFactor text-center" title={tooltipText[mainMetric]}
               style={{ display: 'flex'}}>
               {factor}x
@@ -60,7 +62,7 @@ class Result extends Component {
           )}
           <div className="w-50 flex-auto text-center pa1 pr4 pr0-ns" style={{ background: '#f6f6f6' }}>
             <small>
-              {testOverview.speedKitVersion ? (
+              {speedKitVersion ? (
                 <b>Without Speed Kit</b>
               ) : (
                 <b>Your Website</b>
@@ -77,8 +79,8 @@ class Result extends Component {
           {( !speedKitError ) && (
             <div className="w-50 flex-auto text-center pa1 pl4 pl0-ns" style={{ background: '#f6f6f6' }}>
               <small>
-                {testOverview.speedKitVersion ? (
-                  <b>With Speed Kit {testOverview.speedKitVersion}</b>
+                {speedKitVersion ? (
+                  <b>With Speed Kit {speedKitVersion}</b>
                 ) : (
                   <b>With Speed Kit</b>
                 )}
