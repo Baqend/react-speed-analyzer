@@ -91,6 +91,7 @@ async function prepareCandidates(db: baqend, testId: string, runIndex: string): 
 function chooseTopCandidates(db: baqend, candidates: model.Candidate[]): model.Candidate[] {
   // Find the five highest ΔVCs
   const topCandidates = candidates
+    .filter((candidate) => candidate.visualCompleteness > 0)
     .sort(({ deltaVC: a }, { deltaVC: b }) => b - a)
     .slice(0, 10)
 
