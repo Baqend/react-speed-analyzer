@@ -14,7 +14,7 @@ export function meanValue(numbers: number[]): number {
  * @type T
  */
 export function finites(numbers: any[]): number[] {
-  return filter(numbers, Number.isFinite)
+  return filter(numbers, number => Number.isFinite(number))
 }
 
 /**
