@@ -70,7 +70,7 @@ const Bobbel = ({ description, time, style, upsideDown, absolute, mobile, order,
 
 const calculateMaxTimeForRequests = (requests, competitorTime) => {
   if (requests <= 50) {
-    return 1500
+    return 2500
   } else if (requests >= 400){
     return 8000
   }
