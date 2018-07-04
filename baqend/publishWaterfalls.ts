@@ -39,7 +39,7 @@ function checkPublishedWaterfallLink(testResult: model.TestResult): Promise<stri
 function publishWaterfall(testId: string, db: baqend) {
   const linkRegex = /href(?:s*)=(?:s*)(?:\\?)"(https:\/\/www\.webpagetest\.org\/results\.php\?.*?)(?:\\?)"(?:s*)>/;
 
-  return fetch(`http://ec2-18-195-220-131.eu-central-1.compute.amazonaws.com/publish.php?test=${testId}`)
+  return fetch(`http://wpt.baqend.com//publish.php?test=${testId}`)
     .then(response => response.text())
     .then(text => {
       const match = linkRegex.exec(text);
