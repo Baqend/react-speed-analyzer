@@ -51,7 +51,7 @@ export function isMainMetricSatisfactory(competitorMetric, speedKitMetric) {
  * @return {boolean}
  */
 export function resultIsValid(competitorResult, speedKitResult, mainMetric, secondaryMetric, isPlesk) {
-  if (!speedKitResult.firstView) {
+  if (!competitorResult.firstView || !speedKitResult.firstView) {
     return false
   }
 
