@@ -55,7 +55,7 @@ export function resultIsValid(competitorResult, speedKitResult, mainMetric, seco
     return false
   }
 
-  if (speedKitResult.testInfo.isSpeedKitComparison || isPlesk) {
+  if ((speedKitResult.testInfo && speedKitResult.testInfo.isSpeedKitComparison) || isPlesk) {
     return true
   }
 
