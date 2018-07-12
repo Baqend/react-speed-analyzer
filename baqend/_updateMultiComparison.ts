@@ -53,6 +53,15 @@ export function aggregateBulkTestFactors(db: baqend, bulkTest: model.BulkTest): 
 }
 
 /**
+ * @param bulkTest The Bulk Test to iterate
+ * @param prefix Either 'competitor' or 'speedKit'.
+ * @return Returns the test results.
+ */
+function iterateTestResultsInBulkTest(bulkTest: model.BulkTest, prefix: TestResultFieldPrefix): model.TestResult[] {
+  return bulkTest.testOverviews.map(comparison => prefix === 'speedKit' ? comparison.speedKitTestResult : comparison.competitorTestResult)
+}
+
+/**
  * Gets the best result for a given field of the competitor or Speed Kit.
  *
  * @param bulkTest A bulk test to analyze.
@@ -61,10 +70,9 @@ export function aggregateBulkTestFactors(db: baqend, bulkTest: model.BulkTest): 
  * @return Returns the result or NaN, if no result exists.
  */
 function bestResult(bulkTest: model.BulkTest, prefix: TestResultFieldPrefix, field: string): number {
-  const resultField = `${prefix}TestResult`
-  const best = bulkTest.testOverviews.reduce((prev, { [resultField]: result }) => {
+  const best = iterateTestResultsInBulkTest(bulkTest, prefix).reduce((prev, result) => {
     if (result.firstView) {
-      return Math.min(prev, result.firstView[field])
+      return Math.min(prev, (result.firstView as any)[field])
     }
 
     return prev
@@ -82,10 +90,9 @@ function bestResult(bulkTest: model.BulkTest, prefix: TestResultFieldPrefix, fie
  * @return Returns the result or NaN, if no result exists.
  */
 function worstResult(bulkTest: model.BulkTest, prefix: TestResultFieldPrefix, field: string): number {
-  const resultField = `${prefix}TestResult`
-  const worst = bulkTest.testOverviews.reduce((prev, { [resultField]: result }) => {
+  const worst = iterateTestResultsInBulkTest(bulkTest, prefix).reduce((prev, result) => {
     if (result.firstView) {
-      return Math.max(prev, result.firstView[field])
+      return Math.max(prev, (result.firstView as any)[field])
     }
 
     return prev
