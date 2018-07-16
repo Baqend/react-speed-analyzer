@@ -324,10 +324,10 @@ export class TestWorker {
    */
   private buildScriptForTestWithConfig(test: model.TestResult): string {
     const { testInfo, location } = test
-    const { url, isTestWithSpeedKit, activityTimeout, appName } = testInfo
+    const { url, isTestWithSpeedKit, activityTimeout, appName, testOptions } = testInfo
     const config = this.getConfigForTest(test).replace(/{/, '{ preloadBloomFilter: false,')
 
-    return this.testScriptBuilder.createTestScript(url, isTestWithSpeedKit, config, location, activityTimeout, appName)
+    return this.testScriptBuilder.createTestScript(url, isTestWithSpeedKit, config, location, testOptions.mobile, activityTimeout, appName)
   }
 
   /**
@@ -338,7 +338,7 @@ export class TestWorker {
     const minimal = this.configGenerator.generateMinimal(url, mobile)
     const config = this.serializer.serialize(minimal, DataType.JAVASCRIPT)
 
-    return this.testScriptBuilder.createTestScript(url, isTestWithSpeedKit, config, location, activityTimeout)
+    return this.testScriptBuilder.createTestScript(url, isTestWithSpeedKit, config, location, mobile, activityTimeout)
   }
 
   /**

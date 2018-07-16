@@ -58,6 +58,16 @@ export class TestScript {
   }
 
   /**
+   * Sets the viewport size of the captured screen.
+   * @param {number} width The width of the viewport.
+   * @param {number} height The height of the viewport.
+   * @return {this} This is a chainable method.
+   */
+  setViewport(width: number, height: number) {
+    return this.push(`setViewportSize ${width} ${height}`)
+  }
+
+  /**
    * Sets the navigate in the script.
    *
    * @return This is a chainable method.
