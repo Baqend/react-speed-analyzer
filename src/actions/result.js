@@ -30,20 +30,19 @@ export const loadResult = (testId, isPlesk = false, mainMetric = null) => ({
         db.TestResult.load(speedKitTestResult)
       ])
 
-      if (testOverview.hasFinished) {
-        if (loadedSpeedKitTestResult && !loadedSpeedKitTestResult.testDataMissing) {
-          if (getState().result.startTime) {
-            const fmp = testOverview.factors.firstMeaningfulPaint
-            trackURL('waitingTime', testOverview.url, { startTime: getState().result.startTime })
-            trackURL('showTestResult', testOverview.url, { fmp })
-            if (testOverview.factors.firstMeaningfulPaint >= 1.5) {
-              trackURL('goodTestResult', testOverview.url, { fmp })
-            }
+      if (testOverview.hasFinished && testOverview.factors) {
+        if (getState().result.startTime) {
+          const fmp = testOverview.factors.firstMeaningfulPaint
+          trackURL('waitingTime', testOverview.url, { startTime: getState().result.startTime })
+          trackURL('showTestResult', testOverview.url, { fmp })
+          if (testOverview.factors.firstMeaningfulPaint >= 1.5) {
+            trackURL('goodTestResult', testOverview.url, { fmp })
           }
-        } else {
-          trackURL('errorTestResult', testOverview.url)
         }
+      } else {
+        trackURL('errorTestResult', testOverview.url)
       }
+
       dispatch({
         type: COMPETITOR_RESULT_LOAD,
         payload: loadedCompetitorTestResult
