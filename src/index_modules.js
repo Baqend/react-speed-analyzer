@@ -13,8 +13,9 @@ window.speedKitAnalyzer = {
     ReactDOM.render(<Result testId={testId} isPlesk={isPlesk} mainMetric={mainMetric}/>,
       document.getElementById('speed-kit-analyzer'))
   },
-  renderTest: (testId, callback) => {
-    ReactDOM.render(<Loader testId={testId} onAfterFinish={callback} />, document.getElementById('speed-kit-analyzer'))
+  renderTest: (testId, callback, { isPlesk = false } = {}) => {
+    ReactDOM.render(<Loader testId={testId} isPlesk={isPlesk} onAfterFinish={callback} />,
+      document.getElementById('speed-kit-analyzer'))
   },
   renderAnalyzer: (params) => {
     ReactDOM.render(<Embedded { ...params } />, document.getElementById('speed-kit-analyzer'))

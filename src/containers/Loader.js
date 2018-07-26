@@ -22,7 +22,7 @@ class App extends Component {
           <div id="main">
             <MemoryRouter>
               <Route render={({ location, ...rest }) => {
-                const { testId, onAfterFinish } = this.props
+                const { testId, onAfterFinish, isPlesk } = this.props
                 return (
                   <Switch>
                     <Redirect exact from="/" to={`/test/${testId}`} />
@@ -33,7 +33,7 @@ class App extends Component {
                     )}/>
                     <Route exact path="/test/:testId/result" render={props => (
                       <div className="content">
-                        <ResultScreen { ...props } onAfterFinish={onAfterFinish} />
+                        <ResultScreen { ...props } isPlesk={isPlesk} onAfterFinish={onAfterFinish} />
                       </div>
                     )}/>
                   </Switch>
