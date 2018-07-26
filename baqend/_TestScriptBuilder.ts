@@ -30,11 +30,11 @@ export class TestScriptBuilder {
     const ts = testScript()
 
     if (location.includes('-docker')) { // FIXME this is just testing, set optimal viewport when testing is finished.
-      if (isMobile) {
-        ts.setViewport(480, 987); // Maximum viewport
-      } else {
-        ts.setViewport(1024, 1050); // Good desktop viewport
-      }
+      // if (isMobile) {
+      //   ts.setViewport(480, 987); // Maximum viewport
+      // } else {
+      //   ts.setViewport(1024, 1050); // Good desktop viewport
+      // }
     }
 
     ts.blockDomains(...blockDomains)
@@ -70,11 +70,11 @@ export class TestScriptBuilder {
     const ts = testScript()
 
     if (location.includes('-docker')) { // FIXME this is just testing, set optimal viewport when testing is finished.
-      if (isMobile) {
-        ts.setViewport(480, 987); // Maximum viewport
-      } else {
-        ts.setViewport(1024, 1050); // Good desktop viewport
-      }
+      // if (isMobile) {
+      //   ts.setViewport(480, 987); // Maximum viewport
+      // } else {
+      //   ts.setViewport(1024, 1050); // Good desktop viewport
+      // }
     }
 
     ts.setActivityTimeout(activityTimeout)
