@@ -21,6 +21,7 @@ export const DEFAULT_PARAMS: Required<TestParams> = {
   skipPrewarm: false,
   speedKitConfig: null,
   timeout: DEFAULT_TIMEOUT,
+  speedKitExpected: false,
 }
 
 /**

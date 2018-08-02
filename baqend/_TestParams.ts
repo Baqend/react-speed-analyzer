@@ -56,6 +56,11 @@ export interface TestParams {
    * The WebPagetest test timeout.
    */
   timeout?: number
+
+  /**
+   * If a test is expected to be a Speed Kit comparison.
+   */
+  speedKitExpected?: boolean
 }
 
 export interface MultiTestParams extends TestParams {
