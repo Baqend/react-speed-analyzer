@@ -12,7 +12,7 @@ import {
 
 const initialState = {
   url: '',
-  location: 'eu-central-1:Chrome.Native',
+  location: 'eu-central-1-docker:Chrome.Native',
   caching: false,
   mobile: false,
   isSpeedKitComparison: false,
