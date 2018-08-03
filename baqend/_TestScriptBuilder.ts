@@ -93,20 +93,6 @@ export class TestScriptBuilder {
   }
 
   /**
-   * Adds to a test script the logic to clear the browser's content.
-   */
-  private clearBrowserContent(testScript: TestScript, location: string) {
-    if (location.includes('eu-central-1-')) {
-      return testScript
-        .navigate(`http://localhost:8888/orange.html`)
-        .sleep(10)
-    }
-
-    return testScript
-      .navigate('about:blank')
-  }
-
-  /**
    * Creates a Web Page Test script to execute.
    *
    * @param url                   The URL to create the test script for.

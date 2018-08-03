@@ -10,13 +10,13 @@ const MAX_INTERVAL_ITERATIONS = 480
 const TOP_LIST: BulkTestParams[] =
   [
     { url: 'http://www.alibaba.com/', location: 'us-east-1:Chrome.Native', runs: 10, mobile: false },
-    { url: 'http://www.condenast.com/', location: 'eu-central-1:Chrome.Native', runs: 10, mobile: false },
+    { url: 'http://www.condenast.com/', location: 'eu-central-1-docker:Chrome.FIOSNoLatency', runs: 10, mobile: false },
     { url: 'https://diply.com/', location: 'us-east-1:Chrome.Native', runs: 10, mobile: false },
     { url: 'http://www.espn.com/', location: 'us-east-1:Chrome.Native', runs: 10, mobile: false },
     { url: 'http://fandom.wikia.com/explore', location: 'us-east-1:Chrome.Native', runs: 10, mobile: false },
-    { url: 'https://www.golem.de/', location: 'eu-central-1:Chrome.Native', runs: 10, mobile: false },
+    { url: 'https://www.golem.de/', location: 'eu-central-1-docker:Chrome.FIOSNoLatency', runs: 10, mobile: false },
     { url: 'https://imgur.com/', location: 'us-east-1:Chrome.Native', runs: 10, mobile: false },
-    { url: 'http://www.kicker.de/', location: 'eu-central-1:Chrome.Native', runs: 10, mobile: false },
+    { url: 'http://www.kicker.de/', location: 'eu-central-1-docker:Chrome.FIOSNoLatency', runs: 10, mobile: false },
     { url: 'http://www.molsoncoors.com/en', location: 'us-east-1:Chrome.Native', runs: 10, mobile: false },
     { url: 'http://www.msn.com/de-de/', location: 'us-east-1:Chrome.Native', runs: 10, mobile: false },
     { url: 'https://www.realtor.com/', location: 'us-east-1:Chrome.Native', runs: 10, mobile: false },
@@ -36,9 +36,9 @@ const TOP_LIST: BulkTestParams[] =
     { url: 'https://www.usatoday.com/', location: 'us-east-1:Chrome.Native', runs: 10, mobile: false },
     { url: 'https://www.booking.com/', location: 'us-east-1:Chrome.Native', runs: 10, mobile: false },
     { url: 'https://www.tripadvisor.com/', location: 'us-east-1:Chrome.Native', runs: 10, mobile: false },
-    { url: 'http://www.computerbild.de/', location: 'eu-central-1:Chrome.Native', runs: 10, mobile: false },
-    { url: 'http://www.bild.de/', location: 'eu-central-1:Chrome.Native', runs: 10, mobile: false },
-    { url: 'http://www.spiegel.de/', location: 'eu-central-1:Chrome.Native', runs: 10, mobile: false },
+    { url: 'http://www.computerbild.de/', location: 'eu-central-1-docker:Chrome.FIOSNoLatency', runs: 10, mobile: false },
+    { url: 'http://www.bild.de/', location: 'eu-central-1-docker:Chrome.FIOSNoLatency', runs: 10, mobile: false },
+    { url: 'http://www.spiegel.de/', location: 'eu-central-1-docker:Chrome.FIOSNoLatency', runs: 10, mobile: false },
   ]
 
 /**

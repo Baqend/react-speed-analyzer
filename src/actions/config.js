@@ -25,7 +25,7 @@ export function handleUrlInput(url) {
 export function handleLocationChange(location) {
   return {
     type: CHANGE_LOCATION,
-    payload: location === 'US' ? 'us-east-1:Chrome.Native' : 'eu-central-1-docker:Chrome.Native',
+    payload: location === 'US' ? 'us-east-1:Chrome.Native' : 'eu-central-1-docker:Chrome.FIOSNoLatency',
   }
 }
 

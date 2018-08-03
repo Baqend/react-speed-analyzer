@@ -14,7 +14,7 @@ A comparison of a URL with and without Speed Kit.
 - **url**: string
 - **activityTimeout?**: number = 75
 - **caching?**: boolean = false
-- **location?**: string = 'eu-central-1:Chrome.Native'
+- **location?**: string = 'eu-central-1-docker:Chrome.FIOSNoLatency'
 - **mobile?**: boolean = false
 - **priority?**: number = 0
 - **skipPrewarm?**: boolean = false
@@ -28,7 +28,7 @@ A comparison with multiple runs.
 - **url**: string
 - **activityTimeout?**: number = 75
 - **caching?**: boolean = false
-- **location?**: string = 'eu-central-1:Chrome.Native'
+- **location?**: string = 'eu-central-1-docker:Chrome.FIOSNoLatency'
 - **mobile?**: boolean = false
 - **priority?**: number = 0
 - **skipPrewarm?**: boolean = false
@@ -45,7 +45,7 @@ A comparison of multiple URLs with multiple runs.
   - **url**: string
   - **activityTimeout?**: number = 75
   - **caching?**: boolean = false
-  - **location?**: string = 'eu-central-1:Chrome.Native'
+  - **location?**: string = 'eu-central-1-docker:Chrome.FIOSNoLatency'
   - **mobile?**: boolean = false
   - **priority?**: number = 0
   - **skipPrewarm?**: boolean = false
