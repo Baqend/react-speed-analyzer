@@ -175,9 +175,9 @@ class ConfigFormComponent extends Component {
             <span className="flex-auto w-100 text-right">EU</span>
             <Toggle
               className="mh1"
-              checked={this.props.config.location === 'us-east-1:Chrome.Native'}
+              checked={this.props.config.location.indexOf('us-east-1') !== -1}
               icons={false}
-              value={this.props.config.location === 'us-east-1:Chrome.Native' ? 'EU' : 'US'}
+              value={this.props.config.location.indexOf('us-east-1') !== -1 ? 'EU' : 'US'}
               onChange={this.handleLocationChange}
             />
             <span className="flex-auto w-100">USA</span>
@@ -207,9 +207,9 @@ class ConfigFormComponent extends Component {
                 <span className="flex-auto w-100">Run from US</span>
                 <Toggle
                   className="ml1"
-                  defaultChecked={this.props.config.location === 'us-east-1:Chrome.Native'}
+                  defaultChecked={this.props.config.location === 'us-east-1-docker:Chrome.FIOSNoLatency'}
                   icons={false}
-                  value={this.props.config.location === 'us-east-1:Chrome.Native' ? 'EU' : 'US'}
+                  value={this.props.config.location.indexOf('us-east-1') !== -1 ? 'EU' : 'US'}
                   onChange={this.handleLocationChange}
                 />
               </div>

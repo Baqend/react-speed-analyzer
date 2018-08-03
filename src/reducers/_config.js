@@ -27,13 +27,22 @@ export default function config(state = initialState, action = {}) {
     case CHANGE_URL:
       return { ...state, url: action.payload }
     case CHANGE_LOCATION:
-      return { ...state, location: action.payload }
+      return {
+        ...state,
+        location: state.mobile ? action.payload.substr(0, action.payload.lastIndexOf('.') + 1) + 'LTE' : action.payload
+      }
     case CHANGE_TIMEOUT:
       return { ...state, activityTimeout: action.payload }
     case CHANGE_SPEED_KIT_CONFIG:
       return { ...state, speedKitConfig: action.payload }
     case SWITCH_MOBILE:
-      return { ...state, mobile: action.payload }
+      const mobile = action.payload
+      const location = state.location.substr(0, state.location.lastIndexOf('.') + 1)
+      return {
+        ...state,
+        mobile,
+        location: mobile ? location + 'LTE' : location + 'FIOSNoLatency',
+      }
     case SWITCH_CACHING:
       return { ...state, caching: action.payload }
     case START_TEST_POST:
