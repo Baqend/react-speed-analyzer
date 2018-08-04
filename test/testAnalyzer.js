@@ -11,7 +11,7 @@ const analyzerCodeUrl = `${analyzerAPIUrl}/code`
 async function testAnalyzer(siteUrl, expectedParams) {
   const comparisonBody = {
     url: siteUrl,
-    location: 'eu-central-1:Chrome.Native',
+    location: 'eu-central-1-docker:Chrome.Native',
     mobile: false,
     speedKitConfig: expectedParams.speedKitConfig,
     withPuppeteer: false,
