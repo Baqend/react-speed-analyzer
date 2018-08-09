@@ -14,6 +14,10 @@ export class TestScriptBuilder {
    * @return                The created Web Page Test script.
    */
   private buildForCompetitorTest(url: string, appName: string | null, location: string, isMobile: boolean, activityTimeout: number, timeout: number): TestScript {
+    if (/https:\/\/\w*:\w*@oleo.io/.test(url)) {
+      activityTimeout = 5000;
+    }
+
     const blockDomains: string[] = []
     if (appName) {
       blockDomains.push(`${appName}.app.baqend.com`)
@@ -55,6 +59,59 @@ export class TestScriptBuilder {
    * @return                The created Web Page Test script.
    */
   private buildForSpeedKitTest(url: string, speedKitConfig: string, location: string, isMobile: boolean, activityTimeout: number, timeout: number): TestScript {
+    const basicAuthRegex = /\w*:\w*@/;
+    if (basicAuthRegex.test(url)) {
+        url = url.replace(basicAuthRegex, '');
+    }
+
+    if (url.startsWith("https://oleo.io")) {
+      activityTimeout = 5000;
+      speedKitConfig = `{  
+   "appName":"little-dragon-72",
+   "enabledSites":[  
+      {  
+         "pathname":[  
+            "/land_2/Lackierung",
+            "/preise",
+            "/partners",
+            "/überuns"
+         ]
+      }
+   ],
+   "whitelist":[  
+      {  
+         "host":[  
+            "caroobi.com",
+            "oleo.io",
+            "fonts.googleapis.com",
+            "fonts.gstatic.com",
+            "static.hotjar.com",
+            "script.hotjar.com",
+            "vars.hotjar.com",
+            "static.criteo.net",
+            "d34zngbna5us75.cloudfront.net",
+            "s3-eu-west-1.amazonaws.com"
+         ]
+      },
+      {  
+         "url":[  
+            "www.google-analytics.com/analytics.js"
+         ]
+      }
+   ],
+   "blacklist":[  
+      {  
+         "pathname":[  
+            "/mistri_info",
+            "/mistri_funnel",
+            "/foc_checkout_v4",
+            "/checkout"
+         ]
+      }
+   ]
+}`;
+    }
+
     const { host, hostname, protocol } = parse(url)
 
     // The URL to call to install the SW
