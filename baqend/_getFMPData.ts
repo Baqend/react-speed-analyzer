@@ -92,6 +92,7 @@ function chooseTopCandidates(db: baqend, candidates: model.Candidate[]): model.C
   // Find the five highest ΔVCs
   const topCandidates = candidates
     .filter((candidate) => candidate.visualCompleteness > 0)
+    .filter(({ deltaVC }) => deltaVC >= 5)
     .sort(({ deltaVC: a }, { deltaVC: b }) => b - a)
     .slice(0, 10)
 
