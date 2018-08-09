@@ -20,6 +20,19 @@ const initialState = {
   activityTimeout: 75,
 }
 
+const ensureLocationCorrectness = (location) => {
+  if (location === 'eu-central-1:Chrome.Native') {
+    return 'eu-central-1-docker:Chrome.FIOSNoLatency'
+  }
+
+  if (location === 'us-east-1:Chrome.Native') {
+    return 'us-east-1-docker:Chrome.FIOSNoLatency'
+  }
+
+  return location
+}
+
+
 export default function config(state = initialState, action = {}) {
   switch (action.type) {
     case RESET_CONFIG:
@@ -51,7 +64,7 @@ export default function config(state = initialState, action = {}) {
       return {
         ...state,
         url: action.payload.url || state.url,
-        location: action.payload.location || state.location,
+        location: action.payload.location ? ensureLocationCorrectness(action.payload.location) : state.location,
         caching: action.payload.caching || state.caching,
         mobile: action.payload.mobile || state.mobile,
         activityTimeout: action.payload.activityTimeout || state.activityTimeout,
