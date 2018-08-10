@@ -1,0 +1,25 @@
+{
+  "class": "/db/PuppeteerServiceWorkers",
+  "acl": {
+    "schemaAdd": {
+      "/db/Role/1": "allow"
+    },
+    "schemaReplace": {
+      "/db/Role/1": "allow"
+    }
+  },
+  "embedded": true,
+  "metadata": {},
+  "fields": {
+    "scope": {
+      "name": "scope",
+      "type": "/db/String",
+      "order": 0
+    },
+    "source": {
+      "name": "source",
+      "type": "/db/String",
+      "order": 1
+    }
+  }
+}

@@ -1,4 +1,4 @@
-import { binding } from 'baqend'
+import { binding, model, PuppeteerServiceWorkers } from 'baqend'
 
 declare module 'baqend' {
 
@@ -29,6 +29,7 @@ declare module 'baqend' {
     PuppeteerType: binding.ManagedFactory<model.PuppeteerType>;
     PuppeteerStats: binding.ManagedFactory<model.PuppeteerStats>;
     PuppeteerSpeedKit: binding.ManagedFactory<model.PuppeteerSpeedKit>;
+    PuppeteerServiceWorkers: binding.ManagedFactory<model.PuppeteerServiceWorkers>;
     Candidate: binding.ManagedFactory<model.Candidate>;
     FMPData: binding.ManagedFactory<model.FMPData>;
   }
@@ -355,6 +356,12 @@ declare module 'baqend' {
       stats: PuppeteerStats;
       speedKit: PuppeteerSpeedKit | null;
       smartConfig: string;
+      serviceWorkers: PuppeteerServiceWorkers[] | null;
+    }
+
+    interface PuppeteerServiceWorkers extends binding.Managed {
+      scope: string | null;
+      source: string | null;
     }
 
     interface PuppeteerType extends binding.Managed {

@@ -65,6 +65,11 @@
       "name": "smartConfig",
       "type": "/db/String",
       "order": 10
+    },
+    "serviceWorkers": {
+      "name": "serviceWorkers",
+      "type": "/db/collection.List[/db/PuppeteerServiceWorkers]",
+      "order": 11
     }
   }
 }

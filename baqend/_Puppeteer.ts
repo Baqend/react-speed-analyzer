@@ -118,7 +118,12 @@ export class Puppeteer {
   ) {
   }
 
-  async analyze(url: string, mobile: boolean = false, location: string = 'eu', thirdParty: boolean = true): Promise<model.Puppeteer> {
+  async analyze(
+    url: string,
+    mobile: boolean = false,
+    location: string = 'eu',
+    thirdParty: boolean = true,
+  ): Promise<model.Puppeteer> {
     try {
       const language = location.startsWith('us') ? 'en-US' : 'de-DE'
       const data = await this.postToServer(
@@ -133,6 +138,7 @@ export class Puppeteer {
         PuppeteerSegment.SPEED_KIT,
         PuppeteerSegment.SCREENSHOT_DATA,
         PuppeteerSegment.DOMAINS,
+        PuppeteerSegment.SERVICE_WORKERS,
       )
 
       this.db.log.info(`Received puppeteer data for ${url}`, { data })
@@ -161,6 +167,13 @@ export class Puppeteer {
       puppeteer.stats = new this.db.PuppeteerStats(data.stats!)
       puppeteer.speedKit = data.speedKit ? new this.db.PuppeteerSpeedKit(data.speedKit) : null
       puppeteer.smartConfig = this.serializer.serialize(smartConfig, DataType.JSON)
+
+      const serviceWorkers: model.PuppeteerServiceWorkers[] = [];
+      data.serviceWorkers && data.serviceWorkers.forEach((serviceWorker) => {
+        serviceWorkers.push(new this.db.PuppeteerServiceWorkers(serviceWorker))
+      })
+
+      puppeteer.serviceWorkers = serviceWorkers.length > 0 ? serviceWorkers : null
 
       return puppeteer
     } catch (error) {

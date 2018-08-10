@@ -60,10 +60,17 @@ async function fetchServiceWorkerUrl(db: baqend, url: string): Promise<SpeedKitI
  * @param db The Baqend instance.
  * @param mobile Whether to fetch the mobile variant of the site.
  * @param fetchSW Whether to fetch the sw path.
+ * @param location The location for the analyze.
  * @return A promise which resolves with the analysis's result map.
  * @template Result
  */
-export async function analyzeUrls(queries: string[], db: baqend, mobile: boolean = false, fetchSW = false, location = 'eu'): Promise<Map<string, model.Puppeteer | SpeedKitInfo>> {
+export async function analyzeUrls(
+  queries: string[],
+  db: baqend,
+  mobile: boolean = false,
+  fetchSW = false,
+  location = 'eu'
+): Promise<Map<string, model.Puppeteer | SpeedKitInfo>> {
   if(fetchSW) {
     const analyses = queries.map(query => forMap(query, fetchServiceWorkerUrl(db, query,)))
     const map = await Promise.all(analyses)
