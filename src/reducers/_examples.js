@@ -1,88 +1,88 @@
 import braunLogo from 'assets/img/braun.png'
 import netflixLogo from 'assets/img/netflix.png'
 import bookingLogo from 'assets/img/booking.png'
-import colaLogo from 'assets/img/cola.png'
-import spiegelLogo from 'assets/img/spiegel.png'
 import yelpLogo from 'assets/img/yelp.png'
-import molsoncoorsLogo from 'assets/img/molsoncoors.png'
-import kickerLogo from 'assets/img/kicker.png'
 import wellsFargoLogo from 'assets/img/wells-fargo.png'
 import computerBildLogo from 'assets/img/computerbild.png'
-import aolLogo from 'assets/img/aol.png'
 import alibabaLogo from 'assets/img/alibaba.png'
+import zillowLogo from 'assets/img/zillowLogo.jpg'
+import shutterstockLogo from 'assets/img/shutterstock-logo.jpg'
+import walmartLogo from 'assets/img/walmart.jpeg'
+import redditLogo from 'assets/img/reddit.png'
+import imdbLogo from 'assets/img/imdb.png'
 
 export default function examples() {
   return [
     {
       name: 'Booking',
-      id: 'j08EJNbooking',
-      speedup: '2.5 x Faster',
+      id: 'DDlPATbooking',
+      speedup: '2.6 x Faster',
       logo: bookingLogo,
     },
     {
       name: 'Braun',
-      id: 'qwa9eUbraun',
-      speedup: '8.6 x Faster',
+      id: 'fsyd2Gbraun',
+      speedup: '3.5 x Faster',
       logo: braunLogo,
     },
     {
       name: 'Yelp',
-      id: 'Fi0QMayelp',
-      speedup: '1.5 x Faster',
+      id: 'CMgtoNyelp',
+      speedup: '1.8 x Faster',
       logo: yelpLogo,
     },
     {
-      name: 'Spiegel',
-      id: 'SRP8pispiegel',
-      speedup: '2.1 x Faster',
-      logo: spiegelLogo,
+      name: 'Zillow',
+      id: 'A7KxT8zillow',
+      speedup: '3.2 x Faster',
+      logo: zillowLogo,
     },
     {
-      name: 'Coca Cola',
-      id: 'AyvC67coca-cola',
-      speedup: '2.0 x Faster',
-      logo: colaLogo,
+      name: 'Reddit',
+      id: 'PIMbCXreddit',
+      speedup: '7.5 x Faster',
+      logo: redditLogo,
     },
     {
-      name: 'Molson Coors',
-      id: 'lSnbbwmolsoncoors',
-      speedup: '1.9 x Faster',
-      logo: molsoncoorsLogo,
+      name: 'Walmart',
+      id: 'pJG7Sjwalmart',
+      speedup: '1.8 x Faster',
+      logo: walmartLogo,
     },
     {
       name: 'Netflix',
-      id: 'Kl64XDnetflix',
-      speedup: '3.0 x Faster',
+      id: 'UfiVaInetflix',
+      speedup: '3.6 x Faster',
       logo: netflixLogo,
     },
     {
       name: 'Wells Fargo',
-      id: 'vSfhpdwellsfargo',
-      speedup: '1.6 x Faster',
+      id: 'nTxBTSwellsfargo',
+      speedup: '5.9 x Faster',
       logo: wellsFargoLogo,
     },
     {
-      name: 'Aol',
-      id: 'Hmt5DTaol',
-      speedup: '2.0 x Faster',
-      logo: aolLogo,
+      name: 'IMDb',
+      id: 'r8c27oimdb',
+      speedup: '2.3 x Faster',
+      logo: imdbLogo,
     },
     {
-      name: 'Kicker',
-      id: 'rBSz0ikicker',
-      speedup: '1.4 x Faster',
-      logo: kickerLogo,
+      name: 'shutterstock',
+      id: 'tfKnfLshutterstock',
+      speedup: '3.0 x Faster',
+      logo: shutterstockLogo,
     },
     {
       name: 'Alibaba',
-      id: 'e40aQKalibaba',
-      speedup: '5.3 x Faster',
+      id: 'KK8eXpalibaba',
+      speedup: '2.9 x Faster',
       logo: alibabaLogo,
     },
     {
       name: 'Computer Bild',
-      id: 'PpBf2ocomputerbild',
-      speedup: '2.1 x Faster',
+      id: 'CLrpw1computerbild',
+      speedup: '3.6 x Faster',
       logo: computerBildLogo,
     }
   ]
