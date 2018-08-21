@@ -117,6 +117,7 @@ declare module 'baqend' {
       block?: string,
       breakDown?: boolean,
       chromeTrace?: boolean,
+      keepua?: boolean,
       commandLine: string
       device: string
       disableHTTPHeaders?: boolean,

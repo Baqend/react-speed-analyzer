@@ -36,6 +36,7 @@ export const DEFAULT_TEST_OPTIONS: Partial<model.TestOptions> = {
   breakDown: false,
   domains: false,
   saveResponseBodies: false,
+  keepua: true,
   tcpDump: false,
   timeline: true,
   minimumDuration: 1, // capture at least one second
