@@ -8,21 +8,24 @@ interface PleskTTFBRequest {
 
 interface PleskTTFBResponse {
   url: string
-  ttfb: number
+  ttfb?: number
+  error?: string
 }
 
 /**
  * Calculates the TTFB of a given URL.
  */
-export async function calcTTFB(url: string): Promise<number> {
+export async function calcTTFB(url: string): Promise<PleskTTFBResponse> {
   const requestStart = Date.now()
-  await fetch(url)
+  await fetch(url, { timeout: 15_000 })
 
-  return Date.now() - requestStart
+  const ttfb = Date.now() - requestStart
+
+  return { url, ttfb }
 }
 
 async function pleskTTFB(urls: string[]): Promise<PleskTTFBResponse[]> {
-  return Promise.all(urls.map(url => calcTTFB(url).then(ttfb => ({ url, ttfb }))))
+  return Promise.all(urls.map(url => calcTTFB(url).catch(({ message: error }) => ({ url, error }))))
 }
 
 function ensureArray<T>(optArray: T | T[]): T[] {
