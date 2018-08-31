@@ -209,7 +209,7 @@ async function execSpeedKit() {
     displayUrl: 'https://www.fussballdaten.de/bundesliga/ewige-tabelle/',
     mobile: false,
     isSpeedKitComparison: true,
-    speedKitVersion: '1.6.0',
+    speedKitVersion: '1.10.2',
     speedKitConfig: null,
     configAnalysis: {
       configMissing: false,
