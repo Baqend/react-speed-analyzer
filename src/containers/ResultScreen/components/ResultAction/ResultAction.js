@@ -110,7 +110,7 @@ class ResultAction extends Component {
     const cachingFact = ['HTTP Caching']
     if ( speedKitAmount > competitorAmount) {
       if (isSpeedKitComparison) {
-        cachingFact.push(`Speed Kit takes care of correct <strong>caching headers</strong>. In total, it caches <strong>${formatFileSize(speedKitAmount)}%</strong> and keeps the cache fresh.`)
+        cachingFact.push(`Speed Kit takes care of correct <strong>caching headers</strong>. In total, it caches <strong>${speedKitAmount}%</strong> and keeps the cache fresh.`)
         applied.push(cachingFact)
       } else {
         cachingFact.push(`Currently, <strong>${competitorAmount}%</strong> of resources are served with correct <strong>caching headers</strong>. Speed Kit will cache <strong>${speedKitAmount}%</strong> and keep the cache fresh.`)
