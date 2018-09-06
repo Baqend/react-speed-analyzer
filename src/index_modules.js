@@ -10,6 +10,7 @@ import 'whatwg-fetch'
 
 window.speedKitAnalyzer = {
   renderResult: (testId, { isPlesk = false, mainMetric = 'speedIndex' } = {}) => {
+    ReactDOM.unmountComponentAtNode(document.getElementById('speed-kit-analyzer'))
     ReactDOM.render(<Result testId={testId} isPlesk={isPlesk} mainMetric={mainMetric}/>,
       document.getElementById('speed-kit-analyzer'))
   },

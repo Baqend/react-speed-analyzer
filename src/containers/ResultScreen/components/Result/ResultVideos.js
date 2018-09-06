@@ -22,7 +22,7 @@ class ResultVideos extends Component {
         this[secondVideo].currentTime = 0
         this[secondVideo].play()
       }
-    } else if (!isDeviceIOS()) {
+    } else if (!isDeviceIOS() && playPromise !== undefined) {
       playPromise.then(() => {
         if(this[secondVideo]) {
           this[secondVideo].currentTime = 0
@@ -56,10 +56,12 @@ class ResultVideos extends Component {
   }
 
   handleSpeedKitProgress = () => {
-    const percent = (this.speedKitVideo.currentTime / this.speedKitVideo.duration) + 0.05
-    this.setState({
-      progressSpeedKit: percent
-    })
+    if (this.speedKitVideo) {
+      const percent = (this.speedKitVideo.currentTime / this.speedKitVideo.duration) + 0.05
+      this.setState({
+        progressSpeedKit: percent
+      })
+    }
   }
 
   handleCompetitorEnded = () => {
