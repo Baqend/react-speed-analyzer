@@ -26,12 +26,30 @@ class Result extends Component {
     const { isSpeedKitComparison } = this.props.testOverview
 
     this.state = {
+      windowWidth: null,
       showDetails: isSpeedKitComparison && speedKitError ? true : props.showDetails
     }
   }
 
   toggleDetails = () => {
     this.setState({ showDetails: !this.state.showDetails })
+  }
+
+  componentWillMount = () => {
+    this.updateWidths()
+  }
+
+  componentDidMount = () => {
+    window.addEventListener("resize", this.updateWidths)
+  }
+
+  componentWillUnmount = () => {
+    window.removeEventListener("resize", this.updateWidths)
+  }
+
+  updateWidths = () => {
+    const windowWidth = window.innerWidth
+    this.setState({ windowWidth })
   }
 
   renderHeader() {
@@ -76,7 +94,7 @@ class Result extends Component {
             <div className="w-50 flex-auto text-center pa1 pl4 pl0-ns" style={{ background: '#f6f6f6' }}>
               <small>
                 {speedKitVersion ? (
-                  <b>With Speed Kit {speedKitVersion}</b>
+                  <b>Your Website <small>{(this.state.windowWidth >= 480) && (`(Speed Kit ${speedKitVersion})`)}</small></b>
                 ) : (
                   <b>With Speed Kit</b>
                 )}

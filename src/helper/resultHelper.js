@@ -43,6 +43,15 @@ export function isMainMetricSatisfactory(competitorMetric, speedKitMetric) {
 }
 
 /**
+ * @param configAnalysis The information of the speed kit installation status
+ * @returns {boolean} true, if speed kit was installed correctly
+ */
+export function isSpeedKitInstalledCorrectly(configAnalysis = {}) {
+  const { configMissing, isDisabled, swPath, swPathMatches } = configAnalysis
+  return !configMissing && !isDisabled && swPath.length > 0 && swPathMatches
+}
+
+/**
  * @param competitorResult The test result from the competitor's site.
  * @param speedKitResult The test result from the Speed Kit.
  * @param mainMetric Main metric for the test.

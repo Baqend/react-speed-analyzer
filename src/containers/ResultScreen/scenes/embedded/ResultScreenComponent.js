@@ -7,6 +7,10 @@ import ConfigForm from 'components/ConfigForm/ConfigForm'
 import Result from 'containers/ResultScreen/components/Result/Result'
 import ResultAction from '../../components/ResultAction/ResultAction'
 
+import rocket from 'assets/img/rocket-outline-white.png'
+
+import {isSpeedKitInstalledCorrectly} from "../../../../helper/resultHelper"
+
 class ResultScreenComponent extends Component {
   constructor(props) {
     super(props)
@@ -62,11 +66,27 @@ class ResultScreenComponent extends Component {
   }
 
   render() {
-    const { competitorError } = this.props.result
+    const { competitorError, testOverview } = this.props.result
+    const { isSpeedKitComparison, speedKitVersion, configAnalysis } = testOverview
+
     return (
       <div className="flex results__wrapper pt7">
         <div className="flex-grow-1 flex flex-column">
           {this.props.showInput && this.renderForm()}
+          { isSpeedKitComparison && (
+            <div className="container text-center" style={{ padding: '0px 16px 16px 16px' }}>
+              <h3>
+                { isSpeedKitInstalledCorrectly(configAnalysis) ? (
+                  <div className="flex justify-center" style={{ alignItems: 'center' }}>
+                    <h3>You are using Speed Kit {speedKitVersion}</h3>
+                    <img src={rocket} style={{paddingLeft: '8px', height: 30}} />
+                  </div>
+                ) : (
+                  `Thank you for installing Speed Kit, the configuration is not done yet. Please see below for more information.`
+                ) }
+              </h3>
+            </div>
+          )}
           <div className="flex-grow-1 flex flex-column results" style={{marginTop: competitorError ? 0 : 80, animationDelay: '0.6s', transition: 'margin 0.5s ease' }}>
             {this.props.result.isFinished && this.renderResults()}
           </div>

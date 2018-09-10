@@ -119,11 +119,12 @@ class ResultScaleComponent extends Component {
   }
 
   render() {
-    const { speedKitError, competitorTest, speedKitTest, mainMetric } = this.props.result
+    const { speedKitError, competitorTest, speedKitTest, mainMetric, testOverview } = this.props.result
 
     const requests = competitorTest.firstView && competitorTest.firstView.requests
     const competitorTime = competitorTest.firstView && competitorTest.firstView[mainMetric]
     const speedKitTime = speedKitTest.firstView && !speedKitError && speedKitTest.firstView[mainMetric]
+    const isSpeedKitComparison = testOverview.isSpeedKitComparison
 
     const timeDelta = Math.abs(competitorTime - speedKitTime)
 
@@ -145,7 +146,7 @@ class ResultScaleComponent extends Component {
         <div className={`relative pt4 pt5-ns mt1 ${(speedKitTime && 'pb4 mb1 pb3-ns mb0-ns') || 'pb1'}`}>
           {competitorTime && this.state.windowWidth < 480 && (
             <Bobbel
-              description="Your Website"
+              description={isSpeedKitComparison ? `Without Speed Kit` : `Your Website`}
               time={`${Math.round(competitorTime / 100) / 10}s`}
               style={{ left: `${competitorOffset}%`, top: -8, marginLeft: -22.5 }}
               offset={competitorOffset}
@@ -155,7 +156,7 @@ class ResultScaleComponent extends Component {
           )}
           {speedKitTime && this.state.windowWidth < 480 && (
             <Bobbel
-              description="With Speed Kit"
+              description={isSpeedKitComparison ? `Your Website` : `With Speed Kit`}
               time={`${Math.round(speedKitTime / 100) / 10}s`}
               style={{ left: `${speedKitOffset}%`, top: 64, marginLeft: -22.5 }}
               offset={speedKitOffset}
@@ -171,7 +172,7 @@ class ResultScaleComponent extends Component {
           <div className="flex absolute" style={{ top: 0, width: '100%' }}>
             {speedKitTime && this.state.windowWidth >= 480 && this.state.width && (
               <Bobbel
-                description="With Speed Kit"
+                description={isSpeedKitComparison ? `Your Website` : `With Speed Kit`}
                 time={`${Math.round(speedKitTime / 100) / 10}s`}
                 order={speedKitOrder}
                 delta={timeDelta}
@@ -184,7 +185,7 @@ class ResultScaleComponent extends Component {
             )}
             {competitorTime && this.state.windowWidth >= 480 && this.state.width && (
               <Bobbel
-                description="Your Website"
+                description={isSpeedKitComparison ? `Without Speed Kit` : `Your Website`}
                 time={`${Math.round(competitorTime / 100) / 10}s`}
                 order={competitorOrder}
                 delta={timeDelta}
