@@ -13,7 +13,14 @@ export class TestScriptBuilder {
    * @param timeout         The timeout.
    * @return                The created Web Page Test script.
    */
-  private buildForCompetitorTest(url: string, appName: string | null, location: string, isMobile: boolean, activityTimeout: number, timeout: number): TestScript {
+  private buildForCompetitorTest(
+    url: string,
+    appName: string | null,
+    location: string,
+    isMobile: boolean,
+    activityTimeout: number,
+    timeout: number
+  ): TestScript {
     if (/https:\/\/\w*:\w*@oleo.io/.test(url)) {
       activityTimeout = 5000;
     }
@@ -51,6 +58,7 @@ export class TestScriptBuilder {
 
   /**
    * @param url             The competitor's URL to test.
+   * @param appName         The name of the app to be blocked.
    * @param speedKitConfig  The Speed Kit config.
    * @param location        The location where the test is executed.
    * @param isMobile        true if the mobile site is tested, false otherwise.
@@ -58,7 +66,15 @@ export class TestScriptBuilder {
    * @param timeout         The timeout.
    * @return                The created Web Page Test script.
    */
-  private buildForSpeedKitTest(url: string, speedKitConfig: string, location: string, isMobile: boolean, activityTimeout: number, timeout: number): TestScript {
+  private buildForSpeedKitTest(
+    url: string,
+    appName: string | null,
+    speedKitConfig: string,
+    location: string,
+    isMobile: boolean,
+    activityTimeout: number,
+    timeout: number,
+  ): TestScript {
     const basicAuthRegex = /\w*:\w*@/;
     if (basicAuthRegex.test(url)) {
         url = url.replace(basicAuthRegex, '');
@@ -140,6 +156,10 @@ export class TestScriptBuilder {
       .setDns(hostname!, credentials.makefast_ip)
       .navigate(installSpeedKitUrl)
 
+    if (!appName) {
+      ts.setDns(`${credentials.app}.app.baqend.com`, credentials.shield_pop_ip)
+    }
+
     if (!location.includes('-docker')) {
       ts.navigate('about:blank')
     }
@@ -174,7 +194,7 @@ export class TestScriptBuilder {
   ): string {
     // Resolve Speed Kit config
     if (isTestWithSpeedKit) {
-      return this.buildForSpeedKitTest(url, speedKitConfig, location, isMobile, activityTimeout, timeout).toString()
+      return this.buildForSpeedKitTest(url, appName, speedKitConfig, location, isMobile, activityTimeout, timeout).toString()
     }
 
     return this.buildForCompetitorTest(url, appName, location, isMobile, activityTimeout, timeout).toString()
