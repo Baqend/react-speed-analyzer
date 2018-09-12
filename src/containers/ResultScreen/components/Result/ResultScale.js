@@ -166,8 +166,8 @@ class ResultScaleComponent extends Component {
             />
           )}
           <div className="flex" style={{ fontWeight: 400, background: 'linear-gradient(to right, #c8e4b0, #fef1ea, #fdecec)' }}>
-            <div className="w-50 pa1 dark-green border-left">Excellent</div>
-            <div className="w-50 pa1 red border-right tr">Poor</div>
+            <div className="w-50 pa1 dark-green border-left">Fast</div>
+            <div className="w-50 pa1 red border-right tr">Slow</div>
           </div>
           <div className="flex absolute" style={{ top: 0, width: '100%' }}>
             {speedKitTime && this.state.windowWidth >= 480 && this.state.width && (

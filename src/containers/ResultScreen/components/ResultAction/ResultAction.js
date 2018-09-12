@@ -12,7 +12,7 @@ import { formatFileSize } from 'helper/utils'
 
 import WordPressLogo from 'assets/wordpress.png'
 import check from 'assets/check.svg'
-import cancel from 'assets/cancel.svg'
+import warning from 'assets/warning.svg'
 
 class ResultAction extends Component {
 
@@ -34,15 +34,20 @@ class ResultAction extends Component {
     // Request Latency
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
-    const ttfbFact = ['Request Latency']
+    const ttfbFact = ['Reduce Request Latency']
 
     if (competitorData.ttfb > speedKitData.ttfb) {
+      const ttfbDiff = competitorData.ttfb - speedKitData.ttfb
       if (isSpeedKitComparison) {
         ttfbFact.push(`Speed Kit caches your HTML in a CDN and thereby reduce the <strong>time-to-first-byte</strong> (<i>TTFB</i>) from <strong>${competitorData.ttfb} ms</strong> to <strong>${speedKitData.ttfb} ms</strong>.`)
-        applied.push(ttfbFact)
       } else {
         ttfbFact.push(`Speed Kit will cache your HTML in a CDN and thereby reduce the <strong>time-to-first-byte</strong> (<i>TTFB</i>) from <strong>${competitorData.ttfb} ms</strong> to <strong>${speedKitData.ttfb} ms</strong>.`)
+      }
+
+      if (ttfbDiff > 10 && !isSpeedKitComparison) {
         improvements.push(ttfbFact)
+      } else {
+        applied.push(ttfbFact)
       }
     } else {
       ttfbFact.push(`Your website displays a low <strong>time-to-first-byte</strong> of <strong>${competitorData.ttfb} ms</strong>.`)
@@ -52,17 +57,21 @@ class ResultAction extends Component {
     // Image Optimization
     const { contentSize: competitorContentSize = null } = competitorData
     const { contentSize: speedKitContentSize = null } = speedKitData
-    const imageOptFact = ['Image Optimization']
+    const imageOptFact = ['Use Image Optimization']
 
     if (competitorContentSize && speedKitContentSize) {
       const imageSizeDiff = competitorContentSize.images - speedKitContentSize.images
       if (imageSizeDiff > 0) {
         if (isSpeedKitComparison) {
           imageOptFact.push(`By resizing (<i>responsiveness</i>) and encoding (<i>WebP</i> & <i>Progessive JPEG</i>) <strong>images</strong>, Speed Kit saves <strong>${formatFileSize(imageSizeDiff)}</strong> of data.`)
-          applied.push(imageOptFact)
         } else {
           imageOptFact.push(`By resizing (<i>responsiveness</i>) and encoding (<i>WebP</i> & <i>Progessive JPEG</i>) <strong>images</strong>, Speed Kit will save <strong>${formatFileSize(imageSizeDiff)}</strong> of data.`)
+        }
+
+        if (imageSizeDiff > 50000 && !isSpeedKitComparison) {
           improvements.push(imageOptFact)
+        } else {
+          applied.push(imageOptFact)
         }
       } else {
         imageOptFact.push('Your website serves sufficiently compressed image files.')
@@ -71,7 +80,7 @@ class ResultAction extends Component {
     }
 
     // SSL information
-    const sslFact = ['HTTP/2']
+    const sslFact = ['Use HTTP/2']
     if (this.props.testOverview.puppeteer) {
       if (!isSpeedKitComparison && this.props.testOverview.puppeteer.protocol !== 'h2') {
         sslFact.push(`Your website is currently using <strong>HTTP/1.1</strong>. With Speed Kit, everything will be fetched over an encrypted <strong>HTTP/2</strong> connection.`)
@@ -83,16 +92,20 @@ class ResultAction extends Component {
     }
 
     // Compression
-    const compressionFact = ['Compression']
+    const compressionFact = ['Use Compression']
     if (competitorContentSize && speedKitContentSize) {
       const textSizeDiff = competitorContentSize.text - speedKitContentSize.text
       if (textSizeDiff > 0) {
         if (isSpeedKitComparison) {
           compressionFact.push(`By compressing text resources with GZip, Speed Kit reduces page weight by <strong>${formatFileSize(textSizeDiff)}</strong>.`)
-          applied.push(compressionFact)
         } else {
           compressionFact.push(`By compressing text resources with GZip, Speed Kit will reduce page weight by <strong>${formatFileSize(textSizeDiff)}</strong>.`)
+        }
+
+        if (textSizeDiff > 5000 && !isSpeedKitComparison) {
           improvements.push(compressionFact)
+        } else {
+          applied.push(compressionFact)
         }
       } else {
         compressionFact.push('Text-based HTTP resources on your website are compressed.')
@@ -107,14 +120,19 @@ class ResultAction extends Component {
     const speedKitCaching = speedKitData.hits.withCaching
     const speedKitAmount = speedKitCaching ? Math.round((100 / speedKitData.requests) * speedKitCaching) : 0
 
-    const cachingFact = ['HTTP Caching']
+    const cachingFact = ['Optimize with HTTP Caching']
     if ( speedKitAmount > competitorAmount) {
+      console.log('test')
       if (isSpeedKitComparison) {
         cachingFact.push(`Speed Kit takes care of correct <strong>caching headers</strong>. In total, it caches <strong>${speedKitAmount}%</strong> and keeps the cache fresh.`)
-        applied.push(cachingFact)
       } else {
         cachingFact.push(`Currently, <strong>${competitorAmount}%</strong> of resources are served with correct <strong>caching headers</strong>. Speed Kit will cache <strong>${speedKitAmount}%</strong> and keep the cache fresh.`)
+      }
+
+      if (speedKitAmount - competitorAmount > 5 && !isSpeedKitComparison) {
         improvements.push(cachingFact)
+      } else {
+        applied.push(cachingFact)
       }
     } else if (competitorAmount > 0){
       cachingFact.push(`Your website serves <strong>${competitorAmount}%</strong> of resources with correct <strong>caching headers</strong>.`)
@@ -122,7 +140,7 @@ class ResultAction extends Component {
     }
 
     // Progressive Web App
-    const offlineFact = ['Progressive Web App']
+    const offlineFact = ['Enable as Progressive Web App']
     if (isSpeedKitComparison) {
       offlineFact.push(`Without Internet connection, users can open your website, and Speed Kit will show the last-seen version (<i>offline mode</i>).`)
       applied.push(offlineFact)
@@ -144,12 +162,12 @@ class ResultAction extends Component {
     */
 
     // Client Caching
-    const clientFact = ['Client Caching']
+    const clientFact = ['Benefit from Baqend\'s Caching Technology']
     if (isSpeedKitComparison) {
-      clientFact.push(`Speed Kit serves data from fast caches and <i>make sure you never see stale content</i> (Bloom filter-based cache coherence).`)
+      clientFact.push(`Speed Kit serves data from fast caches and <i>make sure you never see stale content</i>.`)
       applied.push(clientFact)
     } else {
-      clientFact.push(`Speed Kit will serve data from fast caches and <i>make sure you never see stale content</i> (Bloom filter-based cache coherence).`)
+      clientFact.push(`Speed Kit will serve data from fast caches and <i>make sure you never see stale content</i>.`)
       improvements.push(clientFact)
     }
 
@@ -158,14 +176,17 @@ class ResultAction extends Component {
       const siImprovement = Math.round((competitorData.speedIndex - speedKitData.speedIndex) / competitorData.speedIndex * 100)
       const fmpImprovement = Math.round((competitorData.firstMeaningfulPaint - speedKitData.firstMeaningfulPaint) / competitorData.firstMeaningfulPaint * 100)
       if (siImprovement > 0 && fmpImprovement > 0) {
-        const performanceFact = ['User-Perceived Performance']
+        const performanceFact = ['Improve User-Perceived Performance']
         if (isSpeedKitComparison) {
           performanceFact.push(`Speed Kit improves <strong>Speed Index</strong> by <strong>${siImprovement}%</strong> and <strong>First Meaningful Paint</strong> by <strong>${fmpImprovement}%</strong>.`)
-          applied.push(performanceFact)
         } else {
           performanceFact.push(`Speed Kit will improve <strong>Speed Index</strong> by <strong>${siImprovement}%</strong> and <strong>First Meaningful Paint</strong> by <strong>${fmpImprovement}%</strong>.`)
-          performanceFact.push(`Speed Kit will improve <strong>Speed Index</strong> by <strong>${siImprovement}%</strong> and <strong>First Meaningful Paint</strong> by <strong>${fmpImprovement}%</strong>.`)
+        }
+
+        if (fmpImprovement >= 10 && !isSpeedKitComparison) {
           improvements.push(performanceFact)
+        } else {
+          applied.push(performanceFact)
         }
       }
     }
@@ -262,7 +283,7 @@ class ResultAction extends Component {
                 </h4>
               </div>
               <div className="w-10 text-center">
-                <img src={isSecured ? check : cancel} alt="secure status" style={{ height: 30}} />
+                <img src={isSecured ? check : warning} alt="secure status" style={{ height: 30}} />
               </div>
             </div>
             {!configAnalysis.configMissing &&
@@ -278,7 +299,7 @@ class ResultAction extends Component {
                 </h4>
               </div>
               <div className="w-10 text-center">
-                <img src={swPathMatches ? check : cancel} alt="service worker status" style={{ height: 30}} />
+                <img src={swPathMatches ? check : warning} alt="service worker status" style={{ height: 30}} />
               </div>
             </div>
             }
@@ -293,7 +314,7 @@ class ResultAction extends Component {
                 </h4>
               </div>
               <div className="w-10 text-center">
-                <img src={!configMissing && !isDisabled ? check : cancel} alt="config status" style={{ height: 30}} />
+                <img src={!configMissing && !isDisabled ? check : warning} alt="config status" style={{ height: 30}} />
               </div>
             </div>
           </div>
@@ -340,7 +361,7 @@ class ResultAction extends Component {
             <div key={index} className="w-100 w-50-ns mt2 mb2">
               <div className="flex ml2 mr2">
                 <div className="w-20 w-10-ns">
-                  <img src={ cancel } alt="speed kit feature" style={{ height: 30}} />
+                  <img src={ warning } alt="speed kit feature" style={{ height: 30}} />
                 </div>
                 <div className="w-80 w-90-ns">
                   <h4 className="mb0 mt0 fw6">{ content[0] }</h4>
@@ -364,10 +385,10 @@ class ResultAction extends Component {
       <div>
         <div className="text-center pb2 pt2" style={{ maxWidth: 700, margin: '0 auto' }}>
           <h2 className="dn db-ns mb0">
-            Optimization Potential: <span style={{ color: '#F27354' }}>{absolute}</span>
+            How Speed Kit can Accelerate Your Site by <span style={{ color: '#F27354' }}>{absolute}</span>
           </h2>
           <h3 className="dn-ns mb0">
-            Optimization Potential: <span style={{ color: '#F27354' }}>{absolute}</span>
+            How Speed Kit can Accelerate Your Site by <span style={{ color: '#F27354' }}>{absolute}</span>
           </h3>
         </div>
         {this.renderImprovements()}
