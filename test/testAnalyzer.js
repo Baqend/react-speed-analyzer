@@ -99,7 +99,22 @@ async function getResponse(response, name) {
   return json
 }
 
+/**
+ * @param result
+ * @param expectedResult
+ */
 function checkPuppeteerResult(result, expectedResult) {
+  if (!result) {
+    reportError(`Puppeteer erred with empty response.`)
+    return
+  }
+
+  const { status = 200, message = '' } = result
+  if (status !== 200) {
+    reportError(`Puppeteer erred with status ${status}: ${message}`)
+    return
+  }
+  
   try {
     assert.strictEqual(result.url, expectedResult.url, 'Attribute "url" not matching')
     assert.strictEqual(result.displayUrl, expectedResult.displayUrl, 'Attribute "displayUrl" not matching')
