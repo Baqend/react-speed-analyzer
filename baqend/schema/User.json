@@ -2,6 +2,9 @@
   "class": "/db/User",
   "superClass": "/db/Object",
   "acl": {
+    "insert": {
+      "/db/Role/1": "allow"
+    },
     "schemaAdd": {
       "/db/Role/1": "allow"
     },
@@ -28,6 +31,11 @@
       "flags": [
         "READONLY"
       ]
+    },
+    "speedKitConfigs": {
+      "name": "speedKitConfigs",
+      "type": "/db/collection.Map[/db/String,/db/String]",
+      "order": 2
     }
   }
 }
