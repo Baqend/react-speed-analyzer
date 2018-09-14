@@ -13,6 +13,13 @@ import { formatFileSize } from 'helper/utils'
 import WordPressLogo from 'assets/wordpress.png'
 import check from 'assets/check.svg'
 import warning from 'assets/warning.svg'
+import {
+  categorizeClientCachingFact,
+  categorizeCompressionFact, categorizeHTTPCachingFact,
+  categorizeIOFact, categorizePWAFact,
+  categorizeSSLFact,
+  categorizeTtfbFact, categorizeUserPerceivedPerformanceFact
+} from "../../../../helper/ctaFacts"
 
 class ResultAction extends Component {
 
@@ -34,120 +41,25 @@ class ResultAction extends Component {
     // Request Latency
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
-    const ttfbFact = ['Reduce Request Latency']
-
-    if (competitorData.ttfb > speedKitData.ttfb) {
-      const ttfbDiff = competitorData.ttfb - speedKitData.ttfb
-      if (isSpeedKitComparison) {
-        ttfbFact.push(`Speed Kit caches your HTML in a CDN and thereby reduce the <strong>time-to-first-byte</strong> (<i>TTFB</i>) from <strong>${competitorData.ttfb} ms</strong> to <strong>${speedKitData.ttfb} ms</strong>.`)
-      } else {
-        ttfbFact.push(`Speed Kit will cache your HTML in a CDN and thereby reduce the <strong>time-to-first-byte</strong> (<i>TTFB</i>) from <strong>${competitorData.ttfb} ms</strong> to <strong>${speedKitData.ttfb} ms</strong>.`)
-      }
-
-      if (ttfbDiff > 10 && !isSpeedKitComparison) {
-        improvements.push(ttfbFact)
-      } else {
-        applied.push(ttfbFact)
-      }
-    } else {
-      ttfbFact.push(`Your website displays a low <strong>time-to-first-byte</strong> of <strong>${competitorData.ttfb} ms</strong>.`)
-      applied.push(ttfbFact)
-    }
+    categorizeTtfbFact(competitorData.ttfb, speedKitData.ttfb, isSpeedKitComparison, applied, improvements);
 
     // Image Optimization
     const { contentSize: competitorContentSize = null } = competitorData
     const { contentSize: speedKitContentSize = null } = speedKitData
-    const imageOptFact = ['Use Image Optimization']
-
-    if (competitorContentSize && speedKitContentSize) {
-      const imageSizeDiff = competitorContentSize.images - speedKitContentSize.images
-      if (imageSizeDiff > 0) {
-        if (isSpeedKitComparison) {
-          imageOptFact.push(`By resizing (<i>responsiveness</i>) and encoding (<i>WebP</i> & <i>Progessive JPEG</i>) <strong>images</strong>, Speed Kit saves <strong>${formatFileSize(imageSizeDiff)}</strong> of data.`)
-        } else {
-          imageOptFact.push(`By resizing (<i>responsiveness</i>) and encoding (<i>WebP</i> & <i>Progessive JPEG</i>) <strong>images</strong>, Speed Kit will save <strong>${formatFileSize(imageSizeDiff)}</strong> of data.`)
-        }
-
-        if (imageSizeDiff > 50000 && !isSpeedKitComparison) {
-          improvements.push(imageOptFact)
-        } else {
-          applied.push(imageOptFact)
-        }
-      } else {
-        imageOptFact.push('Your website serves sufficiently compressed image files.')
-        applied.push(imageOptFact)
-      }
-    }
+    categorizeIOFact(competitorContentSize, speedKitContentSize, isSpeedKitComparison, applied, improvements)
 
     // SSL information
-    const sslFact = ['Use HTTP/2']
-    if (this.props.testOverview.puppeteer) {
-      if (!isSpeedKitComparison && this.props.testOverview.puppeteer.protocol !== 'h2') {
-        sslFact.push(`Your website is currently using <strong>HTTP/1.1</strong>. With Speed Kit, everything will be fetched over an encrypted <strong>HTTP/2</strong> connection.`)
-        improvements.push(sslFact)
-      } else {
-        sslFact.push(`Your website uses HTTP/2.`)
-        applied.push(sslFact)
-      }
-    }
+    categorizeSSLFact(this.props.testOverview.puppeteer, isSpeedKitComparison, applied, improvements)
 
     // Compression
-    const compressionFact = ['Use Compression']
-    if (competitorContentSize && speedKitContentSize) {
-      const textSizeDiff = competitorContentSize.text - speedKitContentSize.text
-      if (textSizeDiff > 0) {
-        if (isSpeedKitComparison) {
-          compressionFact.push(`By compressing text resources with GZip, Speed Kit reduces page weight by <strong>${formatFileSize(textSizeDiff)}</strong>.`)
-        } else {
-          compressionFact.push(`By compressing text resources with GZip, Speed Kit will reduce page weight by <strong>${formatFileSize(textSizeDiff)}</strong>.`)
-        }
-
-        if (textSizeDiff > 5000 && !isSpeedKitComparison) {
-          improvements.push(compressionFact)
-        } else {
-          applied.push(compressionFact)
-        }
-      } else {
-        compressionFact.push('Text-based HTTP resources on your website are compressed.')
-        applied.push(compressionFact)
-      }
-    }
+    categorizeCompressionFact(competitorContentSize, speedKitContentSize, isSpeedKitComparison, applied, improvements)
 
     // HTTP Caching
-    const competitorCaching = competitorData.hits.withCaching
-    const competitorAmount = competitorCaching ? Math.round((100 / competitorData.requests) * competitorCaching) : 0
+    categorizeHTTPCachingFact(competitorData, speedKitData, isSpeedKitComparison, applied, improvements)
 
-    const speedKitCaching = speedKitData.hits.withCaching
-    const speedKitAmount = speedKitCaching ? Math.round((100 / speedKitData.requests) * speedKitCaching) : 0
-
-    const cachingFact = ['Optimize with HTTP Caching']
-    if ( speedKitAmount > competitorAmount) {
-      console.log('test')
-      if (isSpeedKitComparison) {
-        cachingFact.push(`Speed Kit takes care of correct <strong>caching headers</strong>. In total, it caches <strong>${speedKitAmount}%</strong> and keeps the cache fresh.`)
-      } else {
-        cachingFact.push(`Currently, <strong>${competitorAmount}%</strong> of resources are served with correct <strong>caching headers</strong>. Speed Kit will cache <strong>${speedKitAmount}%</strong> and keep the cache fresh.`)
-      }
-
-      if (speedKitAmount - competitorAmount > 5 && !isSpeedKitComparison) {
-        improvements.push(cachingFact)
-      } else {
-        applied.push(cachingFact)
-      }
-    } else if (competitorAmount > 0){
-      cachingFact.push(`Your website serves <strong>${competitorAmount}%</strong> of resources with correct <strong>caching headers</strong>.`)
-      applied.push(cachingFact)
-    }
 
     // Progressive Web App
-    const offlineFact = ['Enable as Progressive Web App']
-    if (isSpeedKitComparison) {
-      offlineFact.push(`Without Internet connection, users can open your website, and Speed Kit will show the last-seen version (<i>offline mode</i>).`)
-      applied.push(offlineFact)
-    } else {
-      offlineFact.push(`Without Internet connection, users cannot open your website, whereas Speed Kit will show the last-seen version (<i>offline mode</i>).`)
-      improvements.push(offlineFact)
-    }
+    categorizePWAFact(isSpeedKitComparison, applied, improvements)
 
     // Faster Dependencies
     /*
@@ -162,36 +74,14 @@ class ResultAction extends Component {
     */
 
     // Client Caching
-    const clientFact = ['Benefit from Baqend\'s Caching Technology']
-    if (isSpeedKitComparison) {
-      clientFact.push(`Speed Kit serves data from fast caches and <i>make sure you never see stale content</i>.`)
-      applied.push(clientFact)
-    } else {
-      clientFact.push(`Speed Kit will serve data from fast caches and <i>make sure you never see stale content</i>.`)
-      improvements.push(clientFact)
-    }
+    categorizeClientCachingFact(isSpeedKitComparison, applied, improvements)
 
-    if((improvements.length + applied.length) % 2 !== 0) {
+    if ((improvements.length + applied.length) % 2 !== 0) {
       // User-Perceived Performance
-      const siImprovement = Math.round((competitorData.speedIndex - speedKitData.speedIndex) / competitorData.speedIndex * 100)
-      const fmpImprovement = Math.round((competitorData.firstMeaningfulPaint - speedKitData.firstMeaningfulPaint) / competitorData.firstMeaningfulPaint * 100)
-      if (siImprovement > 0 && fmpImprovement > 0) {
-        const performanceFact = ['Improve User-Perceived Performance']
-        if (isSpeedKitComparison) {
-          performanceFact.push(`Speed Kit improves <strong>Speed Index</strong> by <strong>${siImprovement}%</strong> and <strong>First Meaningful Paint</strong> by <strong>${fmpImprovement}%</strong>.`)
-        } else {
-          performanceFact.push(`Speed Kit will improve <strong>Speed Index</strong> by <strong>${siImprovement}%</strong> and <strong>First Meaningful Paint</strong> by <strong>${fmpImprovement}%</strong>.`)
-        }
-
-        if (fmpImprovement >= 10 && !isSpeedKitComparison) {
-          improvements.push(performanceFact)
-        } else {
-          applied.push(performanceFact)
-        }
-      }
+      categorizeUserPerceivedPerformanceFact(competitorData, speedKitData, isSpeedKitComparison, applied, improvements)
     }
 
-    return { improvements, applied}
+    return {improvements, applied}
   }
 
   // all Tests failed
