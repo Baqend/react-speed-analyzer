@@ -33,8 +33,8 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
   async create(
     puppeteer: model.Puppeteer,
     params: TestParams,
-    hasMultiComparison: boolean = false): Promise<model.TestOverview>
-  {
+    hasMultiComparison: boolean = false,
+  ): Promise<model.TestOverview> {
     // Create the comparison object
     const comparison = await this.createComparison(puppeteer.url)
 
@@ -62,8 +62,8 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
     comparison: model.TestOverview,
     puppeteer: model.Puppeteer,
     params: TestParams,
-    hasMultiComparison: boolean = false): Promise<model.TestOverview>
-  {
+    hasMultiComparison: boolean = false,
+  ): Promise<model.TestOverview> {
     const config = await this.buildSpeedKitConfig(puppeteer, params)
     const requiredParams = this.testBuilder.buildSingleTestParams(params, config)
     const configAnalysis = puppeteer.speedKit ? this.createConfigAnalysis(puppeteer.url, puppeteer.speedKit) : null
@@ -108,11 +108,15 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
     return comparison.save()
   }
 
-  async updateComparisonWithError(comparison: model.TestOverview): Promise<model.TestOverview> {
+  /**
+   * Sets the given error on the comparison.
+   */
+  async updateComparisonWithError(comparison: model.TestOverview, message: string, status: number): Promise<void> {
     // use default params => needed for plesk
     comparison.caching = false
     comparison.mobile = false
     comparison.isSpeedKitComparison = false
+    comparison.error = { message, status }
 
     // Create failed tests
     const [competitorTest, speedKitTest] = await Promise.all([
@@ -124,7 +128,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
     comparison.speedKitTestResult = speedKitTest
     setFailed(comparison)
 
-    return comparison.save()
+    await comparison.save()
   }
 
   /**

@@ -1,11 +1,11 @@
 import { baqend, model } from 'baqend'
-import { bootstrap } from './_compositionRoot'
+import { ComparisonFactory } from './_ComparisonFactory'
 import { parallelize } from './_helpers'
 import {
   isFinished, isIncomplete, isQueued, isUnfinished, setCanceled, setIncomplete, setRunning, setSuccess,
   Status,
 } from './_Status'
-import { factorize } from './_updateMultiComparison'
+import { factorize, updateMultiComparison } from './_updateMultiComparison'
 import { chooseFMP } from './_chooseFMP'
 import { callPageSpeed } from './_callPageSpeed'
 import { TestListener, TestWorker } from './_TestWorker'
@@ -25,7 +25,12 @@ export interface ComparisonListener {
  * @return {TestWorker}
  */
 export class ComparisonWorker implements TestListener {
-  constructor(private readonly db: baqend, private testWorker: TestWorker, private listener?: ComparisonListener) {
+  constructor(
+    private readonly db: baqend,
+    private testWorker: TestWorker,
+    private comparisonFactory: ComparisonFactory,
+    private listener?: ComparisonListener,
+  ) {
     this.testWorker.setListener(this)
   }
 
@@ -44,10 +49,11 @@ export class ComparisonWorker implements TestListener {
       return
     }
 
-    if(isQueued(comparison)) {
-      const { comparisonFactory } = bootstrap(this.db)
-      const updatedComparison = await comparisonFactory.updateComparisonWithError(comparison)
-      await updatedComparison.save()
+    // Check if comparison is still queued
+    if (isQueued(comparison)) {
+      const started = Math.ceil((comparison.updatedAt.getTime() - Date.now()) / 1000)
+      const message = `Comparison was still queued after ${started} seconds.`
+      await this.comparisonFactory.updateComparisonWithError(comparison, message, 599)
 
       return
     }

@@ -134,10 +134,15 @@
       "type": "/db/Puppeteer",
       "order": 23
     },
+    "error": {
+      "name": "error",
+      "type": "/db/JsonObject",
+      "order": 24
+    },
     "hasMultiComparison": {
       "name": "hasMultiComparison",
       "type": "/db/Boolean",
-      "order": 24
+      "order": 25
     }
   }
 }

@@ -24,8 +24,9 @@ async function updateWithPuppeteer(
     comparisonWorker.next(updatedComparison).catch((err) => db.log.error(err.message, err))
 
     return updatedComparison
-  } catch ({ message, stack, status = 500 }) {
-    return comparisonFactory.updateComparisonWithError(comparison)
+  } catch ({ message, status = 500 }) {
+    await comparisonFactory.updateComparisonWithError(comparison, message, status)
+    return comparison
   }
 }
 
@@ -35,15 +36,7 @@ async function updateWithPuppeteer(
 export async function post(db: baqend, req: Request, res: Response) {
   const { comparisonFactory } = bootstrap(db)
 
-  let withPuppeteer = true
-  if (req.body.hasOwnProperty('withPuppeteer')) {
-    withPuppeteer = req.body.withPuppeteer
-    delete req.body.withPuppeteer
-  }
-
-  // Get necessary options
-  const params = req.body as TestParams
-
+  const { withPuppeteer = true, ...params } = req.body as { withPuppeteer?: boolean } & TestParams
   const comparison = await comparisonFactory.createComparison(params.url)
 
   if (withPuppeteer) {

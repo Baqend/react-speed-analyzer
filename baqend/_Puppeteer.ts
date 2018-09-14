@@ -193,7 +193,7 @@ export class Puppeteer {
       const reasonPhrase = this.reasonPhraseForStatus(status)
       this.db.log.error(`Puppeteer Error: ${message}`, { message, status, reasonPhrase, stack })
 
-      const error = new Error(`${message} (${status} ${reasonPhrase})`)
+      const error = new Error(message)
       error.name = 'PuppeteerError'
       Object.defineProperty(error, 'status', { value: status })
 

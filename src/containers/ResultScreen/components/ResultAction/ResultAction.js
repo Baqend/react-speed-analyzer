@@ -85,15 +85,18 @@ class ResultAction extends Component {
   }
 
   // all Tests failed
-  renderAllTestsFailed() {
+  renderAllTestsFailed(error) {
+    const { message = 'An error occurred while running your tests.', status = 500 } = error || {}
+    const contactPassage = status === 500 ? 'Please re-run the test and if the problem persists' : 'If you need help with this error'
     return (
       <div>
         <div className="text-center pb2 pt2" style={{ maxWidth: 768, margin: '0 auto' }}>
           <h2>Test Runs Failed</h2>
-          <span className="faded">An error occurred while running your tests. Please re-run the test and if the problem persists, <a style={{ cursor: 'pointer' }} onClick={this.props.toggleModal}>contact us!</a></span>
+          <p className="faded">{message}</p>
+          <p className="faded">{contactPassage}, <a style={{ cursor: 'pointer' }} onClick={this.props.toggleModal}>feel free to contact us!</a></p>
         </div>
         <div className="text-center">
-          <a className="btn btn-orange btn-ghost ma1" onClick={this.restartAnalyzer}>Rerun Test</a>
+          <a className="btn btn-orange btn-ghost ma1" onClick={this.restartAnalyzer}>Re-run Test</a>
         </div>
       </div>
     )
@@ -304,7 +307,7 @@ class ResultAction extends Component {
     if (isSpeedKitComparison && !speedKitError) {
       return this.renderIsSpeedKitCta(speedKitVersion, configAnalysis)
     } else if (competitorError) {
-      return this.renderAllTestsFailed()
+      return this.renderAllTestsFailed(testOverview.error)
     } else if (!competitorError && speedKitError) {
       return this.renderSpeedKitFailed()
     } else if (!isPlesk && isWordPress){

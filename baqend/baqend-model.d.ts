@@ -216,6 +216,7 @@ declare module 'baqend' {
       configAnalysis: ConfigAnalysis | null;
       puppeteer: Puppeteer | null;
       hasMultiComparison: boolean;
+      error?: { message: string, status: number };
     }
 
     interface Hits extends binding.Managed {
