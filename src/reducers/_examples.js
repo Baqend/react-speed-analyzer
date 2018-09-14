@@ -6,8 +6,8 @@ import wellsFargoLogo from 'assets/img/wells-fargo.png'
 import computerBildLogo from 'assets/img/computerbild.png'
 import alibabaLogo from 'assets/img/alibaba.png'
 import zillowLogo from 'assets/img/zillowLogo.jpg'
-import shutterstockLogo from 'assets/img/shutterstock-logo.jpg'
-import walmartLogo from 'assets/img/walmart.jpeg'
+import shutterstockLogo from 'assets/img/shutterstock.png'
+import walmartLogo from 'assets/img/walmart.png'
 import redditLogo from 'assets/img/reddit.png'
 import imdbLogo from 'assets/img/imdb.png'
 
@@ -39,8 +39,8 @@ export default function examples() {
     },
     {
       name: 'Reddit',
-      id: 'PIMbCXreddit',
-      speedup: '7.5 x Faster',
+      id: 'QvGfMwreddit',
+      speedup: '3.4 x Faster',
       logo: redditLogo,
     },
     {
