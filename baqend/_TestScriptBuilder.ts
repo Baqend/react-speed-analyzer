@@ -156,9 +156,10 @@ export class TestScriptBuilder {
       .setDns(hostname!, credentials.makefast_ip)
       .navigate(installSpeedKitUrl)
 
-    if (!appName) {
-      ts.setDns(`${credentials.app}.app.baqend.com`, credentials.shield_pop_ip)
-    }
+    // FIXME when using the shield pop, h2 is not supported anymore.
+    // if (!appName) {
+      // ts.setDns(`${credentials.app}.app.baqend.com`, credentials.shield_pop_ip)
+    // }
 
     if (!location.includes('-docker')) {
       ts.navigate('about:blank')
