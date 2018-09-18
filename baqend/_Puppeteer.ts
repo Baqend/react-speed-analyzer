@@ -210,8 +210,9 @@ export class Puppeteer {
     const method = 'POST'
     const headers = { 'content-type': 'application/json' }
     const body = JSON.stringify(bodyObj)
+    const timeout = 0
 
-    return fetch(url, { method, headers, body })
+    return fetch(url, { method, headers, body, timeout })
   }
 
   /**
