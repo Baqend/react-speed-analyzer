@@ -45,7 +45,7 @@ export function categorizeTtfbFact(competitorTtfb, speedKitTtfb, isSpeedKitCompa
  * @param {Array} improvements The facts that are in need of improvement
  */
 export function categorizeIOFact(competitorContentSize, speedKitContentSize, isSpeedKitComparison, applied, improvements) {
-  const imageOptFact = ['Use Image Optimization']
+  const imageOptFact = ['Optimize Images']
 
   if (competitorContentSize && speedKitContentSize) {
     const imageSizeDiff = competitorContentSize.images - speedKitContentSize.images
@@ -138,7 +138,7 @@ export function categorizeCompressionFact(competitorContentSize, speedKitContent
  * @param {Array} improvements The facts that are in need of improvement
  */
 export function categorizeHTTPCachingFact(competitorData, speedKitData, isSpeedKitComparison, applied, improvements) {
-  const cachingFact = ['Optimize with HTTP Caching']
+  const cachingFact = ['Optimize HTTP Caching']
 
   const competitorCaching = competitorData.hits.withCaching
   const speedKitCaching = speedKitData.hits.withCaching
@@ -162,7 +162,7 @@ export function categorizeHTTPCachingFact(competitorData, speedKitData, isSpeedK
       return
     }
     cachingFact.push(`Your website serves <strong>${competitorAmount}%</strong> of resources with correct <strong>caching headers</strong>.`)
-    applied.push(cachingFact)
+    improvements.push(cachingFact)
   }
 }
 
@@ -193,13 +193,13 @@ export function categorizePWAFact(isSpeedKitComparison, applied, improvements) {
  * @param {Array} improvements The facts that are in need of improvement
  */
 export function categorizeClientCachingFact(isSpeedKitComparison, applied, improvements) {
-  const clientFact = ['Benefit from Baqend\'s Caching Technology']
+  const clientFact = ['Benefit from Unique Caching Technology']
 
   if (isSpeedKitComparison) {
-    clientFact.push(`Speed Kit serves data from fast caches and <i>make sure you never see stale content</i>.`)
+    clientFact.push(`Speed Kit serves data from fast caches and <i>make sure you never see stale content</i>, even for dynamic and personalized content.`)
     applied.push(clientFact)
   } else {
-    clientFact.push(`Speed Kit will serve data from fast caches and <i>make sure you never see stale content</i>.`)
+    clientFact.push(`Speed Kit will serve data from fast caches and <i>make sure you never see stale content</i>, even for dynamic and personalized content.`)
     improvements.push(clientFact)
   }
 }
@@ -215,10 +215,8 @@ export function categorizeClientCachingFact(isSpeedKitComparison, applied, impro
  */
 export function categorizeUserPerceivedPerformanceFact(competitorData, speedKitData, isSpeedKitComparison, applied, improvements) {
   const performanceFact = ['Improve User-Perceived Performance']
-
   const siImprovement = Math.round((competitorData.speedIndex - speedKitData.speedIndex) / competitorData.speedIndex * 100)
   const fmpImprovement = Math.round((competitorData.firstMeaningfulPaint - speedKitData.firstMeaningfulPaint) / competitorData.firstMeaningfulPaint * 100)
-
   if (siImprovement > 0 && fmpImprovement > 0) {
     if (isSpeedKitComparison) {
       performanceFact.push(`Speed Kit improves <strong>Speed Index</strong> by <strong>${siImprovement}%</strong> and <strong>First Meaningful Paint</strong> by <strong>${fmpImprovement}%</strong>.`)
@@ -233,5 +231,8 @@ export function categorizeUserPerceivedPerformanceFact(competitorData, speedKitD
 
       return
     }
+
+    performanceFact.push(`Speed Kit will improve <strong>Speed Index</strong> by <strong>${siImprovement}%</strong> and <strong>First Meaningful Paint</strong> by <strong>${fmpImprovement}%</strong>.`)
+    improvements.push(performanceFact)
   }
 }

@@ -57,9 +57,8 @@ class ResultAction extends Component {
     // HTTP Caching
     categorizeHTTPCachingFact(competitorData, speedKitData, isSpeedKitComparison, applied, improvements)
 
-
-    // Progressive Web App
-    categorizePWAFact(isSpeedKitComparison, applied, improvements)
+    // User-Perceived Performance
+    categorizeUserPerceivedPerformanceFact(competitorData, speedKitData, isSpeedKitComparison, applied, improvements)
 
     // Faster Dependencies
     /*
@@ -77,8 +76,8 @@ class ResultAction extends Component {
     categorizeClientCachingFact(isSpeedKitComparison, applied, improvements)
 
     if ((improvements.length + applied.length) % 2 !== 0) {
-      // User-Perceived Performance
-      categorizeUserPerceivedPerformanceFact(competitorData, speedKitData, isSpeedKitComparison, applied, improvements)
+      // Progressive Web App
+      categorizePWAFact(isSpeedKitComparison, applied, improvements)
     }
 
     return {improvements, applied}
@@ -150,6 +149,7 @@ class ResultAction extends Component {
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
     const absolute = calculateAbsolute(competitorData[this.props.result.mainMetric], speedKitData[this.props.result.mainMetric])
+    const showOptimization = absolute !== '0 ms'
 
     return (
       <div>
@@ -213,14 +213,25 @@ class ResultAction extends Component {
           </div>
           }
         </div>
-        <div className="text-center pb2 pt2" style={{ maxWidth: 700, margin: '0 auto' }}>
-          <h2 className="dn db-ns mb0">
-            Obtained Optimization: <span style={{ color: '#F27354' }}>{absolute}</span>
-          </h2>
-          <h3 className="dn-ns mb0">
-            Obtained  Optimization: <span style={{ color: '#F27354' }}>{absolute}</span>
-          </h3>
-        </div>
+        {showOptimization ? (
+          <div className="text-center pb2 pt2" style={{maxWidth: 700, margin: '0 auto'}}>
+            <h2 className="dn db-ns mb0">
+              Obtained Optimization: <span style={{color: '#F27354'}}>{absolute}</span>
+            </h2>
+            <h3 className="dn-ns mb0">
+              Obtained Optimization: <span style={{color: '#F27354'}}>{absolute}</span>
+            </h3>
+          </div>
+        ) : (
+          <div className="text-center pb2 pt2" style={{maxWidth: 700, margin: '0 auto'}}>
+            <h2 className="dn db-ns mb0">
+              Optimizations
+            </h2>
+            <h3 className="dn-ns mb0">
+              Optimizations
+            </h3>
+          </div>
+        )}
         {this.renderImprovements()}
         {this.props.toggleModal && (
           <div className="text-center">
@@ -278,10 +289,10 @@ class ResultAction extends Component {
       <div>
         <div className="text-center pb2 pt2" style={{ maxWidth: 700, margin: '0 auto' }}>
           <h2 className="dn db-ns mb0">
-            How Speed Kit can Accelerate Your Site by <span style={{ color: '#F27354' }}>{absolute}</span>
+            How Speed Kit Can Accelerate Your Site by <span style={{ color: '#F27354' }}>{absolute}</span>
           </h2>
           <h3 className="dn-ns mb0">
-            How Speed Kit can Accelerate Your Site by <span style={{ color: '#F27354' }}>{absolute}</span>
+            How Speed Kit Can Accelerate Your Site by <span style={{ color: '#F27354' }}>{absolute}</span>
           </h3>
         </div>
         {this.renderImprovements()}

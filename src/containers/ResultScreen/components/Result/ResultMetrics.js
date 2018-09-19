@@ -69,7 +69,7 @@ class ResultMetrics extends Component {
                 <div className="flex items-center pt1 pb1 border-top">
                   <div className="w-third text-center">
                     {competitorData[metric.name] ? (
-                      <div className="metricValue">{competitorData[metric.name]}ms</div>
+                      <div className="metricValue">{competitorData[metric.name]} ms</div>
                     ):(<div className="metricValue">-</div>)}
                   </div>
                   <div className="w-third text-center">
@@ -83,7 +83,7 @@ class ResultMetrics extends Component {
                   </div>
                   <div className="w-third text-center">
                     {speedKitData[metric.name] ? (
-                      <div className="metricValue">{speedKitData[metric.name]}ms</div>
+                      <div className="metricValue">{speedKitData[metric.name]} ms</div>
                     ):(<div className="metricValue">-</div>)}
                   </div>
                 </div>
@@ -102,7 +102,7 @@ class ResultMetrics extends Component {
                 <div className="flex items-center pt1 pb1 border-top">
                   <div className="w-third text-center">
                     {competitorData[metric.name] ? (
-                      <div className="metricValue">{competitorData[metric.name]}ms</div>
+                      <div className="metricValue">{competitorData[metric.name]} ms</div>
                     ):(<div className="metricValue">-</div>)}
                   </div>
                   <div className="w-third text-center">
@@ -116,7 +116,7 @@ class ResultMetrics extends Component {
                   </div>
                   <div className="w-third text-center">
                     {speedKitData[metric.name] ? (
-                      <div className="metricValue">{speedKitData[metric.name]}ms</div>
+                      <div className="metricValue">{speedKitData[metric.name]} ms</div>
                     ):(<div className="metricValue">-</div>)}
                   </div>
                 </div>
@@ -161,7 +161,7 @@ class ResultMetrics extends Component {
                   </div>
                   <div className="w-50 tl pt2 pb2 pl2 speedKitVideo">
                     {competitorData[metric.name] ? (
-                      <div className="metricValue">{competitorData[metric.name]}ms</div>
+                      <div className="metricValue">{competitorData[metric.name]} ms</div>
                     ):(<div className="metricValue">-</div>)}
                   </div>
                 </div>
@@ -186,7 +186,7 @@ class ResultMetrics extends Component {
                   </div>
                   <div className="w-50 tl pt2 pb2 pl2 speedKitVideo">
                     {competitorData[metric.name] ? (
-                      <div className="metricValue">{competitorData[metric.name]}ms</div>
+                      <div className="metricValue">{competitorData[metric.name]} ms</div>
                     ):(<div className="metricValue">-</div>)}
                   </div>
                 </div>

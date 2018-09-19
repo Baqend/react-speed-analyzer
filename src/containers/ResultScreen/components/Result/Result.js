@@ -12,6 +12,7 @@ import ResultMetrics from './ResultMetrics'
 
 import { formatFileSize } from 'helper/utils'
 import { calculateFactor } from 'helper/resultHelper'
+import {roundToNearestTen, isWholeNumberToHundreds} from "../../../../helper/maths"
 
 const tooltipText = {
   'speedIndex': 'Speed Index',
@@ -59,7 +60,19 @@ class Result extends Component {
     const { speedKitVersion } = testOverview
 
     const { mainMetric } = this.props.result
-    const factor = !speedKitError ? calculateFactor(competitorData[mainMetric], speedKitData[mainMetric]) : null
+
+    let competitorMainMetric = competitorData[mainMetric]
+    let speedKitMainMetric = speedKitData[mainMetric]
+
+    if (
+      isWholeNumberToHundreds(competitorMainMetric) || isWholeNumberToHundreds(speedKitMainMetric) &&
+      roundToNearestTen(competitorMainMetric !== roundToNearestTen(speedKitMainMetric))
+    ) {
+      competitorMainMetric = roundToNearestTen(competitorMainMetric)
+      speedKitMainMetric = roundToNearestTen(speedKitMainMetric)
+    }
+
+    const factor = !speedKitError ? calculateFactor(competitorMainMetric, speedKitMainMetric) : null
 
     return (
       <div>
@@ -83,7 +96,7 @@ class Result extends Component {
               </small>
               <br/>
               <div data-tip data-for={mainMetric + 'CompetitorData'}>
-                <b>{ competitorData[mainMetric] }ms</b>
+                <b>{ competitorMainMetric } ms</b>
               </div>
               <ReactTooltip id={mainMetric + 'CompetitorData'} type='dark' place='top' effect='solid'>
                 <span>{tooltipText[mainMetric]}</span>
@@ -101,7 +114,7 @@ class Result extends Component {
               </small>
               <br/>
               <div data-tip data-for={mainMetric + 'SpeedKitData'}>
-                <b>{ speedKitData[mainMetric] }ms</b>
+                <b>{ speedKitMainMetric } ms</b>
               </div>
               <ReactTooltip id={mainMetric + 'SpeedKitData'} type='dark' place='top' effect='solid'>
                 <span>{tooltipText[mainMetric]}</span>

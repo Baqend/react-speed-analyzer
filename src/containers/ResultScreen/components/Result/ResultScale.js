@@ -38,9 +38,9 @@ const Bobbel = ({ description, time, style, upsideDown, absolute, mobile, order,
   <div
     className={`flex justify-center items-center ${absolute ? 'absolute' : ''}`}
     style={style}>
-    <div className={`relative flex justify-center ${mobile ? '' : 'flex-column'} ${order && delta < 250 ? ((order === 1 && 'items-end') || 'items-start') : 'items-center'}`}>
+    <div className={`relative flex justify-center ${mobile ? '' : 'flex-column'} ${order && delta < 250 ? ((order === 2 && 'items-end') || 'items-start') : 'items-center'}`}>
       <div style={{
-        left: (mobile && offset < 60) ? 54 : (upsideDown ? -88 : -80),
+        right: (mobile && offset < 60) ? 54 : (upsideDown ? -88 : -80),
         top: upsideDown ? 14 : 8,
         whiteSpace: 'nowrap',
         position: mobile ? 'absolute' : 'initial',
@@ -54,8 +54,8 @@ const Bobbel = ({ description, time, style, upsideDown, absolute, mobile, order,
         width: delta < 250 ? 47: '100%',
         textAlign: 'center',
         top: mobile ? ((upsideDown && 19) || 13) : 38,
-        right: order === 1 && delta < 250 ? 0 : 'auto',
-        left: order === 2 && delta < 250 ? 0 : 'auto',
+        right: order === 2 && delta < 250 ? 0 : 'auto',
+        left: order === 1 && delta < 250 ? 0 : 'auto',
         fontWeight: 400,
         fontSize: 14,
         zIndex: 1
@@ -79,8 +79,8 @@ const calculateMaxTimeForRequests = (requests, competitorTime) => {
 }
 const calculateOffset = (maxTime, time) => Math.min(95, time / maxTime * 100)
 
-const calculateMargin = (containerWidth, offset1, offset2, order) => {
-  if (offset2 && order === 2) {
+const calculateMarginLeft = (containerWidth, offset1, offset2, isSpeedKit) => {
+  if (offset2 && !isSpeedKit) {
     return Math.max(8, ((containerWidth * (offset1 - offset2) / 100) - 70))
   }
   return containerWidth * offset1 / 100 - 50
@@ -148,7 +148,7 @@ class ResultScaleComponent extends Component {
             <Bobbel
               description={isSpeedKitComparison ? `Without Speed Kit` : `Your Website`}
               time={`${Math.round(competitorTime / 100) / 10}s`}
-              style={{ left: `${competitorOffset}%`, top: -8, marginLeft: -22.5 }}
+              style={{ right: `${competitorOffset}%`, top: -8, marginLeft: -22.5 }}
               offset={competitorOffset}
               absolute
               mobile
@@ -158,18 +158,18 @@ class ResultScaleComponent extends Component {
             <Bobbel
               description={isSpeedKitComparison ? `Your Website` : `With Speed Kit`}
               time={`${Math.round(speedKitTime / 100) / 10}s`}
-              style={{ left: `${speedKitOffset}%`, top: 64, marginLeft: -22.5 }}
+              style={{ right: `${speedKitOffset}%`, top: 64, marginLeft: -22.5 }}
               offset={speedKitOffset}
               absolute
               mobile
               upsideDown
             />
           )}
-          <div className="flex" style={{ fontWeight: 400, background: 'linear-gradient(to right, #c8e4b0, #fef1ea, #fdecec)' }}>
-            <div className="w-50 pa1 dark-green border-left">Fast</div>
-            <div className="w-50 pa1 red border-right tr">Slow</div>
+          <div className="flex" style={{ fontWeight: 400, background: 'linear-gradient(to left, rgb(200, 228, 176), rgb(255, 251, 199), rgb(255, 221, 221))' }}>
+            <div className="w-50 pa1 red border-left">Average</div>
+            <div className="w-50 pa1 dark-green border-right tr">Fast</div>
           </div>
-          <div className="flex absolute" style={{ top: 0, width: '100%' }}>
+          <div className="flex absolute" style={{ top: 0, width: '100%', flexDirection: 'row-reverse' }}>
             {speedKitTime && this.state.windowWidth >= 480 && this.state.width && (
               <Bobbel
                 description={isSpeedKitComparison ? `Your Website` : `With Speed Kit`}
@@ -179,7 +179,7 @@ class ResultScaleComponent extends Component {
                 style={{
                   marginTop: -8,
                   order: speedKitOrder,
-                  marginLeft: calculateMargin(this.state.width, speedKitOffset, competitorOffset, speedKitOrder)
+                  marginRight: calculateMarginLeft(this.state.width, speedKitOffset, competitorOffset, true)
                 }}
               />
             )}
@@ -192,7 +192,7 @@ class ResultScaleComponent extends Component {
                 style={{
                   marginTop: -8,
                   order: competitorOrder,
-                  marginLeft: calculateMargin(this.state.width, competitorOffset, speedKitOffset, competitorOrder)
+                  marginRight: calculateMarginLeft(this.state.width, competitorOffset, speedKitOffset, false)
                 }}
               />
             )}

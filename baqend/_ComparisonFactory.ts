@@ -66,7 +66,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
   ): Promise<model.TestOverview> {
     const config = await this.buildSpeedKitConfig(puppeteer, params)
     const requiredParams = this.testBuilder.buildSingleTestParams(params, config)
-    const configAnalysis = puppeteer.speedKit ? this.createConfigAnalysis(puppeteer.url, puppeteer.speedKit) : null
+    const configAnalysis = puppeteer.speedKit ? this.createConfigAnalysis(puppeteer.speedKit) : null
 
     // Create the tests
     const [competitorTest, speedKitTest] = await Promise.all([
@@ -166,7 +166,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
   /**
    * Creates a config analysis of the given URL.
    */
-  private createConfigAnalysis(url: string, { config, swUrl }: model.PuppeteerSpeedKit): model.ConfigAnalysis {
+  private createConfigAnalysis({config, swUrl}: model.PuppeteerSpeedKit): model.ConfigAnalysis {
     const configAnalysis: model.ConfigAnalysis = new this.db.ConfigAnalysis()
     configAnalysis.swPath = swUrl
 
@@ -175,10 +175,8 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
       return configAnalysis
     }
 
-    const rootPath = getRootPath(this.db, url)
-
     configAnalysis.configMissing = false
-    configAnalysis.swPathMatches = config.sw || rootPath + '/sw.js' === swUrl
+    configAnalysis.swPathMatches = !!swUrl
     configAnalysis.isDisabled = config.disabled === true
 
     return configAnalysis

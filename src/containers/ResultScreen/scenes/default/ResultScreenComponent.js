@@ -19,7 +19,7 @@ import ContactForm from 'components/ContactForm/ContactForm'
 
 import rocket from 'assets/img/rocket-outline-white.png'
 
-import {isSpeedKitInstalledCorrectly} from "../../../../helper/resultHelper"
+import {calculateFactor, isSpeedKitInstalledCorrectly} from "../../../../helper/resultHelper"
 
 Modal.setAppElement('#speed-kit-analyzer')
 
@@ -68,8 +68,11 @@ class ResultScreenComponent extends Component {
   }
 
   renderResults() {
-    const { competitorError, speedKitError} = this.props.result
+    const { competitorError, speedKitError, mainMetric } = this.props.result
     const { isSpeedKitComparison } = this.props.testOverview
+
+    const competitorData = this.props.competitorTest.firstView
+    const speedKitData = this.props.speedKitTest.firstView
 
     return (
       <div className="flex-grow-1 results animated slideInUp" style={{ animationDuration: '0.5s' }}>
@@ -86,7 +89,7 @@ class ResultScreenComponent extends Component {
         </div>
 
         <div className="pv4 pv7-ns" style={{ background: 'white' }}>
-          {!speedKitError && !competitorError && (
+          {!speedKitError && !competitorError && calculateFactor(competitorData[mainMetric], speedKitData[mainMetric]) > 1 && (
             <div className="container ph2 pb2 pb7-ns">
               <ResultWorthiness
                 competitorTest={this.props.competitorTest}
