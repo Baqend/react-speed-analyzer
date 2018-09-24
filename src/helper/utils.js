@@ -53,6 +53,7 @@ export const getObjectKey = (objectId) => {
  * @return {boolean}
  */
 export const isURL = (str) => {
+  const encodedString = encodeUmlauts(str)
   const pattern =
     new RegExp('((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name and extension
       '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
@@ -60,7 +61,20 @@ export const isURL = (str) => {
       '(\\/[-a-z\\d%@_.~+&:#]*)*' + // path
       '(\\?[;&a-z\\d%@_.,~+&:=-]*)?' + // query string
       '(\\#[-a-z\\d_]*)?$', 'i') // fragment locator
-  return pattern.test(str)
+  return pattern.test(encodedString)
+}
+
+/**
+ * Encodes all umlauts contained in a given string.
+ * @param str The string to be encoded.
+ * @return {string}
+ */
+export const encodeUmlauts = (str) => {
+  const encodedStr = str.toLowerCase()
+  return encodedStr
+    .replace(/ä/g, encodeURIComponent('ä'))
+    .replace(/ö/g, encodeURIComponent('ö'))
+    .replace(/ü/g, encodeURIComponent('ü'))
 }
 
 export const shuffle = (a) => {
