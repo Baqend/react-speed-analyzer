@@ -38,10 +38,9 @@ async function httpUriToResourceInfo(url: string, maxRetries = MAX_DOWNLOAD_RETR
 
   // Create resource info from HTTP response
   const mimeType = response.headers.get('content-type') || 'application/octet-stream'
-  const { size } = response
   const buffer = await response.buffer()
 
-  return { buffer, size, mimeType }
+  return { buffer, size: buffer.length, mimeType }
 }
 
 /**
