@@ -145,24 +145,27 @@ export function categorizeHTTPCachingFact(competitorData, speedKitData, isSpeedK
 
   const competitorAmount = competitorCaching ? Math.round((100 / competitorData.requests) * competitorCaching) : 0
   const speedKitAmount = speedKitCaching ? Math.round((100 / speedKitData.requests) * speedKitCaching) : 0
+  const cachingDiff = speedKitAmount - competitorAmount
 
-  if (speedKitAmount > competitorAmount) {
-    if (isSpeedKitComparison) {
-      cachingFact.push(`Speed Kit takes care of correct <strong>caching headers</strong>. In total, it caches <strong>${speedKitAmount}%</strong> and keeps the cache fresh.`)
-      applied.push(cachingFact)
+  if (isSpeedKitComparison && cachingDiff > 0) {
+    cachingFact.push(`Speed Kit takes care of correct <strong>caching headers</strong>. In total, it caches <strong>${speedKitAmount}%</strong> and keeps the cache fresh.`)
+    applied.push(cachingFact)
 
-      return
-    }
+    return
+  }
 
-    // Threshold for whether improvement potential is reasonable
-    if (speedKitAmount - competitorAmount >= 5) {
-      cachingFact.push(`Currently, <strong>${competitorAmount}%</strong> of resources are served with correct <strong>caching headers</strong>. Speed Kit will cache <strong>${speedKitAmount}%</strong> and keep the cache fresh.`)
-      improvements.push(cachingFact)
-
-      return
-    }
-    cachingFact.push(`Your website serves <strong>${competitorAmount}%</strong> of resources with correct <strong>caching headers</strong>.`)
+  // Threshold for whether improvement potential is reasonable
+  if (cachingDiff >= 5) {
+    cachingFact.push(`Currently, <strong>${competitorAmount}%</strong> of resources are served with correct <strong>caching headers</strong>. Speed Kit will cache <strong>${speedKitAmount}%</strong> and keep the cache fresh.`)
     improvements.push(cachingFact)
+
+    return
+  }
+
+  const amount = isSpeedKitComparison ? speedKitAmount : competitorAmount
+  if (amount > 0) {
+    cachingFact.push(`Your website serves <strong>${amount}%</strong> of resources with correct <strong>caching headers</strong>.`)
+    applied.push(cachingFact)
   }
 }
 
