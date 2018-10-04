@@ -110,6 +110,11 @@
       "name": "fmpData",
       "type": "/db/FMPData",
       "order": 19
+    },
+    "documentRequestFailed": {
+      "name": "documentRequestFailed",
+      "type": "/db/Boolean",
+      "order": 20
     }
   }
 }

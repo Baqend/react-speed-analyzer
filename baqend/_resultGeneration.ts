@@ -1,4 +1,3 @@
-import { setFailed, setSuccess } from './_Status'
 import { toFile } from './_toFile'
 import { getAdSet } from './_adBlocker'
 import credentials from './credentials'
@@ -34,7 +33,7 @@ export async function generateTestResult(wptTestId: string, pendingTest: model.T
   }
 
   const [testResult, videos] = await Promise.all([
-    createTestResult(db, rawData, wptTestId, '1'),
+    createTestResult(db, rawData, wptTestId, rawData.testUrl, '1',),
     createVideos(db, wptTestId, '1'),
   ])
 
@@ -105,15 +104,16 @@ function constructVideoLink(testId: string, videoId: string): string {
  * @param db The Baqend instance.
  * @param wptData The data from the WPT test.
  * @param testId The id of the test to create the result for.
+ * @param {string} testUrl The url of the test to create the result for.
  * @param {string} runIndex The index of the run to create the result for.
  * @return {Promise} The test result with its views.
  */
-function createTestResult(db: baqend, wptData: WptTestResult, testId: string, runIndex: string): Promise<[model.Run | null, model.Run | null]> {
+function createTestResult(db: baqend, wptData: WptTestResult, testId: string, testUrl: string, runIndex: string): Promise<[model.Run | null, model.Run | null]> {
   const resultRun = wptData.runs[runIndex]
 
   return Promise.all([
-    createRun(db, resultRun.firstView, testId, runIndex),
-    createRun(db, resultRun.repeatView, testId, runIndex),
+    createRun(db, resultRun.firstView, testId, testUrl, runIndex),
+    createRun(db, resultRun.repeatView, testId, testUrl, runIndex),
   ])
 }
 
@@ -125,10 +125,11 @@ function isValidRun(run: WptRun): boolean {
  * @param db The Baqend instance.
  * @param {object} data The data to create the run of.
  * @param testId The test id to create the run for.
+ * @param testUrl The test url to create the run for.
  * @param runIndex The index of the run to create the run for.
  * @return A promise resolving with the created run.
  */
-async function createRun(db: baqend, data: WptView | undefined, testId: string, runIndex: string): Promise<model.Run | null> {
+async function createRun(db: baqend, data: WptView | undefined, testId: string, testUrl: string, runIndex: string): Promise<model.Run | null> {
   if (!data) {
     return null
   }
@@ -154,6 +155,7 @@ async function createRun(db: baqend, data: WptView | undefined, testId: string, 
   run.bytes = data.bytesIn
   run.hits = new db.Hits(countHits(data.requests))
   run.contentSize = new db.ContentSize(countContentSize(data.requests))
+  run.documentRequestFailed = hasDocumentRequestFailed(testUrl, data.requests)
   run.basePageCDN = data.base_page_cdn
 
   // Set visual completeness
@@ -170,6 +172,26 @@ async function createRun(db: baqend, data: WptView | undefined, testId: string, 
   run.domains = domains
 
   return run
+}
+
+/**
+ * Checks whether the document request failed.
+ *
+ * @param testUrl The url of the test.
+ * @param requests An array of request objects.
+ */
+function hasDocumentRequestFailed(testUrl: string, requests: any[]): boolean {
+  const firstDocument = requests.find((req) => {
+    const requestUrl = req.url
+    const servedByBaqend = req.headers.response.indexOf('via: baqend') !== -1
+    if (!requestUrl || !servedByBaqend) {
+      return false;
+    }
+
+    return requestUrl === `/v1/asset/${testUrl}`
+  })
+
+  return firstDocument ? firstDocument.responseCode >= 400 : false;
 }
 
 /**

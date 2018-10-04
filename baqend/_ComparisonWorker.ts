@@ -5,7 +5,7 @@ import {
   isFinished, isIncomplete, isQueued, isUnfinished, setCanceled, setIncomplete, setRunning, setSuccess,
   Status,
 } from './_Status'
-import { factorize, updateMultiComparison } from './_updateMultiComparison'
+import { factorize } from './_updateMultiComparison'
 import { chooseFMP } from './_chooseFMP'
 import { callPageSpeed } from './_callPageSpeed'
 import { TestListener, TestWorker } from './_TestWorker'
