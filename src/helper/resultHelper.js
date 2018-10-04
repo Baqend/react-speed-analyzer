@@ -48,7 +48,11 @@ export function isMainMetricSatisfactory(competitorMetric, speedKitMetric) {
  */
 export function isSpeedKitInstalledCorrectly(configAnalysis = {}) {
   const { configMissing, isDisabled, swPath, swPathMatches } = configAnalysis
-  return !configMissing && !isDisabled && swPath.length > 0 && swPathMatches
+  if (!swPath || swPath.length <= 0) {
+    return false
+  }
+
+  return !configMissing && !isDisabled && swPathMatches
 }
 
 /**
