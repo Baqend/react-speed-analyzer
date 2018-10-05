@@ -72,6 +72,10 @@ export class ConfigBuilder {
     return this.addToBlacklist('url', host)
   }
 
+  blacklistPathname(pathname: Condition): this {
+    return this.addToBlacklist('pathname', pathname)
+  }
+
   addImageOptions(imageRule: ImageRule) {
     this.image.push(imageRule)
   }
