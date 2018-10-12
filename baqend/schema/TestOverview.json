@@ -143,6 +143,11 @@
       "name": "hasMultiComparison",
       "type": "/db/Boolean",
       "order": 25
+    },
+    "documentRequestFailed": {
+      "name": "documentRequestFailed",
+      "type": "/db/Boolean",
+      "order": 26
     }
   }
 }

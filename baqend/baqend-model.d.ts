@@ -216,6 +216,7 @@ declare module 'baqend' {
       configAnalysis: ConfigAnalysis | null;
       puppeteer: Puppeteer | null;
       hasMultiComparison: boolean;
+      documentRequestFailed: boolean;
       error?: { message: string, status: number };
     }
 
@@ -272,6 +273,7 @@ declare module 'baqend' {
       hits: Hits;
       contentSize: ContentSize;
       fmpData: FMPData;
+      documentRequestFailed: boolean;
     }
 
     interface ConfigAnalysis extends binding.Managed {

@@ -88,6 +88,7 @@ export class ComparisonWorker implements TestListener {
         isIncomplete(competitor) || isIncomplete(speedKit) ? setIncomplete(comparison) : setSuccess(comparison)
         comparison.speedKitConfig = speedKit.speedKitConfig
         comparison.factors = this.calculateFactors(competitor, speedKit)
+        comparison.documentRequestFailed = speedKit.firstView ? speedKit.firstView.documentRequestFailed : false
       })
 
       // Inform the listener that this comparison has finished
