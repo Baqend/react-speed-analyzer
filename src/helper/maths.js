@@ -35,20 +35,20 @@ export function zeroSafeDiv(divisor, dividend) {
 }
 
 /**
- * Check whether the number is already a round number to 100
+ * Check whether the number is already a round number to 100.
  *
- * @param {number} num The number
- * @returns {boolean} true, if the number is rounded to 100
+ * @param {number} num The number.
+ * @returns {boolean} true, if the number is rounded to 100.
  */
 export function isWholeNumberToHundreds(num) {
   return num % 100 === 0
 }
 
 /**
- * Rounds the given number to the nearest 10
+ * Rounds the given number to the nearest 10.
  *
- * @param {number} num The number to round to nearest 10
- * @returns {number} The rounded number
+ * @param {number} num The number to round to nearest 10.
+ * @returns {number} The rounded number.
  */
 export function roundToNearestTen(num) {
   return Math.round(num / 10) * 10

@@ -53,26 +53,41 @@ class Result extends Component {
     this.setState({ windowWidth })
   }
 
-  renderHeader() {
-    const { competitorError, speedKitError, testOverview } = this.props.result
+  roundMetrics(mainMetric) {
+    const { competitorError, speedKitError } = this.props.result
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
-    const { speedKitVersion } = testOverview
 
-    const { mainMetric } = this.props.result
+    const competitorMainMetric = !competitorError ? competitorData[mainMetric] : null
+    const speedKitMainMetric = !speedKitError ? speedKitData[mainMetric] : null
 
-    let competitorMainMetric = competitorData[mainMetric]
-    let speedKitMainMetric = speedKitData[mainMetric]
-
-    if (
-      isWholeNumberToHundreds(competitorMainMetric) || isWholeNumberToHundreds(speedKitMainMetric) &&
-      roundToNearestTen(competitorMainMetric !== roundToNearestTen(speedKitMainMetric))
-    ) {
-      competitorMainMetric = roundToNearestTen(competitorMainMetric)
-      speedKitMainMetric = roundToNearestTen(speedKitMainMetric)
+    if (competitorError || speedKitError) {
+      return { competitorMainMetric, speedKitMainMetric }
     }
 
-    const factor = !speedKitError ? calculateFactor(competitorMainMetric, speedKitMainMetric) : null
+    //None of the both metrics is computed by us.
+    if (!(isWholeNumberToHundreds(competitorMainMetric) || isWholeNumberToHundreds(speedKitMainMetric))) {
+      return { competitorMainMetric, speedKitMainMetric }
+    }
+
+    const competitorNearestTen = roundToNearestTen(competitorMainMetric)
+    const speedKitNearestTen = roundToNearestTen(speedKitMainMetric)
+
+    //The both metrics are equal after rounding to nearest ten.
+    if (competitorNearestTen === speedKitNearestTen) {
+      return { competitorMainMetric, speedKitMainMetric }
+    }
+
+    return { competitorMainMetric: competitorNearestTen, speedKitMainMetric: speedKitNearestTen }
+  }
+
+  renderHeader() {
+    const { testOverview } = this.props.result
+    const { speedKitVersion } = testOverview
+    const { mainMetric } = this.props.result
+
+    const { competitorMainMetric, speedKitMainMetric } = this.roundMetrics(mainMetric)
+    const factor = calculateFactor(competitorMainMetric, speedKitMainMetric)
 
     return (
       <div>
@@ -85,7 +100,7 @@ class Result extends Component {
               Faster
             </div>
           )}
-          {( !competitorError ) && (
+          {( competitorMainMetric ) && (
             <div className="w-50 flex-auto text-center pa1 pr4 pr0-ns" style={{ background: '#f6f6f6' }}>
               <small>
                 {speedKitVersion ? (
@@ -103,7 +118,7 @@ class Result extends Component {
               </ReactTooltip>
             </div>
           )}
-          {( !speedKitError ) && (
+          {( speedKitMainMetric ) && (
             <div className="w-50 flex-auto text-center pa1 pl4 pl0-ns" style={{ background: '#f6f6f6' }}>
               <small>
                 {speedKitVersion ? (
