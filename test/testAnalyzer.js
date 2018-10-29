@@ -235,7 +235,7 @@ async function execSpeedKit() {
       isDisabled: false
     },
     isSecured: true,
-    type: null
+    type: 'wordpress'
   }
 
   return testAnalyzer(url, expectedParams)
