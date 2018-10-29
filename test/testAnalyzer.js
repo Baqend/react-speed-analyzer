@@ -134,7 +134,9 @@ function checkTestParams(result, expectedResult) {
 
     assert.strictEqual(result.mobile, expectedResult.mobile, 'Attribute "mobile" not matching')
     assert.strictEqual(result.isSpeedKitComparison, expectedResult.isSpeedKitComparison, 'Attribute "isSpeedKitComparison" not matching')
-    assert.strictEqual(result.speedKitVersion, expectedResult.speedKitVersion, 'Attribute "speedKitVersion" not matching')
+
+    const hasSpeedKitVersion = /\d+\.\d+\.\d+/.test(result.speedKitVersion)
+    assert.strictEqual(hasSpeedKitVersion, expectedResult.hasSpeedKitVersion, 'Attribute "speedKitVersion" not matching')
   } catch (err) {
     writeln(err)
     reportError(`Test params not valid. ID: ${result.id}`, err)
@@ -191,7 +193,7 @@ async function executeAnalyzerTest() {
   try {
     writeln('Testing kicker.de (no Speed Kit installed)')
     await execNonSpeedKit()
-    writeln('Testing fussballdaten.de (with Speed Kit installed)')
+    writeln('Testing speed-kit-test.com (with Speed Kit installed)')
     await execSpeedKit()
   } catch(err) {
     writeln(err.stack)
@@ -207,7 +209,7 @@ async function execNonSpeedKit() {
     displayUrl: 'http://www.kicker.de/',
     mobile: false,
     isSpeedKitComparison: false,
-    speedKitVersion: null,
+    hasSpeedKitVersion: false,
     speedKitConfig: speedKitConfigString,
     configAnalysis: null,
     isSecured: false,
@@ -218,17 +220,17 @@ async function execNonSpeedKit() {
 }
 
 async function execSpeedKit() {
-  const url = 'https://www.fussballdaten.de/bundesliga/ewige-tabelle/'
+  const url = 'https://www.speed-kit-test.com/'
   const expectedParams = {
-    url: 'https://www.fussballdaten.de/bundesliga/ewige-tabelle/',
-    displayUrl: 'https://www.fussballdaten.de/bundesliga/ewige-tabelle/',
+    url,
+    displayUrl: url,
     mobile: false,
     isSpeedKitComparison: true,
-    speedKitVersion: '1.12.1',
+    hasSpeedKitVersion: true,
     speedKitConfig: null,
     configAnalysis: {
       configMissing: false,
-      swPath: 'https://www.fussballdaten.de/sw.js',
+      swPath: 'https://www.speed-kit-test.com/speed-kit-sw.js',
       swPathMatches: true,
       isDisabled: false
     },
