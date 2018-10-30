@@ -118,30 +118,30 @@ declare module 'baqend' {
       breakDown?: boolean,
       chromeTrace?: boolean,
       keepua?: boolean,
-      commandLine: string
-      device: string
-      disableHTTPHeaders?: boolean,
-      disableOptimization?: boolean,
-      disableScreenshot?: boolean,
+      cmdline: string, // renamed from commandline
+      mobileDevice: string, // renamed from device
+      noheaders?: boolean, // renamed from disableHTTPHeaders
+      noopt?: boolean, // renamed from disableOptimization
+      noimages?: boolean, // renamed from disableScreenshot
       domains?: boolean,
-      firstViewOnly: boolean
+      fvonly: boolean, // renamed from firstViewOnly
       ignoreSSL?: boolean,
-      jpegQuality?: number,
+      iq?: number, // renamed from firstViewOnly
       location: string
       minimalResults?: boolean,
-      minimumDuration?: number,
+      time?: number, // renamed from minimumDuration
       mobile: boolean
       netLog?: boolean,
       pageSpeed?: boolean,
-      poll?: number,
       priority: number
       requests?: boolean,
       runs?: number
-      saveResponseBodies?: boolean,
+      bodies?: boolean, // renamed from saveResponseBodies
       tcpDump?: boolean,
       timeline?: boolean,
       timeout: number,
       video?: boolean,
+      [key: string]: any
     }
 
     interface TestInfo {
