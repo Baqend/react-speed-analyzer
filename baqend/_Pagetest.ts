@@ -2,6 +2,8 @@ import { baqend, model } from 'baqend'
 import WebPageTest, { TestStatus } from 'webpagetest'
 import { sleep } from './_sleep'
 import credentials from './credentials'
+import fetch from 'node-fetch'
+import FormData from 'form-data'
 
 const PING_BACK_URL = `https://${credentials.app}.app.baqend.com/v1/code/testPingback`
 
@@ -94,35 +96,25 @@ export class Pagetest {
   /**
    * Runs a WebpageTest without waiting for the result.
    *
-   * @param testScriptOrUrl The URL under test or a test script.
+   * @param testScript The test script under test.
    * @param options The options to pass to WPT.
    * @return A promise resolving with the queued test's ID.
    */
-  runTestWithoutWait(testScriptOrUrl: string, options: model.TestOptions): Promise<string> {
+  async runTestWithoutWait(testScript: string, options: model.TestOptions): Promise<string> {
     const opts = Object.assign({ pingback: PING_BACK_URL }, options)
+    const result = await this.startTestManually(testScript, opts)
+    if (!result.data) {
+      throw new Error('Received no test id from WPT')
+    }
 
-    return new Promise((resolve, reject) => {
-      this.wpt.runTest(testScriptOrUrl, opts, (err, result) => {
-        if (err) {
-          reject(err)
-          return
-        }
+    const { testId } = result.data
 
-        if (!result.data) {
-          reject(new Error('Received no test id from WPT'))
-          return
-        }
+    this.waitPromises.set(testId, new Promise((nestedResolve, nestedReject) => {
+      this.testResolver.set(testId, nestedResolve)
+      this.testRejecter.set(testId, nestedReject)
+    }))
 
-        const { testId } = result.data
-
-        this.waitPromises.set(testId, new Promise((nestedResolve, nestedReject) => {
-          this.testResolver.set(testId, nestedResolve)
-          this.testRejecter.set(testId, nestedReject)
-        }))
-
-        resolve(testId)
-      })
-    })
+    return testId
   }
 
   /**
@@ -265,25 +257,6 @@ export class Pagetest {
   }
 
   /**
-   * Get the test result from WebPageTest for a given ID.
-   *
-   * @param {string} testId The ID of the test to get the result for.
-   * @param {*} options
-   * @private
-   */
-  private wptGetTestResults(testId: string, options: Partial<WptTestResultOptions> = {}): Promise<WptResult<WptTestResult>> {
-    return new Promise((resolve, reject) => {
-      this.wpt.getTestResults(testId, options, (err, result) => {
-        if (err) {
-          reject(err)
-        } else {
-          resolve(result)
-        }
-      })
-    })
-  }
-
-  /**
    * Creates a video and returns the ID.
    *
    * @param testId The ID of the test.
@@ -322,6 +295,38 @@ export class Pagetest {
         }
       })
     })
+  }
+
+  /**
+   * Get the test result from WebPageTest for a given ID.
+   *
+   * @param {string} testId The ID of the test to get the result for.
+   * @param {*} options
+   * @private
+   */
+  private wptGetTestResults(testId: string, options: Partial<WptTestResultOptions> = {}): Promise<WptResult<WptTestResult>> {
+    return new Promise((resolve, reject) => {
+      this.wpt.getTestResults(testId, options, (err, result) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(result)
+        }
+      })
+    })
+  }
+
+  private async startTestManually(testScript: string, options: model.TestOptions) {
+    const formData = new FormData()
+    formData.append('script', testScript)
+    for (const key in options) {
+      const value = typeof options[key] === 'boolean' ? (options[key] ? 1 : 0) : options[key]
+      formData.append(key, value.toString())
+    }
+
+    const url = `http://${credentials.wpt_dns}/runtest.php?f=json&k=${credentials.wpt_api_key}`
+    const res = await fetch(url, { method: 'POST', body: formData })
+    return await res.json()
   }
 }
 

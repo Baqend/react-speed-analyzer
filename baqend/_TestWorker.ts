@@ -15,7 +15,7 @@ const prewarmOptions = {
   runs: 2,
   timeline: false,
   video: false,
-  firstViewOnly: true,
+  fvonly: true,
   minimalResults: true,
 }
 
