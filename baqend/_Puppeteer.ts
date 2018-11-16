@@ -123,6 +123,7 @@ export class Puppeteer {
     mobile: boolean = false,
     location: string = 'eu',
     thirdParty: boolean = true,
+    preload: boolean = false,
   ): Promise<model.Puppeteer> {
     try {
       const language = location.startsWith('us') ? 'en-US' : 'de-DE'
@@ -147,12 +148,13 @@ export class Puppeteer {
       const { url: normalizedUrl, displayUrl, protocol, host, scheme } = data
       const domains = data.domains!
       const resources = data.resources!
-      const isImageOptimization = false; // location.includes('-docker') // FIXME only active for new test setup
-      const smartConfig = await this.configGenerator.generateSmart(normalizedUrl, mobile, thirdParty, isImageOptimization,{
-        host,
-        domains,
-        resources,
-      })
+      const isImageOptimization = false // location.includes('-docker') // FIXME only active for new test setup
+      const smartConfig =
+        await this.configGenerator.generateSmart(normalizedUrl, mobile, thirdParty, isImageOptimization, preload, {
+          host,
+          domains,
+          resources,
+        })
 
       // Create persistable object
       const puppeteer: model.Puppeteer = new this.db.Puppeteer()
@@ -168,7 +170,7 @@ export class Puppeteer {
       puppeteer.speedKit = data.speedKit ? new this.db.PuppeteerSpeedKit(data.speedKit) : null
       puppeteer.smartConfig = this.serializer.serialize(smartConfig, DataType.JSON)
 
-      const serviceWorkers: model.PuppeteerServiceWorkers[] = [];
+      const serviceWorkers: model.PuppeteerServiceWorkers[] = []
       data.serviceWorkers && data.serviceWorkers.forEach((serviceWorker) => {
         serviceWorkers.push(new this.db.PuppeteerServiceWorkers(serviceWorker))
       })

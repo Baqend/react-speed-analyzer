@@ -52,12 +52,21 @@ export class ConfigGenerator {
    * @param {string} url The site to test.
    * @param {boolean} mobile true if it is a mobile test, false otherwise.
    * @param {boolean} thirdParty true if third party domains should be added to the config, false otherwise.
+   * @param {boolean} imageOptimization true if images should be optimized, false otherwise.
+   * @param {boolean} preload true if css and fonts should be preloaded, false otherwise.
    * @param {string} host The host of the tested site.
    * @param {string[]} domains The domains loaded by the tested site.
    * @param {PuppeteerResource[]} resources The resources loaded by the tested site.
    * @return {Promise<Config>} A smart config for Speed Kit.
    */
-  async generateSmart(url: string, mobile: boolean, thirdParty: boolean, imageOptimization: boolean, { host, domains, resources }: { host: string, domains: string[], resources: PuppeteerResource[] }): Promise<Config> {
+  async generateSmart(
+    url: string,
+    mobile: boolean,
+    thirdParty: boolean,
+    imageOptimization: boolean,
+    preload: boolean,
+    { host, domains, resources }: { host: string, domains: string[], resources: PuppeteerResource[] }): Promise<Config>
+  {
     const configBuilder = new ConfigBuilder(credentials.app, mobile)
 
     // Add image optimization

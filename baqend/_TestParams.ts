@@ -61,6 +61,11 @@ export interface TestParams {
    * If a test is expected to be a Speed Kit comparison.
    */
   speedKitExpected?: boolean
+
+  /**
+   * If resources like CSS and fonts should be preloaded.
+   */
+  preload?: boolean
 }
 
 export interface MultiTestParams extends TestParams {
