@@ -6,6 +6,7 @@ export interface Config {
   blacklist?: Rule[]
   image?: ImageRule[]
   userAgentDetection?: boolean
+  criticalResources?: ResourceRule[]
 }
 
 export interface Rule {
@@ -23,6 +24,11 @@ export interface Rule {
 export interface ImageRule {
   rules: Rule[]
   options: ImageOptions
+}
+
+export interface ResourceRule {
+  rules?: Rule[]
+  resources: string[]
 }
 
 export interface ImageOptions {
