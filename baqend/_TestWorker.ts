@@ -91,6 +91,7 @@ export class TestWorker {
       // Start the next test
       if /* test is against Speed Kit */ (test.isClone) {
         if (this.shouldStartPrewarmWebPagetest(test)) {
+          this.db.log.info(`Should Start Prewarm Test ${test.id}`);
           this.startPrewarmWebPagetest(test)
 
           return
@@ -98,6 +99,7 @@ export class TestWorker {
       }
 
       if (this.shouldStartPerformanceWebPagetest(test)) {
+        this.db.log.info(`Should Start Performance Test ${test.id}`);
         this.startPerformanceWebPagetest(test)
       }
     } catch (error) {
@@ -314,6 +316,7 @@ export class TestWorker {
    * Saves a WebPagetest info in a test.
    */
   private async pushWebPagetestToTestResult(test: model.TestResult, webPagetest: model.WebPagetest): Promise<model.TestResult> {
+    this.db.log.info(`Push Webpagetest to ${test.id}`, webPagetest);
     return test.optimisticSave((it: model.TestResult) => {
       it.webPagetests.push(webPagetest)
     })
