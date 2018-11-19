@@ -61,7 +61,7 @@ export class BulkComparisonWorker implements MultiComparisonListener {
 
       // Start next multi comparison
       const { runs, ...params } = bulkComparison.comparisonsToStart[nextIndex]
-      const puppeteer = await this.getPuppeteerInfo(params.url, params.mobile, params.location)
+      const puppeteer = await this.getPuppeteerInfo(params.url, params.mobile, params.location, params.preload)
 
       const multiComparison = await this.multiComparisonFactory.create(puppeteer, params, createdBy, runs)
 
@@ -88,10 +88,10 @@ export class BulkComparisonWorker implements MultiComparisonListener {
   /**
    * Gets the Puppeteer information of a given url
    */
-  async getPuppeteerInfo(url: string, mobile: boolean, location: string): Promise<model.Puppeteer | null> {
+  async getPuppeteerInfo(url: string, mobile: boolean, location: string, preload: boolean): Promise<model.Puppeteer | null> {
     const { puppeteer } = bootstrap(this.db)
     try {
-      return await puppeteer.analyze(url, mobile, location)
+      return await puppeteer.analyze(url, mobile, location, true, preload)
     } catch ({ message, stack }) {
       this.db.log.error(`Puppeteer failed for ${url}: ${message}`, { stack })
       return null

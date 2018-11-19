@@ -46,6 +46,7 @@ declare module 'baqend' {
       runs: number
       location: string
       mobile: boolean
+      preload: boolean
       multiComparisonId: string | null
     }
 
@@ -150,6 +151,7 @@ declare module 'baqend' {
       isSpeedKitComparison: boolean
       activityTimeout: number
       skipPrewarm: boolean
+      preload: boolean
       testOptions: TestOptions
       appName: string | null
     }

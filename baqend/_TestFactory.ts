@@ -73,6 +73,7 @@ export class TestFactory implements AsyncFactory<model.TestResult> {
       isTestWithSpeedKit: isClone,
       activityTimeout: params.activityTimeout,
       skipPrewarm: params.skipPrewarm,
+      preload: params.preload,
       testOptions: this.testBuilder.buildOptions(params, commandLine),
     }
   }
