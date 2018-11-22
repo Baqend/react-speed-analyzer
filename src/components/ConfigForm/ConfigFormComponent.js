@@ -113,10 +113,13 @@ class ConfigFormComponent extends Component {
     try {
       // eslint-disable-next-line no-eval
       const config = eval(`(${this.state.speedKitConfig})`)
+      const hasWhitelist = !!config.whitelist
+      const host = hasWhitelist ? config.whitelist[0].host : null
 
-      if (!config.whitelist) config.whitelist = []
+      if (!hasWhitelist) config.whitelist = []
       if (!config.whitelist[0]) config.whitelist[0] = { host: [] }
-      if (!config.whitelist[0].host) config.whitelist[0].host = []
+      if (!host) config.whitelist[0].host = []
+      if (!Array.isArray(host)) config.whitelist[0].host = [host]
 
       if (checked) {
         config.whitelist[0].host.push(domain.url)
