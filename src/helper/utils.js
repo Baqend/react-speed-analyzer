@@ -54,13 +54,7 @@ export const getObjectKey = (objectId) => {
  */
 export const isURL = (str) => {
   const encodedString = encodeUmlauts(str)
-  const pattern =
-    new RegExp('((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name and extension
-      '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-      '(\\:\\d+)?' + // port
-      '(\\/[-a-z\\d%@_.~+&:#]*)*' + // path
-      '(\\?[;&a-z\\d%@_.,~+&:=-]*)?' + // query string
-      '(\\#[-a-z\\d_]*)?$', 'i') // fragment locator
+  const pattern = new RegExp('[-a-zA-Z0-9@:%._+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_+.~#?&/=]*)', 'i')
   return pattern.test(encodedString)
 }
 
