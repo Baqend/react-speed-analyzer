@@ -5,7 +5,7 @@ import { Config } from './_Config'
 import { ConfigBuilder } from './_ConfigBuilder'
 import { getTLD } from './_getSpeedKitUrl'
 import { dollarRegExp, escapeRegExp, removeDuplicates, toRegExp } from './_helpers'
-import { PuppeteerResource } from './_Puppeteer'
+import { PuppeteerResource, ResourceType } from './_Puppeteer'
 import credentials from './credentials'
 
 export const CDN_LOCAL_URL = 'https://makefast.app.baqend.com/v1/file/www/selfMaintainedCDNList'
@@ -52,12 +52,21 @@ export class ConfigGenerator {
    * @param {string} url The site to test.
    * @param {boolean} mobile true if it is a mobile test, false otherwise.
    * @param {boolean} thirdParty true if third party domains should be added to the config, false otherwise.
+   * @param {boolean} imageOptimization true if images should be optimized, false otherwise.
+   * @param {boolean} preload true if css and fonts should be preloaded, false otherwise.
    * @param {string} host The host of the tested site.
    * @param {string[]} domains The domains loaded by the tested site.
    * @param {PuppeteerResource[]} resources The resources loaded by the tested site.
    * @return {Promise<Config>} A smart config for Speed Kit.
    */
-  async generateSmart(url: string, mobile: boolean, thirdParty: boolean, imageOptimization: boolean, { host, domains, resources }: { host: string, domains: string[], resources: PuppeteerResource[] }): Promise<Config> {
+  async generateSmart(
+    url: string,
+    mobile: boolean,
+    thirdParty: boolean,
+    imageOptimization: boolean,
+    preload: boolean,
+    { host, domains, resources }: { host: string, domains: string[], resources: PuppeteerResource[] }): Promise<Config>
+  {
     const configBuilder = new ConfigBuilder(credentials.app, mobile)
 
     // Add image optimization
@@ -78,41 +87,67 @@ export class ConfigGenerator {
       .filter(removeDuplicates)
       .forEach(url => configBuilder.blacklistUrl(url))
 
-    if (!thirdParty) {
-      return configBuilder.build();
+    if (thirdParty) {
+      // Add hosts to whitelist if only the top level domain differs from tested url
+      // (e.g. add 'baqend.org' if host is 'baqend.com')
+      const topLevelDomainMatcher = this.matchOtherTopLevelDomains(host);
+      domains
+        .filter(domain => domain.match(topLevelDomainMatcher))
+        .filter(domain => !domain.match(hostMatcher))
+        .filter(removeDuplicates)
+        .forEach(domain => configBuilder.whitelistHost(domain))
+
+      // Get hosts to whitelist by CDN without ads
+      const cdnDomainsWithAds = await this.selectCdnDomains(domains)
+      const cdnDomainsWithoutAds = await this.filterOutAdDomains(cdnDomainsWithAds)
+      cdnDomainsWithoutAds
+        .filter(host => !host.match(hostMatcher)) // filter already whitelisted domains
+        .forEach(host => configBuilder.whitelistHost(host))
+
+      // Whitelist .min.js and .min.css URLs without cookies
+      resources
+        .filter(resource => !resource.cookies.length)
+        .filter(resource => resource.url.match(/\.min\.(?:css|js)$/))
+        .filter(resource => !resource.host.match(hostMatcher)) // filter already whitelisted urls
+        .map(resource => this.stripResourceUrl(resource))
+        .forEach(url => configBuilder.whitelistUrl(url))
+
+      // Whitelist https://apis.google.com/js/plusone.js if it is used
+      resources
+        .filter(resource => thirdParty && resource.url === 'https://apis.google.com/js/plusone.js')
+        .map(resource => this.stripResourceUrl(resource))
+        .forEach(url => configBuilder.whitelistUrl(url))
     }
 
-    // Add hosts to whitelist if only the top level domain differs from tested url
-    // (e.g. add 'baqend.org' if host is 'baqend.com')
-    const topLevelDomainMatcher = this.matchOtherTopLevelDomains(host);
-    domains
-      .filter(domain => domain.match(topLevelDomainMatcher))
-      .filter(domain => !domain.match(hostMatcher))
-      .filter(removeDuplicates)
-      .forEach(domain => configBuilder.whitelistHost(domain))
+    if (preload) {
+      let cssSeen = false
+      let otherSeen = false
+      const criticalResources: string[] = [];
+      resources.forEach(resource => {
+        // Always add fonts to critical resources
+        if (resource.type === ResourceType.FONT) {
+          configBuilder.matchOnWhitelist(resource) && criticalResources.push(resource.url)
+          otherSeen = cssSeen;
+          return;
+        }
 
-    // Get hosts to whitelist by CDN without ads
-    const cdnDomainsWithAds = await this.selectCdnDomains(domains)
-    const cdnDomainsWithoutAds = await this.filterOutAdDomains(cdnDomainsWithAds)
-    cdnDomainsWithoutAds
-      .filter(host => !host.match(hostMatcher)) // filter already whitelisted domains
-      .forEach(host => configBuilder.whitelistHost(host))
+        // Only add stylesheet after the first css request was made and other requests were made afterwards
+        if (resource.type === ResourceType.STYLESHEET) {
+          if (otherSeen) {
+            configBuilder.matchOnWhitelist(resource) && criticalResources.push(resource.url)
+          }
 
-    // Whitelist .min.js and .min.css URLs without cookies
-    resources
-      .filter(resource => !resource.cookies.length)
-      .filter(resource => resource.url.match(/\.min\.(?:css|js)$/))
-      .filter(resource => !resource.host.match(hostMatcher)) // filter already whitelisted urls
-      .map(resource => this.stripResourceUrl(resource))
-      .forEach(url => configBuilder.whitelistUrl(url))
+          cssSeen = true;
+          return;
+        }
 
-    // Whitelist https://apis.google.com/js/plusone.js if it is used
-    resources
-      .filter(resource => thirdParty && resource.url === 'https://apis.google.com/js/plusone.js')
-      .map(resource => this.stripResourceUrl(resource))
-      .forEach(url => configBuilder.whitelistUrl(url))
+        otherSeen = cssSeen;
+      })
 
-    return configBuilder.build()
+      criticalResources.length && configBuilder.addCriticalResource({ resources: criticalResources });
+    }
+
+    return configBuilder.build();
   }
 
   /**

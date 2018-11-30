@@ -1,4 +1,5 @@
-import { Condition, Config, ImageRule, Rule } from './_Config'
+import { Condition, Config, ImageRule, ResourceRule, Rule } from './_Config'
+import { PuppeteerResource } from './_Puppeteer'
 
 export const CONFIG_MAX_SIZE: number = 50
 
@@ -9,6 +10,7 @@ export class ConfigBuilder {
   private whitelist: Rule[] = []
   private blacklist: Rule[] = []
   private image: ImageRule[] = []
+  private criticalResources: ResourceRule[] = []
 
   /**
    * The current size of the config counting all included conditions.
@@ -24,7 +26,6 @@ export class ConfigBuilder {
 
   build(): Config {
     const config: Config = { appName: this.appName, userAgentDetection: this.userAgentDetection }
-
     if (this.whitelist.length) {
       config.whitelist = this.whitelist
     }
@@ -35,6 +36,10 @@ export class ConfigBuilder {
 
     if (this.image.length) {
       config.image = this.image
+    }
+
+    if (this.criticalResources.length) {
+      config.criticalResources = this.criticalResources
     }
 
     return config
@@ -69,6 +74,42 @@ export class ConfigBuilder {
 
   addImageOptions(imageRule: ImageRule) {
     this.image.push(imageRule)
+  }
+
+  addCriticalResource(resourceRule: ResourceRule) {
+    this.criticalResources.push(resourceRule);
+  }
+
+  public matchOnWhitelist(puppeteerResource: PuppeteerResource): boolean {
+    return this.whitelist.some((rule) => {
+      //Remove protocol from URL
+      const strippedUrl = puppeteerResource.url.replace(/(^\w+:|^)\/\//, '');
+      // rule could be url, host or pathName
+      const isUrlOnWhitelist = rule.url ? this.testCondition(strippedUrl, rule.url) : true
+      const isHostOnWhitelist = rule.host ? this.testCondition(puppeteerResource.host, rule.host) : true
+      const isPathnameOnWhitelist = rule.pathname ? this.testCondition(puppeteerResource.pathname, rule.pathname) : true
+
+      return isUrlOnWhitelist && isHostOnWhitelist && isPathnameOnWhitelist
+    });
+  }
+
+  /**
+   * Tests if a condition matches on a string.
+   *
+   * @param {string} subject The string to test.
+   * @param {Condition} condition The condition to match.
+   * @return {boolean} True, if the condition matches.
+   */
+  private testCondition(subject: string, condition: Condition): boolean {
+    if (condition instanceof Array) {
+      return condition.some(cond => this.testCondition(subject, cond));
+    }
+
+    if (condition instanceof RegExp) {
+      return condition.test(subject);
+    }
+
+    return subject.startsWith(condition);
   }
 
   private addToWhitelist(section: 'host' | 'pathname' | 'url', value: Condition): this {

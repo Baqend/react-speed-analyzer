@@ -14,7 +14,7 @@ async function updateWithPuppeteer(
   const { comparisonWorker, comparisonFactory, puppeteer } = bootstrap(db)
 
   try {
-    const puppeteerInfo = await puppeteer.analyze(params.url, params.mobile, params.location)
+    const puppeteerInfo = await puppeteer.analyze(params.url, params.mobile, params.location, params.preload)
     // Retry Puppeteer analysis if Speed Kit is excepted to be installed but no installation was found.
     if (params.speedKitExpected && !puppeteerInfo.speedKit && retries <= MAX_PUPPETEER_RETRIES) {
       return updateWithPuppeteer(db, params, comparison, retries + 1)
