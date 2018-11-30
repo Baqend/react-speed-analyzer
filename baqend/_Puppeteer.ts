@@ -146,6 +146,7 @@ export class Puppeteer {
     location: string = 'eu',
     thirdParty: boolean = true,
     preload: boolean = false,
+    timeout: number | null = null,
   ): Promise<model.Puppeteer> {
     try {
       const language = location.startsWith('us') ? 'en-US' : 'de-DE'
@@ -153,7 +154,7 @@ export class Puppeteer {
         url,
         mobile,
         language,
-
+        timeout,
         // The segments to request:
         PuppeteerSegment.RESOURCES,
         PuppeteerSegment.STATS,
@@ -209,9 +210,12 @@ export class Puppeteer {
   /**
    * Posts the request to the server.
    */
-  private async postToServer(query: string, mobile: boolean, language: string, ...segments: PuppeteerSegment[]): Promise<PuppeteerResponse> {
+  private async postToServer(query: string, mobile: boolean, language: string, timeout: number | null, ...segments: PuppeteerSegment[]): Promise<PuppeteerResponse> {
     const host = credentials.puppeteer_host
-    const response = await this.sendJsonRequest(`http://${host}/`, { query, mobile, language, segments })
+    const defaultBody = { query, mobile, language, segments }
+    const bodyObject = timeout ? Object.assign(defaultBody, timeout) : defaultBody
+
+    const response = await this.sendJsonRequest(`http://${host}/`, bodyObject)
     if (response.status !== 200) {
       const { message, status, stack } = await response.json()
       const reasonPhrase = this.reasonPhraseForStatus(status)

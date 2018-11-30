@@ -61,6 +61,7 @@ async function fetchServiceWorkerUrl(db: baqend, url: string): Promise<SpeedKitI
  * @param mobile Whether to fetch the mobile variant of the site.
  * @param fetchSW Whether to fetch the sw path.
  * @param location The location for the analyze.
+ * @param timeout The timeout for Puppeteer
  * @return A promise which resolves with the analysis's result map.
  * @template Result
  */
@@ -74,12 +75,12 @@ export async function analyzeUrls(
   if(fetchSW) {
     const analyses = queries.map(query => forMap(query, fetchServiceWorkerUrl(db, query,)))
     const map = await Promise.all(analyses)
-
     return new Map(map)
   }
 
+  const timeout: number = 25_000;
   const { puppeteer } = bootstrap(db)
-  const analyses = queries.map(query => forMap(query, puppeteer.analyze(query, mobile, location)))
+  const analyses = queries.map(query => forMap(query, puppeteer.analyze(query, mobile, location, true, false, timeout)))
   const map = await Promise.all(analyses)
 
   return new Map(map)
