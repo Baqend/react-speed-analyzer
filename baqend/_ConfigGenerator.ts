@@ -87,6 +87,11 @@ export class ConfigGenerator {
       .filter(removeDuplicates)
       .forEach(url => configBuilder.blacklistUrl(url))
 
+    // Blacklist jQuery callback pathnames
+    if (this.containsJQuery(resources)) {
+      configBuilder.blacklistUrl(/[?&]_=\d{13,}/)
+    }
+
     if (thirdParty) {
       // Add hosts to whitelist if only the top level domain differs from tested url
       // (e.g. add 'baqend.org' if host is 'baqend.com')
@@ -244,6 +249,17 @@ export class ConfigGenerator {
    * Determines whether a resource is a jQuery callback.
    */
   private isJQueryCallback(resource: PuppeteerResource): boolean {
-    return !!resource.url.match(/[\?\&]callback=/)
+    return !!resource.url.match(/[?&]callback=/)
+  }
+
+  /**
+   * Determines if the given resources contain jQuery.
+   */
+  private containsJQuery(resources: PuppeteerResource[]): boolean {
+    return resources.find((resource) => {
+      const { pathname } = resource
+
+      return pathname.match(/jquery(-[\d.]+)?(\.min)?\.js/) != null
+    }) != null
   }
 }

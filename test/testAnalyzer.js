@@ -213,7 +213,7 @@ async function execNonSpeedKit() {
     speedKitConfig: speedKitConfigString,
     configAnalysis: null,
     isSecured: false,
-    type: null
+    type: 'microsoft asp.net'
   }
 
   return testAnalyzer(url, expectedParams)
