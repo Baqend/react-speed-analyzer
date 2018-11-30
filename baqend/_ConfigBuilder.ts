@@ -82,8 +82,10 @@ export class ConfigBuilder {
 
   public matchOnWhitelist(puppeteerResource: PuppeteerResource): boolean {
     return this.whitelist.some((rule) => {
+      //Remove protocol from URL
+      const strippedUrl = puppeteerResource.url.replace(/(^\w+:|^)\/\//, '');
       // rule could be url, host or pathName
-      const isUrlOnWhitelist = rule.url ? this.testCondition(puppeteerResource.url, rule.url) : true
+      const isUrlOnWhitelist = rule.url ? this.testCondition(strippedUrl, rule.url) : true
       const isHostOnWhitelist = rule.host ? this.testCondition(puppeteerResource.host, rule.host) : true
       const isPathnameOnWhitelist = rule.pathname ? this.testCondition(puppeteerResource.pathname, rule.pathname) : true
 
