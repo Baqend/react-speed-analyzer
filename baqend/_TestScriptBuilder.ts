@@ -80,6 +80,10 @@ export class TestScriptBuilder {
         url = url.replace(basicAuthRegex, '');
     }
 
+    if(url.startsWith("https://mobile.yoox.com")) {
+      url = url.substr(0, url.indexOf('#'));
+    }
+
     if (url.startsWith("https://oleo.io")) {
       activityTimeout = 5000;
       speedKitConfig = `{  
