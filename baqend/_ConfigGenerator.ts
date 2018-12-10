@@ -76,8 +76,7 @@ export class ConfigGenerator {
     }
     // Add host to whitelist
     const hostMatcher = this.matchAllSubdomains(host)
-    configBuilder
-      .whitelistHost(hostMatcher)
+    configBuilder.whitelistHost(hostMatcher)
 
     // Blacklist jQuery callback URLs
     resources
@@ -113,6 +112,13 @@ export class ConfigGenerator {
       resources
         .filter(resource => !resource.cookies.length)
         .filter(resource => resource.url.match(/\.min\.(?:css|js)$/))
+        .filter(resource => !resource.host.match(hostMatcher)) // filter already whitelisted urls
+        .map(resource => this.stripResourceUrl(resource))
+        .forEach(url => configBuilder.whitelistUrl(url))
+
+      // Whitelist cacheable Google requests.
+      resources
+        .filter(resource => this.isCacheableGoogleRequest(resource))
         .filter(resource => !resource.host.match(hostMatcher)) // filter already whitelisted urls
         .map(resource => this.stripResourceUrl(resource))
         .forEach(url => configBuilder.whitelistUrl(url))
@@ -246,10 +252,19 @@ export class ConfigGenerator {
   }
 
   /**
+   * Determines whether a resource is a cachable Google request e.g. Google Analytics.
+   */
+  private isCacheableGoogleRequest(resource: PuppeteerResource) {
+    return resource.url.match(/^(?:http(s)?:\/\/)?www\.google-analytics\.com\/analytics\.js/)
+      || resource.url.match(/^(?:http(s)?:\/\/)?www\.googletagmanager\.com\/gtm\.js/)
+      || resource.url.match(/^(?:http(s)?:\/\/)?www\.googletagservices\.com\/tag\/js\/gpt\.js/)
+  }
+
+  /**
    * Determines whether a resource is a jQuery callback.
    */
   private isJQueryCallback(resource: PuppeteerResource): boolean {
-    return !!resource.url.match(/[?&]callback=/)
+    return !!resource.url.match(/[?&]callback=/) || !!resource.url.match(/[?&]jsonp_callback =/)
   }
 
   /**
