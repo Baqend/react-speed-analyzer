@@ -14,12 +14,14 @@ export async function run(db: baqend) {
   db.log.info('Running cronTestWorker job')
 
   const now = Date.now()
+  // Ascending by "updatedAt" to start at the head of the queue.
   const tests = await db.TestResult.find()
     .equal('hasFinished', false)
     .notEqual('url', null)
     .lessThanOrEqualTo('updatedAt', new Date(now - ONE_MINUTE))
     .greaterThanOrEqualTo('updatedAt', new Date(now - TWO_DAYS))
     .isNotNull('webPagetests')
+    .ascending('updatedAt')
     .resultList()
 
   for (const test of tests) {

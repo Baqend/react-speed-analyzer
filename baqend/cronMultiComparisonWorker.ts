@@ -12,10 +12,12 @@ export async function run(db: baqend) {
   const { multiComparisonWorker } = bootstrap(db)
 
   const now = Date.now()
+  // Ascending by "updatedAt" to start at the head of the queue.
   const multiComparisons = await db.BulkTest.find()
     .equal('hasFinished', false)
     .lessThanOrEqualTo('updatedAt', new Date(now - FIVE_MINUTES))
     .greaterThanOrEqualTo('updatedAt', new Date(now - TWO_DAYS))
+    .ascending('updatedAt')
     .resultList({ depth: 1 })
 
   db.log.info('Running cronMultiComparisonWorker job', { multiComparisons: multiComparisons })
