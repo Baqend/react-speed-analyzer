@@ -138,7 +138,7 @@ export async function post(db: baqend, request: Request, response: Response) {
 
   try {
     const id = `${getDateString()}-plesk-${generateHash()}`
-    const tests = domainNames.map(domainName => ({ url: domainName, priority: DEFAULT_PLESK_PRIORITY, runs: 2 }))
+    const tests = domainNames.map(domainName => ({ url: domainName, priority: DEFAULT_PLESK_PRIORITY, runs: 1 }))
     startBulkComparison(db, id, 'plesk', tests)
 
     response.send({ bulkComparisonId: `/db/BulkComparison/${id}`, domainMap })
