@@ -165,8 +165,9 @@ export class TestScriptBuilder {
       // ts.setDns(`${credentials.app}.app.baqend.com`, credentials.shield_pop_ip)
     // }
 
-    if (!location.includes('-docker')) {
-      ts.navigate('about:blank')
+    // Hack to make "decathlon.de" testable.
+    if (!location.includes('-docker') || url.indexOf('decathlon.de') !== -1) {
+      ts.navigate('http://127.0.0.1:8888/orange.html')
     }
 
     return ts
