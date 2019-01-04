@@ -105,13 +105,18 @@ async function getResponse(response, name) {
  */
 function checkPuppeteerResult(result, expectedResult) {
   if (!result.puppeteer) {
-    if (result.error) {
-      const { message, status } = result.error
-      reportError(`Puppeteer erred with status code ${status}: ${message}`)
+    if (!result.error) {
+      reportError('Puppeteer erred with empty response.')
       return
     }
 
-    reportError('Puppeteer erred with empty response.')
+    const { message, status } = result.error
+    if (status === 599) {
+      reportError(message)
+      return
+    }
+
+    reportError(`Puppeteer erred with status code ${status}: ${message}`)
     return
   }
 
