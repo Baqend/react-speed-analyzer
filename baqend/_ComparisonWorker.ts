@@ -51,7 +51,7 @@ export class ComparisonWorker implements TestListener {
 
     // Check if comparison is still queued
     if (isQueued(comparison)) {
-      const started = Math.ceil((comparison.updatedAt.getTime() - Date.now()) / 1000)
+      const started = Math.ceil((Date.now() - comparison.updatedAt.getTime()) / 1000)
       const message = `Comparison was still queued after ${started} seconds.`
       await this.comparisonFactory.updateComparisonWithError(comparison, message, 599)
 
