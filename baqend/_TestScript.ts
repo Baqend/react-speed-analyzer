@@ -116,6 +116,27 @@ export class TestScript {
     return this.push(`sleep ${seconds}`)
   }
 
+  /**
+   * Sets the given cookie for the given path.
+   *
+   * @param cookie The cookie to set.
+   * @param path The path of the cookie
+   * @return This is a chainable method.
+   */
+  setCookie(cookie: string, path: string = '/'): this {
+    return this.push(`setCookie ${path} ${cookie}`)
+  }
+
+  /**
+   * Sets the given user agent.
+   *
+   * @param userAgent The user agent to set
+   * @return This is a chainable method.
+   */
+  setUserAgent(userAgent: string): this {
+    return this.push(`setUserAgent ${userAgent}`)
+  }
+
   private push(line: string): this {
     this.lines.push(line)
     return this

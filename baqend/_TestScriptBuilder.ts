@@ -48,6 +48,13 @@ export class TestScriptBuilder {
       // }
     }
 
+    // Hack to circumvent zip code protection for "shop.rewe.de"
+    if (url.startsWith('https://shop.rewe.de/')) {
+      // Cookies to choose a marked
+      ts.setCookie('marketsCookie=%7B%22marketId%22%3A%22540622%22%2C%22zipCode%22%3A%2225337%22%2C%22serviceTypes%22%3A%5B%22PICKUP%22%5D%2C%22customerZipCode%22%3A%2225337%22%2C%22marketZipCode%22%3A%2225336%22%7D', 'https://shop.rewe.de/');
+      ts.setCookie('cookie-consent=1', 'https://shop.rewe.de/');
+    }
+
     ts.blockDomains(...blockDomains)
       .setActivityTimeout(activityTimeout)
       .setTimeout(timeout)
@@ -168,6 +175,13 @@ export class TestScriptBuilder {
     // Hack to make "decathlon.de" testable.
     if (!location.includes('-docker') || url.indexOf('decathlon.de') !== -1) {
       ts.navigate('http://127.0.0.1:8888/orange.html')
+    }
+
+    // Hack to circumvent zip code protection for "shop.rewe.de"
+    if (url.startsWith('https://shop.rewe.de/')) {
+      // Cookies to choose a marked
+      ts.setCookie('marketsCookie=%7B%22marketId%22%3A%22540622%22%2C%22zipCode%22%3A%2225337%22%2C%22serviceTypes%22%3A%5B%22PICKUP%22%5D%2C%22customerZipCode%22%3A%2225337%22%2C%22marketZipCode%22%3A%2225336%22%7D', 'https://shop.rewe.de/');
+      ts.setCookie('cookie-consent=1', 'https://shop.rewe.de/');
     }
 
     return ts
