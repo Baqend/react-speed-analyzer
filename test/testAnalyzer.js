@@ -123,7 +123,9 @@ function checkPuppeteerResult(result, expectedResult) {
   try {
     assert.strictEqual(result.url, expectedResult.url, 'Attribute "url" not matching')
     assert.strictEqual(result.displayUrl, expectedResult.displayUrl, 'Attribute "displayUrl" not matching')
-    assert.strictEqual(result.type, expectedResult.type, 'Attribute "type" not matching')
+    if (expectedResult.type) {
+      assert.strictEqual(result.type, expectedResult.type, 'Attribute "type" not matching')
+    }
     assert.strictEqual(result.isSecured, expectedResult.isSecured, 'Attribute "isSecured" not matching')
   } catch (err) {
     writeln(err)
