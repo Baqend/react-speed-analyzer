@@ -217,8 +217,7 @@ async function execNonSpeedKit() {
     hasSpeedKitVersion: false,
     speedKitConfig: speedKitConfigString,
     configAnalysis: null,
-    isSecured: false,
-    type: 'bootstrap'
+    isSecured: false
   }
 
   return testAnalyzer(url, expectedParams)
