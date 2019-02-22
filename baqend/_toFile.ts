@@ -23,17 +23,18 @@ function dataUriToResourceInfo(dataUri: string): ResourceInfo {
   return { buffer, size, mimeType }
 }
 
-async function httpUriToResourceInfo(url: string, maxRetries = MAX_DOWNLOAD_RETRIES): Promise<ResourceInfo> {
+async function httpUriToResourceInfo(db: baqend, url: string, maxRetries = MAX_DOWNLOAD_RETRIES): Promise<ResourceInfo> {
   const response = await fetch(url)
 
   // Retry on error
   if (!response.status || (response.status >= 400 && response.status < 600)) {
     if (maxRetries <= 0) {
+      db.log.error(`Downloading video failed with status code: ${response.status}.`)
       throw new Error(`Maximum number of ${MAX_DOWNLOAD_RETRIES} retries reached without success.`)
     }
 
-    await sleep(500)
-    return httpUriToResourceInfo(url, maxRetries - 1)
+    await sleep(1000)
+    return httpUriToResourceInfo(db, url, maxRetries - 1)
   }
 
   // Create resource info from HTTP response
@@ -46,13 +47,13 @@ async function httpUriToResourceInfo(url: string, maxRetries = MAX_DOWNLOAD_RETR
 /**
  * Creates a resource info from a given URI.
  */
-async function uriToResourceInfo(uri: string): Promise<ResourceInfo> {
+async function uriToResourceInfo(db: baqend, uri: string): Promise<ResourceInfo> {
   if (uri.startsWith('data:')) {
     return dataUriToResourceInfo(uri)
   }
 
   if (uri.startsWith('http:') || uri.startsWith('https:')) {
-    return httpUriToResourceInfo(uri)
+    return httpUriToResourceInfo(db, uri)
   }
 
   throw new Error('Cannot handle the given URI\'s protocol.')
@@ -72,7 +73,7 @@ async function uriToResourceInfo(uri: string): Promise<ResourceInfo> {
  * @returns {Promise} a Promise that resolves to the uploaded file
  */
 export async function toFile(db: baqend, uri: string, target: string, maxRetries: number = 10): Promise<binding.File> {
-  const { buffer: data, mimeType, size } = await uriToResourceInfo(uri)
+  const { buffer: data, mimeType, size } = await uriToResourceInfo(db, uri)
   const file = new db.File({ path: target })
 
   return file.upload({ mimeType, size, type: 'buffer', data, force: true })
