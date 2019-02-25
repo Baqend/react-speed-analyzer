@@ -40,6 +40,14 @@ export class TestScriptBuilder {
 
     const ts = testScript()
 
+    if (url.startsWith('https://www.congstar.de/')) {
+      if (isMobile) {
+        // ts.setViewport(480, 987);
+      } else {
+        ts.setViewport(1366, 768	); // Good desktop viewport
+      }
+    }
+
     if (location.includes('-docker')) { // FIXME this is just testing, set optimal viewport when testing is finished.
       // if (isMobile) {
       //   ts.setViewport(480, 987); // Maximum viewport
@@ -152,6 +160,14 @@ export class TestScriptBuilder {
 
     // SW always needs to be installed
     const ts = testScript()
+
+    if (url.startsWith('https://www.congstar.de/')) {
+      if (isMobile) {
+         // ts.setViewport(480, 987);
+      } else {
+         ts.setViewport(1366, 768	); // Good desktop viewport
+      }
+    }
 
     if (location.includes('-docker')) { // FIXME this is just testing, set optimal viewport when testing is finished.
       // if (isMobile) {
