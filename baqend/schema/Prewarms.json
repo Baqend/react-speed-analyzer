@@ -13,10 +13,65 @@
     }
   },
   "fields": {
-    "testId": {
-      "name": "testId",
+    "hash": {
+      "name": "hash",
       "type": "/db/String",
       "order": 0
+    },
+    "url": {
+      "name": "url",
+      "type": "/db/String",
+      "order": 1
+    },
+    "userAgent": {
+      "name": "userAgent",
+      "type": "/db/String",
+      "order": 2
+    },
+    "cardinality": {
+      "name": "cardinality",
+      "type": "/db/Integer",
+      "order": 3
+    },
+    "status": {
+      "name": "status",
+      "type": "/db/String",
+      "order": 4
+    },
+    "done": {
+      "name": "done",
+      "type": "/db/Integer",
+      "order": 5
+    },
+    "left": {
+      "name": "left",
+      "type": "/db/Integer",
+      "order": 6
+    },
+    "timePerJob": {
+      "name": "timePerJob",
+      "type": "/db/Integer",
+      "order": 7
+    },
+    "passed": {
+      "name": "passed",
+      "type": "/db/Integer",
+      "order": 8
+    },
+    "passedFmt": {
+      "name": "passedFmt",
+      "type": "/db/String",
+      "order": 9
+    },
+    "eta": {
+      "name": "eta",
+      "type": "/db/Integer",
+      "order": 10
+    },
+    "etaFmt": {
+      "name": "etaFmt",
+      "type": "/db/String",
+      "order": 11
     }
   }
 }
