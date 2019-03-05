@@ -98,6 +98,7 @@ const calculatePercentageForFirstBobble = (time) => {
     return 0.8
   }
 
+  // linear equation for the time between 0.2 and 5, which returns a percentage between 0 and 0.8
   return 8 / 49 * time - 4 / 245
 }
 
@@ -120,6 +121,8 @@ const calculatePercentageForSecondBobble = (firstTime, secondTime) => {
     return 0.8
   }
 
+  // linear equation for the time between 0.2 and 5 added to the given percentage,
+  // which returns a percentage between 0.15 and 0.8
   return calculatePercentageForFirstBobble(firstTime) + 13 / 96 * timeDifference + 131 / 960
 }
 
@@ -187,7 +190,7 @@ class ResultScaleComponent extends Component {
     const firstTime = competitorOrder > speedKitOrder ? speedKitTimeRounded : competitorTimeRounded
     const secondTime = speedKitOrder > competitorOrder ? speedKitTimeRounded : competitorTimeRounded
 
-    //calculate percentage to px depending on width + 3. calculate percentage of scale
+    //calculate percentage to px depending on width and the percentage of scale
     const firstBobblePercentage = calculatePercentageForFirstBobble(firstTime)
     const secondBobblePercentage = calculatePercentageForSecondBobble(firstTime, secondTime)
 
