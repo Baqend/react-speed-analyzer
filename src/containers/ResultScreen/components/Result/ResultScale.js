@@ -1,6 +1,9 @@
 import React, {Component} from 'react'
 import {roundMsToSec} from "../../../../helper/maths";
 
+const MAX_SCALE_MS = 5
+const MIN_SCALE_MS = 1
+
 const Marker = ({style}) => (
   <svg
     version="1.1"
@@ -92,9 +95,9 @@ const Bobbel = ({description, time, style, upsideDown, absolute, mobile, order, 
  * @returns {number} Calculated percentage share is between 0 and 0.8 of the fastest result.
  */
 const calculatePercentageForFirstBobble = (time) => {
-  if (time === 0.1) {
+  if (time === MIN_SCALE_MS) {
     return 0
-  } else if (time > 5) {
+  } else if (time > MAX_SCALE_MS) {
     return 0.8
   }
 
@@ -113,10 +116,10 @@ const calculatePercentageForSecondBobble = (firstTime, secondTime) => {
   const timeDifference = secondTime - firstTime
   if (timeDifference === 0) {
     return calculatePercentageForFirstBobble(firstTime) + 0.01
-  } else if (timeDifference === 0.1) {
+  } else if (timeDifference === MIN_SCALE_MS) {
     // adds percentage from the first bobble
     return calculatePercentageForFirstBobble(firstTime) + 0.15
-  } else if (secondTime >= 5) {
+  } else if (secondTime >= MAX_SCALE_MS) {
     return 0.8
   }
 
