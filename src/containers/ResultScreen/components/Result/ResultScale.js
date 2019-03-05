@@ -105,7 +105,6 @@ const calculatePercentageForFirstBobble = (time) => {
 /**
  * Calculates the representing percentage share of the slowest result.
  *
- *
  * @param {number} firstTime
  * @param {number} secondTime
  * @returns {number} Calculated percentage share is between 0 and 0.8 of the slowest result.
