@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import {roundMsToSec} from "../../../../helper/maths";
 
 const Marker = ({style}) => (
   <svg
@@ -36,17 +37,31 @@ const Marker = ({style}) => (
   </svg>
 )
 
+/**
+ * Draws a bobbel for the scale.
+ *
+ * @param {string} description The description which will be positioned around the bobble.
+ * @param {number} time The time which will be displayed inside of the bobble.
+ * @param {string} style Additional style changes.
+ * @param {boolean} upsideDown If true, the bobble will be displayed upside down (with the tip pointing upwards).
+ * @param {boolean} absolute Indicates whether the description should be positioned absolute.
+ * @param {boolean} mobile Indicates whether the state of the screen is mobile or not.
+ * @param {number} order If the order is 1, the description will be shown on the top right. Otherwise top left.
+ * @param {number} delta Indicates the difference between two bobbles.
+ * @param {number} offset Indicates the position in percentage from the right dependent on screen size.
+ */
 const Bobbel = ({description, time, style, upsideDown, absolute, mobile, order, delta, offset}) => (
   <div
     className={`flex justify-center items-center ${absolute ? 'absolute' : ''}`}
     style={style}>
     <div
-      className={`relative flex justify-center ${mobile ? '' : 'flex-column'} ${order && delta < 250 ? ((order === 2 && 'items-end') || 'items-start') : 'items-center'}`}>
+      className={`relative flex justify-center ${mobile || delta === 0 ? '' : 'flex-column'} ${order && delta < 250 ? ((order === 2 && 'items-end') || 'items-start') : 'items-center'}`}>
       <div style={{
-        right: (mobile && offset < 55) ? 54 : -110,
+        marginLeft: (delta === 0 && !mobile) ? offset < 55 ? -70 : 70 : '',
+        right: mobile ? offset < 55 ? 54 : -90 : '',
         top: upsideDown ? 14 : 8,
         whiteSpace: 'nowrap',
-        position: mobile ? 'absolute' : 'initial',
+        position: mobile || delta === 0 ? 'absolute' : 'initial',
         order: mobile ? 1 : 0
       }}>
         <small style={{fontWeight: 600, fontSize: 12}}>{description}</small>
@@ -56,9 +71,7 @@ const Bobbel = ({description, time, style, upsideDown, absolute, mobile, order, 
         display: 'block',
         width: delta < 250 ? 47 : '100%',
         textAlign: 'center',
-        top: mobile ? ((upsideDown && 19) || 13) : 38,
-        right: order === 2 && delta < 250 ? 0 : 'auto',
-        left: order === 1 && delta < 250 ? 0 : 'auto',
+        top: mobile || delta === 0 ? ((upsideDown && 19) || 13) : 38,
         fontWeight: 400,
         fontSize: 14,
         zIndex: 1
@@ -69,10 +82,6 @@ const Bobbel = ({description, time, style, upsideDown, absolute, mobile, order, 
     </div>
   </div>
 )
-
-const round = (time) => {
-  return Math.round(time / 100) / 10
-}
 
 /**
  * Calculates the representing percentage share of the fastest result.
@@ -167,8 +176,8 @@ class ResultScaleComponent extends Component {
   render() {
     const {speedKitError, competitorTest, speedKitTest, mainMetric, testOverview} = this.props.result
     //round times
-    const competitorTimeRounded = competitorTest.firstView && competitorTest.firstView[mainMetric] && round(competitorTest.firstView[mainMetric])
-    const speedKitTimeRounded = speedKitTest.firstView && !speedKitError && speedKitTest.firstView[mainMetric] && round(speedKitTest.firstView[mainMetric])
+    const competitorTimeRounded = competitorTest.firstView && competitorTest.firstView[mainMetric] && roundMsToSec(competitorTest.firstView[mainMetric])
+    const speedKitTimeRounded = speedKitTest.firstView && !speedKitError && speedKitTest.firstView[mainMetric] && roundMsToSec(speedKitTest.firstView[mainMetric])
 
     //give order
     const competitorOrder = competitorTimeRounded >= speedKitTimeRounded ? 2 : 1
@@ -226,11 +235,15 @@ class ResultScaleComponent extends Component {
                 time={`${secondTime}s`}
                 order={2}
                 delta={timeDelta}
+                offset={firstBobblePercentage * 100}
                 style={{
-                  marginTop: -8,
+                  marginTop: timeDelta === 0 ? 80 : -8,
                   order: 2,
-                  marginRight: `${secondBobblePercentage * 100 - firstBobblePercentage * 100}%`
+                  paddingRight: timeDelta === 0 ? `${firstBobblePercentage * 100}%` : 0,
+                  marginRight: timeDelta === 0 ? 0 : `${secondBobblePercentage * 100 - firstBobblePercentage * 100}%`
                 }}
+                absolute={timeDelta === 0}
+                upsideDown={timeDelta === 0}
               />
             )}
             {firstTime && this.state.windowWidth >= 480 && this.state.width && (
@@ -239,11 +252,14 @@ class ResultScaleComponent extends Component {
                 time={`${firstTime}s`}
                 order={1}
                 delta={timeDelta}
+                offset={firstBobblePercentage * 100}
                 style={{
-                  marginTop: -8,
+                  marginTop: timeDelta === 0 ? 8 : -8,
                   order: 1,
-                  marginRight: `${firstBobblePercentage * 100}%`
+                  paddingRight: timeDelta === 0 ? `${firstBobblePercentage * 100}%` : 0,
+                  marginRight: timeDelta === 0 ? 0 : `${firstBobblePercentage * 100}%`
                 }}
+                absolute={timeDelta === 0}
               />
             )}
           </div>

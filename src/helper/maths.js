@@ -53,3 +53,13 @@ export function isWholeNumberToHundreds(num) {
 export function roundToNearestTen(num) {
   return Math.round(num / 10) * 10
 }
+
+/**
+ * Convert ms to seconds and rounds it.
+ *
+ * @param {number} num The number to round to nearest 10.
+ * @returns {number} The converted and rounded number.
+ */
+export function roundMsToSec(num) {
+  return Math.round(num / 100) / 10
+}
