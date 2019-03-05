@@ -92,15 +92,21 @@ export class TestScriptBuilder {
   ): TestScript {
     const basicAuthRegex = /\w*:\w*@/;
     if (basicAuthRegex.test(url)) {
-        url = url.replace(basicAuthRegex, '');
+        url = url.replace(basicAuthRegex, '')
+    }
+
+    // Edit split criterion id necessary to ensure SK is active for test run.
+    const splitRegex = /.*split:.\d+\.\d*[^,]/;
+    if (splitRegex.test(speedKitConfig)) {
+      speedKitConfig = speedKitConfig.replace(splitRegex, 'split: 1.0')
     }
 
     if(url.startsWith("https://mobile.yoox.com")) {
-      url = url.substr(0, url.indexOf('#'));
+      url = url.substr(0, url.indexOf('#'))
     }
 
     if (url.startsWith("https://oleo.io")) {
-      activityTimeout = 5000;
+      activityTimeout = 5000
       speedKitConfig = `{  
    "appName":"little-dragon-72",
    "enabledSites":[  
