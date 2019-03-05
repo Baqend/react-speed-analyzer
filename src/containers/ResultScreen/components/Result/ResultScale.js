@@ -1,8 +1,8 @@
 import React, {Component} from 'react'
-import {roundMsToSec} from "../../../../helper/maths";
+import {roundMsToSec, roundToTenths} from "../../../../helper/maths";
 
-const MAX_SCALE_MS = 5
-const MIN_SCALE_MS = 1
+const MAX_SCALE_MS = 2.5
+const PERCENTAGE_THRESHOLD_IN_MS = 2.2
 
 const Marker = ({style}) => (
   <svg
@@ -63,7 +63,7 @@ const Bobbel = ({description, time, style, upsideDown, absolute, mobile, order, 
         // 'margin-left' is only used for desktop test results with no time difference
         marginLeft: (delta === 0 && !mobile) ? (offset < 55 ? -70 : 70) : '',
         // 'right' is only used for mobile test results
-        right: mobile ? (offset < 55 ? 54 : -90 ) : '',
+        right: mobile ? (offset < 55 ? 54 : -90) : '',
         top: upsideDown ? 14 : 8,
         whiteSpace: 'nowrap',
         position: mobile || delta === 0 ? 'absolute' : 'initial',
@@ -95,14 +95,12 @@ const Bobbel = ({description, time, style, upsideDown, absolute, mobile, order, 
  * @returns {number} Calculated percentage share is between 0 and 0.8 of the fastest result.
  */
 const calculatePercentageForFirstBobble = (time) => {
-  if (time === MIN_SCALE_MS) {
-    return 0
-  } else if (time > MAX_SCALE_MS) {
+  if (time > MAX_SCALE_MS) {
     return 0.8
   }
 
-  // linear equation for the time between 0.2 and 5, which returns a percentage between 0 and 0.8
-  return 8 / 49 * time - 4 / 245
+  // linear equation for the time between 0.1 and 2.5, which returns a percentage between 0 and 0.8
+  return 1 / 3 * time - 1 / 30
 }
 
 /**
@@ -113,19 +111,19 @@ const calculatePercentageForFirstBobble = (time) => {
  * @returns {number} Calculated percentage share is between 0 and 0.8 of the slowest result.
  */
 const calculatePercentageForSecondBobble = (firstTime, secondTime) => {
-  const timeDifference = secondTime - firstTime
+  const timeDifference = roundToTenths(secondTime - firstTime)
   if (timeDifference === 0) {
-    return calculatePercentageForFirstBobble(firstTime) + 0.01
-  } else if (timeDifference === MIN_SCALE_MS) {
-    // adds percentage from the first bobble
-    return calculatePercentageForFirstBobble(firstTime) + 0.15
-  } else if (secondTime >= MAX_SCALE_MS) {
-    return 0.8
+    return calculatePercentageForFirstBobble(firstTime)
+  } else if (secondTime > MAX_SCALE_MS) {
+    return 0.82
+  } else if ((timeDifference !== 0.1 || 0) && firstTime >= PERCENTAGE_THRESHOLD_IN_MS) {
+    // if the first bobble is too far left, then use linear equation for the time difference [2.3, 2.5] -> [11/15, 0.8]
+    return 1 / 3 * secondTime - 1 / 30
   }
 
-  // linear equation for the time between 0.2 and 5 added to the given percentage,
-  // which returns a percentage between 0.15 and 0.8
-  return calculatePercentageForFirstBobble(firstTime) + 13 / 96 * timeDifference + 131 / 960
+  // linear equation for the time between 0.1 and 2.5, which returns a percentage between 0.15 and 0.8
+  // adds 15% distance minimum
+  return 13 / 48 * secondTime + 59 / 480
 }
 
 const getDescriptionForFirstBobble = (speedKitTime, competitorTime, hasSpeedKitInstalled) => {
@@ -190,6 +188,7 @@ class ResultScaleComponent extends Component {
     const competitorOrder = competitorTimeRounded >= speedKitTimeRounded ? 2 : 1
     const speedKitOrder = speedKitTimeRounded > competitorTimeRounded ? 2 : 1
     const firstTime = competitorOrder > speedKitOrder ? speedKitTimeRounded : competitorTimeRounded
+    // it is also secondTime, if one test is null
     const secondTime = speedKitOrder > competitorOrder ? speedKitTimeRounded : competitorTimeRounded
 
     //calculate percentage to px depending on width and the percentage of scale
@@ -246,8 +245,8 @@ class ResultScaleComponent extends Component {
                 style={{
                   marginTop: timeDelta === 0 ? 80 : -8,
                   order: 2,
-                  paddingRight: timeDelta === 0 ? `${firstBobblePercentage * 100}%` : 0,
-                  marginRight: timeDelta === 0 ? 0 : `${secondBobblePercentage * 100 - firstBobblePercentage * 100}%`
+                  paddingRight: timeDelta === 0 ? `${firstBobblePercentage * 100}%` : '',
+                  marginRight: timeDelta === 0 ? '' : `${secondBobblePercentage * 100 - firstBobblePercentage * 100}%`
                 }}
                 absolute={timeDelta === 0}
                 upsideDown={timeDelta === 0}
@@ -263,8 +262,8 @@ class ResultScaleComponent extends Component {
                 style={{
                   marginTop: timeDelta === 0 ? 8 : -8,
                   order: 1,
-                  paddingRight: timeDelta === 0 ? `${firstBobblePercentage * 100}%` : 0,
-                  marginRight: timeDelta === 0 ? 0 : `${firstBobblePercentage * 100}%`
+                  paddingRight: timeDelta === 0 ? `${firstBobblePercentage * 100}%` : '',
+                  marginRight: timeDelta === 0 ? '' : `${firstBobblePercentage * 100}%`
                 }}
                 absolute={timeDelta === 0}
               />
