@@ -1,4 +1,4 @@
-@import 'tachyons/src/_media-queries';
+@import "~tachyons/src/_media-queries.css";
 
 .loading-screen {
   .left {

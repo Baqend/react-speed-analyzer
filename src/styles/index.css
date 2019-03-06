@@ -1,26 +1,26 @@
-@import "tachyons/src/_normalize";
-@import "tachyons/src/_flexbox";
-@import "tachyons/src/_widths";
-@import "tachyons/src/_spacing";
-@import "tachyons/src/_position";
+@import "~tachyons/src/_normalize.css";
+@import "~tachyons/src/_flexbox.css";
+@import "~tachyons/src/_widths.css";
+@import "~tachyons/src/_spacing.css";
+@import "~tachyons/src/_position.css";
 
-@import "slick-carousel/slick/slick.scss";
-@import "slick-carousel/slick/slick-theme.scss";
-@import "codemirror/lib/codemirror.css";
-@import 'tachyons/src/_media-queries';
+@import "~slick-carousel/slick/slick.scss";
+@import "~slick-carousel/slick/slick-theme.scss";
+@import "~codemirror/lib/codemirror.css";
+@import "~tachyons/src/_media-queries.css";
 
 @import "./lib/animate.css";
 @import "./lib/toggle.css";
 
-@import "./_common";
-@import "./_variables";
+@import "./_common.css";
+@import "./_variables.css";
 @import "./_reset.css";
 @import "./_buttons.css";
 @import "./_modal.css";
 
-@import "tachyons/src/_text-align";
-@import "tachyons/src/_font-weight";
-@import "tachyons/src/_display";
+@import "~tachyons/src/_text-align.css";
+@import "~tachyons/src/_font-weight.css";
+@import "~tachyons/src/_display.css";
 
 :root {
   --dark-blue: #162939;

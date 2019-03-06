@@ -163,7 +163,8 @@ module.exports = {
               {
                 loader: require.resolve('css-loader'),
                 options: {
-                  importLoaders: 0,
+                  import: false,
+                  importLoaders: 1,
                 },
               },
               {

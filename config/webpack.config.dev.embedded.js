@@ -165,7 +165,8 @@ module.exports = {
                 options: {
                   modules: false,
                   sourceMap: true,
-                  importLoaders: 0,
+                  import: false,
+                  importLoaders: 1,
                 },
               },
               {

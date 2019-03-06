@@ -1,5 +1,5 @@
-@import 'styles/_variables';
-@import 'tachyons/src/_media-queries';
+@import "../../../../styles/_variables.css";
+@import "~tachyons/src/_media-queries.css";
 
 .result__details-metrics {
   font-size: 16px;
