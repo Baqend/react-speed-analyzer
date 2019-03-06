@@ -117,7 +117,9 @@ const calculatePercentageForFirstBobble = (time, maxRange = maxScaleInMs) => {
 const calculatePercentageForSecondBobble = (firstTime, secondTime) => {
   const timeDifference = secondTime - firstTime
   let result = 0.8 * secondTime / maxScaleInMs
-  if (secondTime > maxScaleInMs || result > 0.83 - MIN_DISTANCE) {
+  if (timeDifference === 0) {
+    return calculatePercentageForFirstBobble(firstTime)
+  } else if (secondTime > maxScaleInMs || result > 0.83 - MIN_DISTANCE) {
     // avoids that the second bobble goes beyond the scale
     return 0.83
   } else if ((timeDifference !== 0.1 || 0) && firstTime >= PERCENTAGE_THRESHOLD_IN_MS) {
