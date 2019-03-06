@@ -54,7 +54,7 @@ export const getObjectKey = (objectId) => {
  */
 export const isURL = (str) => {
   const encodedString = encodeUmlauts(str)
-  const pattern =  new RegExp('(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$');
+  const pattern =  new RegExp('(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)?[a-z0-9]+([\\-.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$')
   return pattern.test(encodedString)
 }
 

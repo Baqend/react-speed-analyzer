@@ -148,7 +148,7 @@ class ResultScreenComponent extends Component {
               {isSpeedKitInstalledCorrectly(configAnalysis) ? (
                 <div className="flex justify-center" style={{ alignItems: 'center' }}>
                   <h3>You are using Speed Kit {speedKitVersion}</h3>
-                  <img src={rocket} style={{paddingLeft: '8px', height: 30}} />
+                  <img alt="Rocket" src={rocket} style={{paddingLeft: '8px', height: 30}} />
                 </div>
               ) : (
                 `Thank you for installing Speed Kit, the configuration is not done yet. Please see below for more information.`

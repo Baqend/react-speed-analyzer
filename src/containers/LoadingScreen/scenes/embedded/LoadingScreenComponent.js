@@ -36,7 +36,7 @@ class StartingScreenComponent extends Component {
     this.setState({ showAdvancedConfig })
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (this.props.result.statusCode !== nextProps.result.statusCode) {
       clearTimeout(this.showFactsTimeout)
       this.setState({ showFacts: false }, () => {

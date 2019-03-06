@@ -55,7 +55,7 @@ class StartingScreen extends Component {
     this.setState({ showAdvancedConfig })
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     if (!this.props.result.isInitiated) {
       this.reset()
     }

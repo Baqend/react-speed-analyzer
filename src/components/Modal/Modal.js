@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 class Modal extends React.Component {
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     document.addEventListener('mousedown', this.handleClick, false)
   }
 

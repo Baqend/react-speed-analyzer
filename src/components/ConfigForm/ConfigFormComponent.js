@@ -48,9 +48,7 @@ class ConfigFormComponent extends Component {
     }
   }
 
-  isDefaultConfig = (speedKitConfig) => {
-    return speedKitConfig === stringifyObject(getDefaultSpeedKitConfig(this.props.config.url, this.props.config.mobile), { indent: '  ' })
-  }
+  isDefaultConfig = (speedKitConfig) => speedKitConfig === stringifyObject(getDefaultSpeedKitConfig(this.props.config.url, this.props.config.mobile), { indent: '  ' })
 
   handleUrlChange = (changeEvent) => {
     const url = changeEvent.target.value.trim()
@@ -142,7 +140,7 @@ class ConfigFormComponent extends Component {
     this.props.onSubmit()
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.whiteListCandidates !== this.props.whiteListCandidates) {
       this.setState({ whiteListCandidates: nextProps.whiteListCandidates })
     }

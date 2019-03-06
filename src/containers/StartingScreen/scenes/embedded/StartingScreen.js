@@ -52,7 +52,7 @@ class StartingScreen extends Component {
     this.startTest(this.props.config.url)
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     if (this.props.url) {
       this.props.actions.handleUrlInput(this.props.url)
     }

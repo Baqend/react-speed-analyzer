@@ -36,7 +36,7 @@ class Result extends Component {
     this.setState({ showDetails: !this.state.showDetails })
   }
 
-  componentWillMount = () => {
+  UNSAFE_componentWillMount = () => {
     this.updateWidths()
   }
 

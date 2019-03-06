@@ -45,7 +45,7 @@ class ResultScreen extends Component {
     } catch (e) {}
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.loadTestResult(this.props)
   }
 

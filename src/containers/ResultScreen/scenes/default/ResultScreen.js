@@ -38,13 +38,13 @@ class ResultScreen extends Component {
     }
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const { testId } = this.props.match.params
     this.checkUrlParams(this.props)
     testId && this.loadTestResult(testId)
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (this.props.match.params.testId !== nextProps.match.params.testId) {
       window.scrollTo(0, 0)
       this.props.actions.resetResult()

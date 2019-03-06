@@ -128,10 +128,10 @@ class ResultMetrics extends Component {
         <hr />
         <div className="flex items-center border-top">
           <div className="w-50 tc pt1 pb1">
-            <a href={createWaterfallLink(this.props.competitorTest)} target="_blank" className="">Without Speed Kit</a>
+            <a href={createWaterfallLink(this.props.competitorTest)} target="_blank" rel="noopener noreferrer" className="">Without Speed Kit</a>
           </div>
           <div className="w-50 tc pt1 pb1" style={{ borderLeft: '1px solid #E8E8E8' }}>
-            <a href={createWaterfallLink(this.props.speedKitTest)} target="_blank" className="">With Speed Kit</a>
+            <a href={createWaterfallLink(this.props.speedKitTest)} target="_blank" rel="noopener noreferrer" className="">With Speed Kit</a>
           </div>
         </div>
         <hr />
@@ -202,7 +202,7 @@ class ResultMetrics extends Component {
         <hr />
         <div className="flex items-center border-top">
           <div className="w-100 tc pt1 pb1">
-            <a href={createWaterfallLink(this.props.competitorTest)} target="_blank" className="">Your Website</a>
+            <a href={createWaterfallLink(this.props.competitorTest)} target="_blank" rel="noopener noreferrer" className="">Your Website</a>
           </div>
         </div>
         <hr />

@@ -8,7 +8,6 @@ import { connect } from 'react-redux'
 import { prepareTest, startTest } from 'actions/test'
 import { getObjectKey } from 'helper/utils'
 import { calculateAbsolute } from 'helper/resultHelper'
-import { formatFileSize } from 'helper/utils'
 
 import WordPressLogo from 'assets/wordpress.png'
 import check from 'assets/check.svg'
@@ -41,7 +40,7 @@ class ResultAction extends Component {
     // Request Latency
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
-    categorizeTtfbFact(competitorData.ttfb, speedKitData.ttfb, isSpeedKitComparison, applied, improvements);
+    categorizeTtfbFact(competitorData.ttfb, speedKitData.ttfb, isSpeedKitComparison, applied, improvements)
 
     // Image Optimization
     const { contentSize: competitorContentSize = null } = competitorData

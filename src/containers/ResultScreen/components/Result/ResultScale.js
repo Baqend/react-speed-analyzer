@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import { roundMsToSec } from "../../../../helper/maths";
+import {roundMsToSec} from "../../../../helper/maths"
 
 const PERCENTAGE_THRESHOLD_IN_MS = 2.2
 const MIN_DISTANCE = 0.15
@@ -34,8 +34,8 @@ const Marker = ({style}) => (
     </defs>
     <g filter="url(#marker-dropshadow)">
       <path id="path-1_9_"
-            d="M23.2,0c12.9,0,23.2,10.2,23.2,22.9c0,6.4-3.6,13.2-13,22.4L23.2,55.4L12.9,45.3 C3.6,36,0,29.2,0,22.9C0,10.2,10.4,0,23.2,0L23.2,0z"
-            style={{fill: 'white'}}></path>
+        d="M23.2,0c12.9,0,23.2,10.2,23.2,22.9c0,6.4-3.6,13.2-13,22.4L23.2,55.4L12.9,45.3 C3.6,36,0,29.2,0,22.9C0,10.2,10.4,0,23.2,0L23.2,0z"
+        style={{fill: 'white'}}></path>
     </g>
   </svg>
 )
@@ -168,7 +168,7 @@ class ResultScaleComponent extends Component {
     }
   }
 
-  componentWillMount = () => {
+  UNSAFE_componentWillMount = () => {
     this.updateWidths()
   }
 

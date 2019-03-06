@@ -30,13 +30,13 @@ class StartingScreenComponent extends Component {
     }
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.showCarouselTimeout = setTimeout(() => {
       this.setState({ showCarousel: true })
     }, 500)
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (this.props.result.statusCode !== nextProps.result.statusCode) {
       clearTimeout(this.showFactsTimeout)
       this.setState({ showFacts: false }, () => {
