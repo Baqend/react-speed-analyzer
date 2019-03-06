@@ -1,8 +1,6 @@
 import React, {Component} from 'react'
 import { roundMsToSec } from "../../../../helper/maths";
 
-const maxScaleInMs = 2.5
-
 const PERCENTAGE_THRESHOLD_IN_MS = 2.2
 const MIN_DISTANCE = 0.15
 
@@ -96,15 +94,15 @@ const Bobbel = ({description, time, style, upsideDown, absolute, mobile, order, 
  * @param {number} time
  * @returns {number} Calculated percentage share is between 0 and 0.8 of the fastest result.
  */
-const calculatePercentageForFirstBobble = (time, maxRange = maxScaleInMs) => {
-  if (time > maxRange) {
+const calculatePercentageForFirstBobble = (time, maxScaleInMs) => {
+  if (time > maxScaleInMs) {
     return 0.8
   }
 
   // time = 0.1 should start at the far right, therefore we subtract it from the result
-  const firstPercentage = 0.8 * 0.1 / maxRange
+  const firstPercentage = 0.8 * 0.1 / maxScaleInMs
 
-  return 0.8 * time / maxRange - firstPercentage
+  return 0.8 * time / maxScaleInMs - firstPercentage
 }
 
 /**
@@ -114,7 +112,7 @@ const calculatePercentageForFirstBobble = (time, maxRange = maxScaleInMs) => {
  * @param {number} secondTime
  * @returns {number} Calculated percentage share is between 0 and 0.8 of the slowest result.
  */
-const calculatePercentageForSecondBobble = (firstTime, secondTime) => {
+const calculatePercentageForSecondBobble = (firstTime, secondTime, maxScaleInMs) => {
   const timeDifference = secondTime - firstTime
   let result = 0.8 * secondTime / maxScaleInMs
   if (timeDifference === 0) {
@@ -195,15 +193,10 @@ class ResultScaleComponent extends Component {
     // it is also secondTime, if one test is null
     const secondTime = speedKitOrder > competitorOrder ? speedKitTimeRounded : competitorTimeRounded
 
-    // calculate percentage to px depending on width and the percentage of scale
-    let firstBobblePercentage = calculatePercentageForFirstBobble(firstTime)
-
     // if the second bobble is over our scale, recalculate the first bobble's position with second time as max range
-    if (secondTime > maxScaleInMs) {
-      firstBobblePercentage = calculatePercentageForFirstBobble(firstTime, secondTime)
-    }
-
-    const secondBobblePercentage = calculatePercentageForSecondBobble(firstTime, secondTime)
+    const maxScaleInMs = secondTime > 2.5 ? secondTime : 2.5
+    const firstBobblePercentage = calculatePercentageForFirstBobble(firstTime, maxScaleInMs)
+    const secondBobblePercentage = calculatePercentageForSecondBobble(firstTime, secondTime, maxScaleInMs)
 
     const hasSpeedKitInstalled = testOverview.isSpeedKitComparison
     const timeDelta = secondTime - firstTime
