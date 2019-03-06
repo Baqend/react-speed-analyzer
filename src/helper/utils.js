@@ -1,4 +1,7 @@
 /* global window fbq ga */
+import punycode from 'punycode'
+
+const DOMAIN_PATTERN =  /^(www\.)?[-a-z0-9]+(\.[-a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?$/
 
 /**
  * @param {number} bytes The file size in bytes to format.
@@ -49,26 +52,45 @@ export const getObjectKey = (objectId) => {
 
 /**
  * Check if a given string is a valid url.
- * @param str The string to be checked.
+ * @param {string} str The string to be checked.
  * @return {boolean}
  */
 export const isURL = (str) => {
-  const encodedString = encodeUmlauts(str)
-  const pattern =  new RegExp('(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)?[a-z0-9]+([\\-.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$')
-  return pattern.test(encodedString)
+  // Check is not a relative URL
+  if (str.startsWith('/')) {
+    return false
+  }
+
+  // Check and strip protocol
+  const protocolMatch = splitString(str, '://')
+  if (protocolMatch) {
+    const [protocol, rest] = protocolMatch
+    if (protocol !== 'http' && protocol !== 'https') {
+      return false
+    }
+
+    str = rest
+  }
+
+  const pathMatch = splitString(str, '/')
+  const domain = punycode.toASCII(pathMatch ? pathMatch[0] : str)
+
+  return DOMAIN_PATTERN.test(domain)
 }
 
 /**
- * Encodes all umlauts contained in a given string.
- * @param str The string to be encoded.
- * @return {string}
+ * Split a string at a given split character.
+ * @param {string} str The string to split.
+ * @param {string} splitChr The character to split at.
+ * @returns {null|[string, string]} The split parts or null, if not found.
  */
-export const encodeUmlauts = (str) => {
-  const encodedStr = str.toLowerCase()
-  return encodedStr
-    .replace(/ä/g, encodeURIComponent('ä'))
-    .replace(/ö/g, encodeURIComponent('ö'))
-    .replace(/ü/g, encodeURIComponent('ü'))
+export const splitString = (str, splitChr) => {
+  const index = str.indexOf(splitChr)
+  if (index >= 0) {
+    return [str.substring(0, index), str.substring(index + splitChr.length)]
+  }
+
+  return null
 }
 
 export const shuffle = (a) => {
