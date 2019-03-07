@@ -1,89 +1,57 @@
-import braunLogo from 'assets/img/braun.png'
-import netflixLogo from 'assets/img/netflix.png'
-import bookingLogo from 'assets/img/booking.png'
-import yelpLogo from 'assets/img/yelp.png'
-import wellsFargoLogo from 'assets/img/wells-fargo.png'
-import computerBildLogo from 'assets/img/computerbild.png'
-import alibabaLogo from 'assets/img/alibaba.png'
-import zillowLogo from 'assets/img/zillowLogo.jpg'
-import shutterstockLogo from 'assets/img/shutterstock.png'
-import walmartLogo from 'assets/img/walmart.png'
-import redditLogo from 'assets/img/reddit.png'
-import imdbLogo from 'assets/img/imdb.png'
+import baurLogo from 'assets/img/testimonial/testimonials-baur.png'
+import empiriecomLogo from 'assets/img/testimonial/testimonials-empiriecom.png'
+import suntoursLogo from 'assets/img/testimonial/testimonials-suntours.png'
+import fussballdatenLogo from 'assets/img/testimonial/testimonials-fussballdaten.png'
+import nectLogo from 'assets/img/testimonial/testimonials-nect.png'
 
 export default function examples() {
   return [
     {
-      name: 'Booking',
-      id: 'DDlPATbooking',
-      speedup: '2.6 x Faster',
-      logo: bookingLogo,
+      name: 'Baur',
+      id: 'QqWacCbaur',
+      logo: baurLogo,
+      author: 'Baur',
+      position: 'European E-Commerce',
+      blockquote: "Speed Kit helps " +
+        "<a href='https://www.baur.de' style='text-decoration: underline' target='_blank'>Baur.de</a> " +
+        "stay ahead of the competition by accelerating page loads through cutting-edge technology."
     },
     {
-      name: 'Braun',
-      id: 'fsyd2Gbraun',
-      speedup: '3.5 x Faster',
-      logo: braunLogo,
+      name: 'Suntours',
+      id: 'C0Z5aCsuntours',
+      logo: suntoursLogo,
+      author: 'Christofer Gratz',
+      position: 'CEO of Suntours',
+      blockquote: 'Speed Kit brought suntours.de from over 2 seconds to less than one second loading time and it was ' +
+        'super-easy to set up.'
     },
     {
-      name: 'Yelp',
-      id: 'CMgtoNyelp',
-      speedup: '1.8 x Faster',
-      logo: yelpLogo,
+      name: 'Fussballdaten',
+      id: 'j0Bl0Wfussballdaten',
+      logo: fussballdatenLogo,
+      author: 'Dennis Wedderkop',
+      position: 'CEO of Fussballdaten.de',
+      blockquote: 'Speed Kit not only makes page loads for Fussballdaten.de twice as fast. Our servers could also ' +
+        'handle the notorious end-of-season load peaks with ease. Through the Dynamic Blocks feature, our live ' +
+        'tickers are further always up-to-date – it\'s the best of caching, but without staleness!'
     },
     {
-      name: 'Zillow',
-      id: 'A7KxT8zillow',
-      speedup: '3.2 x Faster',
-      logo: zillowLogo,
+      name: 'Empiriecom',
+      id: 'QqWacCbaur',
+      logo: empiriecomLogo,
+      author: 'Empiriecom',
+      position: 'E-Commerce Otto Group',
+      blockquote: 'The entire Baqend team has impressed us with their exceptional technical prowess, extremely fast ' +
+        'response times, and a silky smooth onboarding experience for deploying Speed Kit on Baur.de.'
     },
     {
-      name: 'Reddit',
-      id: 'QvGfMwreddit',
-      speedup: '3.4 x Faster',
-      logo: redditLogo,
+      name: 'Nect',
+      id: 'dxj1k2nect',
+      logo: nectLogo,
+      author: 'Carlo Ulbrich',
+      position: 'CEO of Nect',
+      blockquote: 'Other WordPress plugins for web performance are either complex or not effective. ' +
+        'Speed Kit is different: It is easy to configure and still shaves a whole second off nect.com load times.'
     },
-    {
-      name: 'Walmart',
-      id: 'pJG7Sjwalmart',
-      speedup: '1.8 x Faster',
-      logo: walmartLogo,
-    },
-    {
-      name: 'Netflix',
-      id: 'UfiVaInetflix',
-      speedup: '3.6 x Faster',
-      logo: netflixLogo,
-    },
-    {
-      name: 'Wells Fargo',
-      id: 'nTxBTSwellsfargo',
-      speedup: '5.9 x Faster',
-      logo: wellsFargoLogo,
-    },
-    {
-      name: 'IMDb',
-      id: 'r8c27oimdb',
-      speedup: '2.3 x Faster',
-      logo: imdbLogo,
-    },
-    {
-      name: 'shutterstock',
-      id: 'tfKnfLshutterstock',
-      speedup: '3.0 x Faster',
-      logo: shutterstockLogo,
-    },
-    {
-      name: 'Alibaba',
-      id: 'KK8eXpalibaba',
-      speedup: '2.9 x Faster',
-      logo: alibabaLogo,
-    },
-    {
-      name: 'Computer Bild',
-      id: 'CLrpw1computerbild',
-      speedup: '3.6 x Faster',
-      logo: computerBildLogo,
-    }
   ]
 }
