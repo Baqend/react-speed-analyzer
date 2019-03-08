@@ -53,9 +53,6 @@ class SpeedKitCarousel extends Component {
               </div>
             ))}
           </Slider>
-          <div className="text-center faded" style={{ fontSize: '13px', marginTop: '25px' }}>
-            Example performance tests of popular websites. Click logo to learn more.
-          </div>
         </div>
       </div>
     )
