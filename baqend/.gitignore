@@ -11,6 +11,6 @@ credentials.js
 ### Schema
 schema/jobs.Definition.json
 schema/jobs.Status.json
-schema/speedKit.Asset.json
+schema/speedKit.*.json
 schema/Means.json
 schema/Tasks.json
