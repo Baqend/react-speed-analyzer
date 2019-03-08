@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {roundMsToSec} from "../../../../helper/maths"
+import {roundMsToSec, roundToTenths} from "../../../../helper/maths"
 
 const PERCENTAGE_THRESHOLD_IN_MS = 2.2
 const MIN_DISTANCE = 0.15
@@ -113,19 +113,19 @@ const calculatePercentageForFirstBobble = (time, maxScaleInMs) => {
  * @returns {number} Calculated percentage share is between 0 and 0.8 of the slowest result.
  */
 const calculatePercentageForSecondBobble = (firstTime, secondTime, maxScaleInMs) => {
-  const timeDifference = secondTime - firstTime
+  const timeDifference = roundToTenths(secondTime - firstTime)
   let result = 0.8 * secondTime / maxScaleInMs
   if (timeDifference === 0) {
     return calculatePercentageForFirstBobble(firstTime)
   } else if (secondTime > maxScaleInMs || result > 0.83 - MIN_DISTANCE) {
     // avoids that the second bobble goes beyond the scale
     return 0.83
-  } else if ((timeDifference !== 0.1 || 0) && firstTime >= PERCENTAGE_THRESHOLD_IN_MS) {
+  } else if (firstTime >= PERCENTAGE_THRESHOLD_IN_MS) {
     // if the first bobble is too far left, don't add 15%
     return result
   }
 
-  return result + MIN_DISTANCE
+  return Math.max(result, MIN_DISTANCE)
 }
 
 const getDescriptionForFirstBobble = (speedKitTime, competitorTime, hasSpeedKitInstalled) => {
@@ -194,7 +194,7 @@ class ResultScaleComponent extends Component {
     const secondTime = speedKitOrder > competitorOrder ? speedKitTimeRounded : competitorTimeRounded
 
     // if the second bobble is over our scale, recalculate the first bobble's position with second time as max range
-    const maxScaleInMs = secondTime > 2.5 ? secondTime : 2.5
+    const maxScaleInMs = Math.max(2.5, secondTime)
     const firstBobblePercentage = calculatePercentageForFirstBobble(firstTime, maxScaleInMs)
     const secondBobblePercentage = calculatePercentageForSecondBobble(firstTime, secondTime, maxScaleInMs)
 
