@@ -73,6 +73,21 @@
       "name": "etaFmt",
       "type": "/db/String",
       "order": 11
+    },
+    "appName": {
+      "name": "appName",
+      "type": "/db/String",
+      "order": 12
+    },
+    "appIP": {
+      "name": "appIP",
+      "type": "/db/String",
+      "order": 13
+    },
+    "area": {
+      "name": "area",
+      "type": "/db/String",
+      "order": 14
     }
   }
 }
