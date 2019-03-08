@@ -1,4 +1,113 @@
-.banner {
-  background: linear-gradient(to bottom,#162939,#12212e);
-  color: white;
-}  
+.testimonials {
+    overflow: hidden;
+    margin-bottom: -32px;
+    .container {
+        padding-bottom: 32px;
+        .testimonial-single {
+            .slick-slide {
+                opacity: 1;
+                margin: 0 auto;
+                &:hover {
+                    cursor: auto;
+                    opacity: 1;
+                }
+            }
+        }
+    }
+    .slick-testimonials, .testimonial-single {
+        .slick-slide {
+            max-width: 100%;
+            width: 700px;
+            opacity: 0.5;
+            @media (max-width: 991px) {
+                width: 500px;
+            }
+            &:hover {
+                 opacity: 0.8;
+                 cursor: pointer;
+            }
+            &.slick-current {
+                 opacity: 1;
+                 cursor: initial;
+            }
+        }
+        .cite {
+            outline: none;
+            .logo {
+                vertical-align: middle;
+                text-align: center;
+                color: rgba(0,0,0,.5);
+                line-height: inherit;
+                img {
+                    height: 88px;
+                    display: inline-block;
+                    margin-bottom: 8px;
+                    @media (max-width: 991px) {
+                        height: 70px;
+                    }
+                }
+                .position {
+                    font-size: 16px;
+                    width: 100%;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+            }
+            blockquote {
+                color: rgba(0,0,0,.8);
+                border: none;
+                padding: 24px;
+                font-size: 20px;
+                text-align: center;
+                margin: 0;
+                a {
+                    color: gray;
+                }
+                &.smaller {
+                     font-size: 18px;
+                }
+                @media(max-width: 767px) {
+                    font-size: 16px !important;
+                }
+            }
+        }
+        &.slick-slider:after {
+            background: linear-gradient(to right, rgb(255, 255, 255) 7%, rgba(250, 250, 250, 0) 20%, rgba(250, 250, 250, 0) 50%, rgba(250, 250, 250, 0) 80%, rgb(255, 255, 255) 93% );
+            @media(min-width: 480px) {
+                content: " ";
+                width: 115%;
+                height: 100%;
+                position: absolute;
+                top: 0;
+                left: -7.5%;
+                pointer-events: none;
+            }
+        }
+    }
+
+    .gray & {
+        .slick-testimonials.slick-slider:after {
+            background: linear-gradient(to right, #f6f6f6 7%, fade(#f6f6f6, 0%) 20%, fade(#f6f6f6, 0%) 50%, fade(#f6f6f6, 0%) 80%, #f6f6f6 93% );
+        }
+    }
+
+    .dark & {
+        .slick-testimonials.slick-slider:after {
+            background: linear-gradient(to right, #162939 7%, fade(#162939, 0%) 20%, fade(#162939, 0%) 50%, fade(#162939, 0%) 80%, #162939 93% );
+        }
+        .cite {
+            blockquote {
+                color: white
+            }
+        }
+        .slick-dots li {
+            button:before {
+                color: rgba(255,255,255,0.5);
+            }
+            &.slick-active button:before {
+                 color: white;
+            }
+        }
+    }
+}
