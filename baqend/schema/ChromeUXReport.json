@@ -1,0 +1,104 @@
+{
+  "class": "/db/ChromeUXReport",
+  "superClass": "/db/Object",
+  "acl": {
+    "load": {
+      "/db/Role/2": "allow"
+    },
+    "insert": {
+      "/db/Role/1": "allow",
+      "/db/Role/2": "allow"
+    },
+    "update": {
+      "/db/Role/1": "allow",
+      "/db/Role/2": "allow"
+    },
+    "delete": {
+      "/db/Role/1": "allow"
+    },
+    "query": {
+      "/db/Role/2": "allow"
+    },
+    "schemaAdd": {
+      "/db/Role/1": "allow"
+    },
+    "schemaReplace": {
+      "/db/Role/1": "allow"
+    },
+    "schemaSubclass": {
+      "/db/Role/1": "allow"
+    }
+  },
+  "fields": {
+    "url": {
+      "name": "url",
+      "type": "/db/String",
+      "order": 0
+    },
+    "month": {
+      "name": "month",
+      "type": "/db/Integer",
+      "order": 1
+    },
+    "year": {
+      "name": "year",
+      "type": "/db/Integer",
+      "order": 2
+    },
+    "device": {
+      "name": "device",
+      "type": "/db/String",
+      "order": 3
+    },
+    "status": {
+      "name": "status",
+      "type": "/db/String",
+      "order": 4
+    },
+    "totalDensity": {
+      "name": "totalDensity",
+      "type": "/db/Double",
+      "order": 5
+    },
+    "firstPaint": {
+      "name": "firstPaint",
+      "type": "/db/JsonArray",
+      "order": 6
+    },
+    "fpMedian": {
+      "name": "fpMedian",
+      "type": "/db/Double",
+      "order": 7
+    },
+    "firstContentfulPaint": {
+      "name": "firstContentfulPaint",
+      "type": "/db/JsonArray",
+      "order": 8
+    },
+    "fcpMedian": {
+      "name": "fcpMedian",
+      "type": "/db/Double",
+      "order": 9
+    },
+    "domContentLoaded": {
+      "name": "domContentLoaded",
+      "type": "/db/JsonArray",
+      "order": 10
+    },
+    "dclMedian": {
+      "name": "dclMedian",
+      "type": "/db/Double",
+      "order": 11
+    },
+    "onLoad": {
+      "name": "onLoad",
+      "type": "/db/JsonArray",
+      "order": 12
+    },
+    "olMedian": {
+      "name": "olMedian",
+      "type": "/db/Double",
+      "order": 13
+    }
+  }
+}

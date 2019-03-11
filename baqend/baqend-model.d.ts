@@ -13,6 +13,7 @@ declare module 'baqend' {
     Prewarms: binding.EntityFactory<model.Prewarms>;
     CachedConfig: binding.EntityFactory<model.CachedConfig>;
     TestOverview: binding.EntityFactory<model.TestOverview>;
+    ChromeUXReport: binding.EntityFactory<model.ChromeUXReport>;
     Hits: binding.ManagedFactory<model.Hits>;
     ContentSize: binding.ManagedFactory<model.ContentSize>;
     TestEntry: binding.ManagedFactory<model.TestEntry>;
@@ -431,6 +432,29 @@ declare module 'baqend' {
     interface FMPData extends binding.Managed {
       suggestedCandidate: Candidate;
       candidates: Array<Candidate> | null;
+    }
+
+    interface ChromeUXReport extends binding.Entity {
+      [key: string]: any;
+      url: string;
+      month: number;
+      year: number;
+      device: string;
+      status: string;
+      totalDensity: number;
+      firstPaint: ChromeUXReportData[];
+      fpMedian: number;
+      firstContentfulPaint: ChromeUXReportData[];
+      fcpMedian: number;
+      domContentLoaded: ChromeUXReportData[];
+      dclMedian: number;
+      onLoad: ChromeUXReportData[];
+      olMedian: number;
+    }
+
+    interface ChromeUXReportData {
+      start: number;
+      density: number;
     }
   }
 }
