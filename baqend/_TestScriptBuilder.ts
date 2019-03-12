@@ -41,9 +41,9 @@ export class TestScriptBuilder {
     const ts = testScript()
 
     if (isMobile) {
-      ts.setViewport(480, 987); // Maximum viewport
+    //   ts.setViewport(480, 987); // Maximum viewport
     } else {
-      ts.setViewport(1024, 1050); // Good desktop viewport
+      ts.setViewport(1366, 768); // Good desktop viewport
     }
 
     // Hack to circumvent zip code protection for "shop.rewe.de"
@@ -158,9 +158,9 @@ export class TestScriptBuilder {
     const ts = testScript()
 
     if (isMobile) {
-      ts.setViewport(480, 987); // Maximum viewport
+    //   ts.setViewport(480, 987); // Maximum viewport
     } else {
-      ts.setViewport(1024, 1050); // Good desktop viewport
+      ts.setViewport(1366, 768); // Good desktop viewport
     }
 
     ts.setActivityTimeout(activityTimeout)
