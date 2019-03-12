@@ -221,7 +221,7 @@ class ResultScaleComponent extends Component {
           )}
           {firstTime && this.state.windowWidth < 480 && (
             <Bobbel
-              description={getDescriptionForSecondBobble(speedKitTimeRounded, competitorTimeRounded, hasSpeedKitInstalled)}
+              description={getDescriptionForFirstBobble(speedKitTimeRounded, competitorTimeRounded, hasSpeedKitInstalled)}
               time={`${firstTime}s`}
               style={{right: `${firstBobblePercentage * 100}%`, top: 64, marginLeft: -22.5}}
               offset={firstBobblePercentage * 100}
