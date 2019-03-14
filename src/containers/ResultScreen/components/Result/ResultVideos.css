@@ -42,9 +42,12 @@
     content: "";
     display: block;
     position: relative;
-    padding-top: 67.5%;
+    padding-top: 56.5%;
     background: black;
     top: 1px;
+    .mobile & {
+      padding-top: 67.5%;
+    }
   }
   .video__wrapper-inner {
     position: absolute;
@@ -57,11 +60,11 @@
     border: 1px solid #e8e8e8;
     .relative {
       width: 100%;
-      height: 111.35%;
+      height: 116.35%;
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-top: -7.35%;
+      margin-top: -9.35%;
       video {
         width: 104%;
         /* min-height: 120.5%; */
