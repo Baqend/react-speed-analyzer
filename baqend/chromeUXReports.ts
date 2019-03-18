@@ -158,16 +158,22 @@ async function getOriginFromReports(db: baqend, data: QueriedParams): Promise<st
   if (dataResult.length === 1 && dataResult[0].is_valid) {
     return dataResult[0].origin;
   }
-  // choose https if available
+
+  let chosedOrigin = dataResult.filter((result: any) => new URL(result.origin).protocol === 'https:' && result.is_valid)[0].origin;
+
+  // choose the origin which matches most to the queried url
+  const queriedUrl = new URL(data.url);
+  const containsWww = /www\./.test(queriedUrl.hostname);
   dataResult.forEach((result: any) => {
-    const protocol = new URL(result.origin).protocol;
-    const containsWww = new URL(result.origin).hostname.match(/www\./);
-    if (protocol === 'https:' && containsWww) {
-      return result.origin;
+    const sameProtocol = new URL(result.origin).protocol === queriedUrl.protocol;
+    const sameOrigin = /www\./.test(new URL(result.origin).hostname) === containsWww;
+    if (sameProtocol && sameOrigin && result.is_valid) {
+      chosedOrigin = result.origin;
     }
   });
 
-  return null;
+  // else return https and valid result
+  return chosedOrigin;
 }
 
 /**
@@ -253,10 +259,8 @@ exports.post = async function (db: baqend, req: Request, res: Response) {
 
   // params.month holds the manipulated month for querying data from Google
   params.month = `0${params.month}`.slice(-2);
-  db.log.info('month', params.month);
   // Find origin in Chrome User Experience Report to avoid multiple queries for the same url
   const origin = await getOriginFromReports(db, params);
-  db.log.info('origin', origin);
   const reports: model.ChromeUXReport[] = DEVICES.map((device) => {
     const report = new db.ChromeUXReport({
       url: origin ? origin : url,
