@@ -1,15 +1,9 @@
 // Imports the Google Cloud client library.
 import {BigQuery} from '@google-cloud/bigquery';
 import {URL} from 'url';
-
 import credentials from './credentials';
 import {baqend, model} from "baqend";
 import {Request, Response} from 'express'
-
-const bigquery = new BigQuery({
-  projectId: "baqend-1217",
-  credentials: credentials.bigQueryCredentials
-});
 
 interface QueriedParams {
   url: string;
@@ -25,9 +19,12 @@ interface ChromeUXReportFromQuery extends model.ChromeUXReportData {
   device: string;
 }
 
-const devices = ['desktop', 'tablet', 'phone', 'all'];
-
-const metrics: string[] = ['firstContentfulPaint', 'firstPaint', 'domContentLoaded', 'onLoad'];
+const BIG_QUERY = new BigQuery({
+  projectId: "baqend-1217",
+  credentials: credentials.bigQueryCredentials
+});
+const DEVICES = ['all', 'desktop', 'tablet', 'phone'];
+const METRICS: string[] = ['firstContentfulPaint', 'firstPaint', 'domContentLoaded', 'onLoad'];
 
 /**
  * Sends query to Google BigQuery
@@ -46,7 +43,7 @@ async function asyncQuery(db: baqend, sqlQuery: string): Promise<any> {
 
   // Runs the query as a job
   try {
-    const results = await bigquery.createQueryJob(options);
+    const results = await BIG_QUERY.createQueryJob(options);
     job = results[0];
     db.log.info(`Job ${job.id} started.`);
 
@@ -123,75 +120,70 @@ function calculateMedian(histogram: model.ChromeUXReportData[], totalDensity: nu
   return result;
 }
 
+/**
+ * Queries possible origins from Google's Big Query.
+ *
+ * @param db
+ * @param data
+ */
 async function getOrigin(db: baqend, data: QueriedParams): Promise<any> {
-  db.log.info('query origin', data.url);
+  const host = new URL(data.url).host;
+  db.log.info('query origin for host:', host);
   const query =
-    "SELECT DISTINCT origin " +
+    "SELECT DISTINCT origin," +
+    "REGEXP_CONTAINS(origin, r'^[https?:\\/\\/]*(w{0}|w{3}[.])?" + host + "') as is_valid " +
     "FROM `chrome-ux-report.all." + data.year + data.month + "` " +
-    "WHERE origin LIKE '%" + data.url + "'";
+    "WHERE origin LIKE '%" + host + "'";
 
   db.log.info(`Find origin in Chrome UX Reports for ${data.url}`, {month: data.month, year: data.year});
   return asyncQuery(db, query);
 }
 
 /**
- * Gets the origin from BigQuery to ensure available data
+ * Gets the origin from BigQuery to ensure available data.
+ *
  * @param db
  * @param  data
  * @returns origin or null, if queried url does not exist
  */
 async function getOriginFromReports(db: baqend, data: QueriedParams): Promise<string | null> {
-  let url = new URL(data.url);
-  let host = url.host;
-  let addedWww = false;
-  // check for subdomain and if there is www
-  const match = host.match(/\./g);
-  if (match && match.length === 1 && !/^www/.test(host)) {
-    data.url = 'www.' + host;
-    addedWww = true;
-  }
-
   let dataResult = await getOrigin(db, data);
-
-  // if there is no data, check again without added www
-  if (addedWww && (!dataResult || !dataResult.length)) {
-    data.url = host.slice(4);
-    data.url = '://' + host;
-    db.log.info('Second query with another origin', data.url);
-    dataResult = await getOrigin(db, data);
-  }
 
   // if there is still no data return null
   if ((!dataResult || !dataResult.length)) {
     return null;
   }
 
+  // if there is only one solution and it's valid, return it
+  if (dataResult.length === 1 && dataResult[0].is_valid) {
+    return dataResult[0].origin;
+  }
   // choose https if available
-  let chosedOrigin = dataResult[0].origin;
-
   dataResult.forEach((result: any) => {
     const protocol = new URL(result.origin).protocol;
-    if (protocol === 'https:') {
-      chosedOrigin = result.origin;
+    const containsWww = new URL(result.origin).hostname.match(/www\./);
+    if (protocol === 'https:' && containsWww) {
+      return result.origin;
     }
   });
 
-  return chosedOrigin;
+  return null;
 }
 
 /**
- * Looks for an existing entry in BBQ if the query has been already made
+ * Looks for an existing entry in BBQ if the query has been already made.
+ *
  * @param db
  * @param data
  * @returns {Promise<T>}
  */
 async function loadExisting(db: baqend, data: QueriedParams): Promise<model.ChromeUXReport> {
   let {url, month, year} = data;
-  url = url.slice(8); // remove https://
+  const host = new URL(url).host;
   db.log.info('url to look for', url);
 
   const result = await db.ChromeUXReport.find()
-    .matches('url', '^.*' + url)
+    .matches('url', '^.*' + host)
     .equal('month', month)
     .equal('year', year)
     .equal('device', 'all')
@@ -200,27 +192,32 @@ async function loadExisting(db: baqend, data: QueriedParams): Promise<model.Chro
 }
 
 /**
- * Normalizes the queried report to the given total density
+ * Normalizes the queried report to the given total density.
+ *
+ * @param db
  * @param report
  * @returns The normalized report
  */
-function normalizeReport(report: model.ChromeUXReport): model.ChromeUXReport {
+function normalizeReport(db: baqend, report: model.ChromeUXReport): model.ChromeUXReport {
   const totalDensity = report.totalDensity;
 
-  for (const key of metrics) {
-    if (Array.isArray(report[key])) {
-      report[key] = report[key].map((element: model.ChromeUXReportData) => {
-        return {
-          start: element.start,
-          density: element.density / totalDensity
-        }
-      });
-    }
+  for (const key of METRICS) {
+    report[key] = report[key].map((element: model.ChromeUXReportData) => {
+      const data = new db.ChromeUXReportData();
+      data.start = element.start;
+      data.density = totalDensity !== 0 ? element.density / totalDensity : element.density;
+      return data as model.ChromeUXReportData;
+    });
   }
 
   return report;
 }
 
+/**
+ * Calculates the total density of a report with a given device.
+ *
+ * @param histogram
+ */
 function calculateTotalDensity(histogram: model.ChromeUXReportData[]): number {
   let totalDensity = 0;
   for (const object of histogram) {
@@ -259,8 +256,8 @@ exports.post = async function (db: baqend, req: Request, res: Response) {
   db.log.info('month', params.month);
   // Find origin in Chrome User Experience Report to avoid multiple queries for the same url
   const origin = await getOriginFromReports(db, params);
-
-  const reports: model.ChromeUXReport[] = devices.map((device) => {
+  db.log.info('origin', origin);
+  const reports: model.ChromeUXReport[] = DEVICES.map((device) => {
     const report = new db.ChromeUXReport({
       url: origin ? origin : url,
       month,
@@ -318,9 +315,11 @@ exports.post = async function (db: baqend, req: Request, res: Response) {
           return true;
         }
       }).map((histogram: ChromeUXReportFromQuery) => {
-        return {start: histogram.start, density: histogram.density} as model.ChromeUXReportData;
+        const chromeUXReportData = new db.ChromeUXReportData();
+        chromeUXReportData.start = histogram.start;
+        chromeUXReportData.density = histogram.density;
+        return chromeUXReportData as model.ChromeUXReportData;
       });
-
       // calculate totalDensity
       const totalDensity = calculateTotalDensity(report[key]);
       report.totalDensity = totalDensity;
@@ -339,7 +338,7 @@ exports.post = async function (db: baqend, req: Request, res: Response) {
     await report.save();
 
     if (report.device !== 'all') {
-      const normalizedReport = normalizeReport(report);
+      const normalizedReport = normalizeReport(db, report);
       await normalizedReport.save();
     }
   }
