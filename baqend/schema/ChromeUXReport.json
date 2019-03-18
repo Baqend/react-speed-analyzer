@@ -2,23 +2,6 @@
   "class": "/db/ChromeUXReport",
   "superClass": "/db/Object",
   "acl": {
-    "load": {
-      "/db/Role/2": "allow"
-    },
-    "insert": {
-      "/db/Role/1": "allow",
-      "/db/Role/2": "allow"
-    },
-    "update": {
-      "/db/Role/1": "allow",
-      "/db/Role/2": "allow"
-    },
-    "delete": {
-      "/db/Role/1": "allow"
-    },
-    "query": {
-      "/db/Role/2": "allow"
-    },
     "schemaAdd": {
       "/db/Role/1": "allow"
     },
@@ -62,7 +45,7 @@
     },
     "firstPaint": {
       "name": "firstPaint",
-      "type": "/db/JsonArray",
+      "type": "/db/collection.List[/db/ChromeUXReportData]",
       "order": 6
     },
     "fpMedian": {
@@ -72,7 +55,7 @@
     },
     "firstContentfulPaint": {
       "name": "firstContentfulPaint",
-      "type": "/db/JsonArray",
+      "type": "/db/collection.List[/db/ChromeUXReportData]",
       "order": 8
     },
     "fcpMedian": {
@@ -82,7 +65,7 @@
     },
     "domContentLoaded": {
       "name": "domContentLoaded",
-      "type": "/db/JsonArray",
+      "type": "/db/collection.List[/db/ChromeUXReportData]",
       "order": 10
     },
     "dclMedian": {
@@ -92,7 +75,7 @@
     },
     "onLoad": {
       "name": "onLoad",
-      "type": "/db/JsonArray",
+      "type": "/db/collection.List[/db/ChromeUXReportData]",
       "order": 12
     },
     "olMedian": {

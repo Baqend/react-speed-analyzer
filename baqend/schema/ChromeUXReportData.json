@@ -1,0 +1,25 @@
+{
+  "class": "/db/ChromeUXReportData",
+  "acl": {
+    "schemaAdd": {
+      "/db/Role/1": "allow"
+    },
+    "schemaReplace": {
+      "/db/Role/1": "allow"
+    }
+  },
+  "embedded": true,
+  "metadata": {},
+  "fields": {
+    "speedIndex": {
+      "name": "start",
+      "type": "/db/Integer",
+      "order": 0
+    },
+    "firstMeaningfulPaint": {
+      "name": "density",
+      "type": "/db/Double",
+      "order": 1
+    }
+  }
+}
