@@ -152,6 +152,7 @@ declare module 'baqend' {
       activityTimeout: number
       skipPrewarm: boolean
       preload: boolean
+      ignoreConfig: boolean
       testOptions: TestOptions
       appName: string | null
     }

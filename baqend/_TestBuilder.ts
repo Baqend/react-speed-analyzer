@@ -23,6 +23,7 @@ export const DEFAULT_PARAMS: Required<TestParams> = {
   timeout: DEFAULT_TIMEOUT,
   speedKitExpected: false,
   preload: false,
+  ignoreConfig: false,
 }
 
 /**

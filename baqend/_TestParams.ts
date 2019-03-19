@@ -66,6 +66,11 @@ export interface TestParams {
    * If resources like CSS and fonts should be preloaded.
    */
   preload?: boolean
+
+  /**
+   * If an existing Speed Kit config should be ignored.
+   */
+  ignoreConfig?: boolean
 }
 
 export interface MultiTestParams extends TestParams {

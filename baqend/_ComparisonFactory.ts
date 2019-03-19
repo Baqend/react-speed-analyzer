@@ -136,7 +136,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
    */
   private async buildSpeedKitConfig(
     { url, speedKit, smartConfig }: model.Puppeteer,
-    { mobile, speedKitConfig }: TestParams): Promise<string>
+    { ignoreConfig, speedKitConfig }: TestParams): Promise<string>
   {
     // Has the user set a config as a test parameter?
     if (speedKitConfig) {
@@ -145,7 +145,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
 
     // Is Speed Kit enabled on the URL? Get its config
     this.db.log.info(`${url} has Speed Kit: ${speedKit !== null ? 'yes' : 'no'}`)
-    if (speedKit) {
+    if (speedKit && !ignoreConfig) {
       this.db.log.info(`Extracting config from URL: ${url}`)
       const { config } = speedKit
       const denormalize = this.serializer.denormalize(config)

@@ -74,6 +74,7 @@ export class TestFactory implements AsyncFactory<model.TestResult> {
       activityTimeout: params.activityTimeout,
       skipPrewarm: params.skipPrewarm,
       preload: params.preload,
+      ignoreConfig: params.ignoreConfig,
       testOptions: this.testBuilder.buildOptions(params, commandLine),
     }
   }
