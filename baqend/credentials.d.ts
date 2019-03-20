@@ -8,6 +8,7 @@ interface Credentials {
   google_api_key: string
   delete_cronjob_user: string
   delete_cronjob_password: string
+  bigQueryCredentials: any
 }
 
 declare const credentials: Credentials
