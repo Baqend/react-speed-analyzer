@@ -1,25 +1,19 @@
 import React, { Component } from 'react'
+import { CSSTransition, TransitionGroup } from 'react-transition-group'
 import hash from 'object-hash'
 
-import { TransitionGroup, CSSTransition } from 'react-transition-group'
+import { flatten } from 'helper/flatten'
 
 import './Carousel.css'
 
-const flatten = arr => arr.reduce(
-  (acc, val) => acc.concat(
-    Array.isArray(val) ? flatten(val) : val
-  ), []
-)
-
 export class Carousel extends Component {
+  interval = null
+  pageKeys = null
+  duration = 550
+  durationOffset = 150
+
   constructor(props) {
     super(props)
-    this.interval = null
-    this.pageKeys = null
-
-    this.delayFactor = 0
-    this.duration = 550
-    this.durationOffset = 150
 
     this.state = {
       show: true,
@@ -29,7 +23,7 @@ export class Carousel extends Component {
     }
   }
 
-  getNextPage = (current, pages) => {
+  getNextPage(current, pages) {
     if (current >= pages.length - 1) {
       return 0
     }
@@ -43,8 +37,12 @@ export class Carousel extends Component {
     }, 10000)
   }
 
-  updatePages = (props) => {
-    const pages = flatten((Array.isArray(props.children) && props.children.filter((child) => child)) || [ props.children ])
+  static getDerivedStateFromProps(nextProps, prevState) {
+    return null
+  }
+
+  updatePages() {
+    const pages = flatten((Array.isArray(this.props.children) && this.props.children.filter((child) => child)) || [ this.props.children ])
     const pageKeys = hash(pages.map(child => child.key))
     if (pageKeys !== this.pageKeys) {
       clearInterval(this.interval)
@@ -63,19 +61,15 @@ export class Carousel extends Component {
           }
         })
       }, this.duration))
-    } else {
-      this.setState({ pages, initial: true }, () => {
-        this.setState({ initial: false })
-      })
     }
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    this.updatePages(nextProps)
+  componentDidUpdate() {
+    this.updatePages()
   }
 
   componentDidMount() {
-    this.updatePages(this.props)
+    this.updatePages()
   }
 
   componentWillUnmount() {

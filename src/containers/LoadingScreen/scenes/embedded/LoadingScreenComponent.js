@@ -36,8 +36,10 @@ class StartingScreenComponent extends Component {
     this.setState({ showAdvancedConfig })
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (this.props.result.statusCode !== nextProps.result.statusCode) {
+  componentDidUpdate(prevProps, prevState) {
+    const nextProps = this.props
+
+    if (prevProps.result.statusCode !== nextProps.result.statusCode) {
       clearTimeout(this.showFactsTimeout)
       this.setState({ showFacts: false }, () => {
         this.showFactsTimeout = setTimeout(() => {
@@ -45,7 +47,7 @@ class StartingScreenComponent extends Component {
         }, 10000)
       })
     }
-    if (!this.state.showCarousel && nextProps.result.isStarted) {
+    if (!prevState.showCarousel && nextProps.result.isStarted) {
       const timeout = window.innerWidth <= 997 ? 500 : 2500
       setTimeout(() => this.setState({ showCarousel: true }), timeout)
     }

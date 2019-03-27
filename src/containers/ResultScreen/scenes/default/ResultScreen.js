@@ -36,10 +36,11 @@ class ResultScreen extends Component {
     }
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (this.props.match.params.testId !== nextProps.match.params.testId) {
+  componentDidUpdate(prevProps) {
+    const nextProps = this.props
+    if (prevProps.match.params.testId !== nextProps.match.params.testId) {
       window.scrollTo(0, 0)
-      this.props.actions.resetResult()
+      prevProps.actions.resetResult()
       this.loadTestResult(nextProps.match.params.testId)
     }
   }
