@@ -36,12 +36,9 @@ class Result extends Component {
     this.setState({ showDetails: !this.state.showDetails })
   }
 
-  UNSAFE_componentWillMount = () => {
-    this.updateWidths()
-  }
-
   componentDidMount = () => {
     window.addEventListener("resize", this.updateWidths)
+    this.updateWidths()
   }
 
   componentWillUnmount = () => {

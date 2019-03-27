@@ -14,20 +14,18 @@ import { getObjectKey } from 'helper/utils'
 class ResultScreen extends Component {
   constructor(props) {
     super(props)
-    this.state = {
-      showDetails: false,
-      showConfig: false,
-      showAdvancedConfig: false
-    }
-  }
 
-  checkUrlParams = (props) => {
     const params = this.props.location.search.replace('?', '').split('&')
-    this.setState({
+    this.state = {
       showDetails: params.indexOf('details') > -1,
       showConfig: params.indexOf('config') > -1 || params.indexOf('advanced') > -1,
       showAdvancedConfig: params.indexOf('advanced') > -1,
-    })
+    }
+
+    const { testId } = this.props.match.params
+    if (testId) {
+      this.loadTestResult(testId)
+    }
   }
 
   loadTestResult = async (testId) => {
@@ -36,12 +34,6 @@ class ResultScreen extends Component {
     } catch(e) {
       console.log(e)
     }
-  }
-
-  UNSAFE_componentWillMount() {
-    const { testId } = this.props.match.params
-    this.checkUrlParams(this.props)
-    testId && this.loadTestResult(testId)
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {

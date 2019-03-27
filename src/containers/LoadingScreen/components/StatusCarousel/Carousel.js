@@ -70,12 +70,12 @@ export class Carousel extends Component {
     }
   }
 
-  UNSAFE_componentWillMount() {
-    this.updatePages(this.props)
-  }
-
   UNSAFE_componentWillReceiveProps(nextProps) {
     this.updatePages(nextProps)
+  }
+
+  componentDidMount() {
+    this.updatePages(this.props)
   }
 
   componentWillUnmount() {
