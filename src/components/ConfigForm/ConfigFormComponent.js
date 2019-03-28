@@ -140,11 +140,12 @@ class ConfigFormComponent extends Component {
     this.props.onSubmit()
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (nextProps.whiteListCandidates !== this.props.whiteListCandidates) {
+  componentDidUpdate(prevProps, prevState) {
+    const nextProps = this.props
+    if (nextProps.whiteListCandidates !== prevProps.whiteListCandidates) {
       this.setState({ whiteListCandidates: nextProps.whiteListCandidates })
     }
-    if ((!this.state.speedKitConfig || this.isDefaultConfig(this.state.speedKitConfig)) && nextProps.config.speedKitConfig) {
+    if ((!prevState.speedKitConfig || this.isDefaultConfig(prevState.speedKitConfig)) && nextProps.config.speedKitConfig) {
       let speedKitConfig
       try {
         // eslint-disable-next-line no-eval

@@ -16,8 +16,26 @@ import { prepareTest, startTest } from 'actions/test'
 class StartingScreen extends Component {
   constructor(props) {
     super(props)
+    let showAdvancedConfig = false
+
+    if (!this.props.result.isInitiated) {
+      this.reset()
+    }
+
+    const params = this.parseQueryString(this.props.location.search)
+    if (params.url) {
+      const { history } = this.props
+      const url = decodeURIComponent(params.url)
+
+      history.push('/')
+      this.props.actions.handleUrlInput(url)
+      this.startTest(url)
+    }
+    if (params.advanced) {
+      showAdvancedConfig = true
+    }
     this.state = {
-      showAdvancedConfig: false
+      showAdvancedConfig
     }
   }
 
@@ -53,24 +71,6 @@ class StartingScreen extends Component {
 
   onToggleAdvancedConfig = (showAdvancedConfig) => {
     this.setState({ showAdvancedConfig })
-  }
-
-  UNSAFE_componentWillMount() {
-    if (!this.props.result.isInitiated) {
-      this.reset()
-    }
-    const params = this.parseQueryString(this.props.location.search)
-    if (params.url) {
-      const { history } = this.props
-      const url = decodeURIComponent(params.url)
-
-      history.push('/')
-      this.props.actions.handleUrlInput(url)
-      this.startTest(url)
-    }
-    if (params.advanced) {
-      this.setState({ showAdvancedConfig: true })
-    }
   }
 
   render() {

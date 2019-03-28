@@ -19,9 +19,10 @@ class ResultScreen extends Component {
       showConfig: false,
       showAdvancedConfig: false,
     }
+    this.loadTestResult()
   }
 
-  loadTestResult = async (props) => {
+  loadTestResult = async () => {
     const testId = this.props.testId ? this.props.testId : this.props.match.params.testId
     const isPlesk = this.props.isPlesk
     const mainMetric = this.props.mainMetric
@@ -43,10 +44,6 @@ class ResultScreen extends Component {
       const testOverview = await this.props.actions.startTest(useAdvancedConfig)
       history.push(`/test/${getObjectKey(testOverview.id)}${history.location.search}`)
     } catch (e) {}
-  }
-
-  UNSAFE_componentWillMount() {
-    this.loadTestResult(this.props)
   }
 
   render() {

@@ -168,12 +168,9 @@ class ResultScaleComponent extends Component {
     }
   }
 
-  UNSAFE_componentWillMount = () => {
-    this.updateWidths()
-  }
-
   componentDidMount = () => {
     window.addEventListener("resize", this.updateWidths)
+    this.updateWidths()
   }
 
   componentWillUnmount = () => {

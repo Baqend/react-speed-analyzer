@@ -19,6 +19,9 @@ class StartingScreen extends Component {
     this.state = {
       showAdvancedConfig: false
     }
+    if (this.props.url) {
+      this.props.actions.handleUrlInput(this.props.url)
+    }
   }
 
   reset = () => {
@@ -50,12 +53,6 @@ class StartingScreen extends Component {
 
   onSubmit = () => {
     this.startTest(this.props.config.url)
-  }
-
-  UNSAFE_componentWillMount() {
-    if (this.props.url) {
-      this.props.actions.handleUrlInput(this.props.url)
-    }
   }
 
   render() {
