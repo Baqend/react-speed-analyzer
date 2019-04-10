@@ -212,8 +212,8 @@ async function execNonSpeedKit() {
   const url = 'kicker.de'
   const speedKitConfigString = '{"appName": "makefast", "whitelist": [{ "host": [ /.*kicker\\.de/ ] }], "userAgentDetection": false }'
   const expectedParams = {
-    url: 'http://www.kicker.de/',
-    displayUrl: 'http://www.kicker.de/',
+    url: 'https://www.kicker.de/',
+    displayUrl: 'https://www.kicker.de/',
     mobile: false,
     isSpeedKitComparison: false,
     hasSpeedKitVersion: false,
