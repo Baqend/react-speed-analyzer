@@ -50,6 +50,9 @@ export const DEFAULT_TEST_OPTIONS: Partial<model.TestOptions> = {
   block: 'favicon', // exclude favicons for fair comparison, as not handled by SWs
   iq: 100,
   timeout: 2 * DEFAULT_TIMEOUT,
+  bwDown: 15000,
+  bwUp: 5000,
+  latency: 14,
 }
 
 export class TestBuilder {

@@ -144,6 +144,9 @@ declare module 'baqend' {
       timeout: number,
       video?: boolean,
       [key: string]: any
+      bwDown?: number,
+      bwUp?: number,
+      latency?: number,
     }
 
     interface TestInfo {
