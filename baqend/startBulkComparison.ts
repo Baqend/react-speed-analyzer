@@ -2,6 +2,7 @@ import { baqend, model } from 'baqend'
 import { BulkComparisonTestParams } from './_BulkComparisonFactory'
 import { bootstrap } from './_compositionRoot'
 import { generateHash, getDateString } from './_helpers'
+import { DEFAULT_LOCATION } from './_TestBuilder'
 import { TestParams } from './_TestParams'
 
 /**
@@ -20,6 +21,8 @@ export async function startBulkComparison(db: baqend, id: string, createdBy: str
   const { bulkComparisonWorker, bulkComparisonFactory } = bootstrap(db)
 
   const tests = data.filter(param => param !== null) as BulkComparisonTestParams[]
+  tests.forEach(test => test.location = DEFAULT_LOCATION );
+
   const bulkComparison = await bulkComparisonFactory.create(id, createdBy, tests)
   await bulkComparisonWorker.next(bulkComparison)
 
