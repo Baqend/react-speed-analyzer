@@ -26,6 +26,7 @@ export async function post(db: baqend, req: Request, res: Response) {
       return await callPuppeteer(params)
     } catch (err) {
       if (retries <= MAX_PUPPETEER_RETRIES) {
+        await new Promise(resolve => setTimeout(() => resolve(), 2000));
         return callPuppeteerWithRetries(params, retries + 1);
       }
 
