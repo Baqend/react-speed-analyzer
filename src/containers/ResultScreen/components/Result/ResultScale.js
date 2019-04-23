@@ -180,8 +180,8 @@ class ResultScaleComponent extends Component {
   render() {
     const {speedKitError, competitorTest, speedKitTest, mainMetric, testOverview} = this.props.result
     // round times
-    const competitorTimeRounded = competitorTest.firstView && competitorTest.firstView[mainMetric] && roundMsToSec(competitorTest.firstView[mainMetric])
-    const speedKitTimeRounded = speedKitTest.firstView && !speedKitError && speedKitTest.firstView[mainMetric] && roundMsToSec(speedKitTest.firstView[mainMetric])
+    const competitorTimeRounded = competitorTest.firstView && competitorTest.firstView[mainMetric] && Math.max(roundMsToSec(competitorTest.firstView[mainMetric]), 0.1)
+    const speedKitTimeRounded = speedKitTest.firstView && !speedKitError && speedKitTest.firstView[mainMetric] && Math.max(roundMsToSec(speedKitTest.firstView[mainMetric]), 0.1)
 
     // give order
     const competitorOrder = competitorTimeRounded >= speedKitTimeRounded ? 2 : 1
