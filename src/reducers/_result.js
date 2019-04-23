@@ -4,6 +4,7 @@ import {
   MONITOR_TEST,
   CONTINUE_TEST,
   TESTOVERVIEW_LOAD,
+  TESTOVERVIEW_LOAD_FAIL,
   TESTOVERVIEW_NEXT,
   RATE_LIMITER_GET,
   TEST_STATUS_GET,
@@ -113,6 +114,8 @@ export default function result(state = initialState, action = {}) {
           psiScreenshot: createScreenshot(action.payload.psiScreenshot),
         }
       }
+    case TESTOVERVIEW_LOAD_FAIL:
+      return { ...state, isFinished: true }
     case RATE_LIMITER_GET:
       return { ...state, isRateLimited: action.payload }
     case MONITOR_TEST:

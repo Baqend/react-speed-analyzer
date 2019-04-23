@@ -45,6 +45,17 @@ class ResultScreenComponent extends Component {
     )
   }
 
+  renderError() {
+    console.log('Render error');
+    return (
+      <div className={`flex-grow-1 ${styles.results}`}>
+        <div className="container pa2 pt0 pt2-ns pb4 pb6-ns text-center">
+          The requested test result is no longer available. <br/> Please start a new test to get another result.
+        </div>
+      </div>
+    )
+  }
+
   renderResults() {
     const { competitorError } = this.props.result
 
@@ -88,7 +99,9 @@ class ResultScreenComponent extends Component {
             </div>
           )}
           <div className="flex-grow-1 flex flex-column results" style={{marginTop: competitorError ? 0 : 80, animationDelay: '0.6s', transition: 'margin 0.5s ease' }}>
-            {this.props.result.isFinished && this.renderResults()}
+            {this.props.result.isFinished && (
+              Object.entries(testOverview).length === 0 ? this.renderError() : this.renderResults())
+            }
           </div>
         </div>
       </div>
