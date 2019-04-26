@@ -11,10 +11,11 @@ const MAX_PUPPETEER_RETRIES = 2;
 export async function post(db: baqend, req: Request, res: Response) {
   const { comparisonWorker, comparisonFactory, puppeteer } = bootstrap(db)
 
-  const callPuppeteer = async (params: TestParams) => {
+  const callPuppeteer = async (params: TestParams, retries: number) => {
     const puppeteerInfo = await puppeteer.analyze(params.url, params.mobile, params.location, params.preload)
     // Retry Puppeteer analysis if Speed Kit is excepted to be installed but no installation was found.
-    if (params.speedKitExpected && !puppeteerInfo.speedKit) {
+    // Only consider this error when it is not the last retry.
+    if (params.speedKitExpected && !puppeteerInfo.speedKit && retries <= MAX_PUPPETEER_RETRIES - 1) {
       throw new Error('Expected result to be Speed Kit, but was not.')
     }
 
@@ -23,7 +24,7 @@ export async function post(db: baqend, req: Request, res: Response) {
 
   const callPuppeteerWithRetries = async (params: TestParams, retries = 0): Promise<model.Puppeteer> => {
     try {
-      return await callPuppeteer(params)
+      return await callPuppeteer(params, retries)
     } catch (err) {
       if (retries <= MAX_PUPPETEER_RETRIES) {
         await new Promise(resolve => setTimeout(() => resolve(), 5000));
