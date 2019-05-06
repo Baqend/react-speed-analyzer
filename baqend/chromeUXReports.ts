@@ -115,12 +115,17 @@ async function queryHistograms(db: baqend, metric: string, data: ChromeUXReportQ
  */
 function calculateMedian(histogram: model.ChromeUXReportData[], totalDensity: number): number {
   let result = 0;
-
   let cumulativeDistribution = 0;
-  for (const {start, density} of histogram) {
-    cumulativeDistribution = cumulativeDistribution + density;
+  for (let i = 0; i<histogram.length; i++) {
+    cumulativeDistribution = cumulativeDistribution + histogram[i].density;
     if (cumulativeDistribution / totalDensity >= 0.5) {
-      result = start;
+      const a = cumulativeDistribution - histogram[i].density;
+      const b = cumulativeDistribution;
+      const c = cumulativeDistribution + histogram[i+1].density;
+      const binStart = histogram[i].start;
+      const binEnd = histogram[i+1].start;
+
+      result = Math.round((c-b)/(c-a)*(binEnd - binStart) + binStart);
       break;
     }
   }
