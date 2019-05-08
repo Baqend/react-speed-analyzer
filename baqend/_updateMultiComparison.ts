@@ -1,5 +1,5 @@
 import { baqend, model } from 'baqend'
-import { aggregateFields, meanValue } from './_helpers'
+import { aggregateFields } from './_helpers'
 
 type TestResultFieldPrefix = 'competitor' | 'speedKit'
 
@@ -26,27 +26,20 @@ export function factorize(db: baqend, competitor: model.Mean, speedKit: model.Me
 }
 
 /**
- * Calculates the factors of a bulk test.
+ * Calculates the mean factors of a bulk test.
  *
  * @param db The Baqend instance.
- * @param bulkTest The bulk test to calculate the factors for.
+ * @param speedKitMean The calculated Mean value for Speed Kit.
+ * @param competitorMean The calculated Mean value for competitor.
  * @return A mean containing the factors.
  */
-export function aggregateBulkTestFactors(db: baqend, bulkTest: model.BulkTest): model.Mean {
-  const result = {} as { [key: string]: number[] }
-  for (const testOverview of bulkTest.testOverviews) {
-    if (testOverview.factors) {
-      for (const field of fields) {
-        const value = testOverview.factors[field] as number
-        result[field] = result[field] || []
-        result[field].push(value)
-      }
-    }
-  }
-
+export function calcMeanFactors(db: baqend, speedKitMean: model.Mean, competitorMean: model.Mean): model.Mean {
   const mean = new db.Mean()
-  for (const [field, values] of Object.entries(result)) {
-    mean[field] = meanValue(values)
+  for (const field of fields) {
+    const speedKitValue = speedKitMean[field] as number
+    const competitorValue = competitorMean[field] as number
+
+    mean[field] = (competitorValue / speedKitValue) || null
   }
 
   return mean
@@ -162,7 +155,7 @@ export async function updateMultiComparison(db: baqend, bulkTestRef: model.BulkT
 
     bulkTest.speedKitMeanValues = new db.Mean(aggregateFields(pickResults(bulkTest, 'speedKit'), fields))
     bulkTest.competitorMeanValues = new db.Mean(aggregateFields(pickResults(bulkTest, 'competitor'), fields))
-    bulkTest.factors = aggregateBulkTestFactors(db, bulkTest)
+    bulkTest.factors = calcMeanFactors(db, bulkTest.speedKitMeanValues, bulkTest.competitorMeanValues)
     bulkTest.bestFactors = calcBestFactors(db, bulkTest)
     bulkTest.worstFactors = calcWorstFactors(db, bulkTest)
     bulkTest.completedRuns += 1

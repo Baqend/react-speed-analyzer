@@ -2,10 +2,14 @@ import { concat, filter, map, mapValues, mergeWith, pick, reduce } from 'lodash'
 
 /**
  * @param {number[]} numbers
- * @return {number}
+ * @return Second best value of the given array.
  */
-export function meanValue(numbers: number[]): number {
-  return reduce(numbers, (mean, n) => mean + (n / numbers.length), 0)
+export function secondBestValue(numbers: number[]): number {
+  numbers.sort()
+  if(numbers.length > 1) {
+    return numbers[1]
+  }
+  return numbers[0]
 }
 
 /**
@@ -40,7 +44,7 @@ export function mergeConcat<T>(objects: Array<{ [key: string]: T }>): { [key: st
  */
 export function aggregateFields<U>(runs: U[], fields: Array<keyof U>) {
   const means = map(runs, run => pick(run, fields)) as Array<{ [key: string]: any }>
-  return mapValues(mergeConcat(means), values => meanValue(finites(values)))
+  return mapValues(mergeConcat(means), values => secondBestValue(finites(values)))
 }
 
 /**
