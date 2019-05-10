@@ -5,6 +5,14 @@ import credentials from './credentials';
 import {baqend, model} from "baqend";
 import {Request, Response} from 'express'
 
+export enum ResponseMessage {
+  Success = 'The queried domain was analyzed successfully.',
+  AlreadyExists = 'The queried data already exists.',
+  NoData = 'There is no data for the given domain.',
+  AnalysisError = 'The queried Domain could not be analyzed.',
+  InvalidParameter = 'Please provide url, month and year to fetch CrUX report.'
+}
+
 interface QueriedParams {
   url: string;
   year: number,
@@ -249,21 +257,17 @@ function calculateTotalDensity(histogram: model.ChromeUXReportData[]): number {
  * @param req
  * @param res
  */
-exports.post = async function (db: baqend, req: Request, res: Response) {
-  const params: QueriedParams = req.body;
+export async function fetchCruxReport (db: baqend, params: QueriedParams): Promise<ResponseMessage> {
   const { url, month, year } = params;
 
   if (!url || !month || !year) {
-    res.status(400);
-    res.send({error: 'Please be sure that either domain, month and year is given.'});
+    return ResponseMessage.InvalidParameter;
   }
 
   // first check if there is an existing entry with the given url
   const existing = await loadExisting(db, params);
   if (existing) {
-    res.status(400);
-    res.send({message: `The queried data for ${existing.url} (${existing.month}/${existing.year}) already exist.`});
-    return;
+    return ResponseMessage.AlreadyExists;
   }
 
   // params.month holds the manipulated month for querying data from Google
@@ -272,9 +276,7 @@ exports.post = async function (db: baqend, req: Request, res: Response) {
   const origin = await getOriginFromReports(db, params);
 
   if (!origin) {
-    res.status(400);
-    res.send({message: `There is no data for the given domain ${url}.`});
-    return;
+    return ResponseMessage.NoData;
   }
 
   const reports: model.ChromeUXReport[] = await Promise.all(DEVICES.map((device) => {
@@ -301,11 +303,7 @@ exports.post = async function (db: baqend, req: Request, res: Response) {
   if (!fcpHistogramData || !fpHistogramData || !dclHistogramData || !olHistogramData) {
     await Promise.all(reports.map(report => report.partialUpdate().set('status', 'FAILED').execute()));
 
-    res.status(400);
-    res.send({
-      message: `The queried domain ${url} (${month}/${year}) could not be analyzed.`,
-    });
-    return;
+    return ResponseMessage.AnalysisError;
   }
 
   const histogramData: Map<string, any[]> = new Map();
@@ -345,7 +343,29 @@ exports.post = async function (db: baqend, req: Request, res: Response) {
       await normalizedReport.save();
     }
   }
-  res.status(200);
-  res.send({message: 'The queried domain was analyzed successfully.'});
-  return;
+  return ResponseMessage.Success;
+};
+
+/**
+ * Post interface to query a Chrome User Experience Report
+ *
+ * @param db
+ * @param req
+ * @param res
+ */
+exports.post = async function (db: baqend, req: Request, res: Response) {
+  const params: QueriedParams = req.body;
+
+  const responseMessage = await fetchCruxReport(db, params);
+
+  if (responseMessage === ResponseMessage.Success) {
+    res.status(200);
+    res.send({message: responseMessage})
+    return;
+  }
+  res.status(400);
+  res.send({
+    error: responseMessage,
+    parameters: params,
+  });
 };
