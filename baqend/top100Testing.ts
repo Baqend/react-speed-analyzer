@@ -116,20 +116,60 @@ function getFormattedResults(multiComparisons: model.BulkTest[]) {
     }
 
     formattedResult += `${multiComparison.url}\t`;
-    const fmpAverage = multiComparison.factors.firstMeaningfulPaint.toFixed(2).replace('.', ',');
-    const spAverage = multiComparison.factors.speedIndex.toFixed(2).replace('.', ',');
-    formattedResult += `${fmpAverage}\t`;
-    formattedResult += `${spAverage}\t`;
 
-    const fmpUplift = Math.round(multiComparison.competitorMeanValues.firstMeaningfulPaint - multiComparison.speedKitMeanValues.firstMeaningfulPaint);
-    const spUplift = Math.round(multiComparison.competitorMeanValues.speedIndex - multiComparison.speedKitMeanValues.speedIndex);
-    formattedResult += `${fmpUplift}\t`;
-    formattedResult += `${spUplift}\t`;
+    // FMP Median Competitor
+    const fmpMedianCompetitor = multiComparison.testOverviews.sort((testOverview1, testOverview2) => {
+      if (!testOverview1.competitorTestResult.firstView || !testOverview2.competitorTestResult.firstView) return 0;
+      return testOverview2.competitorTestResult.firstView.firstMeaningfulPaint - testOverview1.competitorTestResult.firstView.firstMeaningfulPaint
+    })[1].competitorTestResult.firstView!.firstMeaningfulPaint
 
-    const fmpCompetitor = Math.round(multiComparison.competitorMeanValues.firstMeaningfulPaint);
-    const fmpSpeedKit = Math.round(multiComparison.speedKitMeanValues.firstMeaningfulPaint);
-    formattedResult += `${fmpCompetitor}\t`;
-    formattedResult += `${fmpSpeedKit}\n`;
+    // FMP Median SpeedKit
+    const fmpMedianSpeedKit = multiComparison.testOverviews.sort((testOverview1, testOverview2) => {
+      if (!testOverview1.speedKitTestResult.firstView || !testOverview2.speedKitTestResult.firstView) return 0
+      return testOverview2.speedKitTestResult.firstView.firstMeaningfulPaint - testOverview1.speedKitTestResult.firstView.firstMeaningfulPaint
+    })[1].speedKitTestResult.firstView!.firstMeaningfulPaint
+
+    // SI Median Competitor
+    const siMedianCompetitor = multiComparison.testOverviews.sort((testOverview1, testOverview2) => {
+      if (!testOverview1.competitorTestResult.firstView || !testOverview2.competitorTestResult.firstView) return 0
+      return testOverview2.competitorTestResult.firstView.speedIndex - testOverview1.competitorTestResult.firstView.speedIndex
+    })[1].competitorTestResult.firstView!.speedIndex
+
+    // SI Median SpeedKit
+    const siMedianSpeedKit = multiComparison.testOverviews.sort((testOverview1, testOverview2) => {
+      if (!testOverview1.speedKitTestResult.firstView || !testOverview2.speedKitTestResult.firstView) return 0
+      return testOverview2.speedKitTestResult.firstView.speedIndex - testOverview1.speedKitTestResult.firstView.speedIndex
+    })[1].speedKitTestResult.firstView!.speedIndex
+
+    formattedResult += `${(fmpMedianCompetitor / fmpMedianSpeedKit).toFixed(2).replace('.', ',')}\t`
+    formattedResult += `${(siMedianCompetitor / siMedianSpeedKit).toFixed(2).replace('.', ',')}\t`
+    formattedResult += `${fmpMedianCompetitor}\t`
+    formattedResult += `${fmpMedianSpeedKit}\t`
+    formattedResult += `${siMedianCompetitor}\t`
+    formattedResult += `${siMedianSpeedKit}\t`
+
+    const fmpUpliftWithMedian = Math.round(fmpMedianCompetitor - fmpMedianSpeedKit)
+    const siUpliftWithMedian = Math.round(siMedianCompetitor - siMedianSpeedKit)
+
+    formattedResult += `${fmpUpliftWithMedian}\t`
+    formattedResult += `${siUpliftWithMedian}\n`
+
+    // without median calculation
+    // formattedResult += `${multiComparison.url}\t`;
+    // const fmpAverage = multiComparison.factors.firstMeaningfulPaint.toFixed(2).replace('.', ',');
+    // const spAverage = multiComparison.factors.speedIndex.toFixed(2).replace('.', ',');
+    // formattedResult += `${fmpAverage}\t`;
+    // formattedResult += `${spAverage}\t`;
+    //
+    // const fmpUplift = Math.round(multiComparison.competitorMeanValues.firstMeaningfulPaint - multiComparison.speedKitMeanValues.firstMeaningfulPaint);
+    // const spUplift = Math.round(multiComparison.competitorMeanValues.speedIndex - multiComparison.speedKitMeanValues.speedIndex);
+    // formattedResult += `${fmpUplift}\t`;
+    // formattedResult += `${spUplift}\t`;
+    //
+    // const fmpCompetitor = Math.round(multiComparison.competitorMeanValues.firstMeaningfulPaint);
+    // const fmpSpeedKit = Math.round(multiComparison.speedKitMeanValues.firstMeaningfulPaint);
+    // formattedResult += `${fmpCompetitor}\t`;
+    // formattedResult += `${fmpSpeedKit}\n`;
   })
 
   return formattedResult;
