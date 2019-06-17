@@ -5,109 +5,116 @@ import { generateHash, getDateString } from './_helpers'
 import { BulkTestParams, startBulkComparison } from './startBulkComparison'
 
 const TOP_100 = [
-  'https://spryker.com',
-  'https://www.prym.com/',
-  'https://www.mytheresa.com/',
-  'https://www.simplicity.ag/',
-  'https://de.someday-fashion.com/',
-  'https://de.opus-fashion.com/',
-  'https://www.eigensonne.de/',
-  'https://www.durst.shop/',
-  'http://www.fondofbags.com/',
-  'https://tecar-reifen.de/',
-  'https://www.hilti.de/',
-  'https://www.contorion.de/',
-  'https://www.rosebikes.de/',
-  'https://www.wine-in-black.de/',
-  'https://www.lumas.de/',
-  'https://www.tom-tailor.de/',
-  'https://www.certeo.de/',
-  'https://www.segmueller.de/',
-  'https://www.biesterfeld.com/de/',
-  'http://sourceability.com/',
-  'https://www.lekkerland.de/le/de/index.html',
-  'https://www.jumbo.ch/de/',
-  'http://www.w-f.ch/wfch/de/eh/index.php',
-  'https://www.hardeck.de/',
-  'https://www.dress-for-less.de/',
-  'http://www.tesa.com/',
-  'https://www.koffer24.de/',
-  'https://www.jdwilliams.co.uk/',
-  'https://www.douglas.de/',
-  'https://www.obi.de/',
-  'https://www.thomassabo.com/EU/de_DE/home',
-  'https://www.orsay.com/de-de/',
-  'https://www.ottogroup.com/de/index.php',
-  'https://www.odlo.com/de/de/',
-  'https://www.calida.com/de-DE/',
-  'https://www.fissler.com/de/',
-  'https://www.canterbury.com/',
-  'https://www.bijou-brigitte.com/',
-  'https://www.depot-online.com/home',
-  'https://www.simplybe.co.uk/',
-  'https://www.moevenpick-wein.de/',
-  'https://www.sportscheck.com/',
-  'https://www.mustang-jeans.com/de-de',
-  'https://www.misterspex.de',
-  'https://www.restposten.de/',
-  'baur.de',
-  'https://www.douglas.de/',
-  'https://www.sportscheck.com',
-  'https://www.hobbygigant.nl/',
-  'https://www.keller-sports.de/',
-  'https://www.galaxus.ch/',
-  'https://www.heise.de/',
-  'https://exporo.de/',
-  'https://backend.exporo.de/investment/mezz/an-der-rennbahn',
-  'https://de.lush.com/',
-  'http://worldview.stanford.edu/',
-  'https://international.kk.dk/',
-  'https://www.audubon.org/',
-  'https://www.nordiskfilm.com/',
-  'https://www.ymcamn.org/',
-  'http://fck.dk/',
-  'https://academy.autodesk.com/',
-  'https://www.dagrofa.dk/',
-  'https://www.healthspan.co.uk/',
-  'https://www.randstad.de/',
-  'http://www.aidsactioneurope.org/',
-  'http://www.geenergymanagement.com/',
-  'http://meny.dk/',
-  'http://www.911memorial.org/',
-  'http://www.mountvernon.org/',
-  'http://www.visitdenmark.com/',
-  'https://fc.de/start/',
-  'https://www.trachten-angermaier.de/',
-  'https://www.betzold.de/',
-  'https://www.chbeck.de/',
-  'https://de.erwinmueller.com/shop/start-DE-de-EM',
-  'https://www.ferrero.de/',
-  'https://hemden-meister.de/',
-  'https://www.kuhn-masskonfektion.com/',
-  'https://www.marc-o-polo.com/de-de',
-  'https://www.miles-and-more.com',
-  'https://porta.de/porta/',
-  'https://qundis.de/',
-  'https://www.reidl.de/',
-  'https://www.salewa.com/de-de',
-  'https://www.sportler.com/de',
+  'https://www.amazon.de',
+  'https://www.otto.de',
+  'https://www.zalando.de',
+  'https://www.notebooksbilliger.de',
+  'https://www.bonprix.de',
+  'https://www.mediamarkt.de',
+  'https://www.cyberport.de',
+  'https://www.conrad.de',
+  'https://www.tchibo.de',
+  'https://www.alternate.de',
+  'https://www.hm.com/de/',
+  'https://www.apple.com/de',
+  'https://www.saturn.de',
+  'https://www.docmorris.de',
+  'https://www.thomann.de',
+  'https://www.mindfactory.de',
+  'https://www.zooplus.de',
+  'https://www.ikea.com/de/de/',
+  'https://www.qvc.de',
+  'https://www.lidl.de',
+  'https://shop.degussa-goldhandel.de',
+  'https://www.douglas.de',
+  'https://www.home24.de',
+  'https://www.medion.com/de/',
+  'https://www.klingel.de',
+  'https://www.soliver.de',
+  'https://www.pearl.de',
+  'https://www.voelkner.de',
+  'https://www.amazon.com',
   'https://www.thalia.de',
-  'https://www.tiramizoo.com/',
-  'https://www.vdi-verlag.de/',
-  'https://www.willner-fahrrad.de/',
-  'http://www.worldofsport.de/',
-  'gravis.de',
-  'falk-ross.eu',
-  'medimops.de',
-  'shopmajic.de',
-  'fitmart.de',
-  'hellweg.de',
-  'hirmer.de',
-  'design-3000.de',
-  'bergzeit.de',
+  'https://www.comtech.de',
+  'https://www.sportscheck.com',
+  'https://www.hellofresh.de',
+  'https://www.westfalia.de',
+  'https://www.shop-apotheke.com',
+  'https://www.hse24.de',
+  'https://auragentum.de',
+  'https://www.limango.de',
+  'https://www.reifendirekt.de',
+  'https://www.bader.de',
+  'https://www.breuninger.com',
+  'https://www.reuter.de',
+  'https://www.hagebau.de',
+  'https://www.edelmetall-handel.de',
+  'https://www.aboutyou.de',
+  'https://www.brands4friends.de',
+  'https://www.jako-o.com',
+  'https://www.medikamente-per-klick.de',
+  'https://www.medpex.de',
+  'https://www.heine.de',
+  'https://www.galeria-kaufhof.de',
+  'https://www.kfzteile24.de',
+  'https://www.vente-privee.com',
+  'https://shop.rewe.de',
+  'https://www.medimops.de',
+  'https://www.schwab.de',
+  'https://www.druckerzubehoer.de',
+  'https://www.europa-apotheek.com',
+  'https://www.computeruniverse.net',
+  'https://store.hp.com',
+  'https://www.dell.com',
+  'https://www.eis.de',
+  'https://www.baby-walz.de',
+  'https://www.zalando-lounge.de',
+  'https://www.weltbild.de',
+  'https://www.asos.de',
+  'https://www.hornbach.de',
+  'https://www.rebuy.de',
+  'https://www.aliexpress.com',
+  'https://www.apo-rot.de',
+  'https://www.reichelt.de',
+  'https://www.obi.de',
+  'https://www.real.de',
+  'https://www.c-and-a.com',
+  'https://www.ao.de',
+  'https://www.karstadt.de',
+  'https://www.casando.de',
+  'https://www.misterspex.de',
+  'https://shop.apotal.de',
+  'https://www.elektroshopwagner.de',
+  'https://www.gearbest.com',
+  'https://www.happy-size.de',
+  'https://www.emp.de',
+  'https://www.mytheresa.com',
+  'https://www.flaconi.de',
+  'https://www.witt-weiden.de',
+  'https://www.peterhahn.de',
+  'https://www.sanicare.de',
+  'https://www.posterxxl.de',
+  'https://www.atp-autoteile.de',
+  'https://www.jacob.de',
+  'https://www.pollin.de',
+  'https://www.esprit.de',
+  'https://www.bett1.de',
+  'https://www.adidas.de',
+  'https://www.dm.de',
+  'https://www.babymarkt.de',
+  'https://www.fressnapf.de',
+  'https://www.buecher.de',
 ]
 
-function getFormattedResults(multiComparisons: model.BulkTest[]) {
+function getFMP(testResult: model.TestResult, def: number = -1) {
+  if (!testResult.firstView) {
+    return def;
+  }
+
+  return testResult.firstView.firstMeaningfulPaint;
+}
+
+function getFormattedResults(db: baqend, multiComparisons: model.BulkTest[]) {
   let formattedResult = '';
 
   multiComparisons.forEach(multiComparison => {
@@ -115,36 +122,49 @@ function getFormattedResults(multiComparisons: model.BulkTest[]) {
       return;
     }
 
+    const sortedOverviews = multiComparison.testOverviews.sort((testOverview1: model.TestOverview, testOverview2: model.TestOverview) => {
+      const comp1 = getFMP(testOverview1.competitorTestResult);
+      const sk1 = getFMP(testOverview1.speedKitTestResult);
+      const comp2 = getFMP(testOverview2.competitorTestResult);
+      const sk2 = getFMP(testOverview2.speedKitTestResult);
+
+      const uplift1 = comp1 / sk1;
+      const uplift2 = comp2 / sk2;
+
+      if (uplift1 < -1) {
+        return 1;
+      }
+
+      if (uplift2 < -1) {
+        return -1;
+      }
+
+      return uplift2 - uplift1;
+    })
+
     formattedResult += `${multiComparison.url}\t`;
 
     // FMP Median Competitor
-    const fmpMedianCompetitor = multiComparison.testOverviews.sort((testOverview1, testOverview2) => {
-      if (!testOverview1.competitorTestResult.firstView || !testOverview2.competitorTestResult.firstView) return 0;
-      return testOverview2.competitorTestResult.firstView.firstMeaningfulPaint - testOverview1.competitorTestResult.firstView.firstMeaningfulPaint
-    })[1].competitorTestResult.firstView!.firstMeaningfulPaint
-
+    const fmpMedianCompetitor = sortedOverviews[1].competitorTestResult.firstView!.firstMeaningfulPaint
     // FMP Median SpeedKit
-    const fmpMedianSpeedKit = multiComparison.testOverviews.sort((testOverview1, testOverview2) => {
-      if (!testOverview1.speedKitTestResult.firstView || !testOverview2.speedKitTestResult.firstView) return 0
-      return testOverview2.speedKitTestResult.firstView.firstMeaningfulPaint - testOverview1.speedKitTestResult.firstView.firstMeaningfulPaint
-    })[1].speedKitTestResult.firstView!.firstMeaningfulPaint
-
+    const fmpMedianSpeedKit = sortedOverviews[1].speedKitTestResult.firstView!.firstMeaningfulPaint
     // SI Median Competitor
-    const siMedianCompetitor = multiComparison.testOverviews.sort((testOverview1, testOverview2) => {
-      if (!testOverview1.competitorTestResult.firstView || !testOverview2.competitorTestResult.firstView) return 0
-      return testOverview2.competitorTestResult.firstView.speedIndex - testOverview1.competitorTestResult.firstView.speedIndex
-    })[1].competitorTestResult.firstView!.speedIndex
-
+    const siMedianCompetitor = sortedOverviews[1].competitorTestResult.firstView!.speedIndex
     // SI Median SpeedKit
-    const siMedianSpeedKit = multiComparison.testOverviews.sort((testOverview1, testOverview2) => {
-      if (!testOverview1.speedKitTestResult.firstView || !testOverview2.speedKitTestResult.firstView) return 0
-      return testOverview2.speedKitTestResult.firstView.speedIndex - testOverview1.speedKitTestResult.firstView.speedIndex
-    })[1].speedKitTestResult.firstView!.speedIndex
+    const siMedianSpeedKit = sortedOverviews[1].speedKitTestResult.firstView!.speedIndex
 
     formattedResult += `${(fmpMedianCompetitor / fmpMedianSpeedKit).toFixed(2).replace('.', ',')}\t`
     formattedResult += `${(siMedianCompetitor / siMedianSpeedKit).toFixed(2).replace('.', ',')}\t`
+
+    // Uplift
+    formattedResult += `${fmpMedianCompetitor - fmpMedianSpeedKit}\t`
+    formattedResult += `${siMedianCompetitor - siMedianSpeedKit}\t`
+
+    // FMP
     formattedResult += `${fmpMedianCompetitor}\t`
     formattedResult += `${fmpMedianSpeedKit}\t`
+
+    // SI
     formattedResult += `${siMedianCompetitor}\t`
     formattedResult += `${siMedianSpeedKit}\t`
 
@@ -153,23 +173,6 @@ function getFormattedResults(multiComparisons: model.BulkTest[]) {
 
     formattedResult += `${fmpUpliftWithMedian}\t`
     formattedResult += `${siUpliftWithMedian}\n`
-
-    // without median calculation
-    // formattedResult += `${multiComparison.url}\t`;
-    // const fmpAverage = multiComparison.factors.firstMeaningfulPaint.toFixed(2).replace('.', ',');
-    // const spAverage = multiComparison.factors.speedIndex.toFixed(2).replace('.', ',');
-    // formattedResult += `${fmpAverage}\t`;
-    // formattedResult += `${spAverage}\t`;
-    //
-    // const fmpUplift = Math.round(multiComparison.competitorMeanValues.firstMeaningfulPaint - multiComparison.speedKitMeanValues.firstMeaningfulPaint);
-    // const spUplift = Math.round(multiComparison.competitorMeanValues.speedIndex - multiComparison.speedKitMeanValues.speedIndex);
-    // formattedResult += `${fmpUplift}\t`;
-    // formattedResult += `${spUplift}\t`;
-    //
-    // const fmpCompetitor = Math.round(multiComparison.competitorMeanValues.firstMeaningfulPaint);
-    // const fmpSpeedKit = Math.round(multiComparison.speedKitMeanValues.firstMeaningfulPaint);
-    // formattedResult += `${fmpCompetitor}\t`;
-    // formattedResult += `${fmpSpeedKit}\n`;
   })
 
   return formattedResult;
@@ -208,7 +211,7 @@ export async function post(db: baqend, request: Request, response: Response) {
 export async function get(db: baqend, request: Request, response: Response) {
   const bulkComparisonId = request.query.bulkComparisonId
   const multiComparisons = await getMultiComparisons(db, bulkComparisonId);
-  const formattedResults = getFormattedResults(multiComparisons);
+  const formattedResults = getFormattedResults(db, multiComparisons);
 
   response.send(formattedResults);
 }
