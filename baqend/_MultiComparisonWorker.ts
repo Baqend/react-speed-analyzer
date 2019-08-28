@@ -88,10 +88,12 @@ export class MultiComparisonWorker implements ComparisonListener {
     }
 
     // Cancel all unfinished comparisons
-    await multiComparison.testOverviews
-      .filter(comparison => isUnfinished(comparison))
-      .map(comparison => this.comparisonWorker.cancel(comparison))
-      .reduce(parallelize)
+    const unfinished = multiComparison.testOverviews.filter(comparison => isUnfinished(comparison))
+    if (unfinished.length > 0) {
+      await multiComparison.testOverviews
+        .map(comparison => this.comparisonWorker.cancel(comparison))
+        .reduce(parallelize)
+    }
 
     await multiComparison.optimisticSave(() => setCanceled(multiComparison))
     return true

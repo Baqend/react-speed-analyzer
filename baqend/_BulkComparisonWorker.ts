@@ -107,10 +107,12 @@ export class BulkComparisonWorker implements MultiComparisonListener {
     }
 
     // Cancel all unfinished multi comparisons
-    await bulkComparison.multiComparisons
-      .filter(multiComparison => isUnfinished(multiComparison))
-      .map(multiComparison => this.multiComparisonWorker.cancel(multiComparison))
-      .reduce(parallelize)
+    const unfinished = bulkComparison.multiComparisons.filter(multiComparison => isUnfinished(multiComparison))
+    if (unfinished.length > 0) {
+      await bulkComparison.multiComparisons
+        .map(multiComparison => this.multiComparisonWorker.cancel(multiComparison))
+        .reduce(parallelize)
+    }
 
     await bulkComparison.optimisticSave(() => setCanceled(bulkComparison))
     return true
