@@ -68,11 +68,13 @@ function isNotStringArray(it: any) {
 export async function get(db: baqend, request: Request, response: Response) {
   const bulkComparisonId = request.query.bulkComparisonId
   const url = request.query.url
+  const deepLoading = request.query.deepLoading
   if (!bulkComparisonId) {
     throw new Abort('You have to provide bulkComparisonId.')
   }
 
-  const bulkComparison = await db.BulkComparison.load(bulkComparisonId, { depth: 2 })
+  const depth = deepLoading === "true" ? 3 : 2;
+  const bulkComparison = await db.BulkComparison.load(bulkComparisonId, { depth })
   if (!url) {
     const comparisons: any = {};
     bulkComparison.multiComparisons.forEach((multiComparison) => {
@@ -82,7 +84,12 @@ export async function get(db: baqend, request: Request, response: Response) {
         })
         if (comparison) {
           const bestComparison = findBestComparison(multiComparison)
-          comparisons[comparison.url] = bestComparison || Object.assign(defaultComparison, { url: comparison.url })
+          if (!bestComparison) {
+            comparisons[comparison.url] = Object.assign(defaultComparison, { url: comparison.url })
+            return
+          }
+
+          comparisons[comparison.url] = bestComparison.toJSON({depth: depth - 2})
         }
       }
     })
@@ -115,8 +122,12 @@ export async function get(db: baqend, request: Request, response: Response) {
 
   // Find best comparison and return it
   const bestComparison = findBestComparison(bulkTest)
-  const comparison = bestComparison || Object.assign(defaultComparison, { url })
-  response.send({ bulkComparisonId, url, comparison })
+  if (!bestComparison) {
+    response.send({ bulkComparisonId, url, comparison: Object.assign(defaultComparison, { url }) })
+    return;
+  }
+
+  response.send({ bulkComparisonId, url, comparison: bestComparison.toJSON({depth: depth - 2}) })
 }
 
 /**
