@@ -2,11 +2,13 @@ import { baqend, model } from 'baqend'
 import { bootstrap } from './_compositionRoot'
 import { MultiComparisonFactory } from './_MultiComparisonFactory'
 import { MultiComparisonListener, MultiComparisonWorker } from './_MultiComparisonWorker'
+import { Puppeteer } from './_Puppeteer'
 import {
   isFinished, isIncomplete, isUnfinished, setCanceled, setIncomplete, setRunning, setSuccess,
   Status,
 } from './_Status'
 import { parallelize } from './_helpers'
+import { TestParams } from './_TestParams'
 
 export class BulkComparisonWorker implements MultiComparisonListener {
   constructor(
@@ -91,7 +93,7 @@ export class BulkComparisonWorker implements MultiComparisonListener {
   async getPuppeteerInfo(url: string, mobile: boolean, location: string, preload: boolean): Promise<model.Puppeteer | null> {
     const { puppeteer } = bootstrap(this.db)
     try {
-      return await puppeteer.analyze(url, mobile, location, true, preload)
+      return await this.callPuppeteerWithRetries(puppeteer, url, mobile, location, preload)
     } catch ({ message, stack }) {
       this.db.log.error(`Puppeteer failed for ${url}: ${message}`, { stack })
       return null
@@ -123,6 +125,26 @@ export class BulkComparisonWorker implements MultiComparisonListener {
     if (bulkComparison) {
       console.log(`Multi comparison finished: ${multiComparison.id}`)
       this.next(bulkComparison)
+    }
+  }
+
+  private async callPuppeteerWithRetries(
+    puppeteer: Puppeteer,
+    url: string,
+    mobile: boolean,
+    location: string,
+    preload: boolean,
+    retries = 0
+  ): Promise<model.Puppeteer> {
+    try {
+      return await puppeteer.analyze(url, mobile, location, true, preload)
+    } catch (err) {
+      if (retries < 3) {
+        await new Promise(resolve => setTimeout(() => resolve(), 5000))
+        return this.callPuppeteerWithRetries(puppeteer, url, mobile, location, preload, retries + 1)
+      }
+
+      throw err
     }
   }
 
