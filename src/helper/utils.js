@@ -1,7 +1,7 @@
 /* global window fbq ga */
 import punycode from 'punycode'
 
-const DOMAIN_PATTERN =  /^(www\.)?[-a-z0-9]+(\.[-a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?$/
+const DOMAIN_PATTERN =  /^(www\.)?[-a-z0-9]+(\.[-a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?$/i
 
 /**
  * @param {number} bytes The file size in bytes to format.
