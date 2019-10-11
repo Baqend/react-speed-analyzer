@@ -1,4 +1,4 @@
-import { Condition, Config, ImageRule, ResourceRule, Rule } from './_Config'
+import { Condition, Config, ImageRule, ResourceRule, Rule, StripParamsRule } from './_Config'
 import { PuppeteerResource } from './_Puppeteer'
 
 export const CONFIG_MAX_SIZE: number = 50
@@ -11,6 +11,7 @@ export class ConfigBuilder {
   private blacklist: Rule[] = []
   private image: ImageRule[] = []
   private criticalResources: ResourceRule[] = []
+  private stripQueryParams: StripParamsRule[] = []
 
   /**
    * The current size of the config counting all included conditions.
@@ -40,6 +41,10 @@ export class ConfigBuilder {
 
     if (this.criticalResources.length) {
       config.criticalResources = this.criticalResources
+    }
+
+    if (this.stripQueryParams.length) {
+      config.stripQueryParams = this.stripQueryParams
     }
 
     return config
@@ -76,12 +81,20 @@ export class ConfigBuilder {
     return this.addToBlacklist('pathname', pathname)
   }
 
+  blacklistContentType(contentType: Condition): this {
+    return this.addToBlacklist('contentType', contentType)
+  }
+
   addImageOptions(imageRule: ImageRule) {
     this.image.push(imageRule)
   }
 
   addCriticalResource(resourceRule: ResourceRule) {
     this.criticalResources.push(resourceRule);
+  }
+
+  addStripQueryParams(stripQueryParamsRule: StripParamsRule) {
+    this.stripQueryParams.push(stripQueryParamsRule);
   }
 
   public matchOnWhitelist(puppeteerResource: PuppeteerResource): boolean {
@@ -149,7 +162,7 @@ export class ConfigBuilder {
     return this
   }
 
-  private addToBlacklist(section: 'host' | 'pathname' | 'url', value: Condition): this {
+  private addToBlacklist(section: 'host' | 'pathname' | 'url' | 'contentType', value: Condition): this {
     if (this.isCapacityReached) {
       return this
     }

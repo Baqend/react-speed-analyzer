@@ -7,6 +7,7 @@ export interface Config {
   image?: ImageRule[]
   userAgentDetection?: boolean
   criticalResources?: ResourceRule[]
+  stripQueryParams?: StripParamsRule[]
 }
 
 export interface Rule {
@@ -38,6 +39,12 @@ export interface ImageOptions {
   maxWidth?: number
   webp?: boolean
   pjpeg?: boolean
+}
+
+export interface StripParamsRule {
+  enabledSites?: Rule[]
+  rules?: Rule[]
+  params: string[]
 }
 
 export type Condition = string | RegExp | Array<string | RegExp>

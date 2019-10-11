@@ -88,8 +88,24 @@ export class ConfigGenerator {
 
     // Blacklist jQuery callback pathnames
     if (this.containsJQuery(resources)) {
-      configBuilder.blacklistUrl(/[?&]_=\d{13,}/)
+      configBuilder.blacklistUrl(/[?&](_=1\d{12})/)
     }
+
+    // Blacklist video files
+    configBuilder.blacklistContentType('video');
+
+    // Add default params to be stripped
+    configBuilder.addStripQueryParams({
+      params: [
+        'utm_',
+        'msclkid',
+        'gclsrc',
+        'fbclid',
+        'dclid',
+        'cjid',
+        'gclid',
+      ]
+    })
 
     if (thirdParty) {
       // Add hosts to whitelist if only the top level domain differs from tested url
