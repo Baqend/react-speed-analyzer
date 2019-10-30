@@ -69,11 +69,21 @@ export async function get(db: baqend, request: Request, response: Response) {
   const bulkComparisonId = request.query.bulkComparisonId
   const url = request.query.url
   const deepLoading = request.query.deepLoading
-  if (!bulkComparisonId) {
-    throw new Abort('You have to provide bulkComparisonId.')
+  const depth = deepLoading === "true" ? 3 : 2;
+  if (!bulkComparisonId && !url) {
+    throw new Abort('You have to provide a bulkComparisonId or an url.')
   }
 
-  const depth = deepLoading === "true" ? 3 : 2;
+  if (!bulkComparisonId) {
+    const comparison = await db.TestOverview.find().eq('url', url).descending('createdAt').singleResult({depth: depth - 2})
+    if (!comparison) {
+      throw new Abort('There could be no test analysis found for your url.')
+    }
+
+    response.send({ bulkComparisonId: null, url, comparison: comparison.toJSON({depth: depth - 2}) })
+    return
+  }
+
   const bulkComparison = await db.BulkComparison.load(bulkComparisonId, { depth })
   if (!url) {
     const comparisons: any = {};
