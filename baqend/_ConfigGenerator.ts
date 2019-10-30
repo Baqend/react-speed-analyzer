@@ -92,7 +92,7 @@ export class ConfigGenerator {
     }
 
     // Blacklist video files
-    configBuilder.blacklistContentType('video');
+    configBuilder.blacklistContentType(['video']);
 
     // Add default params to be stripped
     configBuilder.addStripQueryParams({
