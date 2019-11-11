@@ -30,6 +30,22 @@ class ResultScreenComponent extends Component {
     this.setState({ showConfig: !this.state.showConfig })
   }
 
+  getObjectEntries = (testOverview) => {
+    if (Object.entries) {
+      return Object.entries(testOverview)
+    }
+
+    // Fallback for browsers that do not support Object.entries (e.g. IE11)
+    const keys = Object.keys(testOverview)
+    let i = keys.length
+    const resArray = new Array(i) // preallocate the Array
+
+    while (i--)
+      resArray[i] = [keys[i], testOverview[keys[i]]]
+
+    return resArray
+  }
+
   renderForm() {
     return (
       <div className="container pa2">
@@ -100,8 +116,8 @@ class ResultScreenComponent extends Component {
           )}
           <div className="flex-grow-1 flex flex-column results" style={{marginTop: competitorError ? 0 : 80, animationDelay: '0.6s', transition: 'margin 0.5s ease' }}>
             {this.props.result.isFinished && (
-              Object.entries(testOverview).length === 0 ? this.renderError() : this.renderResults())
-            }
+              this.getObjectEntries(testOverview).length === 0 ? this.renderError() : this.renderResults()
+            )}
           </div>
         </div>
       </div>
