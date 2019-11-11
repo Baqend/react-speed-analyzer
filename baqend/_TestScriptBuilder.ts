@@ -53,6 +53,14 @@ export class TestScriptBuilder {
       ts.setCookie('cookie-consent=1', 'https://shop.rewe.de/');
     }
 
+    if (url.startsWith('https://www.snipes.com')) {
+      ts.setCookie('customerCountry=de', 'https://www.snipes.com/');
+    }
+
+    if (url.startsWith('https://eu.puma.com/')) {
+      ts.setCookie('pumacookies=1', 'https://eu.puma.com/');
+    }
+
     ts.blockDomains(...blockDomains)
       .setActivityTimeout(activityTimeout)
       .setTimeout(timeout)
@@ -184,6 +192,14 @@ export class TestScriptBuilder {
       // Cookies to choose a marked
       ts.setCookie('marketsCookie=%7B%22marketId%22%3A%22540622%22%2C%22zipCode%22%3A%2225337%22%2C%22serviceTypes%22%3A%5B%22PICKUP%22%5D%2C%22customerZipCode%22%3A%2225337%22%2C%22marketZipCode%22%3A%2225336%22%7D', 'https://shop.rewe.de/');
       ts.setCookie('cookie-consent=1', 'https://shop.rewe.de/');
+    }
+
+    if (url.startsWith('https://www.snipes.com')) {
+      ts.setCookie('customerCountry=de', 'https://www.snipes.com/');
+    }
+
+    if (url.startsWith('https://eu.puma.com/')) {
+      ts.setCookie('pumacookies=1', 'https://eu.puma.com/');
     }
 
     return ts
