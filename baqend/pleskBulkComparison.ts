@@ -54,12 +54,12 @@ function findBestComparison(multiComparison: model.BulkTest): model.TestOverview
 /**
  * Checks if something is a string array
  */
-function isNotStringArray(it: any) {
+function isStringArray(it: any) {
   if (it instanceof Array) {
-    return it.some(item => typeof item !== 'string')
+    return it.some(item => typeof item === 'string')
   }
 
-  return true
+  return false
 }
 
 /**
@@ -145,19 +145,19 @@ export async function get(db: baqend, request: Request, response: Response) {
  */
 export async function post(db: baqend, request: Request, response: Response) {
   const { body } = request
-  if (isNotStringArray(body)) {
+  const domainNames: string[] = isStringArray(body) ? body : (body && body.domains)
+  if (!domainNames) {
     response.status(400)
     response.send({ error: 'Please send an array of domain names.' })
   }
 
-  const domainNames: string[] = body
-  const domainMap = domainNames.map((domain, index) => [domainNames[index], domain] as [string, string])
-
   try {
     const id = `${getDateString()}-plesk-${generateHash()}`
-    const tests = domainNames.map(domainName => ({ url: domainName, priority: DEFAULT_PLESK_PRIORITY, runs: 1 }))
+    const priority = body.priority !== null ? body.priority : DEFAULT_PLESK_PRIORITY
+    const tests = domainNames.map(domainName => ({ url: domainName, priority, runs: 1 }))
     startBulkComparison(db, id, 'plesk', tests)
 
+    const domainMap = domainNames.map((domain, index) => [domainNames[index], domain] as [string, string])
     response.send({ bulkComparisonId: `/db/BulkComparison/${id}`, domainMap })
   } catch (e) {
     response.status(500)
