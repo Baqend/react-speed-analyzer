@@ -145,6 +145,12 @@ class ConfigFormComponent extends Component {
     if (nextProps.whiteListCandidates !== prevProps.whiteListCandidates) {
       this.setState({ whiteListCandidates: nextProps.whiteListCandidates })
     }
+
+    // Compare states to avoid endless loop
+    if (prevState.speedKitConfig && nextProps.config.speedKitConfig === prevState.speedKitConfig) {
+      return
+    }
+
     if ((!prevState.speedKitConfig || this.isDefaultConfig(prevState.speedKitConfig)) && nextProps.config.speedKitConfig) {
       let speedKitConfig
       try {
