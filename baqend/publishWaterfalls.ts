@@ -3,7 +3,8 @@ import { baqend, model } from 'baqend'
 import { Request, Response } from 'express'
 import { TestType } from './_WebPagetestResultHandler'
 
-function getTestId(testResult: model.TestResult): string | null {
+function getWebPageTestId(testResult: model.TestResult): string | null {
+  // Legacy for older test that do not store the single tests within the webPagetests object
   if (testResult.testId) {
     return testResult.testId
   }
@@ -52,30 +53,29 @@ function publishWaterfall(testId: string, db: baqend) {
     });
 }
 
+export async function getPublishedWaterfallLink(db: baqend, testResultId: string): Promise<string> {
+  const testResult: model.TestResult = await db.TestResult.load(testResultId)
+  let url = await checkPublishedWaterfallLink(testResult)
+  if (url) {
+    return url
+  }
+
+  const webPageTestId = getWebPageTestId(testResult)
+  if (!webPageTestId) {
+    throw new Error('publishWaterfalls: Could not find test ID')
+  }
+
+  const publishedURL = await publishWaterfall(webPageTestId, db)
+  await (testResult as any).partialUpdate().set('publishedSummaryUrl', publishedURL).execute()
+  return publishedURL
+}
+
 export async function post(db: baqend, req: Request, res: Response) {
   try {
-    const testResult: model.TestResult = await db.TestResult.load(req.body.id)
-    let url = await checkPublishedWaterfallLink(testResult)
-    if (!url) {
-      const testId = getTestId(testResult)
-      if (!testId) {
-        db.log.error('publishWaterfalls: Could not find test ID')
-        res.status(404)
-        res.send('Link generation failed')
-        return
-      }
-
-      url = await publishWaterfall(testId, db)
-        .then(publishedSummaryUrl => {
-          return (testResult as any).partialUpdate().set('publishedSummaryUrl', publishedSummaryUrl).execute().then(() => {
-            return publishedSummaryUrl
-          })
-        })
-    }
-
-    res.send(url)
+    const publishedWaterfallLink = await getPublishedWaterfallLink(db, req.body.id)
+    res.send(publishedWaterfallLink)
   } catch (error) {
-    db.log.error(`Waterfall publishing failed`, { testResult: req.body.id, error: error.stack })
+    db.log.error(error.message)
     res.status(404)
     res.send('Link generation failed')
   }
