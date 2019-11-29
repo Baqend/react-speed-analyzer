@@ -117,6 +117,7 @@ declare module 'baqend' {
 
     interface TestOptions {
       block?: string,
+      label?: string,
       breakDown?: boolean,
       chromeTrace?: boolean,
       keepua?: boolean,
