@@ -74,7 +74,7 @@ export class TestBuilder {
     })
   }
 
-  buildOptions(params: Required<TestParams>, cmdline: string = '', isClone: boolean = false): model.TestOptions {
+  buildOptions(params: Required<TestParams>, url: string, isClone: boolean, cmdline: string = ''): model.TestOptions {
     const mobileDevice = params.mobile ? 'iPhone6' : ''
     const testOptions: model.TestOptions = {
       cmdline,
@@ -84,7 +84,7 @@ export class TestBuilder {
       location: params.location,
       timeout: 2 * params.timeout,
       mobile: params.mobile,
-      label: isClone ? 'Speed Kit' : undefined
+      label: isClone ? `Speed Kit ${url}` : url
     }
 
     return Object.assign({}, DEFAULT_TEST_OPTIONS, testOptions)
