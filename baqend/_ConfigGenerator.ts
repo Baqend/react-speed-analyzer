@@ -91,6 +91,9 @@ export class ConfigGenerator {
       configBuilder.blacklistUrl(/[?&](_=1\d{12})/)
     }
 
+    // Blacklist PDF files on default
+    configBuilder.blacklistUrl(/\.pdf/)
+
     // Blacklist video files
     configBuilder.blacklistContentType(['video']);
 
