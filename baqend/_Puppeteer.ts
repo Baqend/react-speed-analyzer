@@ -6,6 +6,8 @@ import { DataType, Serializer } from './_Serializer'
 import { toFile } from './_toFile'
 import credentials from './credentials'
 
+const DEFAULT_TIMEOUT: number = 60_000;
+
 export enum PuppeteerSegment {
   DOMAINS = 'domains',
   PDF = 'pdf',
@@ -146,7 +148,7 @@ export class Puppeteer {
     location: string = 'eu',
     thirdParty: boolean = true,
     preload: boolean = false,
-    timeout: number | null = null,
+    timeout: number = DEFAULT_TIMEOUT,
   ): Promise<model.Puppeteer> {
     try {
       const language = location.startsWith('us') ? 'en-US' : 'de-DE'
