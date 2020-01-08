@@ -153,9 +153,7 @@ function checkTestParams(result, expectedResult) {
 function checkConfigAnalysis(result, expectedResult) {
   try{
     assert.strictEqual(result.configAnalysis.configMissing, expectedResult.configAnalysis.configMissing, 'Attribute "configMissing" not matching')
-    assert.strictEqual(result.configAnalysis.swPath, expectedResult.configAnalysis.swPath, 'Attribute "swPath" not matching')
     assert.strictEqual(result.configAnalysis.isDisabled, expectedResult.configAnalysis.isDisabled, 'Attribute "isDisabled" not matching')
-    assert.strictEqual(result.configAnalysis.swPathMatches, expectedResult.configAnalysis.swPathMatches, 'Attribute "swPathMatching" not matching')
   } catch(err) {
     writeln(err)
     reportError(`Config analysis not valid. ID: ${result.id}`, err)
@@ -236,8 +234,6 @@ async function execSpeedKit() {
     speedKitConfig: null,
     configAnalysis: {
       configMissing: false,
-      swPath: 'https://www.speed-kit-test.com/speed-kit-sw.js',
-      swPathMatches: true,
       isDisabled: false
     },
     isSecured: true,
