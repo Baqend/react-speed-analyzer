@@ -50,7 +50,7 @@ export class TestWorker {
     this.db.log.debug(`TestWorker.next("${test.key}")`)
     try {
       // Ensure test is loaded
-      await test.load()
+      await test.load({ refresh: true })
 
       // Is the test finished, canceled?
       if (isFinished(test)) {

@@ -42,7 +42,7 @@ export class ComparisonWorker implements TestListener {
     this.db.log.debug(`ComparisonWorker.next("${comparison.key}")`)
 
     // Ensure comparison is loaded with depth 1
-    await comparison.load({ depth: 1 })
+    await comparison.load({ depth: 1, refresh: true })
 
     // Is this comparison already finished?
     if (isFinished(comparison)) {

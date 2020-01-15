@@ -35,7 +35,7 @@ export class MultiComparisonWorker implements ComparisonListener {
     this.db.log.debug(`MultiComparisonWorker.next("${multiComparison.key}")`)
     try {
       // Ensure multi comparison is loaded with depth 1
-      await multiComparison.load({ depth: 1 })
+      await multiComparison.load({ depth: 1, refresh: true })
 
       // Is this multi comparison already finished?
       if (isFinished(multiComparison)) {

@@ -23,7 +23,7 @@ export class BulkComparisonWorker implements MultiComparisonListener {
     this.db.log.debug(`BulkComparisonWorker.next("${bulkComparison.key}")`)
     try {
       // Ensure bulk comparison is loaded with depth 1
-      await bulkComparison.load({ depth: 1 })
+      await bulkComparison.load({ depth: 1, refresh: true })
 
       // Is this bulk comparison already finished?
       if (isFinished(bulkComparison)) {
