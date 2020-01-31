@@ -1,4 +1,27 @@
 @import "~tachyons/src/_media-queries.css";
+@import "../../../../styles/_variables.css";
+
+.header {
+  font-family: Axiforma,sans-serif;
+  font-size: 38px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: -0.8px;
+  color: #ffffff;
+  margin-top: 16px;
+  margin-bottom: 16px;
+  @media(--breakpoint-medium-device) {
+    font-size: 44px;
+  }
+  @media(--breakpoint-large-device) {
+    font-size: 52px;
+  }
+  &.mobile {
+     font-size: 38px;
+   }
+}
 
 .loading-screen {
   .left {
@@ -23,6 +46,15 @@
     line-height: 1;
     @media (--breakpoint-not-small) {
       display: none;
+    }
+  }
+  .logo {
+    width: 260px;
+    height: 50px;
+    margin-top: 48px;
+    background: url("../../../../assets/speedKitLogoWhite.svg") no-repeat;
+    @media(--breakpoint-medium-device) {
+      background: url("../../../../assets/speedKitLogoBlack.svg") no-repeat;
     }
   }
 }

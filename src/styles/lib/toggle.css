@@ -43,7 +43,7 @@
   padding: 0;
   border-radius: 30px;
   background-color: none;
-  border: 1px solid color(#fff a(35%));
+  border: 1px solid color(#fff);
   -webkit-transition: all 0.2s ease;
   -moz-transition: all 0.2s ease;
   transition: all 0.2s ease;
@@ -113,7 +113,7 @@
   height: 20px;
   /* border: 1px solid #4D4D4D; */
   border-radius: 50%;
-  background-color: color(#fff a(35%));
+  background-color: color(#fff);
 
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;

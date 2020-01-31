@@ -21,6 +21,8 @@
 
   --fa-var-angle-left: "\f104";
   --fa-var-angle-right: "\f105";
+  --fa-var-angle-up: "\f106";
+  --fa-var-angle-down: "\f107";
 
   --slick-font-path: "../fonts/";
   --slick-font-family: "FontAwesome";
@@ -35,4 +37,9 @@
   --slick-opacity-default: 0.10;
   --slick-opacity-on-hover: 1;
   --slick-opacity-not-active: 0.25;
+
+  @custom-media --breakpoint-small-device (min-width: 576px);
+  @custom-media --breakpoint-medium-device (min-width: 768px);
+  @custom-media --breakpoint-large-device (min-width: 992px);
+  @custom-media --breakpoint-extra-large-device (min-width: 1200px);
 }

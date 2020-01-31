@@ -1,58 +1,62 @@
 @import "../../styles/_variables.css";
 
 .config__form {
-  font-size: 14px;
   &-input-wrapper {
-    position: relative;
-    .parsed-domain {
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      font-size: 18px;
-      color: #fff;
-      font-weight: 400;
-      line-height: 34px;
-      pointer-events: none;
+     display: flex;
+     flex-direction: column;
+     padding: 0 8px;
+    &.desktop {
+      @media(--breakpoint-small-device) {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+      @media(--breakpoint-medium-device) {
+        padding: 0 48px;
+      }
+      @media(--breakpoint-large-device) {
+        padding: 0 96px;
+      }
     }
   }
   &-input {
-    font-size: 18px;
-    background: color(var(--white) a(20%));
+    font-size: 21px;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.24);
     color: var(--white);
     border: none;
-    border-radius: 3px;
     font-weight: 400;
-    line-height: 34px;
+    flex-grow: 1;
+    padding: 14px 16px;
     &.no-text {
       color: transparent;
       caret-color: white;
     }
     &::placeholder {
-      color: color(var(--white) a(75%));
+      color: rgba(255, 255, 255, 0.64);
     }
   }
-  &-submit-wrapper {
-    position: absolute;
-    top: 11px;
-    right: 11px;
-  }
   &-submit {
-    border-radius: 50%;
-    width: 44px;
-    height: 44px;
-    border: none;
-    background: color(var(--white) a(30%));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    border: solid 3px #ffffff;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
     cursor: pointer;
-    .spinner__wrapper {
-      width: 25px;
-      height: 25px;
-      position: relative;
-      svg circle {
-        stroke-width: 4;
-        stroke-color: white;
-      }
+    padding: 15px 10px;
+    margin-top: 15px;
+    margin-left: 0;
+    background: none;
+    color: color(#fff);
+    @media(--breakpoint-small-device) {
+      margin-top: 0;
+      margin-left: 10px;
+    }
+    &.mobile {
+       margin-top: 15px;
+       margin-left: 0;
     }
   }
   &-settings {
@@ -68,19 +72,19 @@
   }
   .advanced {
     width: 100%;
-    /* max-width: 720px; */
-    max-width: 75%;
     margin: 0 auto;
-    h5 {
-      font-size: 16px;
+    @media(--breakpoint-medium-device) {
+      max-width: 75%;
+    }
+    &.mobile {
+       max-width: 100%;
     }
     .CodeMirror {
       height: auto;
-      background: color(var(--white) a(10%));
+      font-size: 16px;
+      background-color: rgba(0, 0, 0, 0.24);
       color: var(--white);
-      border: 1px solid color(var(--white) a(30%));
-      color: white;
-      border-radius: 3px;
+      border-radius: 4px;
       outline: none;
       .CodeMirror-cursor {
         border-color: white;
@@ -90,14 +94,33 @@
       }
     }
   }
-  .toggleAdvancedSettings {
-    text-align: center;
-    color: color(var(--white) a(50%));
-    font-size: 12px;
-    a {
-      color: color(var(--white) a(75%));
-      text-decoration: underline;
-      cursor: pointer;
+  .toggleAdvancedSettings-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+    .toggle {
+       display: flex;
+       justify-content: center;
+       padding: 5px 15px;
+       align-items: center;
+       border-radius: 21.5px;
+       border: solid 2px rgba(255, 255, 255, 0.24);
+      a {
+        font-size: 15px;
+        font-weight: 300;
+        color: #f4f4f4;
+        cursor: pointer;
+        .up:after {
+           font-family: var(--slick-font-family);
+           font-weight: 700;
+           content: var(--fa-var-angle-up);
+         }
+        .down:after {
+           font-family: var(--slick-font-family);
+           font-weight: 700;
+           content: var(--fa-var-angle-down);
+         }
+      }
     }
   }
 }

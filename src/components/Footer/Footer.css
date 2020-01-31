@@ -1,14 +1,26 @@
+@import "../../styles/_variables.css";
+
 footer {
-  align-self: stretch;
-  font-size: 16px;
-  .info {
-    background: color(#fff a(5%));
+  font-weight: 500;
+  font-size: 14px;
+  margin-top: 15px;
+  color: color(#fff);
+  a {
+    color: color(#fff);
+  }
+  .company {
+    color: rgba(255, 255, 255, 0.64);
+  }
+  @media (--breakpoint-small-device) {
+    font-size: 16px;
+  }
+  @media (--breakpoint-medium-device) {
+    color: color(#000);
     a {
-      color: white;
-      white-space: nowrap;
-      @media(max-width: 400px) {
-        font-size: 14px;
-      }
+      color: color(#000);
+    }
+    .company {
+      color: inherit;
     }
   }
 }

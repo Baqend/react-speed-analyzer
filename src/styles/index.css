@@ -22,6 +22,8 @@
 @import "~tachyons/src/_font-weight.css";
 @import "~tachyons/src/_display.css";
 
+@import "./_fonts.css";
+
 :root {
   --dark-blue: #162939;
 }
@@ -34,10 +36,10 @@ body {
   margin: 0;
   padding: 0;
   flex-grow: 1;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 18px;
+  font-family: Axiforma, sans-serif;
+  font-size: 20px;
   line-height: 1.48;
-  color: color(#fff a(80%));
+  color: color(#fff);
 }
 
 html, body, #speed-kit-analyzer, #wrapper {
@@ -46,16 +48,10 @@ html, body, #speed-kit-analyzer, #wrapper {
 
 html {
   background: #12212e;
-  /* min-height: 100%; */
-  /* background-color: linear-gradient(to bottom,#162939,#12212e); */
 }
 
 #speed-kit-analyzer {
-  /* background: var(--dark-blue); */
-  /* background: linear-gradient(to bottom, var(--dark-blue) 0%, #1a1a1a 100%); */
-  /* background: linear-gradient(to bottom, #000 0%, #000 66%, #1a1a1a 100%); */
-  /* background: linear-gradient(to bottom,#162939,#12212e); */
-  background-color: linear-gradient(to bottom,#162939,#12212e);
+  background-image: linear-gradient(119deg, #1201e8, #e808f2 102%);
 }
 
 #speed-kit-analyzer, #main {
@@ -145,4 +141,11 @@ textarea {
 .__react_component_tooltip.type-dark {
   background-color: rgba(0,0,0,0.95);
   font-weight: 400;
+}
+
+@media (--breakpoint-medium-device) {
+  #speed-kit-analyzer {
+    background-color: #f4f4f4;
+    background-image: none;
+  }
 }

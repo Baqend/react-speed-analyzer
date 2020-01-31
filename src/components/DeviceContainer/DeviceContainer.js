@@ -23,6 +23,7 @@ export default class DeviceContainer extends Component {
     return (
       <div className={`${showDevice ? 'device' : 'no-device'}`}>
         <div className={`${mobile ? 'device__phone' : 'device__laptop'}`}>
+          <div className="device__wrapper-top"></div>
           <DeviceNodes img={backgroundImage && mobile ? null : backgroundImage }>
             <div className="flex-grow-1 flex flex-column">
               <div className={`flex-grow-1 flex justify-center items-center ${showRight && 'loading'}`}>
@@ -41,6 +42,9 @@ export default class DeviceContainer extends Component {
               </div>
             </div>
           </DeviceNodes>
+          <div className="device__wrapper-bottom">
+            <div className="device-notch"></div>
+          </div>
         </div>
       </div>
     )

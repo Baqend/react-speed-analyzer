@@ -165,17 +165,17 @@ class ConfigFormComponent extends Component {
 
   renderConfig() {
     return (
-      <div className="pa1">
+      <div className="pa2">
         <div className="pt1">
           <div className="flex items-center">
-            <span className="flex-auto w-100 text-right">Desktop</span>
+            <span className="flex-auto w-100 text-right">Mobile</span>
             <Toggle
               className="mh1"
-              checked={this.props.config.mobile}
+              checked={!this.props.config.mobile}
               icons={false}
               onChange={this.handleMobileSwitch}
             />
-            <span className="flex-auto w-100">Mobile</span>
+            <span className="flex-auto w-100">Desktop</span>
           </div>
         </div>
         <div className="pt1">
@@ -197,44 +197,14 @@ class ConfigFormComponent extends Component {
 
   renderAdvancedConfig() {
     return (
-      <div className="advanced pv2">
+      <div className={`advanced ${this.props.config.mobile ? 'mobile' : 'desktop'}`}>
         <div className="flex flex-wrap">
           <div className="flex-grow-1 flex-shrink-0" style={{ flexBasis: '100%' }}>
-            <div className="ph2">
-              <h5 className="mv1 text-center">WebPagetest Config</h5>
-              <div className="pt1 flex items-center">
-                <span className="flex-auto w-100">Mobile</span>
-                <Toggle
-                  className="ml1"
-                  defaultChecked={this.props.config.mobile}
-                  icons={false}
-                  onChange={this.handleMobileSwitch}
-                />
-              </div>
-              <div className="pt1 flex items-center">
-                <span className="flex-auto w-100">Run from US</span>
-                <Toggle
-                  className="ml1"
-                  defaultChecked={this.props.config.location === 'us-east-1-docker:Chrome.FIOSNoLatency'}
-                  icons={false}
-                  value={this.props.config.location.indexOf('us-east-1') !== -1 ? 'EU' : 'US'}
-                  onChange={this.handleLocationChange}
-                />
-              </div>
-              <div className="pt1 flex flex-shrink-0 items-center" style={{ minWidth: '180px' }}>
-                <span className="flex-shrink-0 flex-grow-1">Activity Timeout</span>
-                <div className="flex-shrink-0">
-                  <input type="number" className="material-input text-center mh1" value={this.props.config.activityTimeout}
-                    style={{ width: '50px', marginBottom: '-2px' }} onChange={this.handleTimeoutChange}
-                  />
-                  <span className="">ms</span>
-                </div>
-              </div>
-            </div>
+            { this.renderConfig() }
           </div>
           <div className="flex-grow-1 flex-shrink-0" style={{ maxWidth: '100%' }}>
-            <div className="ph2">
-              <h5 className="mv1 text-center">Speed Kit Config</h5>
+            <div className="ph1">
+              <h4 className="mv1 text-center">Speed Kit Config</h4>
               <div className="pt1">
                 <CodeMirror
                   value={this.state.speedKitConfig}
@@ -268,60 +238,46 @@ class ConfigFormComponent extends Component {
   }
 
   render() {
-    // const url = splitUrl(this.props.config.url)
-    // debugger
-
+    const mobile = this.props.config.mobile;
     return (
       <div className="config__form flex-grow-1 flex flex-column">
         <form className="flex flex-grow-1 flex-column" onSubmit={this.handleSubmit} noValidate>
-          <div className="config__form-input-wrapper">
+          <div className={`config__form-input-wrapper ${mobile ? 'mobile' : 'desktop'}`}>
             <input
-              className="w-100 ph2 pv2 config__form-input"
+              className="config__form-input"
               type="url"
               inputMode="url"
               spellCheck="false"
               value={this.props.config.url}
               onChange={this.handleUrlChange}
-              placeholder="Enter URL here..."
+              placeholder="https://www.example.com"
               noValidate
             />
-            {/*<div className="parsed-domain ph2 pv2">
-              {Array.isArray(url) && url.length === 3 ? [
-                <span key="pre" className="faded">{url[0]}</span>,
-                <span key="hostname">{url[1]}</span>,
-                <span key="rest" className="faded">{url[2]}</span>
-              ] : (
-                <span>{url}</span>
-              )}
-            </div>*/}
-            <div className="config__form-submit-wrapper flex">
-              {this.props.showConfigToggle && (<a onClick={this.toggleConfig} className="config__form-settings flex justify-center items-center mr2" style={{ width: 'auto', background: 'none' }}>
-                <img width="24" src={settings} alt="settings" />
-              </a>)}
-              <button className="config__form-submit flex justify-center items-center" type="submit">
-                {this.props.isInitiated ? (
-                  <div className="spinner__wrapper" style={{ width: 25, height: 25 }}>
-                    <Spinner />
-                  </div>
-                ) : (
-                  <img src={arrow} alt="arrow" />
-                )}
-              </button>
-            </div>
+            <button className={`config__form-submit ${mobile ? 'mobile' : 'desktop'}`} type="submit">START TEST</button>
+            {/*<div className="config__form-submit-wrapper flex">*/}
+            {/*  {this.props.showConfigToggle && (<a onClick={this.toggleConfig} className="config__form-settings flex justify-center items-center mr2" style={{ width: 'auto', background: 'none' }}>*/}
+            {/*    <img width="24" src={settings} alt="settings" />*/}
+            {/*  </a>)}*/}
+            {/*  <button className="config__form-submit flex justify-center items-center" type="submit">*/}
+            {/*    {this.props.isInitiated ? (*/}
+            {/*      <div className="spinner__wrapper" style={{ width: 25, height: 25 }}>*/}
+            {/*        <Spinner />*/}
+            {/*      </div>*/}
+            {/*    ) : (*/}
+            {/*      <img src={arrow} alt="arrow" />*/}
+            {/*    )}*/}
+            {/*  </button>*/}
+            {/*</div>*/}
           </div>
           {this.state.showConfig &&
-            <div className="flex-grow-1 flex flex-column justify-between">
+            <div className="mv2 flex-grow-1 flex flex-column justify-between">
               {this.state.showAdvancedConfig ? this.renderAdvancedConfig() : this.renderConfig()}
-              <div className="toggleAdvancedSettings">
-                {this.state.showAdvancedConfig ? (
-                  <span>
-                    <a onClick={this.toggleAdvancedConfig}>Hide Advanced Settings</a>
-                  </span>
-                ): (
-                  <span>
-                    <a onClick={this.toggleAdvancedConfig}>Show Advanced Settings</a>
-                  </span>
-                )}
+              <div className="toggleAdvancedSettings-wrapper">
+                <div className="toggle">
+                  <a onClick={this.toggleAdvancedConfig}>
+                    Advanced Options <span className={`${this.state.showAdvancedConfig ? 'up' : 'down'}`}/>
+                  </a>
+                </div>
               </div>
             </div>
           }

@@ -19,7 +19,9 @@ class StartingScreenComponent extends Component {
     return (
       <div className="flex-grow-1 flex flex-column justify-center">
         <div className="text-center flex-grow-1 flex flex-column justify-end">
-          <h1 className="mv2">Page Speed Analyzer</h1>
+          <h1 className={`header ${this.props.config.mobile ? 'mobile' : 'desktop'}`}>
+            Test Your Speed
+          </h1>
         </div>
         <div className="mt4 flex-grow-1 flex flex-column">
           <ConfigForm
@@ -38,6 +40,7 @@ class StartingScreenComponent extends Component {
   render() {
     return (
       <div className="loading-screen flex-column flex-grow-1 flex items-center">
+        <div className="logo"></div>
         <DeviceContainer
           showDevice={!this.state.showAdvancedConfig}
           mobile={this.props.config.mobile}
