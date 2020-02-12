@@ -21,6 +21,8 @@ import {
 import { generateRules } from '../helper/configHelper'
 import { resultIsValid } from '../helper/resultHelper'
 
+const PROGRESS_SESSION_KEY = 'baqend-progress'
+
 const createScreenshot = (psiScreenshot) => {
   if (psiScreenshot) {
     return `https://${process.env.REACT_APP_BAQEND}.app.baqend.com/v1${psiScreenshot}`
@@ -135,6 +137,8 @@ export default function result(state = initialState, action = {}) {
     case START_TEST:
       return { ...state, isStarted: true, startTime: new Date() }
     case UPDATE_TEST_PROGRESS:
+      // Persist progress in session storage to make it usable on reload.
+      sessionStorage.setItem(PROGRESS_SESSION_KEY, action.payload)
       return { ...state, testProgress: action.payload }
     case CONTINUE_TEST:
       return { ...state, isInitiated: true, isStarted: true }
@@ -177,6 +181,7 @@ export default function result(state = initialState, action = {}) {
         isMonitored: false,
       }
     case RESET_TEST_RESULT:
+      sessionStorage.removeItem(PROGRESS_SESSION_KEY)
       return {
         ...initialState,
         isInitiated: state.isInitiated,

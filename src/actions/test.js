@@ -182,13 +182,17 @@ const computeTestProgress = () => ({
   'BAQEND': ({ dispatch, getState }) => {
     const interval = setInterval( () => {
       const doComputation = (upperBorder) => {
-        const { testProgress } = getState().result
+        const persistedProgress = parseInt(sessionStorage.getItem('baqend-progress') || 0, 10)
+        const { testProgress: reduxProgress } = getState().result
+        const testProgress = persistedProgress < 100 ? persistedProgress : reduxProgress
         const increaseBy = Math.floor(Math.random() * 3) + 1
-        // Set immediately to 100% if the upper border is 100 (test has finished)
-        const newProgress = upperBorder < 100 ? testProgress + increaseBy : 100
+
+        // Set immediately to 100% if the upper border is 100 (test has finished).
+        const computedProgress = upperBorder < 100 ? testProgress + increaseBy : 100
+        const newProgress = computedProgress < upperBorder ? computedProgress : upperBorder
         dispatch({
           type: UPDATE_TEST_PROGRESS,
-          payload: newProgress < upperBorder ? newProgress : upperBorder
+          payload: newProgress
         })
       }
 
