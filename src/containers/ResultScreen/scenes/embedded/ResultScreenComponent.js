@@ -62,7 +62,6 @@ class ResultScreenComponent extends Component {
   }
 
   renderError() {
-    console.log('Render error');
     return (
       <div className={`flex-grow-1 ${styles.results}`}>
         <div className="container pa2 pt0 pt2-ns pb4 pb6-ns text-center">

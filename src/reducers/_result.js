@@ -8,12 +8,15 @@ import {
   TESTOVERVIEW_NEXT,
   RATE_LIMITER_GET,
   TEST_STATUS_GET,
+  UPDATE_TEST_PROGRESS,
   COMPETITOR_RESULT_LOAD,
   SPEED_KIT_RESULT_LOAD,
   TERMINATE_TEST,
   RESET_TEST_RESULT,
   RESET_TEST_STATUS,
-} from '../actions/types'
+  SPEED_KIT_RESULT_NEXT,
+  COMPETITOR_RESULT_NEXT,
+} from '../actions/types';
 
 import { generateRules } from '../helper/configHelper'
 import { resultIsValid } from '../helper/resultHelper'
@@ -89,8 +92,11 @@ const initialState = {
   isPlesk: false,
   speedKitVersion: null,
   testOverview: {},
+  prewarmFinished: false,
+  finishedTests: 0,
   statusCode: null,
   statusText: '',
+  testProgress: 0,
   competitorSubscription: null,
   speedKitSubscription: null,
   competitorTest: {},
@@ -114,6 +120,10 @@ export default function result(state = initialState, action = {}) {
           psiScreenshot: createScreenshot(action.payload.psiScreenshot),
         }
       }
+    case COMPETITOR_RESULT_NEXT:
+      return { ...state, competitorTest: { ...action.payload } }
+    case SPEED_KIT_RESULT_NEXT:
+      return { ...state, speedKitTest: { ...action.payload } }
     case TESTOVERVIEW_LOAD_FAIL:
       return { ...state, isFinished: true }
     case RATE_LIMITER_GET:
@@ -124,6 +134,8 @@ export default function result(state = initialState, action = {}) {
       return { ...state, isInitiated: true }
     case START_TEST:
       return { ...state, isStarted: true, startTime: new Date() }
+    case UPDATE_TEST_PROGRESS:
+      return { ...state, testProgress: action.payload }
     case CONTINUE_TEST:
       return { ...state, isInitiated: true, isStarted: true }
     case TEST_STATUS_GET:

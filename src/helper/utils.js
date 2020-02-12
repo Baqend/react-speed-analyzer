@@ -57,7 +57,7 @@ export const getObjectKey = (objectId) => {
  */
 export const isURL = (str) => {
   // Check is not a relative URL
-  if (str.startsWith('/')) {
+  if (str.match(/^\//)) {
     return false
   }
 

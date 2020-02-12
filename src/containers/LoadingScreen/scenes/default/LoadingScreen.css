@@ -1,28 +1,27 @@
 @import "~tachyons/src/_media-queries.css";
+@import "../../../../styles/_variables.css";
 
 .loading-screen {
-  .left {
-    width: 100%;
-    .spinner__wrapper {
-      position:relative;
-      width: 200px;
-      height: 200px;
-      @media (--breakpoint-not-small) {
-        width: 300px;
-        height: 300px;
-      }
+  .device__laptop, .device__phone {
+    .carousel__wrapper {
+      width: 95%;
+      margin: 40px 0 32px 0;
+    }
+    .progress__wrapper {
+      width: 180px;
     }
   }
-  .statusMessage {
-    position: fixed;
-    background: rgba(255,255,255,0.15);
-    top: 0;
-    left: 0;
-    right: 0;
-    padding: 8px;
-    line-height: 1;
-    @media (--breakpoint-not-small) {
-      display: none;
+
+  .device__laptop {
+    .carousel__wrapper {
+      @media (--breakpoint-medium-device) {
+        width: 70%;
+      }
+    }
+    .progress__wrapper {
+      @media (--breakpoint-small-device) {
+        width: 210px;
+      }
     }
   }
 }

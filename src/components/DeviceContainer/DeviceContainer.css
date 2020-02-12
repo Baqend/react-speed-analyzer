@@ -10,12 +10,12 @@
   --device-background-to: rgb(232, 8, 242);
 }
 
-.device, .no-device {
+.device {
   width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 48px 16px 32px;
+  padding: 42px 16px 32px;
   max-width: 1170px;
   .device__wrapper-outer, .device__wrapper, .device__screen {
     display: flex;
@@ -40,39 +40,6 @@
     flex-grow: 1;
     align-items: center;
     justify-content: center;
-  }
-  .loading {
-    display: flex;
-    position: relative;
-    overflow: hidden;
-    flex-wrap: wrap;
-    .device-right {
-      margin-top: 0;
-      width: 100%;
-      height: 200px;
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      text-align: center;
-      @media (--breakpoint-not-small) {
-        height: 300px;
-        margin-top: 32px;
-        align-items: center;
-      }
-      @media (min-width: 998px) {
-        margin-top: 0px;
-        width: 0%;
-        /* max-height: 0px; */
-        animation: show 0.5s 1 ease;
-        animation-fill-mode: forwards;
-        animation-delay: 2s;
-        text-align: left;
-        > * {
-          max-height: 0;
-          animation: showInner 0.1ms 1 linear 2.5s forwards;
-        }
-      }
-    }
   }
 }
 
@@ -107,7 +74,7 @@
     }
     @media (--breakpoint-medium-device) {
       /* creates the bottom bar */
-      height: 65px;
+      height: 55px;
       display: inline;
       border-bottom-left-radius: 24px;
       border-bottom-right-radius: 24px;
@@ -143,6 +110,7 @@
       > .device__wrapper {
         position: relative;
         display: inherit;
+        max-width: 100%;
         background-image: linear-gradient(
                 119deg,
                 color(var(--device-background-from)),
@@ -157,7 +125,7 @@
         > .device__screen {
           position: relative;
           z-index: 1;
-          padding: var(--device-padding);
+          padding: 32px 0 0 0;
           .device__wrapper-outer, .device__wrapper, .device__inner {
             display: flex;
             flex-grow: 1;
@@ -171,6 +139,7 @@
 .device .device__phone {
   display: flex;
   justify-content: center;
+  align-items: center;
   flex-direction: column;
   .device__background-image {
     position: fixed;
@@ -189,36 +158,36 @@
       border-left: 1px solid rgba(51, 53, 55, 0.25);
       border-right: 1px solid rgba(51, 53, 55, 0.25);
     }
-    .device__wrapper-outer .device__wrapper .device__screen {
-      .device__wrapper-outer {
-        box-sizing: content-box;
-        max-width: 375px;
-        min-height: 500px;
+    .device__wrapper-outer {
+      box-sizing: content-box;
+      width: 375px;
+      min-height: 500px;
+      position: relative;
+      padding-left: var(--device-border-width-xs);
+      padding-right: var(--device-border-width-xs);
+      margin: auto;
+      &:before { left: 0px; border-left: 1px solid rgba(51, 53, 55, 0.25); }
+      &:after { right: 0px; border-right: 1px solid rgba(51, 53, 55, 0.25); }
+      &:before, &:after {
+        content: "";
+        position: absolute;
+        background-image: linear-gradient(color(var(--device-color)), color(var(--device-color) a(30%)));
+        top: 0px;
+        bottom: 0;
+        width: var(--device-border-width-xs);
+        max-height: 100%;
+      }
+      .device__wrapper {
         position: relative;
-        padding-left: var(--device-border-width-xs);
-        padding-right: var(--device-border-width-xs);
-        &:before { left: 0px; border-left: 1px solid rgba(51, 53, 55, 0.25); }
-        &:after { right: 0px; border-right: 1px solid rgba(51, 53, 55, 0.25); }
-        &:before, &:after {
-          content: "";
+        max-width: 100%;
+        background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0) 95%, rgba(244, 244, 244, 1)),
+        linear-gradient(144deg, color(var(--device-background-from)), color(var(--device-background-to)) 101%);
+        .device__background-image {
           position: absolute;
-          background-image: linear-gradient(color(var(--device-color)), color(var(--device-color) a(30%)));
-          top: 0px;
-          bottom: 0;
-          width: var(--device-border-width-xs);
-          max-height: 100%;
         }
-        .device__wrapper {
-          position: relative;
-          background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0) 95%, rgba(244, 244, 244, 1)),
-          linear-gradient(144deg, color(var(--device-background-from)), color(var(--device-background-to)) 101%);
-          .device__background-image {
-            position: absolute;
-          }
-        }
-        .device__screen {
-          padding: var(--device-padding);
-        }
+      }
+      .device__screen {
+        padding: 32px 16px;
       }
     }
   }

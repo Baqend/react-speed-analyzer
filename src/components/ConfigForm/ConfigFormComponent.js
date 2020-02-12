@@ -197,7 +197,7 @@ class ConfigFormComponent extends Component {
 
   renderAdvancedConfig() {
     return (
-      <div className={`advanced ${this.props.config.mobile ? 'mobile' : 'desktop'}`}>
+      <div className="advanced">
         <div className="flex flex-wrap">
           <div className="flex-grow-1 flex-shrink-0" style={{ flexBasis: '100%' }}>
             { this.renderConfig() }
@@ -238,11 +238,10 @@ class ConfigFormComponent extends Component {
   }
 
   render() {
-    const mobile = this.props.config.mobile;
     return (
       <div className="config__form flex-grow-1 flex flex-column">
         <form className="flex flex-grow-1 flex-column" onSubmit={this.handleSubmit} noValidate>
-          <div className={`config__form-input-wrapper ${mobile ? 'mobile' : 'desktop'}`}>
+          <div className="config__form-input-wrapper">
             <input
               className="config__form-input"
               type="url"
@@ -253,7 +252,7 @@ class ConfigFormComponent extends Component {
               placeholder="https://www.example.com"
               noValidate
             />
-            <button className={`config__form-submit ${mobile ? 'mobile' : 'desktop'}`} type="submit">START TEST</button>
+            <button className="config__form-submit" type="submit">START TEST</button>
             {/*<div className="config__form-submit-wrapper flex">*/}
             {/*  {this.props.showConfigToggle && (<a onClick={this.toggleConfig} className="config__form-settings flex justify-center items-center mr2" style={{ width: 'auto', background: 'none' }}>*/}
             {/*    <img width="24" src={settings} alt="settings" />*/}

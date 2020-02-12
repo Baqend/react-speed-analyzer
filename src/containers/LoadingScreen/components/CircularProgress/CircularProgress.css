@@ -1,0 +1,13 @@
+@import '~react-circular-progressbar/dist/styles.css';
+
+.head-text {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -1.0px;
+}
+
+.sub-text {
+    font-size: 7px;
+    font-style: italic;
+    font-weight: bold;
+}

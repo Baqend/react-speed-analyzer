@@ -1,130 +1,133 @@
 @import "../../styles/_variables.css";
 
-.config__form {
-  &-input-wrapper {
-     display: flex;
-     flex-direction: column;
-     padding: 0 8px;
-    &.desktop {
-      @media(--breakpoint-small-device) {
-        flex-direction: row;
-        flex-wrap: wrap;
-      }
-      @media(--breakpoint-medium-device) {
-        padding: 0 48px;
-      }
-      @media(--breakpoint-large-device) {
-        padding: 0 96px;
-      }
-    }
-  }
-  &-input {
-    font-size: 21px;
-    border-radius: 4px;
-    background-color: rgba(0, 0, 0, 0.24);
-    color: var(--white);
-    border: none;
-    font-weight: 400;
-    flex-grow: 1;
-    padding: 14px 16px;
+.device__laptop, .device__phone {
+  .config__form {
+    &-input-wrapper {
+       display: flex;
+       flex-direction: column;
+       padding: 0 8px;
+     }
+    &-input {
+       font-size: 21px;
+       border-radius: 4px;
+       background-color: rgba(0, 0, 0, 0.24);
+       color: var(--white);
+       border: none;
+       font-weight: 400;
+       flex-grow: 1;
+       padding: 14px 16px;
     &.no-text {
-      color: transparent;
-      caret-color: white;
-    }
+       color: transparent;
+       caret-color: white;
+     }
     &::placeholder {
-      color: rgba(255, 255, 255, 0.64);
+       color: rgba(255, 255, 255, 0.64);
+     }
     }
-  }
-  &-submit {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-    border: solid 3px #ffffff;
-    font-size: 16px;
-    font-weight: 500;
-    letter-spacing: 0.15em;
-    cursor: pointer;
-    padding: 15px 10px;
-    margin-top: 15px;
-    margin-left: 0;
-    background: none;
-    color: color(#fff);
-    @media(--breakpoint-small-device) {
-      margin-top: 0;
-      margin-left: 10px;
-    }
-    &.mobile {
+    &-submit {
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       border-radius: 4px;
+       border: solid 3px #ffffff;
+       font-size: 16px;
+       font-weight: 500;
+       letter-spacing: 0.15em;
+       cursor: pointer;
+       padding: 15px 10px;
        margin-top: 15px;
        margin-left: 0;
+       background: none;
+       color: color(#fff);
     }
-  }
-  &-settings {
-    border-radius: 50%;
-    width: 44px;
-    height: 44px;
-    border: none;
-    opacity: 0.8;
-    cursor: pointer;
+    &-settings {
+       border-radius: 50%;
+       width: 44px;
+       height: 44px;
+       border: none;
+       opacity: 0.8;
+       cursor: pointer;
     &:hover {
-      opacity: 1;
+       opacity: 1;
+     }
     }
-  }
-  .advanced {
-    width: 100%;
-    margin: 0 auto;
-    @media(--breakpoint-medium-device) {
-      max-width: 75%;
-    }
-    &.mobile {
-       max-width: 100%;
-    }
-    .CodeMirror {
-      height: auto;
-      font-size: 16px;
-      background-color: rgba(0, 0, 0, 0.24);
-      color: var(--white);
-      border-radius: 4px;
-      outline: none;
-      .CodeMirror-cursor {
-        border-color: white;
-      }
-      .CodeMirror-selected {
-        background: rgba(255,255,255,0.2);
+    .advanced {
+      width: 100%;
+      margin: 0 auto;
+      .CodeMirror {
+        height: auto;
+        font-size: 16px;
+        background-color: rgba(0, 0, 0, 0.24);
+        color: var(--white);
+        border-radius: 4px;
+        outline: none;
+        .CodeMirror-cursor {
+          border-color: white;
+        }
+        .CodeMirror-selected {
+          background: rgba(255,255,255,0.2);
+        }
       }
     }
-  }
-  .toggleAdvancedSettings-wrapper {
-    display: flex;
-    justify-content: center;
-    margin-top: 15px;
-    .toggle {
-       display: flex;
-       justify-content: center;
-       padding: 5px 15px;
-       align-items: center;
-       border-radius: 21.5px;
-       border: solid 2px rgba(255, 255, 255, 0.24);
-      a {
-        font-size: 15px;
-        font-weight: 300;
-        color: #f4f4f4;
-        cursor: pointer;
-        .up:after {
-           font-family: var(--slick-font-family);
-           font-weight: 700;
-           content: var(--fa-var-angle-up);
-         }
-        .down:after {
-           font-family: var(--slick-font-family);
-           font-weight: 700;
-           content: var(--fa-var-angle-down);
-         }
+    .toggleAdvancedSettings-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-top: 15px;
+      .toggle {
+        display: flex;
+        justify-content: center;
+        padding: 5px 15px;
+        align-items: center;
+        border-radius: 21.5px;
+        border: solid 2px rgba(255, 255, 255, 0.24);
+        a {
+          font-size: 15px;
+          font-weight: 300;
+          color: #f4f4f4;
+          cursor: pointer;
+          .up:after {
+            font-family: var(--slick-font-family);
+            font-weight: 700;
+            content: var(--fa-var-angle-up);
+          }
+          .down:after {
+            font-family: var(--slick-font-family);
+            font-weight: 700;
+            content: var(--fa-var-angle-down);
+          }
+        }
       }
     }
   }
 }
 
+.device__laptop {
+  .config__form {
+    &-input-wrapper {
+        @media(--breakpoint-medium-device) {
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+        @media(--breakpoint-medium-device) {
+            padding: 0 48px;
+        }
+        @media(--breakpoint-large-device) {
+            padding: 0 96px;
+        }
+    }
+    &-submit {
+      @media(--breakpoint-medium-device) {
+        margin-top: 0;
+        margin-left: 10px;
+      }
+    }
+    .advanced {
+      @media(--breakpoint-medium-device) {
+        max-width: 75%;
+      }
+    }
+  }
+}
 
 .checkbox-custom {
   background-color: transparent;

@@ -2,13 +2,15 @@ import {
   ADD_ERROR,
   INIT_TEST,
   START_TEST,
-  START_TEST_POST,
+  UPDATE_TEST_PROGRESS,
   MONITOR_TEST,
   TESTOVERVIEW_LOAD,
   TESTOVERVIEW_NEXT,
   TEST_STATUS_GET,
   RESET_TEST_RESULT,
-} from './types'
+  SPEED_KIT_RESULT_NEXT,
+  COMPETITOR_RESULT_NEXT,
+} from './types';
 
 import { isURL, trackURL } from '../helper/utils'
 import stringifyObject from 'lib/stringify-object'
@@ -51,7 +53,8 @@ export const startTest = (useAdvancedConfig = true) => ({
       dispatch({
         type: START_TEST,
       })
-      const { testOverview } = getState().result
+      const { testOverview, config } = getState().result
+
       const speedKit = testOverview.isSpeedKitComparison
       let speedKitConfig = !speedKit || (speedKit && useAdvancedConfig) ? getState().config.speedKitConfig : null
 
@@ -62,11 +65,9 @@ export const startTest = (useAdvancedConfig = true) => ({
         speedKitConfig = stringifyObject(speedKitConfigObj, { indent: '  ' })
       }
 
-      // const testOverview = await db.modules.post('runComparison', {
-
       trackURL('startComparison', url)
 
-      const comparison = await db.modules.post('startComparison', {
+      return db.modules.post('startComparison', {
         url,
         location,
         caching,
@@ -75,14 +76,6 @@ export const startTest = (useAdvancedConfig = true) => ({
         activityTimeout,
         withPuppeteer: false,
       })
-
-      // dispatch to update the display URL
-      dispatch({
-        type: START_TEST_POST,
-        payload: testOverview
-      })
-
-      return comparison
     } catch(e) {
       trackURL('failedComparison', url)
 
@@ -105,11 +98,33 @@ export const startTest = (useAdvancedConfig = true) => ({
 export const monitorTest = (testId, onAfterFinish) => ({
   'BAQEND': async ({ dispatch }) => {
     dispatch({ type: MONITOR_TEST })
+    dispatch(computeTestProgress())
     const testOverview = await dispatch(subscribeToTestOverview({ testId, onAfterFinish }))
-    // dispatch(updateConfigByTestOverview(testOverview))
+    // TODO: This is needed for the status update of the embedded version
     if (!testOverview.hasFinished) {
-      dispatch(checkTestStatus(testOverview.competitorTestResult))
+      dispatch(checkTestStatus())
     }
+  }
+})
+
+const subscribeToTestResult = (testId, isSpeedKitComparison) => ({
+  'BAQEND': async ({ dispatch, getState, db }) => {
+    const stream = db.TestResult.find().equal('id', testId).resultStream()
+    const subscription = stream.subscribe((res) => {
+      const testResult = res[0] ? res[0].toJSON() : null
+      if (!testResult) {
+        return
+      }
+
+      dispatch({
+        type: isSpeedKitComparison ? SPEED_KIT_RESULT_NEXT: COMPETITOR_RESULT_NEXT,
+        payload: testResult
+      })
+
+      if (testResult.hasFinished) {
+        subscription.unsubscribe()
+      }
+    })
   }
 })
 
@@ -122,6 +137,13 @@ const subscribeToTestOverview = ({ testId, onAfterFinish }) => ({
       const testOverviewSubscription = testOverviewStream.subscribe((res) => {
         const testOverview = res[0] ? res[0].toJSON() : null
         if (testOverview) {
+          if (testOverview.competitorTestResult && !getState().result.speedKitTestResult) {
+            dispatch(subscribeToTestResult(testOverview.competitorTestResult, false))
+          }
+          if (testOverview.speedKitTestResult && !getState().result.speedKitTestResult) {
+            dispatch(subscribeToTestResult(testOverview.speedKitTestResult, true))
+          }
+
           if (!trackUnload) {
             trackUnload = () => {
               trackURL('leaveDuringTest', testOverview.url, { startTime: getState().result.startTime })
@@ -145,7 +167,7 @@ const subscribeToTestOverview = ({ testId, onAfterFinish }) => ({
               payload: testOverview
             })
           }
-          testOverviewPromise.then((testOverview) => {
+          testOverviewPromise.then(() => {
             isResolved = true
           })
           resolve(testOverview)
@@ -153,6 +175,58 @@ const subscribeToTestOverview = ({ testId, onAfterFinish }) => ({
       })
     })
     return testOverviewPromise
+  }
+})
+
+const computeTestProgress = () => ({
+  'BAQEND': ({ dispatch, getState }) => {
+    const interval = setInterval( () => {
+      const doComputation = (upperBorder) => {
+        const { testProgress } = getState().result
+        const increaseBy = Math.floor(Math.random() * 3) + 1
+        // Set immediately to 100% if the upper border is 100 (test has finished)
+        const newProgress = upperBorder < 100 ? testProgress + increaseBy : 100
+        dispatch({
+          type: UPDATE_TEST_PROGRESS,
+          payload: newProgress < upperBorder ? newProgress : upperBorder
+        })
+      }
+
+      const getUpperBorder = () => {
+        const { testOverview, speedKitTest, competitorTest } = getState().result
+        const { puppeteer: puppeteerFinished, hasFinished: testOverviewFinished } = testOverview
+        const { hasFinished: speedKitFinished, webPagetests } = speedKitTest
+        const { hasFinished: competitorFinished } = competitorTest
+
+        // Check if the whole test (both speed kit and competitor) is finished.
+        // Check first to ensure that the progress bar always finish with 100%.
+        if (testOverviewFinished) {
+          return 100
+        }
+
+        // Check if the puppeteer analysis is finished.
+        if (!puppeteerFinished) {
+          return 50
+        }
+
+        // Check if the prewarm run of the speed kit test is finished.
+        if (!webPagetests || !webPagetests.find((test) => test.testType === 'prewarm' && test.status === 'SUCCESS')) {
+          return 75
+        }
+
+        // Check if at least one of the two test is finished.
+        if (!speedKitFinished && !competitorFinished) {
+          return 90
+        }
+
+        return 99
+      }
+
+      const upperBorder = getUpperBorder()
+      doComputation(upperBorder)
+      upperBorder === 100 && clearInterval(interval)
+    }, 750)
+    return interval
   }
 })
 
@@ -189,3 +263,4 @@ const checkTestStatus = () => ({
     return interval
   }
 })
+

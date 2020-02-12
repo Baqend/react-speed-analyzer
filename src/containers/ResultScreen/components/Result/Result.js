@@ -145,7 +145,6 @@ class Result extends Component {
   }
 
   renderPSI() {
-    // console.log(this.props)
     const psiDomains = this.props.testOverview && this.props.testOverview.psiDomains
     const psiRequests =  this.props.testOverview && this.props.testOverview.psiRequests
     const psiResponseSize = this.props.testOverview && this.props.testOverview.psiResponseSize

@@ -6,29 +6,17 @@ import ConfigForm from 'components/ConfigForm/ConfigForm'
 import DeviceContainer from 'components/DeviceContainer/DeviceContainer'
 
 class StartingScreenComponent extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      showCarousel: false,
-      showFacts: false,
-      showAdvancedConfig: props.showAdvancedConfig,
-    }
-  }
-
   renderForm() {
     return (
       <div className="flex-grow-1 flex flex-column justify-center">
         <div className="text-center flex-grow-1 flex flex-column justify-end">
-          <h1 className={`header ${this.props.config.mobile ? 'mobile' : 'desktop'}`}>
-            Test Your Speed
-          </h1>
+          <h1 className="header">Test Your Speed</h1>
         </div>
         <div className="mt4 flex-grow-1 flex flex-column">
           <ConfigForm
             config={this.props.config}
             showConfig={true}
             showConfigToggle={false}
-            showAdvancedConfig={this.state.showAdvancedConfig}
             onToggleAdvancedConfig={this.props.onToggleAdvancedConfig}
             onSubmit={this.props.onSubmit}
           />
@@ -42,15 +30,14 @@ class StartingScreenComponent extends Component {
       <div className="loading-screen flex-column flex-grow-1 flex items-center">
         <div className="logo"></div>
         <DeviceContainer
-          showDevice={!this.state.showAdvancedConfig}
           mobile={this.props.config.mobile}
-          backgroundImage={this.props.result.testOverview.psiScreenshot}
-          left={
-            <div className="left">
-              {this.renderForm()}
+          content={
+            <div className={`flex-grow-1 flex justify-center items-center`}>
+              <div className="flex-grow-1">
+                {this.renderForm()}
+              </div>
             </div>
           }
-          right={null}
         />
       </div>
     )
