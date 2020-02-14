@@ -13,6 +13,7 @@ class LoadingScreenComponent extends Component {
         <div className="logo"></div>
         <DeviceContainer
           mobile={this.props.config.mobile}
+          bgImage={this.props.result.testOverview.psiScreenshot}
           content={
             <div className="flex flex-column items-center">
               <div className="progress__wrapper">

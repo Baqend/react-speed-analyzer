@@ -3,7 +3,8 @@ import './DeviceContainer.css'
 
 export default class DeviceContainer extends Component {
   render() {
-    const { mobile, content } = this.props
+    const { mobile, content, bgImage } = this.props
+    const showBgImage = bgImage && !mobile
     return (
       <div className="device">
         <div className={`${mobile ? 'device__phone' : 'device__laptop'}`}>
@@ -13,6 +14,12 @@ export default class DeviceContainer extends Component {
               <div className="device__screen">
                 {content}
               </div>
+              {showBgImage && (
+                <div
+                  className="device__background"
+                  style={{ backgroundImage: `url(${bgImage})` }}>
+                </div>
+              )}
             </div>
           </div>
           <div className="device__wrapper-bottom">

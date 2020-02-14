@@ -134,6 +134,21 @@
       }
     }
   }
+  .device__background {
+    background-position: top;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    position: absolute;
+    opacity: 0.15;
+    @media (--breakpoint-medium-device) {
+      background-size: cover;
+      opacity: 0.08;
+    }
+  }
 }
 
 .device .device__phone {
