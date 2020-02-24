@@ -66,7 +66,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
   ): Promise<model.TestOverview> {
     const config = await this.buildSpeedKitConfig(puppeteer, params)
     const requiredParams = this.testBuilder.buildSingleTestParams(params, config)
-    const configAnalysis = puppeteer.speedKit ? this.createConfigAnalysis(puppeteer.speedKit) : null
+    const configAnalysis = this.createConfigAnalysis(puppeteer)
 
     // Create the tests
     const [competitorTest, speedKitTest] = await Promise.all([
@@ -166,18 +166,18 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
   /**
    * Creates a config analysis of the given URL.
    */
-  private createConfigAnalysis({config, swUrl}: model.PuppeteerSpeedKit): model.ConfigAnalysis {
-    const configAnalysis: model.ConfigAnalysis = new this.db.ConfigAnalysis()
-    configAnalysis.swPath = swUrl
-
-    if (!config) {
-      configAnalysis.configMissing = true
-      return configAnalysis
+  private createConfigAnalysis(puppeteer: model.Puppeteer): model.ConfigAnalysis | null {
+    if (!puppeteer.speedKit) {
+      return null
     }
 
+    const configAnalysis: model.ConfigAnalysis = new this.db.ConfigAnalysis()
+    // If Puppeteer has found Speed Kit there must be a config and the swPath must match
     configAnalysis.configMissing = false
-    configAnalysis.swPathMatches = !!swUrl
-    configAnalysis.isDisabled = config.disabled === true
+    configAnalysis.swPathMatches = true
+
+    configAnalysis.swPath = puppeteer.speedKit.swUrl
+    configAnalysis.isDisabled = puppeteer.speedKit.config.disabled === true
 
     return configAnalysis
   }
