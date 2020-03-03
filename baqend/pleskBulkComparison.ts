@@ -125,7 +125,16 @@ export async function get(db: baqend, request: Request, response: Response) {
 
   const { multiComparisonId } = comparisonToStart
   const bulkTest = bulkComparison.multiComparisons.find((multiComparison) => multiComparison.id === multiComparisonId)
+  // Check if there is no bulkTest or the bulkTest has not finished yet
   if (!bulkTest || !bulkTest.hasFinished) {
+    // The corresponding bulkComparison is already finished (probably because of an error)
+    // There will no bulkTest result be generated in the future => return default comparison
+    if (bulkComparison.hasFinished) {
+      const comparison = Object.assign(defaultComparison, { url })
+      response.send({ bulkComparisonId, url, comparison })
+    }
+
+    // The corresponding bulkComparison is not finished yet. There will be a bulkTest result generated in the future
     response.send({ bulkComparisonId, url, comparison: null })
     return
   }
