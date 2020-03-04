@@ -84,7 +84,24 @@ class ResultAction extends Component {
 
   // all Tests failed
   renderAllTestsFailed(error) {
-    const { message = 'An error occurred while running your tests.', status = 500 } = error || {}
+    const getErrorData = (error) => {
+      const defaultMessage = 'An error occurred while running your tests.'
+      const { message, status = 500 } = error || {}
+      if (!message) {
+        return { message: defaultMessage, status }
+      }
+
+      // Check if the message contains the URL of the Puppeteer
+      const containsPuppeteerUrl = message.indexOf('puppeteer.baqend.com') !== -1
+      if (containsPuppeteerUrl) {
+        // Avoid Puppeteer's URL from being displayed
+        return { message: message.replace(/http.*puppeteer\.baqend\.com.*?\s/, 'Puppeteer\xa0'), status }
+      }
+
+      return { message, status }
+    }
+
+    const { message, status } = getErrorData(error)
     const contactPassage = status === 500 ? 'Please re-run the test and if the problem persists' : 'If you need help with this error'
     return (
       <div>
