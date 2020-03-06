@@ -215,11 +215,47 @@ function countContentSize(requests: any[]): any {
     if (contentType.indexOf('text/') !== -1) {
       contentSize.text += objectSize || 0
     } else if (contentType.indexOf('image/') !== -1) {
-      contentSize.images += objectSize || 0
+      contentSize.images += calculateFastlyImageSize(req)
     }
-  })
+  });
 
   return contentSize
+}
+
+/**
+ * Finds fastly io information in Header.
+ *
+ * @param header Header entry to check for fastly-io-info.
+ */
+function findFastlyHeaders(header: string): boolean {
+  return !!header.match(/^fastly-io-info/)
+}
+
+/**
+ * Calculates the difference of the input file size (after optimization) and output file size (before optimization).
+ *
+ * @param req Request object.
+ */
+function calculateFastlyImageSize(req: any): number {
+  const headers: Array<string> = req.headers.response
+
+  // can't convert to Headers object, therefore we need to find in the array
+  const fastlyHeaders = headers.find(findFastlyHeaders)
+  if (!fastlyHeaders) {
+    return 0
+  }
+
+  const fastlyHeader = fastlyHeaders.split(': ')
+  const match = fastlyHeader[1].match(/ifsz=(\d*).*ofsz=(\d*)/)
+
+  if (!match) {
+    return 0
+  }
+
+  const inputFileSize = parseInt(match[1])
+  const outputFileSize = parseInt(match[2])
+
+  return inputFileSize - outputFileSize
 }
 
 /**

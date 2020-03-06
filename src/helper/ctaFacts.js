@@ -48,7 +48,7 @@ export function categorizeIOFact(competitorContentSize, speedKitContentSize, isS
   const imageOptFact = ['Optimize Images']
 
   if (competitorContentSize && speedKitContentSize) {
-    const imageSizeDiff = competitorContentSize.images - speedKitContentSize.images
+    const imageSizeDiff = speedKitContentSize.images
     if (isSpeedKitComparison && imageSizeDiff > 0) {
       imageOptFact.push(`By resizing (<i>responsiveness</i>) and encoding (<i>WebP</i> & <i>Progessive JPEG</i>) <strong>images</strong>, Speed Kit saves <strong>${formatFileSize(imageSizeDiff)}</strong> of data.`)
       applied.push(imageOptFact)
