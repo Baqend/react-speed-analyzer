@@ -129,6 +129,7 @@ export class ComparisonWorker implements TestListener {
   async handleTestFinished(test: model.TestResult): Promise<void> {
     try {
       const comparison = await this.findComparisonByTest(test)
+      if (!comparison) throw new Error('Could not find comparison by test')
 
       this.db.log.info(`Test finished: ${test.id}`)
       this.next(comparison).catch((err) => this.db.log.error(err.message, err))
@@ -192,7 +193,7 @@ export class ComparisonWorker implements TestListener {
     return testOverview.puppeteer !== null
   }
 
-  private async findComparisonByTest(test: model.TestResult): Promise<model.TestOverview> {
+  private async findComparisonByTest(test: model.TestResult): Promise<model.TestOverview | null> {
     const testId = test.id
     const comparison = await this.db.TestOverview.find()
       .where({

@@ -25,7 +25,7 @@ export class ConfigCache {
    */
   async get(url: string, mobile: boolean): Promise<Config | null> {
     const anHourAgo = new Date(Date.now() - 1000 * 60 * 60)
-    const cachedConfig: model.CachedConfig = await this.db.CachedConfig.find()
+    const cachedConfig: model.CachedConfig | null = await this.db.CachedConfig.find()
       .equal('url', url)
       .equal('mobile', mobile)
       .greaterThanOrEqualTo('updatedAt', anHourAgo)

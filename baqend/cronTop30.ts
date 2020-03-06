@@ -184,7 +184,7 @@ function createMailTemplate(bulkTestMap: Map<model.BulkTest, model.BulkTest>): s
  * @param db The Baqend instance.
  * @param bulkTest The latest bulk test .
  */
-function loadPreviousBulkTest(db: baqend, bulkTest: model.BulkTest): Promise<model.BulkTest> {
+function loadPreviousBulkTest(db: baqend, bulkTest: model.BulkTest): Promise<model.BulkTest | null> {
   return db.BulkTest.find()
     .eq('url', bulkTest.url)
     .eq('createdBy', bulkTest.createdBy)
@@ -216,6 +216,8 @@ async function sendSuccessMail(db: baqend, bulkComparison: model.BulkComparison)
   const loadPromises = bulkComparison.multiComparisons.map(async (bulkTest) => {
     await bulkTest.load({ refresh: true })
     const previous = await loadPreviousBulkTest(db, bulkTest)
+
+    if (!previous) throw new Error('Could not load previous bulk test for: ' + bulkTest)
 
     return [previous, bulkTest] as [model.BulkTest, model.BulkTest]
   })

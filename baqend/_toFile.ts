@@ -6,7 +6,6 @@ const MAX_DOWNLOAD_RETRIES = 10
 
 interface ResourceInfo {
   buffer: Buffer
-  size: number
   mimeType: string
 }
 
@@ -18,9 +17,8 @@ function dataUriToResourceInfo(dataUri: string): ResourceInfo {
 
   const [, mimeType, data] = match
   const buffer = new Buffer(data, 'base64')
-  const size = buffer.length
 
-  return { buffer, size, mimeType }
+  return { buffer, mimeType }
 }
 
 async function httpUriToResourceInfo(db: baqend, url: string, maxRetries = MAX_DOWNLOAD_RETRIES): Promise<ResourceInfo> {
@@ -41,7 +39,7 @@ async function httpUriToResourceInfo(db: baqend, url: string, maxRetries = MAX_D
   const mimeType = response.headers.get('content-type') || 'application/octet-stream'
   const buffer = await response.buffer()
 
-  return { buffer, size: buffer.length, mimeType }
+  return { buffer, mimeType }
 }
 
 /**
@@ -73,8 +71,8 @@ async function uriToResourceInfo(db: baqend, uri: string): Promise<ResourceInfo>
  * @returns {Promise} a Promise that resolves to the uploaded file
  */
 export async function toFile(db: baqend, uri: string, target: string, maxRetries: number = 10): Promise<binding.File> {
-  const { buffer: data, mimeType, size } = await uriToResourceInfo(db, uri)
+  const { buffer: data, mimeType } = await uriToResourceInfo(db, uri)
   const file = new db.File({ path: target })
 
-  return file.upload({ mimeType, size, type: 'buffer', data, force: true })
+  return file.upload({ mimeType, type: 'buffer', data, force: true })
 }
