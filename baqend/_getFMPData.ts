@@ -45,13 +45,14 @@ function getFMPFromWebPagetest(data: WptView): number {
 function parseCandidates(db: baqend, data: Array<[number, number]>): model.Candidate[] {
   const diffs = [] as model.Candidate[]
   if (data.length === 1) {
-    const candidate = new db.Candidate()
+    const candidate: model.Candidate = new db.Candidate()
     candidate.visualCompleteness = 100
     candidate.deltaVC = data[0][1]
     candidate.startTime = 0
     candidate.endTime = Math.round(data[0][0] * 1000)
     candidate.wptFMP = null
-    return candidate
+    diffs.push(candidate)
+    return diffs
   }
 
   let lastVisualProgress = 0

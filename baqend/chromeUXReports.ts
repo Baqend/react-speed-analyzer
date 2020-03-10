@@ -198,7 +198,7 @@ async function getOriginFromReports(db: baqend, data: QueriedParams): Promise<st
  * @param data
  * @returns {Promise<T>}
  */
-async function loadExisting(db: baqend, data: QueriedParams): Promise<model.ChromeUXReport> {
+async function loadExisting(db: baqend, data: QueriedParams): Promise<model.ChromeUXReport | null> {
   const {url, month, year} = data;
   const host = new URL(url).host;
   db.log.info('url to look for', url);
