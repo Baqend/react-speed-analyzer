@@ -12,7 +12,7 @@ export async function post(db: baqend, req: Request, res: Response) {
   const { comparisonWorker, comparisonFactory, puppeteer } = bootstrap(db)
 
   const callPuppeteer = async (params: TestParams, retries: number) => {
-    const puppeteerInfo = await puppeteer.analyze(params.url, params.mobile, params.location, true, params.preload)
+    const puppeteerInfo = await puppeteer.analyze(params.url, params.mobile, params.location, true, params.preload, params.app)
     // Retry Puppeteer analysis if Speed Kit is excepted to be installed but no installation was found.
     // Only consider this error when it is not the last retry.
     if (params.speedKitExpected && !puppeteerInfo.speedKit && retries <= MAX_PUPPETEER_RETRIES - 1) {

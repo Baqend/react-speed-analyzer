@@ -8,7 +8,6 @@ import {
   Status,
 } from './_Status'
 import { parallelize } from './_helpers'
-import { TestParams } from './_TestParams'
 
 export class BulkComparisonWorker implements MultiComparisonListener {
   constructor(
@@ -63,7 +62,7 @@ export class BulkComparisonWorker implements MultiComparisonListener {
 
       // Start next multi comparison
       const { runs, ...params } = bulkComparison.comparisonsToStart[nextIndex]
-      const puppeteer = await this.getPuppeteerInfo(params.url, params.mobile, params.location, params.preload)
+      const puppeteer = await this.getPuppeteerInfo(params.url, params.mobile, params.location, params.preload, params.app)
 
       const multiComparison = await this.multiComparisonFactory.create(puppeteer, params, createdBy, runs)
 
@@ -90,10 +89,10 @@ export class BulkComparisonWorker implements MultiComparisonListener {
   /**
    * Gets the Puppeteer information of a given url
    */
-  async getPuppeteerInfo(url: string, mobile: boolean, location: string, preload: boolean): Promise<model.Puppeteer | null> {
+  async getPuppeteerInfo(url: string, mobile: boolean, location: string, preload: boolean, app: string): Promise<model.Puppeteer | null> {
     const { puppeteer } = bootstrap(this.db)
     try {
-      return await this.callPuppeteerWithRetries(puppeteer, url, mobile, location, preload)
+      return await this.callPuppeteerWithRetries(puppeteer, url, mobile, location, preload, app)
     } catch ({ message, stack }) {
       this.db.log.error(`Puppeteer failed for ${url}: ${message}`, { stack })
       return null
@@ -134,14 +133,15 @@ export class BulkComparisonWorker implements MultiComparisonListener {
     mobile: boolean,
     location: string,
     preload: boolean,
+    app: string,
     retries = 0
   ): Promise<model.Puppeteer> {
     try {
-      return await puppeteer.analyze(url, mobile, location, true, preload)
+      return await puppeteer.analyze(url, mobile, location, true, preload, app)
     } catch (err) {
       if (retries < 3) {
         await new Promise(resolve => setTimeout(() => resolve(), 5000))
-        return this.callPuppeteerWithRetries(puppeteer, url, mobile, location, preload, retries + 1)
+        return this.callPuppeteerWithRetries(puppeteer, url, mobile, location, preload, app, retries + 1)
       }
 
       throw err

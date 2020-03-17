@@ -1,5 +1,6 @@
 import { model } from 'baqend'
 import { MultiTestParams, Priority, TestParams } from './_TestParams'
+import credentials from './credentials'
 
 export const DEFAULT_SINGLE_PRIORITY = Priority.HIGHEST
 export const DEFAULT_BULK_PRIORITY = Priority.LOWEST
@@ -13,6 +14,7 @@ export const DEFAULT_TIMEOUT = 30
  */
 export const DEFAULT_PARAMS: Required<TestParams> = {
   url: '',
+  app: credentials.app,
   activityTimeout: DEFAULT_ACTIVITY_TIMEOUT,
   caching: false,
   location: DEFAULT_LOCATION,

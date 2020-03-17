@@ -148,6 +148,7 @@ export class Puppeteer {
     location: string = 'eu',
     thirdParty: boolean = true,
     preload: boolean = false,
+    app: string = credentials.app,
     timeout: number = DEFAULT_TIMEOUT,
   ): Promise<model.Puppeteer> {
     try {
@@ -175,7 +176,7 @@ export class Puppeteer {
       const resources = data.resources!
       const isImageOptimization = false // location.includes('-docker') // FIXME only active for new test setup
       const smartConfig =
-        await this.configGenerator.generateSmart(normalizedUrl, mobile, thirdParty, isImageOptimization, preload, {
+        await this.configGenerator.generateSmart(normalizedUrl, mobile, thirdParty, isImageOptimization, preload, app, {
           host,
           domains,
           resources,

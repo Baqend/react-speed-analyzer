@@ -54,6 +54,7 @@ export class ConfigGenerator {
    * @param {boolean} thirdParty true if third party domains should be added to the config, false otherwise.
    * @param {boolean} imageOptimization true if images should be optimized, false otherwise.
    * @param {boolean} preload true if css and fonts should be preloaded, false otherwise.
+   * @param {string} app The name of the Baqend app to connect to.
    * @param {string} host The host of the tested site.
    * @param {string[]} domains The domains loaded by the tested site.
    * @param {PuppeteerResource[]} resources The resources loaded by the tested site.
@@ -65,9 +66,10 @@ export class ConfigGenerator {
     thirdParty: boolean,
     imageOptimization: boolean,
     preload: boolean,
+    app: string,
     { host, domains, resources }: { host: string, domains: string[], resources: PuppeteerResource[] }): Promise<Config>
   {
-    const configBuilder = new ConfigBuilder(credentials.app, mobile)
+    const configBuilder = new ConfigBuilder(app, mobile)
 
     // Add image optimization
     if (imageOptimization) {

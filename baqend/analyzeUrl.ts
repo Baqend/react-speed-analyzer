@@ -78,9 +78,9 @@ export async function analyzeUrls(
     return new Map(map)
   }
 
-  const timeout: number = 25_000;
+  const timeout: number = 25_000
   const { puppeteer } = bootstrap(db)
-  const analyses = queries.map(query => forMap(query, puppeteer.analyze(query, mobile, location, true, false, timeout)))
+  const analyses = queries.map(query => forMap(query, puppeteer.analyze(query, mobile, location, true, false, undefined, timeout)))
   const map = await Promise.all(analyses)
 
   return new Map(map)

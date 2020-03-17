@@ -18,6 +18,11 @@ export interface TestParams {
   url: string
 
   /**
+   * The name of the Baqend app to connect to.
+   */
+  app?: string
+
+  /**
    * The activity timeout of the test.
    */
   activityTimeout?: number
