@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import ConfigForm from 'components/ConfigForm/ConfigForm'
 
 import DeviceContainer from 'components/DeviceContainer/DeviceContainer'
+import Header from '../../../../components/Header/Header';
 
 class StartingScreenComponent extends Component {
   renderForm() {
@@ -28,7 +29,7 @@ class StartingScreenComponent extends Component {
   render() {
     return (
       <div className="loading-screen flex-column flex-grow-1 flex items-center">
-        <div className="logo"></div>
+        <Header changeColorOnResize={true} />
         <DeviceContainer
           mobile={this.props.config.mobile}
           content={

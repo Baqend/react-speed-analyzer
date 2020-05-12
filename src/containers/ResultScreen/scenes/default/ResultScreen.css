@@ -28,4 +28,7 @@
     }
   }
 
+  .results-header {
+    background-image: linear-gradient(113deg, #1201e8, #e808f2 102%);
+  }
 }

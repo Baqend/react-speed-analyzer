@@ -1,28 +1,37 @@
 @import "../../styles/_variables.css";
 
-.device__laptop, .device__phone {
-  .config__form {
+.config__form {
     &-input-wrapper {
        display: flex;
        flex-direction: column;
        padding: 0 8px;
+       @media(--breakpoint-medium-device) {
+           flex-direction: row;
+           flex-wrap: wrap;
+       }
+       @media(--breakpoint-medium-device) {
+           padding: 0 48px;
+       }
+       @media(--breakpoint-large-device) {
+          padding: 0 96px;
+       }
      }
     &-input {
-       font-size: 21px;
+       font-size: 20px;
        border-radius: 4px;
        background-color: rgba(0, 0, 0, 0.24);
        color: var(--white);
        border: none;
        font-weight: 400;
        flex-grow: 1;
-       padding: 14px 16px;
-    &.no-text {
-       color: transparent;
-       caret-color: white;
-     }
-    &::placeholder {
-       color: rgba(255, 255, 255, 0.64);
-     }
+       padding: 14px 45px 14px 16px;
+       &.no-text {
+           color: transparent;
+           caret-color: white;
+       }
+       &::placeholder {
+           color: rgba(255, 255, 255, 0.64);
+       }
     }
     &-submit {
        display: flex;
@@ -39,6 +48,10 @@
        margin-left: 0;
        background: none;
        color: color(#fff);
+       @media(--breakpoint-medium-device) {
+           margin-top: 0;
+           margin-left: 10px;
+       }
     }
     &-settings {
        border-radius: 50%;
@@ -47,13 +60,30 @@
        border: none;
        opacity: 0.8;
        cursor: pointer;
-    &:hover {
-       opacity: 1;
-     }
+       &:hover {
+         opacity: 1;
+       }
+    }
+    .config__form-input-wrapper {
+        position: relative;
+    }
+    .config__form-submit-wrapper {
+        position: absolute;
+        top: 4px;
+        right: 8px;
+        @media(--breakpoint-medium-device) {
+            right: 198px;
+        }
+        @media(--breakpoint-large-device) {
+            right: 248px;
+        }
     }
     .advanced {
       width: 100%;
       margin: 0 auto;
+      @media(--breakpoint-medium-device) {
+           max-width: 75%;
+      }
       .CodeMirror {
         height: auto;
         font-size: 16px;
@@ -98,35 +128,17 @@
         }
       }
     }
-  }
 }
-
-.device__laptop {
-  .config__form {
-    &-input-wrapper {
-        @media(--breakpoint-medium-device) {
-            flex-direction: row;
-            flex-wrap: wrap;
+.device__phone {
+    .config__form {
+        &-input-wrapper {
+            flex-direction: column;
         }
-        @media(--breakpoint-medium-device) {
-            padding: 0 48px;
-        }
-        @media(--breakpoint-large-device) {
-            padding: 0 96px;
+        &-submit {
+            margin-top: 15px;
+            margin-left: 0;
         }
     }
-    &-submit {
-      @media(--breakpoint-medium-device) {
-        margin-top: 0;
-        margin-left: 10px;
-      }
-    }
-    .advanced {
-      @media(--breakpoint-medium-device) {
-        max-width: 75%;
-      }
-    }
-  }
 }
 
 .checkbox-custom {

@@ -90,7 +90,7 @@ class Result extends Component {
       <div>
         <div className="flex items-center relative">
           {(factor >= 1.1 && mainMetric !== 'ttfb') && (
-            <div className="mainFactor text-center" title={tooltipText[mainMetric]}
+            <div className="main-factor text-center" title={tooltipText[mainMetric]}
               style={{ display: 'flex'}}>
               {factor}x
               <br/>
@@ -241,8 +241,8 @@ class Result extends Component {
   render() {
     return (
       <div>
-        {this.renderHeader()}
-        {this.renderVideos()}
+        {/*{this.renderHeader()}*/}
+        {/*{this.renderVideos()}*/}
         <div className="ph2 ph6-ns">
           <hr />
           {/*<h3 className="text-center mt3 mb0">Industry Comparison</h3>*/}

@@ -2,14 +2,11 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
 import Toggle from 'react-toggle'
-// import CodeMirror from 'react-codemirror'
+
 import stringifyObject from 'lib/stringify-object'
 import { Controlled as CodeMirror } from 'react-codemirror2'
 
 import { generateDefaultConfig } from '../../helper/configHelper'
-import Spinner from 'components/Spinner'
-
-import arrow from '../../assets/arrow_right.svg'
 import settings from 'assets/settings.svg'
 
 import './ConfigForm.css'
@@ -252,21 +249,12 @@ class ConfigFormComponent extends Component {
               placeholder="https://www.example.com"
               noValidate
             />
+            <div className="config__form-submit-wrapper flex">
+              {this.props.showConfigToggle && (<a onClick={this.toggleConfig} className="config__form-settings flex justify-center items-center mr2" style={{ width: 'auto', background: 'none' }}>
+                <img width="24" src={settings} alt="settings" />
+              </a>)}
+            </div>
             <button className="config__form-submit" type="submit">START TEST</button>
-            {/*<div className="config__form-submit-wrapper flex">*/}
-            {/*  {this.props.showConfigToggle && (<a onClick={this.toggleConfig} className="config__form-settings flex justify-center items-center mr2" style={{ width: 'auto', background: 'none' }}>*/}
-            {/*    <img width="24" src={settings} alt="settings" />*/}
-            {/*  </a>)}*/}
-            {/*  <button className="config__form-submit flex justify-center items-center" type="submit">*/}
-            {/*    {this.props.isInitiated ? (*/}
-            {/*      <div className="spinner__wrapper" style={{ width: 25, height: 25 }}>*/}
-            {/*        <Spinner />*/}
-            {/*      </div>*/}
-            {/*    ) : (*/}
-            {/*      <img src={arrow} alt="arrow" />*/}
-            {/*    )}*/}
-            {/*  </button>*/}
-            {/*</div>*/}
           </div>
           {this.state.showConfig &&
             <div className="mv2 flex-grow-1 flex flex-column justify-between">

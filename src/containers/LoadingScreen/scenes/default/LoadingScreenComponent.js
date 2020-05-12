@@ -5,12 +5,13 @@ import DeviceContainer from 'components/DeviceContainer/DeviceContainer'
 
 import CustomerSlider from '../../components/CustomerSlider/CustomerSlider'
 import CircularProgress from '../../components/CircularProgress/CircularProgress'
+import Header from '../../../../components/Header/Header';
 
 class LoadingScreenComponent extends Component {
   render() {
     return (
       <div className="loading-screen flex-column flex-grow-1 flex items-center">
-        <div className="logo"></div>
+        <Header changeColorOnResize={true} />
         <DeviceContainer
           mobile={this.props.config.mobile}
           bgImage={this.props.result.testOverview.psiScreenshot}

@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
-import './Result.css'
+import './ResultVideos.css'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlay } from '@fortawesome/free-solid-svg-icons'
 import { isDeviceIOS, isIE, isEdge } from 'helper/utils'
 
 class ResultVideos extends Component {
@@ -109,7 +111,7 @@ class ResultVideos extends Component {
     // poster={`data:${data.mime_type};base64,${data.data.replace(/_/g, '/').replace(/-/g, '+')}`}
     return (
       <div className="flex justify-center">
-        <div className={`w-50 pa2 pv4-ns ph6-ns ${this.props.testOverview.mobile ? 'mobile' : ''}`}>
+        <div className={`w-50 pa2 pv4-ns ${this.props.testOverview.mobile ? 'mobile' : ''}`}>
           <div className="video__wrapper">
             <div className="video__wrapper-inner">
               <div className="relative">
@@ -126,7 +128,11 @@ class ResultVideos extends Component {
                 {/*<div style={{ backgroundImage: `url(data:${data.mime_type};base64,${data.data.replace(/_/g, '/').replace(/-/g, '+')})`}}></div>*/}
 
                 {this.competitorVideo && this.competitorVideo.paused && (
-                  <div className="video__wrapper-play" onClick={() => this.playVideos('competitorVideo')}>►</div>
+                  <div className={"video__wrapper-play"}>
+                    <div className="video__wrapper-play-inner blue" onClick={() => this.playVideos('competitorVideo')}>
+                      <FontAwesomeIcon icon={ faPlay } />
+                    </div>
+                  </div>
                 )}
                 <div className="video__wrapper-progress">
                   <div className="video__wrapper-progress-inner">
@@ -144,7 +150,7 @@ class ResultVideos extends Component {
           </div>
         </div>
         { !speedKitError && (
-          <div className={`w-50 speedKitVideo pa2 pv4-ns ph6-ns ${this.props.testOverview.mobile ? 'mobile' : ''}`}>
+          <div className={`w-50 pa2 pv4-ns ${this.props.testOverview.mobile ? 'mobile' : ''}`}>
             <div className="video__wrapper">
               <div className="video__wrapper-inner">
                 <div className="relative">
@@ -160,7 +166,11 @@ class ResultVideos extends Component {
                     src={speedKitVideoPath && `https://${process.env.REACT_APP_BAQEND}.app.baqend.com/v1${speedKitVideoPath}`} />
                   {/*<div style={{ backgroundImage: `url(data:${data.mime_type};base64,${data.data.replace(/_/g, '/').replace(/-/g, '+')})`}}></div>*/}
                   {this.speedKitVideo && this.speedKitVideo.paused && (
-                    <div className="video__wrapper-play" onClick={() => this.playVideos('speedKitVideo')}>►</div>
+                    <div className={"video__wrapper-play"}>
+                      <div className="video__wrapper-play-inner purple" onClick={() => this.playVideos('speedKitVideo')}>
+                        <FontAwesomeIcon icon={faPlay} />
+                      </div>
+                    </div>
                   )}
                   <div className="video__wrapper-progress">
                     <div className="video__wrapper-progress-inner">

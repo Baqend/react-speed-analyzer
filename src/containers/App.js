@@ -9,7 +9,6 @@ import '../styles/index.css'
 
 import createStore from '../store/store'
 
-import Navbar from '../components/Navbar/Navbar'
 import Footer from '../components/Footer/Footer'
 
 import StartingScreen from './StartingScreen'
@@ -61,7 +60,6 @@ class App extends Component {
               )}/>
               <Route exact path="/test/:testId/result" render={props => (
                 <div id="main">
-                  <Navbar />
                   <div className="content">
                     <ResultScreen { ...props } />
                   </div>

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 
 import './ResultScreen.css'
 
-// import Modal from '../Modal/Modal'
 import Modal from 'react-modal'
 
 import Result from '../../components/Result/Result'
@@ -14,12 +13,10 @@ import SpeedKitCarousel from '../../components/SpeedKitCarousel/SpeedKitCarousel
 import SpeedKitAnalyzer from '../../components/SpeedKitAnalyzer/SpeedKitAnalyzer'
 import SpeedKitBanner from '../../components/SpeedKitBanner/SpeedKitBanner'
 
-import ConfigForm from 'components/ConfigForm/ConfigForm'
 import ContactForm from 'components/ContactForm/ContactForm'
 
-import rocket from 'assets/img/rocket-outline-white.png'
-
-import {calculateFactor, isSpeedKitInstalledCorrectly} from "../../../../helper/resultHelper"
+import {calculateFactor} from "../../../../helper/resultHelper"
+import ResultHeader from '../../components/Result/ResultHeader'
 
 Modal.setAppElement('#speed-kit-analyzer')
 
@@ -27,20 +24,9 @@ class ResultScreenComponent extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      showDetails: props.showDetails,
-      showConfig: props.showConfig,
-      showAdvancedConfig: props.showAdvancedConfig,
       showModal: false,
       isIFrame: props.isIFrame,
     }
-  }
-
-  toggleDetails = () => {
-    this.setState({ showDetails: !this.state.showDetails })
-  }
-
-  toggleConfig = () => {
-    this.setState({ showConfig: !this.state.showConfig })
   }
 
   toggleModal = () => {
@@ -49,22 +35,6 @@ class ResultScreenComponent extends Component {
 
   closeModal = () => {
     this.setState({ showModal: false })
-  }
-
-  renderForm() {
-    return (
-      <div className="container pa2">
-        <div className="mb1">
-          <ConfigForm
-            config={this.props.config}
-            showConfig={this.state.showConfig}
-            showAdvancedConfig={this.state.showAdvancedConfig}
-            onToggleAdvancedConfig={this.props.onToggleAdvancedConfig}
-            onSubmit={this.props.onSubmit}
-          />
-        </div>
-      </div>
-    )
   }
 
   renderResults() {
@@ -136,28 +106,13 @@ class ResultScreenComponent extends Component {
   }
 
   render() {
-    const { competitorError, testOverview } = this.props.result
-    const { isSpeedKitComparison, speedKitVersion, configAnalysis } = testOverview
+    const { competitorError } = this.props.result
 
     return (
-      <div className="flex results__wrapper pt7">
-        <div className="flex-grow-1 flex flex-column" style={{ overflow: 'hidden' }}>
-          {this.renderForm()}
-          {isSpeedKitComparison && (
-            <div className="container text-center" style={{ padding: '0px 16px 16px 16px' }}>
-              {isSpeedKitInstalledCorrectly(configAnalysis) ? (
-                <div className="flex justify-center" style={{ alignItems: 'center' }}>
-                  <h3>You are using Speed Kit {speedKitVersion}</h3>
-                  <img alt="Rocket" src={rocket} style={{paddingLeft: '8px', height: 30}} />
-                </div>
-              ) : (
-                `Thank you for installing Speed Kit, the configuration is not done yet. Please see below for more information.`
-              )}
-            </div>
-          )}
-          <div className="flex-grow-1 flex flex-column results" style={{marginTop: competitorError ? 0 : 80, animationDelay: '0.6s', transition: 'margin 0.5s ease' }}>
-            {this.props.result.isFinished && this.renderResults()}
-          </div>
+      <div className={"flex-column flex-grow-1 flex"} style={{ overflow: 'hidden' }}>
+        <ResultHeader { ...this.props } />
+        <div className="flex-grow-1 flex flex-column results" style={{marginTop: competitorError ? 0 : 80, animationDelay: '0.6s', transition: 'margin 0.5s ease' }}>
+          {this.props.result.isFinished && this.renderResults()}
         </div>
         {this.renderContactFormModal()}
       </div>
@@ -166,8 +121,6 @@ class ResultScreenComponent extends Component {
 }
 
 ResultScreenComponent.propTypes = {
-  // mainMetric: PropTypes.string,
-  // speedKitError: PropTypes.bool.isRequired,
   onToggleAdvancedConfig: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
 }

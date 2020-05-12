@@ -1,0 +1,15 @@
+@import "../../styles/_variables.css";
+
+.logo {
+    width: 260px;
+    height: 50px;
+    margin-top: 42px;
+    background: url("../../assets/speedKitLogoWhite.svg") no-repeat center;
+    background-size: 240px;
+    &.resize {
+        @media(--breakpoint-medium-device) {
+            background: url("../../assets/speedKitLogoBlack.svg") no-repeat center;
+            background-size: 240px;
+        }
+    }
+}
