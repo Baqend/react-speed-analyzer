@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import ReactTooltip from 'react-tooltip'
-
+import './ResultMetrics.css'
 import { calculateFactor, calculateAbsolute } from 'helper/resultHelper'
 
 const userMetrics = [
@@ -58,7 +58,6 @@ class ResultMetrics extends Component {
     const speedKitData = this.props.speedKitTest.firstView
     return (
       <div className="result__details-metrics">
-        <h3 className="text-center mt5">User-perceived Performance</h3>
         {userMetrics.map((metric, index) => {
           const factor = calculateFactor(competitorData[metric.name], speedKitData[metric.name])
           const absolute = calculateAbsolute(competitorData[metric.name], speedKitData[metric.name])
@@ -66,22 +65,24 @@ class ResultMetrics extends Component {
             <div key={index} className="flex justify-center">
               <div className="w-100">
                 {index !== 0 && <hr/>}
-                <div className="flex items-center pt1 pb1 border-top">
-                  <div className="w-third text-center">
+                <div className="flex flex-row items-center pt3 pb3">
+                  <div className="metric-column text-center">
                     {competitorData[metric.name] ? (
                       <div className="metricValue">{competitorData[metric.name]} ms</div>
                     ):(<div className="metricValue">-</div>)}
                   </div>
-                  <div className="w-third text-center">
+                  <div className="factor-column text-center">
                     <div data-tip data-for={metric.name}>
-                      {(absolute && factor) && <div className="factor">{absolute} {factor > 1 ? 'Faster' : ''} ({factor}x)</div>}
                       <div className="metricLabel">{metric.label}</div>
+                      {(absolute && factor) && <div className="faster">
+                        {absolute} {factor > 1 ? 'Faster' : ''} (<span className="purple factor">{factor}x</span>)
+                      </div>}
                     </div>
                     <ReactTooltip id={metric.name} type='dark' place='top' effect='solid'>
                       <span>{metric.tooltip}</span>
                     </ReactTooltip>
                   </div>
-                  <div className="w-third text-center">
+                  <div className="metric-column text-center">
                     {speedKitData[metric.name] ? (
                       <div className="metricValue">{speedKitData[metric.name]} ms</div>
                     ):(<div className="metricValue">-</div>)}
@@ -91,7 +92,7 @@ class ResultMetrics extends Component {
             </div>
           )
         })}
-        <h3 className="text-center mt5">Technical Performance Metrics</h3>
+        <hr/>
         {technicalMetrics.map((metric, index) => {
           const factor = calculateFactor(competitorData[metric.name], speedKitData[metric.name])
           const absolute = calculateAbsolute(competitorData[metric.name], speedKitData[metric.name])
@@ -99,22 +100,24 @@ class ResultMetrics extends Component {
             <div key={index} className="flex justify-center">
               <div className="w-100">
                 {index !== 0 && <hr/>}
-                <div className="flex items-center pt1 pb1 border-top">
-                  <div className="w-third text-center">
+                <div className="flex items-center pt3 pb3">
+                  <div className="metric-column text-center display-desktop">
                     {competitorData[metric.name] ? (
                       <div className="metricValue">{competitorData[metric.name]} ms</div>
                     ):(<div className="metricValue">-</div>)}
                   </div>
-                  <div className="w-third text-center">
+                  <div className="factor-column text-center display-desktop">
                     <div data-tip data-for={metric.name}>
-                      {(absolute && factor) && <div className="factor">{absolute} {factor > 1 ? 'Faster' : ''} ({factor}x)</div>}
                       <div className="metricLabel">{metric.label}</div>
+                      {(absolute && factor) && <div className="faster">
+                        {absolute} {factor > 1 ? 'Faster' : ''} (<span className="purple factor">{factor}x</span>)
+                      </div>}
                     </div>
                     <ReactTooltip id={metric.name} type='dark' place='top' effect='solid'>
                       <span>{metric.tooltip}</span>
                     </ReactTooltip>
                   </div>
-                  <div className="w-third text-center">
+                  <div className="metric-column text-center display-desktop">
                     {speedKitData[metric.name] ? (
                       <div className="metricValue">{speedKitData[metric.name]} ms</div>
                     ):(<div className="metricValue">-</div>)}
@@ -124,17 +127,17 @@ class ResultMetrics extends Component {
             </div>
           )
         })}
-        <h3 className="text-center mt5">WebPagetest Waterfalls</h3>
-        <hr />
-        <div className="flex items-center border-top">
-          <div className="w-50 tc pt1 pb1">
-            <a href={createWaterfallLink(this.props.competitorTest)} target="_blank" rel="noopener noreferrer" className="">Without Speed Kit</a>
-          </div>
-          <div className="w-50 tc pt1 pb1" style={{ borderLeft: '1px solid #E8E8E8' }}>
-            <a href={createWaterfallLink(this.props.speedKitTest)} target="_blank" rel="noopener noreferrer" className="">With Speed Kit</a>
-          </div>
-        </div>
-        <hr />
+        {/*<h3 className="text-center mt5">WebPagetest Waterfalls</h3>*/}
+        {/*<hr />*/}
+        {/*<div className="flex items-center border-top">*/}
+        {/*  <div className="w-50 tc pt1 pb1">*/}
+        {/*    <a href={createWaterfallLink(this.props.competitorTest)} target="_blank" rel="noopener noreferrer" className="">Without Speed Kit</a>*/}
+        {/*  </div>*/}
+        {/*  <div className="w-50 tc pt1 pb1" style={{ borderLeft: '1px solid #E8E8E8' }}>*/}
+        {/*    <a href={createWaterfallLink(this.props.speedKitTest)} target="_blank" rel="noopener noreferrer" className="">With Speed Kit</a>*/}
+        {/*  </div>*/}
+        {/*</div>*/}
+        {/*<hr />*/}
         {/*<div className="flex items-center pt1 pb0 border-top mt3">
           <div className="w-100 text-center pa1">
             <a className="btn btn-ghost" href="">Get Full Report by Email</a>
@@ -148,18 +151,17 @@ class ResultMetrics extends Component {
     const competitorData = this.props.competitorTest.firstView
     return (
       <div className="result__details-metrics">
-        <h3 className="text-center mt5">User-perceived Performance</h3>
         <hr />
         {userMetrics.map((metric, index) => (
           <div key={index} className="flex justify-center">
             <div className="w-100">
               {index !== 0 && <hr/>}
               <div data-tip data-for={metric.name}>
-                <div className="flex items-center border-top">
-                  <div className="w-50 tr pt2 pb2 pr2">
+                <div className="flex flex-column items-center pt1 pb1">
+                  <div className="pt1 pb1">
                     <div className="metricValue faded">{metric.label}</div>
                   </div>
-                  <div className="w-50 tl pt2 pb2 pl2 speedKitVideo">
+                  <div>
                     {competitorData[metric.name] ? (
                       <div className="metricValue">{competitorData[metric.name]} ms</div>
                     ):(<div className="metricValue">-</div>)}
@@ -172,19 +174,17 @@ class ResultMetrics extends Component {
             </div>
           </div>
         ))}
-        <hr />
-        <h3 className="text-center mt5">Technical Performance Metrics</h3>
         <hr />
         {technicalMetrics.map((metric, index) => (
           <div key={index} className="flex justify-center">
             <div className="w-100">
               {index !== 0 && <hr/>}
               <div data-tip data-for={metric.name}>
-                <div className="flex items-center border-top">
-                  <div className="w-50 tr pt2 pb2 pr2">
+                <div className="flex flex-column items-center pt1 pb1">
+                  <div className="pt1 pb1">
                     <div className="metricValue faded">{metric.label}</div>
                   </div>
-                  <div className="w-50 tl pt2 pb2 pl2 speedKitVideo">
+                  <div>
                     {competitorData[metric.name] ? (
                       <div className="metricValue">{competitorData[metric.name]} ms</div>
                     ):(<div className="metricValue">-</div>)}
@@ -197,15 +197,15 @@ class ResultMetrics extends Component {
             </div>
           </div>
         ))}
-        <hr />
-        <h3 className="text-center mt5">WebPagetest Waterfalls</h3>
-        <hr />
-        <div className="flex items-center border-top">
-          <div className="w-100 tc pt1 pb1">
-            <a href={createWaterfallLink(this.props.competitorTest)} target="_blank" rel="noopener noreferrer" className="">Your Website</a>
-          </div>
-        </div>
-        <hr />
+        {/*<hr />*/}
+        {/*<h3 className="text-center mt5">WebPagetest Waterfalls</h3>*/}
+        {/*<hr />*/}
+        {/*<div className="flex items-center border-top">*/}
+        {/*  <div className="w-100 tc pt1 pb1">*/}
+        {/*    <a href={createWaterfallLink(this.props.competitorTest)} target="_blank" rel="noopener noreferrer" className="">Your Website</a>*/}
+        {/*  </div>*/}
+        {/*</div>*/}
+        {/*<hr />*/}
       </div>
     )
   }

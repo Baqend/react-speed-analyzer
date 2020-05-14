@@ -4,7 +4,6 @@
     &-input-wrapper {
        display: flex;
        flex-direction: column;
-       padding: 0 8px;
        @media(--breakpoint-medium-device) {
            flex-direction: row;
            flex-wrap: wrap;
@@ -22,7 +21,6 @@
        background-color: rgba(0, 0, 0, 0.24);
        color: var(--white);
        border: none;
-       font-weight: 400;
        flex-grow: 1;
        padding: 14px 45px 14px 16px;
        &.no-text {

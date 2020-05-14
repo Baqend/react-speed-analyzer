@@ -244,10 +244,9 @@ class Result extends Component {
         {/*{this.renderHeader()}*/}
         {/*{this.renderVideos()}*/}
         <div className="ph2 ph6-ns">
-          <hr />
           {/*<h3 className="text-center mt3 mb0">Industry Comparison</h3>*/}
-          {this.renderScale()}
-          {this.renderDetails()}
+          {/*{this.renderScale()}*/}
+          {/*{this.renderDetails()}*/}
         </div>
       </div>
     )

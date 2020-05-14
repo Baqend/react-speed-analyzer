@@ -1,0 +1,97 @@
+@import "../../../../styles/_variables.css";
+
+.result-body {
+  margin-top: -30px;
+  background: #f4f4f4;
+  color: #444;
+  @media(--breakpoint-small-device) {
+    margin-top: -70px;
+  }
+  @media(--breakpoint-medium-device) {
+    margin-top: -100px;
+  }
+  @media(--breakpoint-large-device) {
+    margin-top: -180px;
+  }
+}
+
+.result-body-inner {
+  margin-top: 14px;
+  @media(--breakpoint-small-device) {
+    margin-top: 54px;
+  }
+  @media(--breakpoint-medium-device) {
+    margin-top: 84px;
+  }
+  @media(--breakpoint-large-device) {
+    margin-top: 164px;
+  }
+}
+
+.result-details {
+  color: #333537;
+  text-align: center;
+}
+
+.scale-wrapper {
+  padding: 0;
+  @media(--breakpoint-small-device) {
+    padding: 0 100px;
+  }
+  @media(--breakpoint-medium-device) {
+    padding: 0 150px;
+  }
+  @media(--breakpoint-large-device) {
+    padding: 0 200px;
+  }
+  @media(--breakpoint-extra-large-device) {
+    padding: 0 250px;
+  }
+}
+
+.scale {
+  font-size: 16px;
+  color: #ffffff;
+  font-style: italic;
+  font-weight: 700;
+  @media(--breakpoint-small-device) {
+    font-size: 22px;
+  }
+}
+
+.scale-competitor {
+  border-radius: 4px;
+  background-color: #1201e8;
+  padding: 10px 14px;
+}
+
+.scale-speedKit {
+  border-radius: 4px;
+  background-color: #e808f2;
+  padding: 10px 14px;
+  min-width: 75px;
+  @media(--breakpoint-small-device) {
+    min-width: 100px;
+  }
+}
+
+.scale-save {
+  border-radius: 4px;
+  background-color: #8d0093;
+  text-align: center;
+  padding: 10px 14px;
+  min-width: 160px;
+  @media(--breakpoint-small-device) {
+    min-width: 210px;
+  }
+}
+
+.bar-cut-image {
+  margin-left: -6px;
+  margin-right: -5px;
+  height: 43px;
+  z-index: 1;
+  @media(--breakpoint-small-device) {
+    height: 52px;
+  }
+}

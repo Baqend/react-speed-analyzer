@@ -37,9 +37,12 @@ body {
   padding: 0;
   flex-grow: 1;
   font-family: Axiforma, sans-serif;
-  font-size: 20px;
+  font-size: 18px;
   line-height: 1.48;
   color: color(#fff);
+  @media (--breakpoint-small-device) {
+    font-size: 20px;
+  }
 }
 
 html, body, #speed-kit-analyzer, #wrapper {
@@ -94,6 +97,13 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 400;
 }
 
+h2 {
+  font-size: 24px;
+  font-weight: bold;
+  @media (--breakpoint-small-device) {
+    font-size: 36px;
+  }
+}
 a {
   color: var(--blue);
   text-decoration: none;
@@ -103,6 +113,7 @@ a {
   width: 100%;
   max-width: 1270px;
   margin: 0 auto;
+  padding: 0 20px;
 }
 
 .text-right {
@@ -117,11 +128,19 @@ a {
   text-align: center;
 }
 
+.dark-blue {
+   color: var(--custom-dark-blue);
+ }
+
+.purple {
+   color: var(--custom-purple);
+}
+
 hr {
   height: 1px;
-  margin: 0;
   border: 0;
-  background: linear-gradient(to right,rgba(232,232,232,.1),rgba(232,232,232,.9) 10%,rgba(232,232,232,.9) 90%,rgba(232,232,232,.1))
+  margin: 0;
+  background-color: #dedede;
 }
 
 input {

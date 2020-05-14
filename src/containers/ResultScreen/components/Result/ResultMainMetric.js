@@ -58,7 +58,7 @@ class ResultMainMetric extends Component {
             </div>
           )}
           {( competitorMainMetric ) && (
-            <div className="w-50 flex-auto text-center pa1 pr0-ns">
+            <div className="w-50 flex-auto competitorMetric">
               <b className={"main-metric-title"}>Before Speed Kit</b>
               <br/>
               <div data-tip data-for={mainMetric + 'CompetitorData'}>
@@ -70,7 +70,7 @@ class ResultMainMetric extends Component {
             </div>
           )}
           {( speedKitMainMetric ) && (
-            <div className="w-50 flex-auto text-center pa1 pl0-ns">
+            <div className="w-50 flex-auto speedKitMetric">
               <b className={"main-metric-title"}>After Speed Kit</b>
               <br/>
               <div data-tip data-for={mainMetric + 'SpeedKitData'}>

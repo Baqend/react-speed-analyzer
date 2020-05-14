@@ -17,6 +17,7 @@ import ContactForm from 'components/ContactForm/ContactForm'
 
 import {calculateFactor} from "../../../../helper/resultHelper"
 import ResultHeader from '../../components/Result/ResultHeader'
+import ResultBody from '../../components/Result/ResultBody'
 
 Modal.setAppElement('#speed-kit-analyzer')
 
@@ -106,14 +107,13 @@ class ResultScreenComponent extends Component {
   }
 
   render() {
-    const { competitorError } = this.props.result
-
     return (
       <div className={"flex-column flex-grow-1 flex"} style={{ overflow: 'hidden' }}>
-        <ResultHeader { ...this.props } />
-        <div className="flex-grow-1 flex flex-column results" style={{marginTop: competitorError ? 0 : 80, animationDelay: '0.6s', transition: 'margin 0.5s ease' }}>
-          {this.props.result.isFinished && this.renderResults()}
-        </div>
+        <ResultHeader {...this.props} />
+        {this.props.result.isFinished && <ResultBody {...this.props} />}
+        {/*<div className={"flex-grow-1 flex flex-column results"}>*/}
+        {/*  {this.props.result.isFinished && this.renderResults()}*/}
+        {/*</div>*/}
         {this.renderContactFormModal()}
       </div>
     )

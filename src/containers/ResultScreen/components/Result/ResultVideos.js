@@ -111,7 +111,7 @@ class ResultVideos extends Component {
     // poster={`data:${data.mime_type};base64,${data.data.replace(/_/g, '/').replace(/-/g, '+')}`}
     return (
       <div className="flex justify-center">
-        <div className={`w-50 pa2 pv4-ns ${this.props.testOverview.mobile ? 'mobile' : ''}`}>
+        <div className={`w-50 competitor-video ${this.props.testOverview.mobile ? 'mobile' : ''}`}>
           <div className="video__wrapper">
             <div className="video__wrapper-inner">
               <div className="relative">
@@ -129,7 +129,7 @@ class ResultVideos extends Component {
 
                 {this.competitorVideo && this.competitorVideo.paused && (
                   <div className={"video__wrapper-play"}>
-                    <div className="video__wrapper-play-inner blue" onClick={() => this.playVideos('competitorVideo')}>
+                    <div className="video__wrapper-play-inner dark-blue" onClick={() => this.playVideos('competitorVideo')}>
                       <FontAwesomeIcon icon={ faPlay } />
                     </div>
                   </div>
@@ -137,7 +137,7 @@ class ResultVideos extends Component {
                 <div className="video__wrapper-progress">
                   <div className="video__wrapper-progress-inner">
                     <div
-                      className="video__wrapper-progress-bar"
+                      className="video__wrapper-progress-bar dark-blue"
                       style={{
                         transform: `scaleX(${this.state.progressCompetitor})`,
                         transition: this.state.isRunningCompetitor ? 'all 0.5s linear' : 'all 0.01ms linear'
@@ -150,7 +150,7 @@ class ResultVideos extends Component {
           </div>
         </div>
         { !speedKitError && (
-          <div className={`w-50 pa2 pv4-ns ${this.props.testOverview.mobile ? 'mobile' : ''}`}>
+          <div className={`w-50 speedKit-video ${this.props.testOverview.mobile ? 'mobile' : ''}`}>
             <div className="video__wrapper">
               <div className="video__wrapper-inner">
                 <div className="relative">
@@ -175,7 +175,7 @@ class ResultVideos extends Component {
                   <div className="video__wrapper-progress">
                     <div className="video__wrapper-progress-inner">
                       <div
-                        className="video__wrapper-progress-bar"
+                        className="video__wrapper-progress-bar purple"
                         style={{
                           transform: `scaleX(${this.state.progressSpeedKit})`,
                           transition: this.state.isRunningSpeedKit ? 'all 0.5s linear' : 'all 0.01ms linear'

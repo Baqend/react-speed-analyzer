@@ -250,7 +250,7 @@ class ConfigFormComponent extends Component {
               noValidate
             />
             <div className="config__form-submit-wrapper flex">
-              {this.props.showConfigToggle && (<a onClick={this.toggleConfig} className="config__form-settings flex justify-center items-center mr2" style={{ width: 'auto', background: 'none' }}>
+              {this.props.showConfigToggle && (<a onClick={this.toggleConfig} className="config__form-settings flex justify-center items-center mr1" style={{ width: 'auto', background: 'none' }}>
                 <img width="24" src={settings} alt="settings" />
               </a>)}
             </div>
