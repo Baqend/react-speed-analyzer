@@ -14,8 +14,6 @@
   }
 }
 
-
-
 .details-toggle-wrapper {
   position: relative;
   margin-top: -20px;
@@ -73,12 +71,6 @@
       font-size: 26px;
     }
   }
-  .metricLabel {
-    color: #9b9b9b;
-    @media(--breakpoint-medium-device) {
-      font-size: 20px;
-    }
-  }
   .faster {
     font-weight: 600;
     @media(--breakpoint-medium-device) {
@@ -93,5 +85,24 @@
     @media(--breakpoint-small-device) {
       font-size: 22px;
     }
+  }
+  .competitor-metric-scale {
+    height: 40px;
+    border-radius: 4px;
+    background-color: var(--custom-dark-blue);
+  }
+  .speedKit-metric-scale {
+    border-radius: 4px;
+    background-color: var(--custom-purple);
+  }
+  .speedKit-metric-scale-save {
+    border-radius: 4px;
+    background-color: #8d0093;
+  }
+  .bar-cut-image {
+    margin-left: -6px;
+    margin-right: -4px;
+    height: 40px;
+    z-index: 1;
   }
 }

@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { isSpeedKitInstalledCorrectly } from '../../../../helper/resultHelper'
 import ResultVideos from './ResultVideos'
+import './ResultHeader.css'
 import ResultMainMetric from './ResultMainMetric'
 import Header from 'components/Header/Header'
 import ConfigForm from 'components/ConfigForm/ConfigForm'
@@ -46,7 +47,7 @@ class ResultHeader extends Component {
     const { isSpeedKitComparison, speedKitVersion, configAnalysis } = testOverview
 
     return (
-      <div className={"results-header"}>
+      <div className={"result-header"}>
         <Header changeColorOnResize={false} />
         <div className={"container"}>
           {this.renderConfigForm()}

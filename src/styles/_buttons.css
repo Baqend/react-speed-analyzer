@@ -35,51 +35,36 @@
   user-select: none;
 }
 
-.btn-orange {
+.btn-purple {
   &:not(.btn-ghost) {
     color: white;
-    background: var(--orange);
-    border-bottom: 3px solid var(--orange);
-    // padding-bottom: 7px;
-    &:hover {
-      background: var(--orange-hover);
-      border-bottom: 3px solid var(--orange-light);
-      border-bottom-left-radius: 3px;
-      border-bottom-right-radius: 3px;
-    }
+    background: var(--custom-purple);
+    border-bottom: 3px solid var(--custom-purple);
   }
   &.btn-ghost {
-    color: var(--orange);
+    color: var(--custom-purple);
     background: transparent;
-    border: 2px solid var(--orange);
+    border: 2px solid var(--custom-purple);
     &:hover {
       color: white;
-      background: var(--orange);
+      background: var(--custom-purple);
     }
   }
 }
 
 .btn-blue {
+  border-radius: 4px;
+  border: solid 3px #4a90e2;
+  padding: 8px 16px;
+  font-weight: bold;
   &:not(.btn-ghost) {
     color: white;
     background: var(--blue);
-    border-bottom: 3px solid var(--blue);
     // padding-bottom: 7px;
-    &:hover {
-      background: var(--blue-hover);
-      border-bottom: 3px solid var(--blue-dark);
-      border-bottom-left-radius: 3px;
-      border-bottom-right-radius: 3px;
-    }
   }
   &.btn-ghost {
     color: var(--blue);
     background: transparent;
-    border: 2px solid var(--blue);
-    &:hover {
-      color: white;
-      background: var(--blue);
-    }
   }
 }
 

@@ -1,16 +1,9 @@
-.lightGreen {
-  color: #5cb85c;
-}
+@import "../../../../styles/_variables.css";
 
-.img-container {
-  height: 30px;
-  padding-left: 32px;
-  padding-right: 32px;
-}
-
-.border-bot {
-  border-bottom: 3px solid rgb(242, 115, 84);
-  padding-bottom: 8px;
-  margin-bottom: 8px;
-  display: inline-block;
+.worthiness-header {
+  font-size: 24px;
+  font-weight: 800;
+  @media(--breakpoint-small-device) {
+    font-size: 30px;
+  }
 }

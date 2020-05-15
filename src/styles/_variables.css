@@ -17,7 +17,7 @@
   --orange-light: color(var(--orange) tint(15%));
   --orange-hover: color(var(--orange) shade(3%));
   --orange-dark: color(var(--orange) shade(15%));
-  --blue: #297dd1;
+  --blue: #4a90e2;
   --blue-hover: color(var(--blue) shade(3%));
   --blue-dark: color(var(--blue) shade(15%));
 

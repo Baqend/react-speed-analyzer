@@ -49,6 +49,14 @@
   }
 }
 
+.box-wrapper {
+  flex: 1;
+  border-radius: 8px;
+  white-space: nowrap;
+  border: solid 3px #dedede;
+  background-color: #ffffff;
+}
+
 .scale {
   font-size: 16px;
   color: #ffffff;
@@ -93,5 +101,13 @@
   z-index: 1;
   @media(--breakpoint-small-device) {
     height: 52px;
+  }
+}
+
+.text-light-grey {
+  font-size: 16px;
+  color: #9b9b9b;
+  @media(--breakpoint-medium-device) {
+    font-size: 20px;
   }
 }

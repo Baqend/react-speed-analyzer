@@ -111,7 +111,7 @@ class ResultAction extends Component {
           <p className="faded">{contactPassage}, <a style={{ cursor: 'pointer' }} onClick={this.props.toggleModal}>feel free to contact us!</a></p>
         </div>
         <div className="text-center">
-          <a className="btn btn-orange btn-ghost ma1" onClick={this.restartAnalyzer}>Re-run Test</a>
+          <a className="btn btn-purple btn-ghost ma1" onClick={this.restartAnalyzer}>Re-run Test</a>
         </div>
       </div>
     )
@@ -127,7 +127,7 @@ class ResultAction extends Component {
         </div>
         {this.props.toggleModal && (
           <div className="text-center">
-            <a className="btn btn-orange btn-ghost ma1" onClick={this.props.toggleModal}>Contact Us</a>
+            <a className="btn btn-purple btn-ghost ma1" onClick={this.props.toggleModal}>Contact Us</a>
           </div>
         )}
       </div>
@@ -151,7 +151,7 @@ class ResultAction extends Component {
             <span className="faded">One plugin that does it all: Instant response times for WordPress blogs, shops, and landing pages.</span>
           </div>
           <p className="tc tl-ns mt2">
-            <a target="_blank" rel="noopener noreferrer" className="btn btn-orange" href="https://wordpress.org/plugins/baqend/">Download Plugin</a>
+            <a target="_blank" rel="noopener noreferrer" className="btn btn-purple" href="https://wordpress.org/plugins/baqend/">Download Plugin</a>
           </p>
         </div>
       </div>
@@ -230,13 +230,10 @@ class ResultAction extends Component {
           }
         </div>
         {showOptimization ? (
-          <div className="text-center pb2 pt2" style={{maxWidth: 700, margin: '0 auto'}}>
-            <h2 className="dn db-ns mb0">
-              Obtained Optimization: <span style={{color: '#F27354'}}>{absolute}</span>
+          <div className="text-center pb2 pt2">
+            <h2 className="mb0">
+              Obtained Optimization: <span className="purple">{absolute}</span>
             </h2>
-            <h3 className="dn-ns mb0">
-              Obtained Optimization: <span style={{color: '#F27354'}}>{absolute}</span>
-            </h3>
           </div>
         ) : (
           <div className="text-center pb2 pt2" style={{maxWidth: 700, margin: '0 auto'}}>
@@ -251,7 +248,7 @@ class ResultAction extends Component {
         {this.renderImprovements()}
         {this.props.toggleModal && (
           <div className="text-center">
-            <a className="btn btn-orange btn-ghost ma1" onClick={this.props.toggleModal}>Contact Us</a>
+            <a className="btn btn-purple btn-ghost ma1" onClick={this.props.toggleModal}>Contact Us</a>
           </div>
         )}
       </div>
@@ -303,21 +300,18 @@ class ResultAction extends Component {
 
     return (
       <div>
-        <div className="text-center pb2 pt2" style={{ maxWidth: 700, margin: '0 auto' }}>
-          <h2 className="dn db-ns mb0">
-            How Speed Kit Can Accelerate Your Site by <span style={{ color: '#F27354' }}>{absolute}</span>
+        <div className="text-center pb3 pt6">
+          <h2 className="mb0">
+            Speed Kit Accelerates Your Website by <span className="purple">{absolute}</span>
           </h2>
-          <h3 className="dn-ns mb0">
-            How Speed Kit Can Accelerate Your Site by <span style={{ color: '#F27354' }}>{absolute}</span>
-          </h3>
         </div>
         {this.renderImprovements()}
         {this.props.toggleModal && (
           <div className="text-center">
-            <a className="btn btn-orange ma1"
+            <a className="btn btn-purple ma1"
               target="_blank" rel="noopener noreferrer"
               href="https://www.baqend.com/speedkit.html?_ga=2.224276178.858004496.1520933148-181229276.1509025941#sk-features">Learn more</a>
-            <a className="btn btn-orange btn-ghost ma1" onClick={this.props.toggleModal}>Contact Us</a>
+            <a className="btn btn-purple btn-ghost ma1" onClick={this.props.toggleModal}>Contact Us</a>
           </div>
         )}
       </div>

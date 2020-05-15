@@ -2,24 +2,15 @@ import React, { Component } from 'react'
 import Papercut from '../Papercut/Papercut'
 import './ResultBody.css'
 import barCut from 'assets/barCutGrey.svg'
-import Collapse from 'react-css-collapse'
 import ResultMetrics from './ResultMetrics'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronDown, faChevronUp, faLongArrowAltRight } from '@fortawesome/free-solid-svg-icons'
+import { faLongArrowAltRight } from '@fortawesome/free-solid-svg-icons'
+import ResultAction from '../ResultAction/ResultAction'
+import ResultWorthiness from '../ResultWorthiness/ResultWorthiness';
 
 class ResultBody extends Component {
   constructor(props) {
     super(props)
-    const { speedKitError } = this.props.result
-    const { isSpeedKitComparison } = this.props.testOverview
-
-    this.state = {
-      showDetails: isSpeedKitComparison && speedKitError ? true : props.showDetails
-    }
-  }
-
-  toggleDetails = () => {
-    this.setState({ showDetails: !this.state.showDetails })
   }
 
   createWaterfallLink = () => {
@@ -34,25 +25,10 @@ class ResultBody extends Component {
     return (
       <div className="pt6 result-details">
         <h2 className="mb1">Performance Metrics</h2>
-        <div className="purple" style={{ fontWeight: "600"}}>
+        <div className="purple pb2" style={{ fontWeight: "600"}}>
           <a href={this.createWaterfallLink()} target="_blank"><FontAwesomeIcon icon={ faLongArrowAltRight } /> WebPageTest Results</a>
         </div>
-        <Collapse className={`result-details-collapse ${this.state.showDetails ? '' : 'fade-out'}`} isOpen={this.state.showDetails}>
-          <ResultMetrics { ...this.props } />
-        </Collapse>
-        <div className="pb1">
-          <div className="details-toggle-wrapper ">
-            <div className="details-toggle" onClick={this.toggleDetails}>
-              {this.state.showDetails ?
-                (
-                  <span>Hide Metrics <FontAwesomeIcon className="details-toggle-arrow" icon={ faChevronUp } /></span>
-                ) : (
-                  <span>Show All Metrics <FontAwesomeIcon className="details-toggle-arrow" icon={ faChevronDown } /></span>
-                )
-              }
-            </div>
-          </div>
-        </div>
+        <ResultMetrics { ...this.props } />
       </div>
     )
   }
@@ -76,15 +52,22 @@ class ResultBody extends Component {
       </div>
     )
   }
+
   render() {
     const {competitorError, speedKitError} = this.props.result
     return (
       <div className="flex-grow-1 flex flex-column result-body">
         <Papercut {...this.props} fillColor={"grey"} />
-        {!competitorError && (
+        {this.props.result.isFinished && !competitorError && (
           <div className="container result-body-inner">
             {!speedKitError && this.renderScale()}
             {!speedKitError && this.renderDetails()}
+            <ResultAction { ...this.props } toggleModal={this.toggleModal}/>
+            <ResultWorthiness
+              competitorTest={this.props.competitorTest}
+              speedKitTest={this.props.speedKitTest}
+              mainMetric={this.props.result.mainMetric}
+            />
           </div>
         )}
       </div>

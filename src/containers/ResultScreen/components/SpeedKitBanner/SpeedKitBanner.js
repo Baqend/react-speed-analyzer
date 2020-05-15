@@ -22,7 +22,7 @@ class SpeedKitBanner extends Component {
               <a
                 href="https://dashboard.baqend.com/register?appType=speedkit"
                 target="_blank" rel="noopener noreferrer"
-                className="btn btn-orange ma1">
+                className="btn btn-purple ma1">
                 Get Started for Free
               </a>
             </div>

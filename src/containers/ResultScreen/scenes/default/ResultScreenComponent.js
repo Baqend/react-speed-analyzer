@@ -30,10 +30,6 @@ class ResultScreenComponent extends Component {
     }
   }
 
-  toggleModal = () => {
-    this.setState({ showModal: !this.state.showModal })
-  }
-
   closeModal = () => {
     this.setState({ showModal: false })
   }
@@ -110,7 +106,7 @@ class ResultScreenComponent extends Component {
     return (
       <div className={"flex-column flex-grow-1 flex"} style={{ overflow: 'hidden' }}>
         <ResultHeader {...this.props} />
-        {this.props.result.isFinished && <ResultBody {...this.props} />}
+        <ResultBody {...this.props} />
         {/*<div className={"flex-grow-1 flex flex-column results"}>*/}
         {/*  {this.props.result.isFinished && this.renderResults()}*/}
         {/*</div>*/}

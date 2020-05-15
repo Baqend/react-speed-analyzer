@@ -63,8 +63,8 @@ class ContactFormComponent extends Component {
             required />
         </div>
         <div className="flex justify-between">
-          <button className="btn btn-orange btn-ghost btn-small" onClick={this.handleAbort}>Cancel</button>
-          <button className="btn btn-orange btn-small" type="submit">Send</button>
+          <button className="btn btn-purple btn-ghost btn-small" onClick={this.handleAbort}>Cancel</button>
+          <button className="btn btn-purple btn-small" type="submit">Send</button>
         </div>
       </form>
     )

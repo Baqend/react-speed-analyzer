@@ -1,7 +1,11 @@
 import React, { Component } from 'react'
 import ReactTooltip from 'react-tooltip'
 import './ResultMetrics.css'
+import barCut from 'assets/barCutGrey.svg'
 import { calculateFactor, calculateAbsolute } from 'helper/resultHelper'
+import Collapse from 'react-css-collapse'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
 
 const userMetrics = [
   {
@@ -41,17 +45,78 @@ const technicalMetrics = [
   },
 ]
 
-const createWaterfallLink = (testResult) => {
-  if (testResult.publishedSummaryUrl) {
-    return testResult.publishedSummaryUrl
-  }
-  if (process.env.NODE_ENV === 'development' || process.env.REACT_APP_TYPE === 'modules') {
-    return `https://${process.env.REACT_APP_BAQEND}.app.baqend.com/v1/code/publishWaterfalls?id=${testResult.id}`
-  }
-  return `/v1/code/publishWaterfalls?id=${testResult.id}`
-}
+const metrics = userMetrics.concat(technicalMetrics)
 
 class ResultMetrics extends Component {
+  constructor(props) {
+    super(props)
+    const { speedKitError } = this.props.result
+    const { isSpeedKitComparison } = this.props.testOverview
+
+    this.state = {
+      showDetails: isSpeedKitComparison && speedKitError ? true : props.showDetails
+    }
+  }
+
+  toggleDetails = () => {
+    this.setState({ showDetails: !this.state.showDetails })
+  }
+
+
+  getHighlightMetrics() {
+    const highlightMetrics = []
+    const { testOverview } = this.props.result
+    if (!testOverview.factors) {
+      return highlightMetrics
+    }
+
+    const positiveFactors = Object.entries(testOverview.factors)
+      .map(([metric, factor]) => ({metric, factor}))
+      .filter(entry => entry.factor > 1 && entry.metric !== 'load') // Load event should not be displayed as metric
+      .sort((curr, prev) => {
+        if (curr.metric === 'ttfb') {
+          return -1
+        }
+
+        if (curr.metric === 'firstMeaningfulPaint' && prev.metric !== 'ttfb') {
+          return -1
+        }
+
+        if (prev.metric === 'firstMeaningfulPaint' || prev.metric === 'ttfb') {
+          return 1
+        }
+
+        return prev.factor - curr.factor
+      })
+
+    return positiveFactors.map(entry => entry.metric).slice(0, 3)
+  }
+
+  renderHighlightMetrics() {
+    const competitorData = this.props.competitorTest.firstView
+    const speedKitData = this.props.speedKitTest.firstView
+
+    return (
+      <div className="flex flex-row items-center flex-wrap" style={{margin: '0 -8px'}}>
+        {this.getHighlightMetrics().map((metric, index) => (
+          <div key={index} className="flex flex-column justify-center box-wrapper ma1" style={{padding: "24px"}}>
+            <div className="mb2" style={{width: '200px', margin: 'auto'}}>
+              <div className="competitor-metric-scale mb1" style={{height: '40px'}}/>
+              <div className="flex flex-row" style={{height: '40px'}}>
+                <div className="speedKit-metric-scale" style={{width: 100 - (competitorData[metric] - speedKitData[metric]) / competitorData[metric] * 100 + '%'}}/>
+                <img src={barCut} className="bar-cut-image" alt="bar cut" />
+                <div className="speedKit-metric-scale-save" style={{width: (competitorData[metric] - speedKitData[metric]) / competitorData[metric] * 100 + '%'}}/>
+              </div>
+            </div>
+            <div className="text-light-grey mt1">{metrics.find(metricEntry => metricEntry.name === metric).label}</div>
+            <div className="faster">{calculateAbsolute(competitorData[metric], speedKitData[metric])} Faster (
+              <span className="purple factor">{calculateFactor(competitorData[metric], speedKitData[metric])}x</span>)
+            </div>
+          </div>
+        ))}
+      </div>
+    )
+  }
 
   renderCompetitorSpeedKitTable() {
     const competitorData = this.props.competitorTest.firstView
@@ -73,7 +138,7 @@ class ResultMetrics extends Component {
                   </div>
                   <div className="factor-column text-center">
                     <div data-tip data-for={metric.name}>
-                      <div className="metricLabel">{metric.label}</div>
+                      <div className="text-light-grey">{metric.label}</div>
                       {(absolute && factor) && <div className="faster">
                         {absolute} {factor > 1 ? 'Faster' : ''} (<span className="purple factor">{factor}x</span>)
                       </div>}
@@ -108,7 +173,7 @@ class ResultMetrics extends Component {
                   </div>
                   <div className="factor-column text-center display-desktop">
                     <div data-tip data-for={metric.name}>
-                      <div className="metricLabel">{metric.label}</div>
+                      <div className="text-light-grey">{metric.label}</div>
                       {(absolute && factor) && <div className="faster">
                         {absolute} {factor > 1 ? 'Faster' : ''} (<span className="purple factor">{factor}x</span>)
                       </div>}
@@ -127,22 +192,6 @@ class ResultMetrics extends Component {
             </div>
           )
         })}
-        {/*<h3 className="text-center mt5">WebPagetest Waterfalls</h3>*/}
-        {/*<hr />*/}
-        {/*<div className="flex items-center border-top">*/}
-        {/*  <div className="w-50 tc pt1 pb1">*/}
-        {/*    <a href={createWaterfallLink(this.props.competitorTest)} target="_blank" rel="noopener noreferrer" className="">Without Speed Kit</a>*/}
-        {/*  </div>*/}
-        {/*  <div className="w-50 tc pt1 pb1" style={{ borderLeft: '1px solid #E8E8E8' }}>*/}
-        {/*    <a href={createWaterfallLink(this.props.speedKitTest)} target="_blank" rel="noopener noreferrer" className="">With Speed Kit</a>*/}
-        {/*  </div>*/}
-        {/*</div>*/}
-        {/*<hr />*/}
-        {/*<div className="flex items-center pt1 pb0 border-top mt3">
-          <div className="w-100 text-center pa1">
-            <a className="btn btn-ghost" href="">Get Full Report by Email</a>
-          </div>
-        </div>*/}
       </div>
     )
   }
@@ -150,7 +199,7 @@ class ResultMetrics extends Component {
   renderCompetitorTable() {
     const competitorData = this.props.competitorTest.firstView
     return (
-      <div className="result__details-metrics">
+      <div>
         <hr />
         {userMetrics.map((metric, index) => (
           <div key={index} className="flex justify-center">
@@ -197,22 +246,33 @@ class ResultMetrics extends Component {
             </div>
           </div>
         ))}
-        {/*<hr />*/}
-        {/*<h3 className="text-center mt5">WebPagetest Waterfalls</h3>*/}
-        {/*<hr />*/}
-        {/*<div className="flex items-center border-top">*/}
-        {/*  <div className="w-100 tc pt1 pb1">*/}
-        {/*    <a href={createWaterfallLink(this.props.competitorTest)} target="_blank" rel="noopener noreferrer" className="">Your Website</a>*/}
-        {/*  </div>*/}
-        {/*</div>*/}
-        {/*<hr />*/}
       </div>
     )
   }
 
   render() {
     const { speedKitError } = this.props.result
-    return speedKitError ? this.renderCompetitorTable() : this.renderCompetitorSpeedKitTable()
+    return (
+      <div className="result__details-metrics">
+        {this.renderHighlightMetrics()}
+        <Collapse className={`result-details-collapse ${this.state.showDetails ? '' : 'fade-out'}`} isOpen={this.state.showDetails}>
+          {speedKitError ? this.renderCompetitorTable() : this.renderCompetitorSpeedKitTable() }
+        </Collapse>
+        <div className="pb1">
+          <div className="details-toggle-wrapper ">
+            <div className="details-toggle" onClick={this.toggleDetails}>
+              {this.state.showDetails ?
+                (
+                  <span>Hide Metrics <FontAwesomeIcon className="details-toggle-arrow" icon={ faChevronUp } /></span>
+                ) : (
+                  <span>Show All Metrics <FontAwesomeIcon className="details-toggle-arrow" icon={ faChevronDown } /></span>
+                )
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 }
 

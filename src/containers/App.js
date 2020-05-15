@@ -63,7 +63,6 @@ class App extends Component {
                   <div className="content">
                     <ResultScreen { ...props } />
                   </div>
-                  <Footer/>
                 </div>
               )}/>
             </Switch>

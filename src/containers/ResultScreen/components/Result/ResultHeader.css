@@ -1,0 +1,9 @@
+@import "../../../../styles/_variables.css";
+
+.result-header {
+  min-height: 350px;
+  background-image: linear-gradient(113deg, #1201e8, #e808f2 102%);
+  @media(--breakpoint-small-device) {
+    min-height: 450px;
+  }
+}
