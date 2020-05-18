@@ -45,7 +45,7 @@ class App extends Component {
                     <div className="content">
                       <StartingScreen { ...props } />
                     </div>
-                    <Footer />
+                    <Footer isResultPage={false}/>
                   </div>
                 )
               }}/>
@@ -55,7 +55,7 @@ class App extends Component {
                   <div className="content">
                     <LoadingScreen { ...props } />
                   </div>
-                  <Footer />
+                  <Footer isResultPage={false}/>
                 </div>
               )}/>
               <Route exact path="/test/:testId/result" render={props => (

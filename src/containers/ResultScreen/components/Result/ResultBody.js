@@ -57,17 +57,17 @@ class ResultBody extends Component {
     const {competitorError, speedKitError} = this.props.result
     return (
       <div className="flex-grow-1 flex flex-column result-body">
-        <Papercut {...this.props} fillColor={"grey"} />
+        <Papercut fillColor={"grey"} doRotation={false}/>
         {this.props.result.isFinished && !competitorError && (
           <div className="container result-body-inner">
             {!speedKitError && this.renderScale()}
             {!speedKitError && this.renderDetails()}
             <ResultAction { ...this.props } toggleModal={this.toggleModal}/>
-            <ResultWorthiness
+            {!speedKitError && <ResultWorthiness
               competitorTest={this.props.competitorTest}
               speedKitTest={this.props.speedKitTest}
               mainMetric={this.props.result.mainMetric}
-            />
+            />}
           </div>
         )}
       </div>

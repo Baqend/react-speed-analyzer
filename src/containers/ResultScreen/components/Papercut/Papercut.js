@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import './Papercut.css'
-import PropTypes from 'prop-types';
+import PropTypes from 'prop-types'
 
 class Papercut extends Component {
   constructor(props) {
@@ -9,7 +9,7 @@ class Papercut extends Component {
 
   render() {
     return (
-      <svg className={`fill-${this.props.fillColor} papercut-svg`}
+      <svg className={`fill-${this.props.fillColor} papercut-svg ${this.props.doRotation && 'rotate'}`}
         height="64"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 1440 64"
@@ -25,6 +25,7 @@ class Papercut extends Component {
 
 Papercut.propTypes = {
   fillColor: PropTypes.string.isRequired,
+  doRotation: PropTypes.bool.isRequired,
 }
 
 export default Papercut

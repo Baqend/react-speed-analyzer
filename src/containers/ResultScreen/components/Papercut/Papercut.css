@@ -6,3 +6,12 @@
 .fill-grey {
   fill: #f4f4f4;
 }
+
+.fill-black {
+  fill: #333537;
+}
+
+.rotate {
+  margin-top: -2px;
+  transform: rotate(180deg);
+}

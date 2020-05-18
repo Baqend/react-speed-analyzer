@@ -11,6 +11,13 @@ footer {
   .company {
     color: rgba(255, 255, 255, 0.64);
   }
+  .result-page {
+    color: color(#fff) !important;
+    background-color: rgb(51, 53, 55) !important;
+    a {
+      color: color(#fff) !important;
+    }
+  }
   @media (--breakpoint-small-device) {
     font-size: 16px;
   }

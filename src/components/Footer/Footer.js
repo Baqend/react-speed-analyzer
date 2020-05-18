@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 
 import './Footer.css'
+import PropTypes from 'prop-types'
 
 class Footer extends Component {
   getRandomExample = (e) => {
@@ -18,7 +19,7 @@ class Footer extends Component {
   render() {
     return (
       <footer>
-        <div className="container">
+        <div className={`container ${this.props.isResultPage && 'result-page'}`}>
           <div className="flex justify-center company">
             POWERED BY BAQEND
           </div>
@@ -52,6 +53,10 @@ class Footer extends Component {
       </footer>
     )
   }
+}
+
+Footer.propTypes = {
+  isResultPage: PropTypes.bool.isRequired,
 }
 
 function mapStateToProps(state) {
