@@ -16,6 +16,15 @@
   }
 }
 
+.device__phone {
+  .header {
+    @media(--breakpoint-medium-device) {
+      margin-top: -21px;
+      margin-bottom: 0;
+    }
+  }
+}
+
 .device__laptop {
   .header {
     @media(--breakpoint-medium-device) {

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import ConfigForm from 'components/ConfigForm/ConfigForm'
 
 import DeviceContainer from 'components/DeviceContainer/DeviceContainer'
-import Header from '../../../../components/Header/Header';
+import Header from '../../../../components/Header/Header'
 
 class StartingScreenComponent extends Component {
   renderForm() {
