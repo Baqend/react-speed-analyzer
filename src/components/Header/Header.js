@@ -11,7 +11,7 @@ class Header extends Component {
   render() {
     return (
       <div className={"flex flex-column items-center"}>
-        <div className={`logo ${this.props.changeColorOnResize ? "resize" : ""}`}></div>
+        <a href="/" className={`logo ${this.props.changeColorOnResize ? "resize" : ""}`}></a>
       </div>
     )
   }
