@@ -16,7 +16,7 @@ import {
   RESET_TEST_STATUS,
   SPEED_KIT_RESULT_NEXT,
   COMPETITOR_RESULT_NEXT,
-} from '../actions/types';
+} from '../actions/types'
 
 import { generateRules } from '../helper/configHelper'
 import { resultIsValid } from '../helper/resultHelper'
@@ -114,18 +114,29 @@ const initialState = {
 export default function result(state = initialState, action = {}) {
   switch (action.type) {
     case TESTOVERVIEW_LOAD:
-    case TESTOVERVIEW_NEXT:
       return {
-        ...state,
-        testOverview: {
-          ...action.payload,
-          psiScreenshot: createScreenshot(action.payload.psiScreenshot),
-        }
+        ...state, testOverview: { ...action.payload, psiScreenshot: createScreenshot(action.payload.psiScreenshot) }
+      }
+    case TESTOVERVIEW_NEXT:
+      // Do not trigger update if the test is not started anymore e.g. because of backward navigation
+      if (!state.isStarted) {
+        return { ...state }
+      }
+      return {
+        ...state, testOverview: { ...action.payload, psiScreenshot: createScreenshot(action.payload.psiScreenshot) }
       }
     case COMPETITOR_RESULT_NEXT:
-      return { ...state, competitorTest: { ...action.payload } }
+      // Do not trigger update if the test is not started anymore e.g. because of backward navigation
+      if (!state.isStarted) {
+        return { ...state}
+      }
+      return { ...state, competitorTest: state.isStarted ? { ...action.payload } : state.competitorTest }
     case SPEED_KIT_RESULT_NEXT:
-      return { ...state, speedKitTest: { ...action.payload } }
+      // Do not trigger update if the test is not started anymore e.g. because of backward navigation
+      if (!state.isStarted) {
+        return { ...state}
+      }
+      return { ...state, speedKitTest: state.isStarted ? { ...action.payload } : state.speedKitTest }
     case TESTOVERVIEW_LOAD_FAIL:
       return { ...state, isFinished: true }
     case RATE_LIMITER_GET:

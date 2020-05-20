@@ -10,7 +10,7 @@ import {
   RESET_TEST_RESULT,
   SPEED_KIT_RESULT_NEXT,
   COMPETITOR_RESULT_NEXT,
-} from './types';
+} from './types'
 
 import { isURL, trackURL } from '../helper/utils'
 import stringifyObject from 'lib/stringify-object'
@@ -154,7 +154,8 @@ const subscribeToTestOverview = ({ testId, onAfterFinish }) => ({
           if (testOverview.hasFinished) {
             window.removeEventListener('beforeunload', trackUnload)
             testOverviewSubscription && testOverviewSubscription.unsubscribe()
-            onAfterFinish && onAfterFinish({ testId })
+            // Do not trigger reload if the test is not started anymore e.g. because of backward navigation
+            onAfterFinish && getState().result.isStarted && onAfterFinish({ testId })
           }
           if (isResolved) {
             dispatch({
