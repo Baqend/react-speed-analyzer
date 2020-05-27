@@ -165,21 +165,19 @@ class ConfigFormComponent extends Component {
       <div className="pa2">
         <div className="pt1">
           <div className="flex items-center">
-            <span className="flex-auto w-100 text-right">Mobile</span>
+            <span className="flex-auto w-100 text-right">Desktop</span>
             <Toggle
-              className="mh1"
-              checked={!this.props.config.mobile}
+              checked={this.props.config.mobile}
               icons={false}
               onChange={this.handleMobileSwitch}
             />
-            <span className="flex-auto w-100">Desktop</span>
+            <span className="flex-auto w-100">Mobile</span>
           </div>
         </div>
         <div className="pt1">
           <div className="flex items-center">
             <span className="flex-auto w-100 text-right">EU</span>
             <Toggle
-              className="mh1"
               checked={this.props.config.location.indexOf('us-east-1') !== -1}
               icons={false}
               value={this.props.config.location.indexOf('us-east-1') !== -1 ? 'EU' : 'US'}
@@ -199,8 +197,8 @@ class ConfigFormComponent extends Component {
           <div className="flex-grow-1 flex-shrink-0" style={{ flexBasis: '100%' }}>
             { this.renderConfig() }
           </div>
-          <div className="flex-grow-1 flex-shrink-0" style={{ maxWidth: '100%' }}>
-            <div className="ph1">
+          <div className="flex-grow-1 flex-shrink-0" style={{ maxWidth: '100%', marginBottom: '19px' }}>
+            <div>
               <h4 className="mv1 text-center">Speed Kit Config</h4>
               <div className="pt1">
                 <CodeMirror

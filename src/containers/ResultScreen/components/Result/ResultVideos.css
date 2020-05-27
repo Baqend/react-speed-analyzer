@@ -10,20 +10,20 @@
 .competitor-video {
   padding: 16px 6px 16px 0;
   @media(--breakpoint-small-device) {
-    padding: 32px 16px;
+    padding: 32px 16px 32px 0;
   }
   @media(--breakpoint-medium-device) {
-    padding: 48px 16px;
+    padding: 48px 23px 48px 0;
   }
 }
 
 .speedKit-video {
   padding: 16px 0 16px 6px;
   @media(--breakpoint-small-device) {
-    padding: 32px 16px;
+    padding: 32px 0 32px 16px;
   }
   @media(--breakpoint-medium-device) {
-    padding: 48px 16px;
+    padding: 48px 0 48px 23px;
   }
 }
 
@@ -47,11 +47,8 @@
     bottom: 0;
     left: 0;
     overflow: hidden;
-    border-radius: 8px;
+    border-radius: 4px;
     box-shadow: 0 4px 32px 0 rgba(51, 53, 55, 0.44);
-    @media(--breakpoint-small-device) {
-      border-radius: 16px;
-    }
     .relative {
       width: 100%;
       height: 116.35%;
@@ -59,6 +56,7 @@
       flex-direction: column;
       align-items: center;
       margin-top: -9.35%;
+      background-color: black;
       video {
         width: 104%;
         /* min-height: 120.5%; */
@@ -106,8 +104,8 @@
     @media(--breakpoint-small-device) {
       width: 100px;
       height: 100px;
-      margin-left: -37.5px;
-      margin-top: -37.5px;
+      margin-left: -48.5px;
+      margin-top: -26.5px;
     }
   }
   .video__wrapper-play-inner {

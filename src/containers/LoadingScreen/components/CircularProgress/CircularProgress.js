@@ -10,7 +10,7 @@ const circularProgress = ({ progress }) => {
       maxValue={100}
       value={progress}
       text={Parser(`
-        <tspan class="head-text" x="52" dy="-0.3em">${progress}%</tspan>
+        <tspan class="head-text" x="52" dy="-0.2em">${progress}%</tspan>
         <tspan class="sub-text" x="52" dy="2.8em">Test has been</tspan>
         <tspan class="sub-text" x="52" dy="1.4em">started...</tspan>
       `)}

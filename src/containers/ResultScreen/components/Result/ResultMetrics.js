@@ -97,9 +97,9 @@ class ResultMetrics extends Component {
     const speedKitData = this.props.speedKitTest.firstView
 
     return (
-      <div className="flex flex-row items-center flex-wrap" style={{margin: '0 -8px'}}>
+      <div className="flex flex-row items-center flex-wrap" style={{margin: '0 -10px'}}>
         {this.getHighlightMetrics().map((metric, index) => (
-          <div key={index} className="flex flex-column justify-center box-wrapper ma1" style={{padding: "24px"}}>
+          <div key={index} className="flex flex-column justify-center box-wrapper" style={{margin: '10px', padding: '40px 24px', alignItems: 'center'}}>
             <div className="mb2" style={{width: '200px', margin: 'auto'}}>
               <div className="competitor-metric-scale mb1" style={{height: '40px'}}/>
               <div className="flex flex-row" style={{height: '40px'}}>
@@ -108,9 +108,9 @@ class ResultMetrics extends Component {
                 <div className="speedKit-metric-scale-save" style={{width: (competitorData[metric] - speedKitData[metric]) / competitorData[metric] * 100 + '%'}}/>
               </div>
             </div>
-            <div className="text-light-grey mt1">{metrics.find(metricEntry => metricEntry.name === metric).label}</div>
-            <div className="faster">{calculateAbsolute(competitorData[metric], speedKitData[metric])} Faster (
-              <span className="purple factor">{calculateFactor(competitorData[metric], speedKitData[metric])}x</span>)
+            <div className="text-light-grey mt3">{metrics.find(metricEntry => metricEntry.name === metric).label}</div>
+            <div className="faster" style={{ flexDirection: 'row' }}>{calculateAbsolute(competitorData[metric], speedKitData[metric])} Faster
+              (<span className="purple factor">{calculateFactor(competitorData[metric], speedKitData[metric])}x</span>)
             </div>
           </div>
         ))}
@@ -133,15 +133,18 @@ class ResultMetrics extends Component {
                 <div className="flex flex-row items-center pt3 pb3">
                   <div className="metric-column text-center">
                     {competitorData[metric.name] ? (
-                      <div className="metricValue">{competitorData[metric.name]} ms</div>
+                      <div className="metricValue pl2 pl0-ns">{competitorData[metric.name]} ms</div>
                     ):(<div className="metricValue">-</div>)}
                   </div>
-                  <div className="factor-column text-center">
+                  <div className="flex flex-column factor-column" style={{ alignItems: 'center' }}>
                     <div data-tip data-for={metric.name}>
                       <div className="text-light-grey">{metric.label}</div>
-                      {(absolute && factor) && <div className="faster">
-                        {absolute} {factor > 1 ? 'Faster' : ''} (<span className="purple factor">{factor}x</span>)
-                      </div>}
+                      {(absolute && factor) && (
+                        <div className="faster">
+                          <div className="faster-value">{absolute}{factor > 1 ? ' Faster' : ''}</div>
+                          <div>(<span className="purple factor">{factor}x</span>)</div>
+                        </div>
+                      )}
                     </div>
                     <ReactTooltip id={metric.name} type='dark' place='top' effect='solid'>
                       <span>{metric.tooltip}</span>
@@ -149,7 +152,7 @@ class ResultMetrics extends Component {
                   </div>
                   <div className="metric-column text-center">
                     {speedKitData[metric.name] ? (
-                      <div className="metricValue">{speedKitData[metric.name]} ms</div>
+                      <div className="metricValue pr2 pr0-ns">{speedKitData[metric.name]} ms</div>
                     ):(<div className="metricValue">-</div>)}
                   </div>
                 </div>
@@ -166,17 +169,20 @@ class ResultMetrics extends Component {
               <div className="w-100">
                 {index !== 0 && <hr/>}
                 <div className="flex items-center pt3 pb3">
-                  <div className="metric-column text-center display-desktop">
+                  <div className="metric-column text-center">
                     {competitorData[metric.name] ? (
-                      <div className="metricValue">{competitorData[metric.name]} ms</div>
+                      <div className="metricValue pl2 pl0-ns">{competitorData[metric.name]} ms</div>
                     ):(<div className="metricValue">-</div>)}
                   </div>
-                  <div className="factor-column text-center display-desktop">
+                  <div className="flex flex-column factor-column" style={{ alignItems: 'center' }}>
                     <div data-tip data-for={metric.name}>
                       <div className="text-light-grey">{metric.label}</div>
-                      {(absolute && factor) && <div className="faster">
-                        {absolute} {factor > 1 ? 'Faster' : ''} (<span className="purple factor">{factor}x</span>)
-                      </div>}
+                      {(absolute && factor) && (
+                        <div className="faster">
+                          <div className="faster-value">{absolute}{factor > 1 ? ' Faster' : ''}</div>
+                          <div>(<span className="purple factor">{factor}x</span>)</div>
+                        </div>
+                      )}
                     </div>
                     <ReactTooltip id={metric.name} type='dark' place='top' effect='solid'>
                       <span>{metric.tooltip}</span>
@@ -184,7 +190,7 @@ class ResultMetrics extends Component {
                   </div>
                   <div className="metric-column text-center display-desktop">
                     {speedKitData[metric.name] ? (
-                      <div className="metricValue">{speedKitData[metric.name]} ms</div>
+                      <div className="metricValue pr2 pr0-ns">{speedKitData[metric.name]} ms</div>
                     ):(<div className="metricValue">-</div>)}
                   </div>
                 </div>

@@ -20,7 +20,7 @@
 }
 
 .details-toggle {
-  border-radius: 21px;
+  border-radius: 100px;
   border: solid 3px #dedede;
   background-color: #ffffff;
   font-weight: 500;
@@ -29,9 +29,9 @@
   text-align: center;
   cursor: pointer;
   padding: 4px;
-  width: 230px;
+  width: 235px;
 @media(--breakpoint-medium-device) {
-  font-size: 22px;
+  font-size: 20px;
 }
 }
 
@@ -72,19 +72,27 @@
     }
   }
   .faster {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 16px;
     font-weight: 600;
-    @media(--breakpoint-medium-device) {
+    @media(--breakpoint-small-device) {
+      flex-direction: row;
       font-size: 18px;
     }
     @media(--breakpoint-medium-device) {
       font-size: 22px;
     }
   }
+  .faster-value {
+    padding-right: 0;
+    @media(--breakpoint-small-device) {
+      padding-right: 5px;
+    }
+  }
   .factor {
     font-weight: 500;
-    @media(--breakpoint-small-device) {
-      font-size: 22px;
-    }
   }
   .competitor-metric-scale {
     height: 40px;

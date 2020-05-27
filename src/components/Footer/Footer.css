@@ -3,7 +3,7 @@
 footer {
   font-weight: 500;
   font-size: 14px;
-  margin-top: 15px;
+  padding: 8px 0 32px;
   color: color(#fff);
   a {
     color: color(#fff);
@@ -12,6 +12,7 @@ footer {
     color: rgba(255, 255, 255, 0.64);
   }
   .result-page {
+    font-size: 1.125rem;
     color: color(#fff) !important;
     background-color: rgb(51, 53, 55) !important;
     a {
@@ -22,9 +23,9 @@ footer {
     font-size: 16px;
   }
   @media (--breakpoint-medium-device) {
-    color: color(#000);
+    color: #333537;
     a {
-      color: color(#000);
+      color: #333537;
     }
     .company {
       color: inherit;

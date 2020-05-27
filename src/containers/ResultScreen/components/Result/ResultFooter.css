@@ -34,13 +34,13 @@
 }
 
 .footer-menu-header {
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 700;
   text-transform: uppercase;
 }
 
 .footer-menu-item {
-  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.125rem;
 }
 
 .footer-line {
@@ -50,15 +50,15 @@
 }
 
 .footer-icon {
-  padding-right: 4px;
-  padding-left: 4px;
+  padding-right: 0.25rem;
+  padding-left: 0.25rem;
   @media(--breakpoint-small-device) {
-    padding-right: 6px;
-    padding-left: 6px;
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
   }
   @media(--breakpoint-medium-device) {
-    padding-right: 12px;
-    padding-left: 12px;
+    padding-right: 1rem;
+    padding-left: 1rem;
   }
 }
 
@@ -100,29 +100,29 @@
 .cta-wrapper {
   padding: 48px 16px 96px 16px;
   @media(--breakpoint-small-device) {
-    padding: 96px;
+    padding: 64px 0 112px 0;
   }
 }
 
 .cta-header {
-  font-size: 32px;
+  font-size: 1.875rem;
   font-weight: 700;
   letter-spacing: -.025em;
 
   @media(--breakpoint-small-device) {
-    font-size: 48px;
+    font-size: 2.25rem;
   }
   @media(--breakpoint-medium-device) {
-    font-size: 56px;
+    font-size: 3rem;
   }
 }
 
 .cta-img {
-  height: 48px;
+  height: 2.5rem;
   @media(--breakpoint-small-device) {
-    height: 64px;
+    height: 3rem;
   }
   @media(--breakpoint-medium-device) {
-    height: auto;
+    height: 4.2rem;
   }
 }

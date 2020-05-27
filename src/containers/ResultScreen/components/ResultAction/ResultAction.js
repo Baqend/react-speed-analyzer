@@ -10,8 +10,8 @@ import { getObjectKey } from 'helper/utils'
 import { calculateAbsolute } from 'helper/resultHelper'
 
 import WordPressLogo from 'assets/wordpress.png'
-import check from 'assets/check.svg'
-import warning from 'assets/warning.svg'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCheckCircle, faExclamationCircle } from '@fortawesome/free-solid-svg-icons'
 import {
   categorizeClientCachingFact,
   categorizeCompressionFact, categorizeHTTPCachingFact,
@@ -192,7 +192,8 @@ class ResultAction extends Component {
                 </h4>
               </div>
               <div className="w-10 text-center">
-                <img src={isSecured ? check : warning} alt="secure status" style={{ height: 30}} />
+                <FontAwesomeIcon icon={ isSecured ? faCheckCircle: faExclamationCircle }
+                  style={{ color: '#12b84f', width: '30px', height: '30px'}}/>
               </div>
             </div>
             {!configAnalysis.configMissing &&
@@ -208,7 +209,8 @@ class ResultAction extends Component {
                 </h4>
               </div>
               <div className="w-10 text-center">
-                <img src={swPathMatches ? check : warning} alt="service worker status" style={{ height: 30}} />
+                <FontAwesomeIcon icon={ isSecured ? faCheckCircle: faExclamationCircle }
+                  style={{ color: '#12b84f', width: '30px', height: '30px'}}/>
               </div>
             </div>
             }
@@ -223,7 +225,8 @@ class ResultAction extends Component {
                 </h4>
               </div>
               <div className="w-10 text-center">
-                <img src={!configMissing && !isDisabled ? check : warning} alt="config status" style={{ height: 30}} />
+                <FontAwesomeIcon icon={ isSecured ? faCheckCircle: faExclamationCircle }
+                  style={{ color: '#12b84f', width: '30px', height: '30px'}}/>
               </div>
             </div>
           </div>
@@ -265,7 +268,7 @@ class ResultAction extends Component {
             <div key={index} className="w-100 w-50-ns mt2 mb2">
               <div className="flex ml2 mr2">
                 <div className="w-20 w-10-ns">
-                  <img src={ check } alt="speed kit feature" style={{ height: 30}} />
+                  <FontAwesomeIcon icon={ faCheckCircle } style={{ color: '#12b84f', width: '30px', height: '30px'}}/>
                 </div>
                 <div className="w-80 w-90-ns">
                   <h4 className="mb0 mt0 fw6">{ content[0] }</h4>
@@ -278,7 +281,7 @@ class ResultAction extends Component {
             <div key={index} className="w-100 w-50-ns mt2 mb2">
               <div className="flex ml2 mr2">
                 <div className="w-20 w-10-ns">
-                  <img src={ warning } alt="speed kit feature" style={{ height: 30}} />
+                  <FontAwesomeIcon icon={ faExclamationCircle } style={{ color: '#ff9d00', width: '30px', height: '30px'}}/>
                 </div>
                 <div className="w-80 w-90-ns">
                   <h4 className="mb0 mt0 fw6">{ content[0] }</h4>

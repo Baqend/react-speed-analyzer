@@ -125,7 +125,7 @@ class ResultFooter extends Component {
             <span className="btn btn-purple mb2 mr0 mr3-ns" style={{display: "flex", alignItems: "center"}} onClick={this.toggleModal}>
               CONTACT SALES
             </span>
-            <a className="btn-white mb2" href={onePager} target="_blank">DOWNLAD ONEPAGER</a>
+            <a className="btn btn-white mb2" href={onePager} target="_blank">DOWNLOAD ONEPAGER</a>
           </div>
         </div>
       </div>

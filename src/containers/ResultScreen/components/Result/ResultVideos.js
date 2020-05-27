@@ -130,7 +130,7 @@ class ResultVideos extends Component {
                 {this.competitorVideo && this.competitorVideo.paused && (
                   <div className={"video__wrapper-play"}>
                     <div className="video__wrapper-play-inner dark-blue" onClick={() => this.playVideos('competitorVideo')}>
-                      <FontAwesomeIcon icon={ faPlay } />
+                      <FontAwesomeIcon icon={ faPlay } style={{ width: "21px", height: "26px" }} />
                     </div>
                   </div>
                 )}
@@ -168,7 +168,7 @@ class ResultVideos extends Component {
                   {this.speedKitVideo && this.speedKitVideo.paused && (
                     <div className={"video__wrapper-play"}>
                       <div className="video__wrapper-play-inner purple" onClick={() => this.playVideos('speedKitVideo')}>
-                        <FontAwesomeIcon icon={faPlay} />
+                        <FontAwesomeIcon icon={ faPlay } style={{ width: "21px", height: "26px" }} />
                       </div>
                     </div>
                   )}

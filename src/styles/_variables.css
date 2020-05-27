@@ -46,5 +46,5 @@
   @custom-media --breakpoint-small-device (min-width: 576px);
   @custom-media --breakpoint-medium-device (min-width: 768px);
   @custom-media --breakpoint-large-device (min-width: 992px);
-  @custom-media --breakpoint-extra-large-device (min-width: 1200px);
+  @custom-media --breakpoint-extra-large-device (min-width: 1441px);
 }

@@ -13,7 +13,7 @@ class StartingScreenComponent extends Component {
         <div className="text-center flex-grow-1 flex flex-column justify-end">
           <h1 className="header">Test Your Speed</h1>
         </div>
-        <div className="mt4 flex-grow-1 flex flex-column">
+        <div className="mt5 flex-grow-1 flex flex-column">
           <ConfigForm
             config={this.props.config}
             showConfig={true}
@@ -33,7 +33,7 @@ class StartingScreenComponent extends Component {
         <DeviceContainer
           mobile={this.props.config.mobile}
           content={
-            <div className={`flex-grow-1 flex justify-center items-center`}>
+            <div className={`flex-grow-1 flex justify-center`}>
               <div className="flex-grow-1">
                 {this.renderForm()}
               </div>

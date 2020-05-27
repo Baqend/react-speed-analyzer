@@ -15,8 +15,8 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 42px 16px 32px;
-  max-width: 1170px;
+  padding: 42px 20px 32px;
+  max-width: 1200px;
   .device__wrapper-outer, .device__wrapper, .device__screen {
     display: flex;
     flex-grow: 1;
@@ -64,7 +64,7 @@
   }
   .device__wrapper-bottom {
     display: none;
-    .device-notch{
+    .device-notch {
       width: 20%;
       height: 25%;
       border-bottom-left-radius: 28px;
@@ -120,16 +120,25 @@
           content: "";
           display: block;
           position: relative;
-          padding-top: 56.25%;
+          padding-top: 55%;
         }
         > .device__screen {
           position: relative;
           z-index: 1;
-          padding: 32px 0 0 0;
+          padding: 80px 48px;
           .device__wrapper-outer, .device__wrapper, .device__inner {
             display: flex;
             flex-grow: 1;
           }
+        }
+      }
+    }
+  }
+  @media (--breakpoint-large-device) {
+    .device__wrapper-outer {
+      .device__wrapper {
+        > .device__screen {
+          padding: 80px 96px;
         }
       }
     }
@@ -162,7 +171,7 @@
   @media (--breakpoint-medium-device) {
     .device__wrapper-top {
       /* creates the bottom bar */
-      width: calc(375px + var(--device-border-width-xs) + var(--device-border-width-xs));
+      width: calc(452px + var(--device-border-width-xs) + var(--device-border-width-xs));
       height: 90px;
       display: inline;
       border-top-left-radius: 72px;
@@ -175,8 +184,8 @@
     }
     .device__wrapper-outer {
       box-sizing: content-box;
-      width: 375px;
-      min-height: 500px;
+      width: 452px;
+      min-height: 610px;
       position: relative;
       padding-left: var(--device-border-width-xs);
       padding-right: var(--device-border-width-xs);
@@ -187,7 +196,7 @@
         content: "";
         position: absolute;
         background-image: linear-gradient(color(var(--device-color)), color(var(--device-color) a(30%)));
-        top: 0px;
+        top: 0;
         bottom: 0;
         width: var(--device-border-width-xs);
         max-height: 100%;
@@ -200,9 +209,9 @@
         .device__background-image {
           position: absolute;
         }
-      }
-      .device__screen {
-        padding: 32px 16px;
+        > .device__screen {
+          padding-top: 60px;
+        }
       }
     }
   }

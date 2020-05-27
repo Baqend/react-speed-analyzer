@@ -11,7 +11,7 @@
     line-height: normal;
     letter-spacing: -0.8px;
     color: #ffffff;
-    margin-top: 16px;
+    margin-top: 0;
     margin-bottom: 16px;
   }
 }
@@ -19,7 +19,7 @@
 .device__phone {
   .header {
     @media(--breakpoint-medium-device) {
-      margin-top: -21px;
+      font-size: 44px;
       margin-bottom: 0;
     }
   }

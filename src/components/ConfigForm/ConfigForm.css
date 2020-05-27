@@ -8,12 +8,6 @@
            flex-direction: row;
            flex-wrap: wrap;
        }
-       @media(--breakpoint-medium-device) {
-           padding: 0 48px;
-       }
-       @media(--breakpoint-large-device) {
-          padding: 0 96px;
-       }
      }
     &-input {
        font-size: 20px;
@@ -22,7 +16,12 @@
        color: var(--white);
        border: none;
        flex-grow: 1;
-       padding: 14px 45px 14px 16px;
+       padding: 14px 45px 14px 20px;
+       box-shadow: none;
+       min-height: 56px;
+       @media(--breakpoint-medium-device) {
+           min-height: 60px;
+       }
        &.no-text {
            color: transparent;
            caret-color: white;
@@ -41,14 +40,15 @@
        font-weight: 500;
        letter-spacing: 0.15em;
        cursor: pointer;
-       padding: 15px 10px;
+       padding: 16px 40px;
        margin-top: 15px;
        margin-left: 0;
        background: none;
        color: color(#fff);
        @media(--breakpoint-medium-device) {
            margin-top: 0;
-           margin-left: 10px;
+           margin-left: 15px;
+           padding: 18px 40px;
        }
     }
     &-settings {
@@ -67,13 +67,10 @@
     }
     .config__form-submit-wrapper {
         position: absolute;
-        top: 4px;
+        top: 8px;
         right: 8px;
         @media(--breakpoint-medium-device) {
-            right: 198px;
-        }
-        @media(--breakpoint-large-device) {
-            right: 248px;
+            right: 225px;
         }
     }
     .advanced {
@@ -104,13 +101,13 @@
       .toggle {
         display: flex;
         justify-content: center;
-        padding: 5px 15px;
+        padding: 8px 22px;
         align-items: center;
         border-radius: 21.5px;
         border: solid 2px rgba(255, 255, 255, 0.24);
         a {
-          font-size: 15px;
-          font-weight: 300;
+          font-size: 16px;
+          font-weight: 400;
           color: #f4f4f4;
           cursor: pointer;
           .up:after {
@@ -131,10 +128,20 @@
     .config__form {
         &-input-wrapper {
             flex-direction: column;
+            @media(--breakpoint-medium-device) {
+                padding: 0 30px;
+            }
         }
         &-submit {
             margin-top: 15px;
             margin-left: 0;
+        }
+        .advanced {
+            @media(--breakpoint-medium-device) {
+                width: auto !important;
+                max-width: none;
+                margin: 0 20px;
+            }
         }
     }
 }

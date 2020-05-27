@@ -15,6 +15,10 @@ a {
     text-align: center;
 }
 
+.slick-dots li {
+    margin: 0 10px;
+}
+
 .slick-dots li button:before {
     font-size: 30px !important;
     color: #ffffff !important;
@@ -39,7 +43,7 @@ a {
 
 .item-text {
     font-size: 16px;
-    font-weight: 300;
+    font-weight: 400;
     line-height: 1.5;
     margin-bottom: 5px;
 }

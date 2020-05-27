@@ -5,7 +5,7 @@ import DeviceContainer from 'components/DeviceContainer/DeviceContainer'
 
 import CustomerSlider from '../../components/CustomerSlider/CustomerSlider'
 import CircularProgress from '../../components/CircularProgress/CircularProgress'
-import Header from '../../../../components/Header/Header';
+import Header from '../../../../components/Header/Header'
 
 class LoadingScreenComponent extends Component {
   render() {

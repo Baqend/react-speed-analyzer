@@ -52,10 +52,10 @@ class ResultMainMetric extends Component {
       <div>
         <div className="flex items-center relative">
           {(factor >= 1.1 && mainMetric !== 'ttfb') && (
-            <div className="flex flex-column main-factor-cycle text-center" title={tooltipText[mainMetric]}>
+            <i className="flex flex-column main-factor-cycle text-center" title={tooltipText[mainMetric]}>
               <span className={"main-factor-value"}>{factor}x</span>
               Faster
-            </div>
+            </i>
           )}
           {( competitorMainMetric ) && (
             <div className="w-50 flex-auto competitorMetric">

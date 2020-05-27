@@ -8,22 +8,53 @@ import './Footer.css'
 import PropTypes from 'prop-types'
 
 class Footer extends Component {
-  getRandomExample = (e) => {
-    e.preventDefault()
-    const { history } = this.props
-    const ids = this.props.examples.map(example => example.id)
-    const randomId = ids[Math.floor(Math.random() * ids.length)]
-    history.push(`/test/${randomId}/result`)
-  }
+  // getRandomExample = (e) => {
+  //   e.preventDefault()
+  //   const { history } = this.props
+  //   const ids = this.props.examples.map(example => example.id)
+  //   const randomId = ids[Math.floor(Math.random() * ids.length)]
+  //   history.push(`/test/${randomId}/result`)
+  // }
 
-  render() {
+  renderResultFooter() {
     return (
       <footer>
-        <div className={`container ${this.props.isResultPage && 'result-page'}`}>
+        <div className="flex justify-center flex-wrap result-page" style={{ fontWeight: 400 }}>
+          <span className="pa1">© 2019 Baqend</span>
+          <span style={{ alignSelf: "center" }}>-</span>
+          <a
+            className="pa1"
+            target="_blank" rel="noopener noreferrer"
+            href="https://dashboard.baqend.com/privacy">
+            Privacy Policy
+          </a>
+          <span style={{ alignSelf: "center" }}>-</span>
+          <a
+            className="pa1"
+            target="_blank" rel="noopener noreferrer"
+            href="https://dashboard.baqend.com/imprint">
+            Imprint
+          </a>
+          <span style={{ alignSelf: "center" }}>-</span>
+          <a
+            className="pa1"
+            target="_blank" rel="noopener noreferrer"
+            href="https://dashboard.baqend.com/terms">
+            Terms of Service
+          </a>
+        </div>
+      </footer>
+    )
+  }
+
+  renderGeneralFooter() {
+    return (
+      <footer>
+        <div>
           <div className="flex justify-center company">
             POWERED BY BAQEND
           </div>
-          <div className="flex justify-center">
+          <div className="flex justify-center flex-wrap" style={{ fontWeight: 400 }}>
             <a
               className="pa1"
               target="_blank" rel="noopener noreferrer"
@@ -34,15 +65,15 @@ class Footer extends Component {
             <a
               className="pa1"
               target="_blank" rel="noopener noreferrer"
-              href="https://dashboard.baqend.com/terms">
-              Terms of Service
+              href="https://dashboard.baqend.com/imprint">
+              Imprint
             </a>
             <span style={{ alignSelf: "center" }}>-</span>
             <a
               className="pa1"
               target="_blank" rel="noopener noreferrer"
-              href="https://dashboard.baqend.com/imprint">
-              Imprint
+              href="https://dashboard.baqend.com/terms">
+              Terms of Service
             </a>
             {/*<span style={{ alignSelf: "center" }}>-</span>*/}
             {/*<a className="pa1" href="" onClick={this.getRandomExample}>*/}
@@ -51,6 +82,14 @@ class Footer extends Component {
           </div>
         </div>
       </footer>
+    )
+  }
+
+  render() {
+    return (
+      <div>
+        {this.props.isResultPage ? (this.renderResultFooter()) : (this.renderGeneralFooter())}
+      </div>
     )
   }
 }

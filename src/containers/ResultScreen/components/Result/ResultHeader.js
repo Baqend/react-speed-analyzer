@@ -29,7 +29,7 @@ class ResultHeader extends Component {
 
   renderConfigForm() {
     return (
-      <div className="pt5 pb4">
+      <div className="pt5 pb5">
         <ConfigForm
           config={this.props.config}
           showConfig={this.state.showConfig}

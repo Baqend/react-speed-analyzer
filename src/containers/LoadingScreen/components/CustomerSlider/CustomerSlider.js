@@ -7,7 +7,7 @@ import './CustomSlider.css'
 
 export default class CustomerSlider extends Component {
   componentDidMount(): void {
-    this.interval = setInterval(() => this.slider.slickNext(), 4000)
+    this.interval = setInterval(() => this.slider.slickNext(), 5000)
   }
 
   componentWillUnmount() {
@@ -18,7 +18,8 @@ export default class CustomerSlider extends Component {
     const settings = {
       dots: true,
       arrows: false,
-      speed: 1000,
+      autoplay: false,
+      speed: 1500,
       slidesToShow: 1,
       slidesToScroll: 1
     }
