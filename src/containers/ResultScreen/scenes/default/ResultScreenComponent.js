@@ -23,7 +23,7 @@ class ResultScreenComponent extends Component {
       <div className={"flex-column flex-grow-1 flex"} style={{ overflow: 'hidden' }}>
         <ResultHeader {...this.props} />
         <ResultBody {...this.props} />
-        {this.props.result.isFinished && <ResultFooter/>}
+        {this.props.result.isFinished && <ResultFooter {...this.props}/>}
       </div>
     )
   }

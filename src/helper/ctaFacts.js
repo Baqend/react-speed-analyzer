@@ -81,14 +81,14 @@ export function categorizeSSLFact(puppeteer, isSpeedKitComparison, applied, impr
   const sslFact = ['Use HTTP/2']
 
   if (puppeteer) {
-    if (!isSpeedKitComparison && puppeteer.protocol !== 'h2') {
-      sslFact.push(`Your website is currently using <strong>HTTP/1.1</strong>. With Speed Kit, everything will be fetched over an encrypted <strong>HTTP/2</strong> connection.`)
-      improvements.push(sslFact)
-    } else {
+    if (isSpeedKitComparison || puppeteer.protocol === 'h2') {
       sslFact.push(`Your website uses HTTP/2.`)
       applied.push(sslFact)
+      return
     }
   }
+  sslFact.push(`Your website is currently using <strong>HTTP/1.1</strong>. With Speed Kit, everything will be fetched over an encrypted <strong>HTTP/2</strong> connection.`)
+  improvements.push(sslFact)
 }
 
 /**
@@ -140,8 +140,8 @@ export function categorizeCompressionFact(competitorContentSize, speedKitContent
 export function categorizeHTTPCachingFact(competitorData, speedKitData, isSpeedKitComparison, applied, improvements) {
   const cachingFact = ['Optimize HTTP Caching']
 
-  const competitorCaching = competitorData.hits.withCaching
-  const speedKitCaching = speedKitData.hits.withCaching
+  const competitorCaching = competitorData.hits ? competitorData.hits.withCaching : null
+  const speedKitCaching = speedKitData.hits ? speedKitData.hits.withCaching : null
 
   const competitorAmount = competitorCaching ? Math.round((100 / competitorData.requests) * competitorCaching) : 0
   const speedKitAmount = speedKitCaching ? Math.round((100 / speedKitData.requests) * speedKitCaching) : 0
@@ -224,13 +224,6 @@ export function categorizeUserPerceivedPerformanceFact(competitorData, speedKitD
     if (isSpeedKitComparison) {
       performanceFact.push(`Speed Kit improves <strong>Speed Index</strong> by <strong>${siImprovement}%</strong> and <strong>First Meaningful Paint</strong> by <strong>${fmpImprovement}%</strong>.`)
       applied.push(performanceFact)
-
-      return
-    }
-
-    if (fmpImprovement < 10) {
-      performanceFact.push(`Speed Kit will improve <strong>Speed Index</strong> by <strong>${siImprovement}%</strong> and <strong>First Meaningful Paint</strong> by <strong>${fmpImprovement}%</strong>.`)
-      improvements.push(performanceFact)
 
       return
     }

@@ -124,12 +124,28 @@
     z-index: 2;
     &:hover {
       opacity: 0.7;
-   }
-   @media(--breakpoint-small-device) {
-     width: 78px;
-     height: 78px;
-     font-size: 30px;
-   }
+    }
+    &.error {
+      cursor: auto;
+      padding-left: 0;
+      &:hover {
+         opacity: 1.0;
+      }
+    }
+    @media(--breakpoint-small-device) {
+      width: 78px;
+      height: 78px;
+      font-size: 30px;
+    }
+    .play {
+      width: 21px;
+    }
+    .locked {
+      width: 16px;
+      @media(--breakpoint-small-device) {
+        width: 26px;
+      }
+    }
   }
   .video__wrapper-progress {
     position: absolute;

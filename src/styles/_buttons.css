@@ -9,11 +9,8 @@
   cursor: pointer;
   text-align: center;
   padding-top: .85rem;
-  -webkit-transition: box-shadow .2s;
-  transition: box-shadow .2s;
   font-size: 16px;
   font-weight: 400;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   text-decoration: none;
 &.btn-small {
    padding: 5px 10px;
@@ -25,7 +22,7 @@
   &:not(.btn-ghost) {
     color: white;
     background: var(--custom-purple);
-    border-bottom: 3px solid var(--custom-purple);
+    border: none;
   }
   &.btn-ghost {
     color: var(--custom-purple);
@@ -35,6 +32,10 @@
       color: white;
       background: var(--custom-purple);
     }
+  }
+  &:active {
+     border: none !important;
+     outline: none !important;
   }
 }
 

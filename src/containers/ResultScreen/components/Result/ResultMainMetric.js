@@ -44,43 +44,40 @@ class ResultMainMetric extends Component {
   }
 
   render() {
-    const { mainMetric } = this.props.result
+    const { mainMetric, competitorError, speedKitError } = this.props.result
     const { competitorMainMetric, speedKitMainMetric } = this.roundMainMetrics(mainMetric)
     const factor = calculateFactor(competitorMainMetric, speedKitMainMetric)
+    const showError = competitorError || speedKitError
 
     return (
       <div>
         <div className="flex items-center relative">
-          {(factor >= 1.1 && mainMetric !== 'ttfb') && (
+          {(!showError && factor >= 1.1 && mainMetric !== 'ttfb') && (
             <i className="flex flex-column main-factor-cycle text-center" title={tooltipText[mainMetric]}>
               <span className={"main-factor-value"}>{factor}x</span>
               Faster
             </i>
           )}
-          {( competitorMainMetric ) && (
-            <div className="w-50 flex-auto competitorMetric">
-              <b className={"main-metric-title"}>Before Speed Kit</b>
-              <br/>
-              <div data-tip data-for={mainMetric + 'CompetitorData'}>
-                <b className={"main-metric-value"}>{ competitorMainMetric } ms</b>
-              </div>
-              <ReactTooltip id={mainMetric + 'CompetitorData'} type='dark' place='top' effect='solid'>
-                <span>{tooltipText[mainMetric]}</span>
-              </ReactTooltip>
+          <div className="w-50 flex-auto competitorMetric">
+            <b className={"main-metric-title"}>Before Speed Kit</b>
+            <br/>
+            <div data-tip data-for={mainMetric + 'CompetitorData'}>
+              <b className={"main-metric-value"}>{ !showError ? competitorMainMetric: '???' } ms</b>
             </div>
-          )}
-          {( speedKitMainMetric ) && (
-            <div className="w-50 flex-auto speedKitMetric">
-              <b className={"main-metric-title"}>After Speed Kit</b>
-              <br/>
-              <div data-tip data-for={mainMetric + 'SpeedKitData'}>
-                <b className={"main-metric-value"}>{ speedKitMainMetric } ms</b>
-              </div>
-              <ReactTooltip id={mainMetric + 'SpeedKitData'} type='dark' place='top' effect='solid'>
-                <span>{tooltipText[mainMetric]}</span>
-              </ReactTooltip>
+            <ReactTooltip id={mainMetric + 'CompetitorData'} type='dark' place='top' effect='solid'>
+              <span>{tooltipText[mainMetric]}</span>
+            </ReactTooltip>
+          </div>
+          <div className="w-50 flex-auto speedKitMetric">
+            <b className={"main-metric-title"}>After Speed Kit</b>
+            <br/>
+            <div data-tip data-for={mainMetric + 'SpeedKitData'}>
+              <b className={"main-metric-value"}>{ !showError ? speedKitMainMetric: '???' } ms</b>
             </div>
-          )}
+            <ReactTooltip id={mainMetric + 'SpeedKitData'} type='dark' place='top' effect='solid'>
+              <span>{tooltipText[mainMetric]}</span>
+            </ReactTooltip>
+          </div>
         </div>
       </div>
     )

@@ -43,7 +43,7 @@ class ResultHeader extends Component {
   }
 
   render() {
-    const { competitorError, testOverview } = this.props.result
+    const { testOverview } = this.props.result
     const { isSpeedKitComparison, speedKitVersion, configAnalysis } = testOverview
 
     return (
@@ -61,7 +61,7 @@ class ResultHeader extends Component {
               </div>
             </div>
           )}
-          {this.props.result.isFinished && !competitorError && (
+          {this.props.result.isFinished && (
             <div>
               {this.renderMainMetric()}
               {this.renderVideos()}

@@ -32,19 +32,21 @@ class ResultAction extends Component {
     } catch (e) {}
   }
 
-  getCTAContent = () => {
+  getCTAContent = (showError) => {
     const improvements = []
     const applied = []
     const { isSpeedKitComparison } = this.props.testOverview
 
     // Request Latency
-    const competitorData = this.props.competitorTest.firstView
-    const speedKitData = this.props.speedKitTest.firstView
+    const competitorData = this.props.competitorTest.firstView || {}
+    const speedKitData = this.props.speedKitTest.firstView || {}
     categorizeTtfbFact(competitorData.ttfb, speedKitData.ttfb, isSpeedKitComparison, applied, improvements)
 
+    // Dummy values intended to ensure cta is rendered in background of error view
+    const { contentSize: competitorContentSize = { images: 50001, text: 50001 } } = competitorData
+    const { contentSize: speedKitContentSize = { images: 0, text: 0 } } = speedKitData
+
     // Image Optimization
-    const { contentSize: competitorContentSize = null } = competitorData
-    const { contentSize: speedKitContentSize = null } = speedKitData
     categorizeIOFact(competitorContentSize, speedKitContentSize, isSpeedKitComparison, applied, improvements)
 
     // SSL information
@@ -80,58 +82,6 @@ class ResultAction extends Component {
     }
 
     return {improvements, applied}
-  }
-
-  // all Tests failed
-  renderAllTestsFailed(error) {
-    const getErrorData = (error) => {
-      const defaultMessage = 'An error occurred while running your tests.'
-      const { message, status = 500 } = error || {}
-      if (!message) {
-        return { message: defaultMessage, status }
-      }
-
-      // Check if the message contains the URL of the Puppeteer
-      const containsPuppeteerUrl = message.indexOf('puppeteer.baqend.com') !== -1
-      if (containsPuppeteerUrl) {
-        // Avoid Puppeteer's URL from being displayed
-        return { message: message.replace(/http.*puppeteer\.baqend\.com.*?\s/, 'Puppeteer\xa0'), status }
-      }
-
-      return { message, status }
-    }
-
-    const { message, status } = getErrorData(error)
-    const contactPassage = status === 500 ? 'Please re-run the test and if the problem persists' : 'If you need help with this error'
-    return (
-      <div>
-        <div className="text-center pb2 pt2" style={{ maxWidth: 768, margin: '0 auto' }}>
-          <h2>Test Runs Failed</h2>
-          <p className="faded">{message}</p>
-          <p className="faded">{contactPassage}, <a style={{ cursor: 'pointer' }} onClick={this.props.toggleModal}>feel free to contact us!</a></p>
-        </div>
-        <div className="text-center">
-          <a className="btn btn-purple btn-ghost ma1" onClick={this.restartAnalyzer}>Re-run Test</a>
-        </div>
-      </div>
-    )
-  }
-
-  // Speedkit failed or we are not faster
-  renderSpeedKitFailed() {
-    return (
-      <div>
-        <div className="text-center pb2 pt2" style={{ maxWidth: 768, margin: '0 auto' }}>
-          <h2>Tuning Required</h2>
-          <span className="faded">It looks like some fine-tuning or configuration is required to measure your site. Please contact our web performance experts to adjust and re-run the test!</span>
-        </div>
-        {this.props.toggleModal && (
-          <div className="text-center">
-            <a className="btn btn-purple btn-ghost ma1" onClick={this.props.toggleModal}>Contact Us</a>
-          </div>
-        )}
-      </div>
-    )
   }
 
   // success for wordpress page
@@ -258,8 +208,8 @@ class ResultAction extends Component {
     )
   }
 
-  renderImprovements() {
-    const ctaContent = this.getCTAContent()
+  renderImprovements(showError) {
+    const ctaContent = this.getCTAContent(showError)
 
     return (
       <div>
@@ -296,10 +246,11 @@ class ResultAction extends Component {
   }
 
   // success
-  renderCta() {
+  renderCta(showError) {
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
-    const absolute = calculateAbsolute(competitorData[this.props.result.mainMetric], speedKitData[this.props.result.mainMetric])
+    const absolute = !showError ?
+      calculateAbsolute(competitorData[this.props.result.mainMetric], speedKitData[this.props.result.mainMetric]) : '400ms'
 
     return (
       <div>
@@ -308,7 +259,7 @@ class ResultAction extends Component {
             Speed Kit Accelerates Your Website by <span className="purple">{absolute}</span>
           </h2>
         </div>
-        {this.renderImprovements()}
+        {this.renderImprovements(showError)}
         {this.props.toggleModal && (
           <div className="text-center">
             <a className="btn btn-purple ma1"
@@ -326,19 +277,16 @@ class ResultAction extends Component {
     // const speedKitError = this.props.speedKitError
     const isWordPress = testOverview.type === 'wordpress'
     const isPlesk = this.props.result.isPlesk
+    const showError = competitorError || speedKitError
     const { isSpeedKitComparison, speedKitVersion, configAnalysis } = testOverview
 
     if (isSpeedKitComparison && !speedKitError) {
       return this.renderIsSpeedKitCta(speedKitVersion, configAnalysis)
-    } else if (competitorError) {
-      return this.renderAllTestsFailed(testOverview.error)
-    } else if (!competitorError && speedKitError) {
-      return this.renderSpeedKitFailed()
     } else if (!isPlesk && isWordPress){
       return this.renderWordpressCta()
     }
 
-    return this.renderCta()
+    return this.renderCta(showError)
   }
 }
 

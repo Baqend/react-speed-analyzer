@@ -66,7 +66,7 @@ class ResultMetrics extends Component {
   getHighlightMetrics() {
     const highlightMetrics = []
     const { testOverview } = this.props.result
-    if (!testOverview.factors) {
+    if (!testOverview || !testOverview.factors) {
       return highlightMetrics
     }
 
@@ -118,14 +118,39 @@ class ResultMetrics extends Component {
     )
   }
 
+  renderErrorHighlightMetrics() {
+    const defaultMetrics = ['firstMeaningfulPaint', 'speedIndex', 'ttfb']
+
+    return (
+      <div className="flex flex-row items-center flex-wrap" style={{margin: '0 -10px'}}>
+        {defaultMetrics.map((metric, index) => (
+          <div key={index} className="flex flex-column justify-center box-wrapper" style={{margin: '10px', padding: '40px 24px', alignItems: 'center'}}>
+            <div className="mb2" style={{width: '200px', margin: 'auto'}}>
+              <div className="competitor-metric-scale mb1" style={{height: '40px'}}/>
+              <div className="flex flex-row" style={{height: '40px'}}>
+                <div className="speedKit-metric-scale" style={{width: '50%'}}/>
+                <img src={barCut} className="bar-cut-image" alt="bar cut" />
+                <div className="speedKit-metric-scale-save" style={{width: '50%'}}/>
+              </div>
+            </div>
+            <div className="text-light-grey mt3">{metrics.find(metricEntry => metricEntry.name === metric).label}</div>
+            <div className="faster" style={{ flexDirection: 'row' }}>400ms Faster (<span className="purple factor">2x</span>)
+            </div>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
   renderCompetitorSpeedKitTable() {
-    const competitorData = this.props.competitorTest.firstView
-    const speedKitData = this.props.speedKitTest.firstView
+    // Dummy values intended to ensure table is rendered in background of error view
+    const competitorData = this.props.competitorTest.firstView || {firstMeaningfulPaint: 800}
+    const speedKitData = this.props.speedKitTest.firstView || {firstMeaningfulPaint: 400}
     return (
       <div className="result__details-metrics">
-        {userMetrics.map((metric, index) => {
-          const factor = calculateFactor(competitorData[metric.name], speedKitData[metric.name])
-          const absolute = calculateAbsolute(competitorData[metric.name], speedKitData[metric.name])
+        {metrics.map((metric, index) => {
+          const factor = calculateFactor(competitorData[metric.name], speedKitData[metric.name]) || '2'
+          const absolute = calculateAbsolute(competitorData[metric.name], speedKitData[metric.name]) || '400ms'
           return (
             <div key={index} className="flex justify-center">
               <div className="w-100">
@@ -160,109 +185,18 @@ class ResultMetrics extends Component {
             </div>
           )
         })}
-        <hr/>
-        {technicalMetrics.map((metric, index) => {
-          const factor = calculateFactor(competitorData[metric.name], speedKitData[metric.name])
-          const absolute = calculateAbsolute(competitorData[metric.name], speedKitData[metric.name])
-          return (
-            <div key={index} className="flex justify-center">
-              <div className="w-100">
-                {index !== 0 && <hr/>}
-                <div className="flex items-center pt3 pb3">
-                  <div className="metric-column text-center">
-                    {competitorData[metric.name] ? (
-                      <div className="metricValue pl2 pl0-ns">{competitorData[metric.name]} ms</div>
-                    ):(<div className="metricValue">-</div>)}
-                  </div>
-                  <div className="flex flex-column factor-column" style={{ alignItems: 'center' }}>
-                    <div data-tip data-for={metric.name}>
-                      <div className="text-light-grey">{metric.label}</div>
-                      {(absolute && factor) && (
-                        <div className="faster">
-                          <div className="faster-value">{absolute}{factor > 1 ? ' Faster' : ''}</div>
-                          <div>(<span className="purple factor">{factor}x</span>)</div>
-                        </div>
-                      )}
-                    </div>
-                    <ReactTooltip id={metric.name} type='dark' place='top' effect='solid'>
-                      <span>{metric.tooltip}</span>
-                    </ReactTooltip>
-                  </div>
-                  <div className="metric-column text-center display-desktop">
-                    {speedKitData[metric.name] ? (
-                      <div className="metricValue pr2 pr0-ns">{speedKitData[metric.name]} ms</div>
-                    ):(<div className="metricValue">-</div>)}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )
-        })}
-      </div>
-    )
-  }
-
-  renderCompetitorTable() {
-    const competitorData = this.props.competitorTest.firstView
-    return (
-      <div>
-        <hr />
-        {userMetrics.map((metric, index) => (
-          <div key={index} className="flex justify-center">
-            <div className="w-100">
-              {index !== 0 && <hr/>}
-              <div data-tip data-for={metric.name}>
-                <div className="flex flex-column items-center pt1 pb1">
-                  <div className="pt1 pb1">
-                    <div className="metricValue faded">{metric.label}</div>
-                  </div>
-                  <div>
-                    {competitorData[metric.name] ? (
-                      <div className="metricValue">{competitorData[metric.name]} ms</div>
-                    ):(<div className="metricValue">-</div>)}
-                  </div>
-                </div>
-              </div>
-              <ReactTooltip id={metric.name} type='dark' place='top' effect='solid'>
-                <span>{metric.tooltip}</span>
-              </ReactTooltip>
-            </div>
-          </div>
-        ))}
-        <hr />
-        {technicalMetrics.map((metric, index) => (
-          <div key={index} className="flex justify-center">
-            <div className="w-100">
-              {index !== 0 && <hr/>}
-              <div data-tip data-for={metric.name}>
-                <div className="flex flex-column items-center pt1 pb1">
-                  <div className="pt1 pb1">
-                    <div className="metricValue faded">{metric.label}</div>
-                  </div>
-                  <div>
-                    {competitorData[metric.name] ? (
-                      <div className="metricValue">{competitorData[metric.name]} ms</div>
-                    ):(<div className="metricValue">-</div>)}
-                  </div>
-                </div>
-              </div>
-              <ReactTooltip id={metric.name} type='dark' place='top' effect='solid'>
-                <span>{metric.tooltip}</span>
-              </ReactTooltip>
-            </div>
-          </div>
-        ))}
       </div>
     )
   }
 
   render() {
-    const { speedKitError } = this.props.result
+    const { competitorError, speedKitError } = this.props.result
+    const showError = competitorError || speedKitError
     return (
       <div className="result__details-metrics">
-        {this.renderHighlightMetrics()}
+        {!showError ? this.renderHighlightMetrics() : this.renderErrorHighlightMetrics()}
         <Collapse className={`result-details-collapse ${this.state.showDetails ? '' : 'fade-out'}`} isOpen={this.state.showDetails}>
-          {speedKitError ? this.renderCompetitorTable() : this.renderCompetitorSpeedKitTable() }
+          { this.renderCompetitorSpeedKitTable() }
         </Collapse>
         <div className="pb1">
           <div className="details-toggle-wrapper ">
