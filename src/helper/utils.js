@@ -106,18 +106,6 @@ export const shuffle = (a) => {
 }
 
 /**
- * Verify whether the site was loaded in an IFrame or not.
- * @return {boolean}
- */
-export const isIFrame = () => {
-  try {
-    return window.self !== window.top
-  } catch (e) {
-    return true
-  }
-}
-
-/**
  * Verify whether the browser is IE or not.
  * @return {boolean}
  */

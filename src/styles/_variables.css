@@ -1,4 +1,3 @@
-@import "~tachyons/src/_colors.css";
 @import "~tachyons/src/_media-queries.css";
 
 :root {
@@ -13,27 +12,8 @@
 
   --custom-dark-blue: #1201e8;
   --custom-purple: #e808f2;
-  --orange: #F27354;
-  --orange-light: color(var(--orange) tint(15%));
-  --orange-hover: color(var(--orange) shade(3%));
-  --orange-dark: color(var(--orange) shade(15%));
   --blue: #4a90e2;
-  --blue-hover: color(var(--blue) shade(3%));
-  --blue-dark: color(var(--blue) shade(15%));
 
-  --fa-var-angle-left: "\f104";
-  --fa-var-angle-right: "\f105";
-  --fa-var-angle-up: "\f106";
-  --fa-var-angle-down: "\f107";
-
-  --slick-font-path: "../fonts/";
-  --slick-font-family: "FontAwesome";
-  --slick-loader-path: "./";
-  --slick-arrow-color: black;
-  --slick-dot-color: black;
-  --slick-dot-color-active: var(--slick-dot-color);
-  --slick-prev-character: var(--fa-var-angle-left);
-  --slick-next-character: var(--fa-var-angle-right);
   --slick-dot-character: "•";
   --slick-dot-size: 12px;
   --slick-opacity-default: 0.10;

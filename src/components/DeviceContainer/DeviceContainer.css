@@ -14,8 +14,9 @@
   width: 100%;
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
   justify-content: center;
-  padding: 42px 20px 32px;
+  padding: 32px 20px;
   max-width: 1200px;
   .device__wrapper-outer, .device__wrapper, .device__screen {
     display: flex;
@@ -88,20 +89,22 @@
     /* creates the bars on the left, right and top */
     > .device__wrapper-outer {
       position: relative;
-      padding-left: var(--device-border-width-xs);
-      padding-right: var(--device-border-width-xs);
-      margin-left: calc(var(--device-border-width) * 1.5);
-      margin-right: calc(var(--device-border-width) * 1.5);
-      &:before { left: 0px; border-left: 1px solid rgba(51, 53, 55, 0.25); }
-      &:after { right: 0px; border-right: 1px solid rgba(51, 53, 55, 0.25); }
-      &:before, &:after {
-        content: "";
-        position: absolute;
-        background-color: color(var(--device-color));
-        top: 0px;
-        bottom: 0px;
-        width: var(--device-border-width-xs);
-        max-height: 100%;
+      &:not(.embedded) {
+         padding-left: var(--device-border-width-xs);
+         padding-right: var(--device-border-width-xs);
+         margin-left: calc(var(--device-border-width) * 1.5);
+         margin-right: calc(var(--device-border-width) * 1.5);
+        &:before { left: 0px; border-left: 1px solid rgba(51, 53, 55, 0.25); }
+        &:after { right: 0px; border-right: 1px solid rgba(51, 53, 55, 0.25); }
+        &:before, &:after {
+          content: "";
+          position: absolute;
+          background-color: color(var(--device-color));
+          top: 0px;
+          bottom: 0px;
+          width: var(--device-border-width-xs);
+          max-height: 100%;
+        }
       }
       .device__wrapper-outer {
         align-self: stretch;
@@ -111,11 +114,13 @@
         position: relative;
         display: inherit;
         max-width: 100%;
-        background-image: linear-gradient(
-                119deg,
-                color(var(--device-background-from)),
-                color(var(--device-background-to)) 102%
-        );
+        &:not(.embedded) {
+           background-image: linear-gradient(
+                   119deg,
+                   color(var(--device-background-from)),
+                   color(var(--device-background-to)) 102%
+           );
+        }
         &:before {
           content: "";
           display: block;
@@ -187,25 +192,30 @@
       width: 452px;
       min-height: 610px;
       position: relative;
-      padding-left: var(--device-border-width-xs);
-      padding-right: var(--device-border-width-xs);
       margin: auto;
-      &:before { left: 0px; border-left: 1px solid rgba(51, 53, 55, 0.25); }
-      &:after { right: 0px; border-right: 1px solid rgba(51, 53, 55, 0.25); }
-      &:before, &:after {
-        content: "";
-        position: absolute;
-        background-image: linear-gradient(color(var(--device-color)), color(var(--device-color) a(30%)));
-        top: 0;
-        bottom: 0;
-        width: var(--device-border-width-xs);
-        max-height: 100%;
+      &:not(.embedded) {
+         padding-left: var(--device-border-width-xs);
+         padding-right: var(--device-border-width-xs);
+         &:before { left: 0px; border-left: 1px solid rgba(51, 53, 55, 0.25); }
+         &:after { right: 0px; border-right: 1px solid rgba(51, 53, 55, 0.25); }
+         &:before, &:after {
+          content: "";
+          position: absolute;
+          background-image: linear-gradient(color(var(--device-color)), color(var(--device-color) a(30%)));
+          top: 0;
+          bottom: 0;
+          width: var(--device-border-width-xs);
+          max-height: 100%;
+        }
       }
+
       .device__wrapper {
         position: relative;
         max-width: 100%;
-        background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0) 95%, rgba(244, 244, 244, 1)),
-        linear-gradient(144deg, color(var(--device-background-from)), color(var(--device-background-to)) 101%);
+        &:not(.embedded) {
+           background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0) 95%, rgba(244, 244, 244, 1)),
+           linear-gradient(144deg, color(var(--device-background-from)), color(var(--device-background-to)) 101%);
+        }
         .device__background-image {
           position: absolute;
         }

@@ -118,7 +118,7 @@ class ResultVideos extends Component {
               {!showErrorView ? (
                 <div className="relative">
                   <video id="competitorVideo"
-                    playsinline
+                    playsInline
                     controls={false}
                     muted
                     autoPlay

@@ -11,18 +11,6 @@ export function roundToTenths(num) {
 }
 
 /**
- * Rounds a floating point number to hundredth.
- *
- * E.g.: 4.555435345345 -> 4.56
- *
- * @param {number} num The number to round.
- * @return {number} The rounded number.
- */
-export function roundToHundredths(num) {
-  return Math.round(num * 100) / 100
-}
-
-/**
  * @param {number} float The float to format.
  * @return {string} A formatted percentage.
  */

@@ -17,15 +17,15 @@
 
 .result-body-inner {
   position: relative;
-  margin-top: 32px;
+  margin-top: 32px !important;
   @media(--breakpoint-small-device) {
-    margin-top: 54px;
+    margin-top: 54px !important;
   }
   @media(--breakpoint-medium-device) {
-    margin-top: 84px;
+    margin-top: 84px !important;
   }
   @media(--breakpoint-large-device) {
-    margin-top: 164px;
+    margin-top: 164px !important;
   }
 }
 

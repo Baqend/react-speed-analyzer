@@ -13,6 +13,7 @@ class LoadingScreenComponent extends Component {
       <div className="loading-screen flex-column flex-grow-1 flex items-center">
         <Header changeColorOnResize={true} />
         <DeviceContainer
+          embedded={false}
           mobile={this.props.config.mobile}
           bgImage={this.props.result.testOverview.psiScreenshot}
           content={

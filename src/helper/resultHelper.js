@@ -1,4 +1,4 @@
-import { roundToTenths, roundToHundredths, zeroSafeDiv, formatPercentage } from './maths'
+import { roundToTenths, zeroSafeDiv, formatPercentage } from './maths'
 
 /**
  * @param competitorMetric Metric from the competitor's site.
@@ -28,18 +28,6 @@ export function calculateAbsolute(competitorMetric, speedKitMetric) {
     return `${Math.round(improvement / 1000 * 10) / 10} s`
   }
   return `${improvement} ms`
-}
-
-/**
- * @param competitorMetric Main metric from the competitor's site.
- * @param speedKitMetric Main metric from Speed Kit.
- * @return {boolean}
- */
-export function isMainMetricSatisfactory(competitorMetric, speedKitMetric) {
-  if (competitorMetric > 0 && speedKitMetric > 0) {
-    return roundToHundredths(competitorMetric / speedKitMetric) > 1.2
-  }
-  return false
 }
 
 /**
@@ -88,23 +76,4 @@ export function resultIsValid(competitorResult, speedKitResult, mainMetric, seco
     return false
   }
   return false
-}
-
-/**
- * @param {*} data
- * @return {string}
- */
-export function calculateServedRequests(data) {
-  const totalRequests = data.requests || 0
-
-  /* eslint-disable */
-  const cacheHits = data.hits.hit || 0
-  const cacheMisses = data.hits.miss || 0
-  const otherRequests = data.hits.other || 0
-
-  // eslint-disable-next-line no-console
-  // console.log(`hit: ${cacheHits} miss: ${cacheMisses} other: ${otherRequests} total: ${totalRequests}`)
-
-  const servedFactor = (totalRequests - otherRequests) / totalRequests
-  return formatPercentage(servedFactor)
 }

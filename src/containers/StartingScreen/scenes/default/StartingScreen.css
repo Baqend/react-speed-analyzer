@@ -1,4 +1,3 @@
-@import "~tachyons/src/_media-queries.css";
 @import "../../../../styles/_variables.css";
 
 .device__laptop, .device__phone {

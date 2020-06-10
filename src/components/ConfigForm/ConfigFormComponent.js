@@ -9,6 +9,9 @@ import { Controlled as CodeMirror } from 'react-codemirror2'
 import { generateDefaultConfig } from '../../helper/configHelper'
 import settings from 'assets/settings.svg'
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons'
+
 import './ConfigForm.css'
 
 export function splitUrl(url) {
@@ -260,7 +263,9 @@ class ConfigFormComponent extends Component {
               <div className="toggleAdvancedSettings-wrapper">
                 <div className="toggle">
                   <a onClick={this.toggleAdvancedConfig}>
-                    Advanced Options <span className={`${this.state.showAdvancedConfig ? 'up' : 'down'}`}/>
+                    Advanced Options
+                    <FontAwesomeIcon icon={this.state.showAdvancedConfig ? faChevronUp : faChevronDown}
+                                     style={{width: '15px', paddingLeft: '5px'}}/>
                   </a>
                 </div>
               </div>

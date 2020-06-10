@@ -110,16 +110,6 @@
           font-weight: 400;
           color: #f4f4f4;
           cursor: pointer;
-          .up:after {
-            font-family: var(--slick-font-family);
-            font-weight: 700;
-            content: var(--fa-var-angle-up);
-          }
-          .down:after {
-            font-family: var(--slick-font-family);
-            font-weight: 700;
-            content: var(--fa-var-angle-down);
-          }
         }
       }
     }

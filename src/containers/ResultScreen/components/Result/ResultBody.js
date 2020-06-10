@@ -131,12 +131,13 @@ class ResultBody extends Component {
           </div>
           <ContactForm onlyMail={true}/>
         </div>
-        {this.renderCustomers()}
+        {!this.props.embedded && this.renderCustomers()}
       </div>
     )
   }
 
   render() {
+    const embedded = this.props.embedded
     const {competitorError, speedKitError} = this.props.result
     const showError = competitorError || speedKitError
     return (
@@ -147,12 +148,12 @@ class ResultBody extends Component {
             {!showError && this.renderScale()}
             {this.renderDetails(showError)}
             <ResultAction { ...this.props } toggleModal={this.toggleModal}/>
-            {!showError && <ResultWorthiness
+            {!embedded && !showError && <ResultWorthiness
               competitorTest={this.props.competitorTest}
               speedKitTest={this.props.speedKitTest}
               mainMetric={this.props.result.mainMetric}
             />}
-            {!showError && this.renderCustomers()}
+            {!embedded && !showError && this.renderCustomers()}
             {showError && this.renderErrorOverlay()}
           </div>
         )}

@@ -48,7 +48,7 @@ class ResultHeader extends Component {
 
     return (
       <div className={"result-header"}>
-        <Header changeColorOnResize={false} />
+        {!this.props.embedded && <Header changeColorOnResize={false} />}
         <div className={"container"}>
           {this.renderConfigForm()}
           {isSpeedKitComparison && (

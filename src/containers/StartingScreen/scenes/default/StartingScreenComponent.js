@@ -28,9 +28,10 @@ class StartingScreenComponent extends Component {
 
   render() {
     return (
-      <div className="loading-screen flex-column flex-grow-1 flex items-center">
+      <div className="flex-column flex-grow-1 flex items-center">
         <Header changeColorOnResize={true} />
         <DeviceContainer
+          embedded={false}
           mobile={this.props.config.mobile}
           content={
             <div className={`flex-grow-1 flex justify-center`}>

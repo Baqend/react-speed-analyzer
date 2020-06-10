@@ -3,17 +3,15 @@ import './DeviceContainer.css'
 
 export default class DeviceContainer extends Component {
   render() {
-    const { mobile, content, bgImage } = this.props
+    const { mobile, content, bgImage, embedded } = this.props
     const showBgImage = bgImage && !mobile
     return (
       <div className="device">
         <div className={`${mobile ? 'device__phone' : 'device__laptop'}`}>
-          <div className="device__wrapper-top"></div>
-          <div className="device__wrapper-outer">
-            <div className="device__wrapper">
-              <div className="device__screen">
-                {content}
-              </div>
+          { !embedded && <div className="device__wrapper-top"/> }
+          <div className={`device__wrapper-outer${embedded ? 'embedded' : ''}`}>
+            <div className={`device__wrapper${embedded ? 'embedded' : ''}`}>
+              <div className="device__screen">{content}</div>
               {showBgImage && (
                 <div
                   className="device__background"
@@ -22,9 +20,11 @@ export default class DeviceContainer extends Component {
               )}
             </div>
           </div>
-          <div className="device__wrapper-bottom">
-            <div className="device-notch"></div>
-          </div>
+          { !embedded && (
+            <div className="device__wrapper-bottom">
+              <div className="device-notch"/>
+            </div>
+          )}
         </div>
       </div>
     )

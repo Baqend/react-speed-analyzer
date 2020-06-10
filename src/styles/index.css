@@ -28,10 +28,6 @@
   --dark-blue: #162939;
 }
 
-/* html {
-  height: 100%;
-} */
-
 body {
   margin: 0;
   padding: 0;
@@ -47,10 +43,6 @@ body {
 
 html, body, #speed-kit-analyzer, #wrapper {
   min-height: 100vh;
-}
-
-html {
-  background: #12212e;
 }
 
 #speed-kit-analyzer {
