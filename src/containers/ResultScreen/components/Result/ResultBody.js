@@ -32,7 +32,7 @@ class ResultBody extends Component {
     if (process.env.NODE_ENV === 'development' || process.env.REACT_APP_TYPE === 'modules') {
       return `https://${process.env.REACT_APP_BAQEND}.app.baqend.com/v1/code/openVideoComparison?ids=${competitorTest.id},${speedKitTest.id}`
     }
-    return `/v1/code/publishWaterfalls?id=${competitorTest.id},${speedKitTest.id}`
+    return `/v1/code/openVideoComparison?ids=${competitorTest.id},${speedKitTest.id}`
   }
 
   renderDetails(showError) {
