@@ -146,11 +146,12 @@
 
 .bar-cut-image {
   margin-left: -6px;
-  margin-right: -5px;
-  height: 43px;
+  margin-right: -4px;
+  height: 43.5px;
   z-index: 1;
   @media(--breakpoint-small-device) {
     height: 52px;
+    margin-right: -5.5px;
   }
 }
 
