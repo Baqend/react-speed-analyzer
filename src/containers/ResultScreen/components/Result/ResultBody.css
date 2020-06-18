@@ -120,16 +120,23 @@
 .scale-competitor {
   border-radius: 4px;
   background-color: #1201e8;
-  padding: 10px 14px;
+  padding: 9px 14px;
 }
 
 .scale-speedKit {
   border-radius: 4px;
   background-color: #e808f2;
-  padding: 10px 14px;
+  padding: 9px 14px;
   min-width: 75px;
   @media(--breakpoint-small-device) {
     min-width: 100px;
+  }
+}
+.scale-safe-wrapper {
+  display: flex;
+  min-width: 160px;
+  @media(--breakpoint-small-device) {
+    min-width: 210px;
   }
 }
 
@@ -137,11 +144,8 @@
   border-radius: 4px;
   background-color: #8d0093;
   text-align: center;
-  padding: 10px 14px;
-  min-width: 160px;
-  @media(--breakpoint-small-device) {
-    min-width: 210px;
-  }
+  padding: 9px 14px;
+  width: 100%;
 }
 
 .text-light-grey {

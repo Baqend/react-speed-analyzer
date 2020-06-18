@@ -104,8 +104,10 @@ class ResultMetrics extends Component {
               <div className="competitor-metric-scale mb1" style={{height: '40px'}}/>
               <div className="flex flex-row" style={{height: '40px'}}>
                 <div className="speedKit-metric-scale" style={{width: 100 - (competitorData[metric] - speedKitData[metric]) / competitorData[metric] * 100 + '%'}}/>
-                <Barcut/>
-                <div className="speedKit-metric-scale-save" style={{width: (competitorData[metric] - speedKitData[metric]) / competitorData[metric] * 100 + '%'}}/>
+                <div className="flex" style={{width: (competitorData[metric] - speedKitData[metric]) / competitorData[metric] * 100 + '%'}}>
+                  <Barcut/>
+                  <div className="speedKit-metric-scale-save"/>
+                </div>
               </div>
             </div>
             <div className="text-light-grey mt3">{metrics.find(metricEntry => metricEntry.name === metric).label}</div>

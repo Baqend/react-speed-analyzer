@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import renderHTML from 'react-render-html'
+import './ResultAction.css'
 
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -9,7 +10,6 @@ import { prepareTest, startTest } from 'actions/test'
 import { getObjectKey } from 'helper/utils'
 import { calculateAbsolute } from 'helper/resultHelper'
 
-import WordPressLogo from 'assets/wordpress.png'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle, faExclamationCircle } from '@fortawesome/free-solid-svg-icons'
 import {
@@ -85,16 +85,13 @@ class ResultAction extends Component {
   }
 
   // success for wordpress page
-  renderWordpressCta() {
+  renderWordpressCta(showError) {
     return (
-      <div className="flex items-center pb2 pt2" style={{ maxWidth: 768, margin: '0 auto' }}>
-        <div className="ph2 dn db-ns">
-          <img className="pa2" height="200" src={WordPressLogo} alt="Wordpress Logo"/>
-        </div>
+      <div className="flex items-center pb2 pt2" style={{ maxWidth: 768, margin: `0 auto ${showError ? '250px' : '0'} auto` }}>
+        <div className="ph2 dn db-ns wordpress-image"/>
         <div className="ph2">
           <h2 className="mb1 dn db-ns">WordPress too slow?</h2>
           <h2 className="flex items-center justify-center dn-ns tc">
-            <img className="mr2" height="50" src={WordPressLogo} alt="Wordpress Logo"/>
             WordPress too slow?
           </h2>
           <div className="tc tl-ns">
@@ -274,7 +271,6 @@ class ResultAction extends Component {
 
   render() {
     const { competitorError, speedKitError, testOverview } = this.props.result
-    // const speedKitError = this.props.speedKitError
     const isWordPress = testOverview.type === 'wordpress'
     const isPlesk = this.props.result.isPlesk
     const showError = competitorError || speedKitError
@@ -282,8 +278,8 @@ class ResultAction extends Component {
 
     if (isSpeedKitComparison && !speedKitError) {
       return this.renderIsSpeedKitCta(speedKitVersion, configAnalysis)
-    } else if (!isPlesk && isWordPress){
-      return this.renderWordpressCta()
+    } else if (!isPlesk && isWordPress) {
+      return this.renderWordpressCta(showError)
     }
 
     return this.renderCta(showError)

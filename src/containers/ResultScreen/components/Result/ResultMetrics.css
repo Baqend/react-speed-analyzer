@@ -106,5 +106,6 @@
   .speedKit-metric-scale-save {
     border-radius: 4px;
     background-color: #8d0093;
+    width: 100%;
   }
 }

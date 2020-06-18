@@ -67,15 +67,32 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h2 {
-  font-size: 24px;
-  font-weight: bold;
+  font-size: 24px !important;
+  font-weight: bold !important;
   @media (--breakpoint-small-device) {
-    font-size: 36px;
+    font-size: 36px !important;
   }
 }
+
+h3 {
+  font-size: 1.17em !important;
+}
+
+h4 {
+  font-size: 18px !important;
+  line-height: 1.48 !important;
+  @media (--breakpoint-small-device) {
+    font-size: 20px !important;
+  }
+}
+
 a {
   color: var(--blue);
   text-decoration: none;
+}
+
+.pt5 {
+  padding-top: 48px !important;
 }
 
 .container {

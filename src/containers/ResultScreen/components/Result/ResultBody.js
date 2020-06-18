@@ -61,8 +61,12 @@ class ResultBody extends Component {
           <div className="scale-competitor">BEFORE</div>
           <div className="flex flex-row pt1">
             <div className="scale-speedKit" style={{width: 100 - scaleSave + '%'}}>AFTER</div>
-            {scaleSave > 0 && <Barcut/>}
-            {scaleSave > 0 && <div className="scale-save" style={{width: scaleSave + '%'}}>{competitor - speedKit} MS FASTER</div>}
+            {scaleSave > 0 && (
+              <div className="scale-safe-wrapper" style={{width: scaleSave + '%'}}>
+                <Barcut/>
+                <div className="scale-save">{competitor - speedKit} MS FASTER</div>
+              </div>
+            )}
           </div>
         </div>
       </div>

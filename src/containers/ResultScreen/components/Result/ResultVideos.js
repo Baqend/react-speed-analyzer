@@ -3,8 +3,6 @@ import './ResultVideos.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlay } from '@fortawesome/free-solid-svg-icons'
 import { isDeviceIOS, isIE, isEdge } from 'helper/utils'
-import testFailedAfter from 'assets/img/test-failed-after.png'
-import testFailedBefore from 'assets/img/test-failed-before.png'
 
 class ResultVideos extends Component {
   constructor(props) {
@@ -148,8 +146,8 @@ class ResultVideos extends Component {
                   </div>
                 </div>
               ) : (
-                <div className="relative">
-                  <img src={testFailedBefore} alt="test failed  page preview" style={{width: '100%', paddingTop: '9%'}}/>
+                <div className="relative" style={{paddingTop: '9%'}}>
+                  <div className="test-failed-before"/>
                 </div>
               )}
             </div>
@@ -190,8 +188,8 @@ class ResultVideos extends Component {
                   </div>
                 </div>
               ) : (
-                <div className="relative">
-                  <img src={testFailedAfter} alt="test failed  page preview" style={{width: '100%', paddingTop: '9%'}}/>
+                <div className="relative" style={{paddingTop: '9%'}}>
+                  <div className="test-failed-after"/>
                 </div>
               )}
             </div>
