@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import Papercut from '../Papercut/Papercut'
 import './ResultBody.css'
-import barCut from 'assets/barCutGrey.svg'
 import ResultMetrics from './ResultMetrics'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLongArrowAltRight } from '@fortawesome/free-solid-svg-icons'
@@ -21,6 +20,7 @@ import johnReedLogo from 'assets/customers/JohnReed_Logo.png'
 import justSpicesLogo from 'assets/customers/justspices.svg'
 import toolImage from 'assets/tool.svg'
 import ContactForm from '../../../../components/ContactForm/ContactForm'
+import Barcut from '../BarCut/Barcut'
 
 class ResultBody extends Component {
   constructor(props) {
@@ -61,7 +61,7 @@ class ResultBody extends Component {
           <div className="scale-competitor">BEFORE</div>
           <div className="flex flex-row pt1">
             <div className="scale-speedKit" style={{width: 100 - scaleSave + '%'}}>AFTER</div>
-            {scaleSave > 0 && <img src={barCut} className="bar-cut-image" alt="bar cut" />}
+            {scaleSave > 0 && <Barcut/>}
             {scaleSave > 0 && <div className="scale-save" style={{width: scaleSave + '%'}}>{competitor - speedKit} MS FASTER</div>}
           </div>
         </div>

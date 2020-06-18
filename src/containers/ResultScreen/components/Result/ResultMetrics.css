@@ -107,10 +107,4 @@
     border-radius: 4px;
     background-color: #8d0093;
   }
-  .bar-cut-image {
-    margin-left: -6px;
-    margin-right: -4px;
-    height: 40px;
-    z-index: 1;
-  }
 }

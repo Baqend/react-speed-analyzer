@@ -144,17 +144,6 @@
   }
 }
 
-.bar-cut-image {
-  margin-left: -6px;
-  margin-right: -4px;
-  height: 43.5px;
-  z-index: 1;
-  @media(--breakpoint-small-device) {
-    height: 52px;
-    margin-right: -5.5px;
-  }
-}
-
 .text-light-grey {
   font-size: 16px;
   color: #9b9b9b;

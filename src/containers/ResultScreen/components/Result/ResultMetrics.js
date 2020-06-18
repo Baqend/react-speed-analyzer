@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
 import ReactTooltip from 'react-tooltip'
 import './ResultMetrics.css'
-import barCut from 'assets/barCutGrey.svg'
 import { calculateFactor, calculateAbsolute } from 'helper/resultHelper'
 import Collapse from 'react-css-collapse'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
+import Barcut from '../BarCut/Barcut'
 
 const userMetrics = [
   {
@@ -104,7 +104,7 @@ class ResultMetrics extends Component {
               <div className="competitor-metric-scale mb1" style={{height: '40px'}}/>
               <div className="flex flex-row" style={{height: '40px'}}>
                 <div className="speedKit-metric-scale" style={{width: 100 - (competitorData[metric] - speedKitData[metric]) / competitorData[metric] * 100 + '%'}}/>
-                <img src={barCut} className="bar-cut-image" alt="bar cut" />
+                <Barcut/>
                 <div className="speedKit-metric-scale-save" style={{width: (competitorData[metric] - speedKitData[metric]) / competitorData[metric] * 100 + '%'}}/>
               </div>
             </div>
@@ -129,7 +129,7 @@ class ResultMetrics extends Component {
               <div className="competitor-metric-scale mb1" style={{height: '40px'}}/>
               <div className="flex flex-row" style={{height: '40px'}}>
                 <div className="speedKit-metric-scale" style={{width: '50%'}}/>
-                <img src={barCut} className="bar-cut-image" alt="bar cut" />
+                <img className="bar-cut-image" alt="bar cut" />
                 <div className="speedKit-metric-scale-save" style={{width: '50%'}}/>
               </div>
             </div>
