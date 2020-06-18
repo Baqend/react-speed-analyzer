@@ -25,7 +25,7 @@ class Footer extends Component {
           <a
             className="pa1"
             target="_blank" rel="noopener noreferrer"
-            href="https://dashboard.baqend.com/privacy">
+            href="https://www.baqend.com/privacy">
             Privacy Policy
           </a>
           <span style={{ alignSelf: "center" }}>-</span>
@@ -39,7 +39,7 @@ class Footer extends Component {
           <a
             className="pa1"
             target="_blank" rel="noopener noreferrer"
-            href="https://dashboard.baqend.com/terms">
+            href="https://www.baqend.com/terms">
             Terms of Service
           </a>
         </div>
@@ -58,7 +58,7 @@ class Footer extends Component {
             <a
               className="pa1"
               target="_blank" rel="noopener noreferrer"
-              href="https://dashboard.baqend.com/privacy">
+              href="https://www.baqend.com/privacy">
               Privacy Policy
             </a>
             <span style={{ alignSelf: "center" }}>-</span>
@@ -72,7 +72,7 @@ class Footer extends Component {
             <a
               className="pa1"
               target="_blank" rel="noopener noreferrer"
-              href="https://dashboard.baqend.com/terms">
+              href="https://www.baqend.com/terms">
               Terms of Service
             </a>
             {/*<span style={{ alignSelf: "center" }}>-</span>*/}
