@@ -28,7 +28,9 @@ export default class CustomerSlider extends Component {
         {Customers.map(function(customer) {
           return (
             <div key={customer.logo}>
-              <img className="item-img" alt={`image ${customer.name}`} src={require(`../../../../assets/customers/${customer.logo}`)} />
+              <div className="flex text-center justify-center">
+                <div className={`item-img ${customer.className}`} />
+              </div>
               <p className="item-header">{customer.name} - {customer.title}</p>
               <p className="item-text">{Parser(customer.copy)}</p>
             </div>
