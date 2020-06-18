@@ -29,7 +29,7 @@ class ResultHeader extends Component {
 
   renderConfigForm() {
     return (
-      <div className="pt5 pb5">
+      <div className="pt5">
         <ConfigForm
           config={this.props.config}
           showConfig={this.state.showConfig}
@@ -43,14 +43,15 @@ class ResultHeader extends Component {
   }
 
   render() {
+    const { isPlesk, embedded } = this.props
     const { testOverview } = this.props.result
     const { isSpeedKitComparison, speedKitVersion, configAnalysis } = testOverview
 
     return (
       <div className={"result-header"}>
-        {!this.props.embedded && <Header changeColorOnResize={false} />}
+        {!embedded && <Header changeColorOnResize={false} />}
         <div className={"container"}>
-          {this.renderConfigForm()}
+          {!isPlesk && this.renderConfigForm()}
           {isSpeedKitComparison && (
             <div className="text-center" style={{ padding: '0px 16px' }}>
               <div className="flex justify-center" style={{ alignItems: 'center' }}>
@@ -62,7 +63,7 @@ class ResultHeader extends Component {
             </div>
           )}
           {this.props.result.isFinished && (
-            <div>
+            <div className="pt5">
               {this.renderMainMetric()}
               {this.renderVideos()}
             </div>
