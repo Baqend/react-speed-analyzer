@@ -1,0 +1,77 @@
+@import "../../../../styles/_variables.css";
+
+a {
+    color: inherit;
+}
+
+.slick-slider {
+    display: grid !important;
+    img {
+        display: inline !important;
+    }
+}
+
+.slick-list {
+    text-align: center;
+}
+
+.slick-dots li {
+    margin: 0 10px;
+}
+
+.slick-dots li button:before {
+    font-size: 30px !important;
+    color: #ffffff !important;
+}
+
+.slick-dots li.slick-active button:before {
+    opacity: 1.0 !important;
+}
+
+.item-img {
+    height: 25px;
+    @media (--breakpoint-small-device) {
+        height: 30px;
+    }
+}
+
+.item-header {
+    font-size: 13px;
+    margin: 5px 0;
+    color: rgba(255, 255, 255, 0.64);
+}
+
+.item-text {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.5;
+    margin-bottom: 5px;
+}
+
+.customer {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: auto 25px;
+    width: 100%;
+    @media (--breakpoint-small-device) {
+        background-size: auto 30px;
+    }
+    &.appelrath {
+         background-image: url('../../../../assets/customers/Appelrath_Logo_White.svg');
+    }
+    &.baur {
+         background-image: url('../../../../assets/customers/BAUR_Logo_White.svg');
+    }
+    &.justspices {
+         background-image: url('../../../../assets/customers/justspices_White.svg');
+    }
+    &.plesk {
+         background-image: url('../../../../assets/customers/plesk_Logo_White.png');
+    }
+    &.fussballdaten {
+         background-image: url('../../../../assets/customers/fussballdaten_Logo_White.svg');
+    }
+    &.stylefile {
+         background-image: url('../../../../assets/customers/Stylefile_Logo_White.svg');
+    }
+}

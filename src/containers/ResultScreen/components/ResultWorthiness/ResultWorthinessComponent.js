@@ -1,70 +1,80 @@
 import React, { Component } from 'react'
 import './ResultWorthiness.css'
 
-import { calculateFactor } from 'helper/resultHelper'
-
-import doubleClickLogo from 'assets/doubleClick.png'
-import amazonLogo from 'assets/amazon.png'
-
 class ResultWorthinessComponent extends Component {
+  getStudyLink(studyName) {
+    switch(studyName) {
+      case 'amazon':
+        return 'http://glinden.blogspot.com/2006/12/slides-from-my-talk-at-stanford.html'
+      case 'eggplant':
+        return 'https://blog.eggplantsoftware.com/case-studies/cook-increases-conversions-by-seven-percent-thanks-to-faster-load-time'
+      case 'gq':
+        return 'https://digiday.com/media/gq-com-cut-page-load-time-80-percent/'
+      case 'pinterest':
+        return ' https://medium.com/pinterest-engineering/driving-user-growth-with-performance-improvements-cfc50dafadd7'
+      case 'otto':
+        return 'https://www.thinkwithgoogle.com/intl/de-de/insights/markteinblicke/mobile-speed-race-der-otto-group-verbessert-mobile-ladezeiten/'
+      case 'akamai':
+        return 'https://blogs.akamai.com/2017/04/new-findings-the-state-of-online-retail-performance-spring-2017.html'
+    }
+  }
+
   render() {
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
-
-    const factor = calculateFactor(competitorData[this.props.mainMetric], speedKitData[this.props.mainMetric])
-
-    const publisherRevenue =
-      Math.round(((competitorData[this.props.mainMetric] - speedKitData[this.props.mainMetric]) / (19000 - 5000)) * 100)
-
-    const eCommerceRevenue =
-      Math.round((competitorData[this.props.mainMetric]  - speedKitData[this.props.mainMetric]) * 0.01)
+    const mainMetric = this.props.mainMetric
+    const savedMilliseconds = competitorData[mainMetric] - speedKitData[mainMetric]
 
     return (
-      <div>
-        <div className="flex">
-          <div className="w-100 text-center mb4 mt4 animated slideInUp">
-            <h2 className="dn db-ns mt0" style={{ maxWidth: 768, marginLeft: 'auto', marginRight: 'auto' }}>
-              How much is the <span style={{ color: '#F27354' }}>{factor}x</span> performance boost worth?
-            </h2>
-            <h3 className="dn-ns mt0" style={{ maxWidth: 768, marginLeft: 'auto', marginRight: 'auto' }}>
-              How much is the <span style={{ color: '#F27354' }}>{factor}x</span> performance boost worth?
-            </h3>
-            <h4 className="faded" style={{ maxWidth: 530, margin: '0 auto' }}>
-              Here is the impact Google and Amazon research predicts for this uplift.
-            </h4>
+      <div className="flex flex-column text-center pt6">
+        <h2 className="ma0">What can you expect from this <span className="purple">{savedMilliseconds} ms</span> improvement?</h2>
+        <h3>Here is a range of potential outcomes from well-known studies.</h3>
+        <div className="flex flex-wrap text-center" style={{margin: '0 -10px'}}>
+          <div className="box-wrapper" style={{margin: '10px'}}>
+            <div className="worthiness-header">
+              <span className="purple">+{(savedMilliseconds/100).toFixed(2)}%</span> Revenue
+            </div>
+            <div className="text-light-grey">100 ms ≙ 1% Revenue</div>
+            <a className="btn btn-blue btn-ghost mt4" href={this.getStudyLink('amazon')} target="_blank">Amazon Study</a>
+          </div>
+          <div className="box-wrapper" style={{margin: '10px'}}>
+            <div className="worthiness-header">
+              <span className="purple">+{(savedMilliseconds/100*0.8).toFixed(2)}%</span> Conversions
+            </div>
+            <div className="text-light-grey">100 ms ≙ 0.8% Conversions</div>
+            <a className="btn btn-blue btn-ghost mt4" href={this.getStudyLink('eggplant')} target="_blank">Eggplant Study</a>
           </div>
         </div>
-
-        <div className="flex flex-wrap flex-nowrap-ns text-center" style={{ margin: -16 }}>
-          <div className="w-100 w-50-ns pr6 pl6 ma2" style={{ padding: '64px 16px', background: '#f8f8f8' }}>
-            <h5 className="mt0 mb1">Publishers and Ad-driven Businesses</h5>
-            <h2 className="mb0"><span className="lightGreen">+{publisherRevenue}%</span> Revenue</h2>
-            <small className="faded">(PLT Original - PLT Speed Kit) / (19000 - 5000)</small>
-            <div className="pa1 mt2" style={{ maxWidth: 340, marginLeft: 'auto', marginRight: 'auto' }}>
-              <span>
-                <a href="https://storage.googleapis.com/doubleclick-prod/documents/The_Need_for_Mobile_Speed_-_FINAL.pdf#page=3"
-                  target="_blank" rel="noopener noreferrer">DoubleClick study (p. 3)
-                </a> "The Need for Mobile Speed" based on 4,500 real websites
-              </span>
+        <div className="flex flex-wrap text-center" style={{margin: '0 -10px'}}>
+          <div className="box-wrapper" style={{margin: '10px'}}>
+            <div className="worthiness-header">
+              <span className="purple">+{(savedMilliseconds/100*1.6).toFixed(2)}%</span> Traffic
             </div>
-            <div className="img-container pa1">
-              <img src={doubleClickLogo} alt="DoubleClick logo" style={{ maxWidth: '150px'}}/>
-            </div>
+            <div className="text-light-grey">100 ms ≙ 1.6% Traffic</div>
+            <a className="btn btn-blue btn-ghost mt4" href={this.getStudyLink('gq')} target="_blank">GQ Study</a>
           </div>
-          <div className="w-100 w-50-ns pr6 pl6 ma2" style={{ padding: '64px 32px', background: '#f8f8f8' }}>
-            <h5 className="mt0 mb1">E-Commerce</h5>
-            <h2 className="mb0"><span className="lightGreen">+{eCommerceRevenue}%</span> Revenue</h2>
-            <small className="faded">(PLT Original - PLT Speed Kit) * (1 / 100)</small>
-            <div className="pa1 mt2" style={{ maxWidth: 340, marginLeft: 'auto', marginRight: 'auto' }}>
-              <span>
-                <a href="http://sites.google.com/site/glinden/Home/StanfordDataMining.2006-11-28.ppt?attredirects=0"
-                  target="_blank" rel="noopener noreferrer">Amazon study (p. 10)
-                </a> "Make Data Useful" using A/B tests on the Amazon shop
-              </span>
+          <div className="box-wrapper" style={{margin: '10px'}}>
+            <div className="worthiness-header">
+              <span className="purple">+{(savedMilliseconds/100*0.4).toFixed(2)}%</span> SEO-Traffic
             </div>
-            <div className="img-container pa1">
-              <img src={amazonLogo} alt="Amazon logo" style={{ maxWidth: '120px'}}/>
+            <div className="text-light-grey">100 ms ≙ 0.4% SEO-Traffic</div>
+            <a className="btn btn-blue btn-ghost mt4" href={this.getStudyLink('pinterest')} target="_blank">Pinterest Study</a>
+          </div>
+        </div>
+        <div className="flex flex-wrap text-center" style={{margin: '0 -10px'}}>
+          <div className="box-wrapper" style={{margin: '10px'}}>
+            <div className="worthiness-header">
+              <span className="purple">+{(savedMilliseconds/100*0.6).toFixed(2)}%</span> Session Length
             </div>
+            <div className="text-light-grey">100 ms ≙ 0.6% Session Length</div>
+            <a className="btn btn-blue btn-ghost mt4" href={this.getStudyLink('otto')} target="_blank">OTTO Study</a>
+          </div>
+          <div className="box-wrapper" style={{margin: '10px'}}>
+            <div className="worthiness-header">
+              <span className="purple">-{(savedMilliseconds/1000*18.4).toFixed(2)}%</span> Bounce Rate
+            </div>
+            <div className="text-light-grey">1 s ≙ -18.4% Bounce Rate</div>
+            <a className="btn btn-blue btn-ghost mt4" href={this.getStudyLink('akamai')} target="_blank">Akamai Study</a>
           </div>
         </div>
       </div>

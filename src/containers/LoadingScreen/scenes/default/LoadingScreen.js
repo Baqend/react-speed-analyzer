@@ -11,13 +11,17 @@ import { resetResult } from 'actions/result'
 import { monitorTest } from 'actions/test'
 
 
-class StartingScreen extends Component {
+class LoadingScreen extends Component {
   componentDidMount() {
     const { history } = this.props
     const { testId } = this.props.match.params
+
     try {
       this.props.actions.monitorTest(testId, () => {
-        history.replace(`/test/${testId}/result${history.location.search}`)
+        // Wait one second to ensure the user can see the final animation of the progress bar
+        setTimeout(() => {
+          history.replace(`/test/${testId}/result${history.location.search}`)
+        }, 1000)
       })
     } catch(e) {
       this.props.actions.resetResult()
@@ -32,7 +36,7 @@ class StartingScreen extends Component {
   }
 }
 
-StartingScreen.propTypes = {
+LoadingScreen.propTypes = {
   testOverview: PropTypes.object,
   actions: PropTypes.object.isRequired,
   config: PropTypes.object.isRequired,
@@ -64,4 +68,4 @@ function mapDispatchToProps(dispatch) {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(StartingScreen)
+export default connect(mapStateToProps, mapDispatchToProps)(LoadingScreen)

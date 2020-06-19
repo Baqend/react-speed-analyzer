@@ -9,7 +9,6 @@ import '../styles/index.css'
 
 import createStore from '../store/store'
 
-import Navbar from '../components/Navbar/Navbar'
 import Footer from '../components/Footer/Footer'
 
 import StartingScreen from './StartingScreen'
@@ -46,7 +45,7 @@ class App extends Component {
                     <div className="content">
                       <StartingScreen { ...props } />
                     </div>
-                    <Footer />
+                    <Footer isResultPage={false}/>
                   </div>
                 )
               }}/>
@@ -56,16 +55,14 @@ class App extends Component {
                   <div className="content">
                     <LoadingScreen { ...props } />
                   </div>
-                  <Footer />
+                  <Footer isResultPage={false}/>
                 </div>
               )}/>
               <Route exact path="/test/:testId/result" render={props => (
                 <div id="main">
-                  <Navbar />
                   <div className="content">
                     <ResultScreen { ...props } />
                   </div>
-                  <Footer/>
                 </div>
               )}/>
             </Switch>

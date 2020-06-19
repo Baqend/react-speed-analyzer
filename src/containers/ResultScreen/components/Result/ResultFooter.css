@@ -1,0 +1,128 @@
+@import "../../../../styles/_variables.css";
+
+.result-footer {
+  background: #f4f4f4;
+}
+
+.footer-wrapper {
+  width: 100%;
+  text-align: center;
+  margin: auto;
+  @media(--breakpoint-small-device) {
+    max-width: 576px;
+    text-align: left;
+  }
+  @media(--breakpoint-medium-device) {
+    max-width: 768px;
+  }
+  @media(--breakpoint-large-device) {
+    max-width:  992px;
+  }
+  @media(--breakpoint-extra-large-device) {
+    max-width: 1280px;
+  }
+}
+
+.footer-menu-column{
+  width: 100%;
+  @media(--breakpoint-small-device) {
+    width: 50%;
+  }
+  @media(--breakpoint-large-device) {
+    width: 25%;
+  }
+}
+
+.footer-menu-header {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.footer-menu-item {
+  font-size: 1.125rem;
+}
+
+.footer-line {
+  background-color: #fff;
+  width: 100%;
+  height: 2px;
+}
+
+.footer-icon {
+  padding-right: 0.25rem;
+  padding-left: 0.25rem;
+  @media(--breakpoint-small-device) {
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+  }
+  @media(--breakpoint-medium-device) {
+    padding-right: 1rem;
+    padding-left: 1rem;
+  }
+}
+
+.footer-line-wrapper {
+  width: 25%;
+  @media(--breakpoint-medium-device) {
+    width: 33.3333%;
+  }
+}
+
+.footer-icon-wrapper {
+  width: 50%;
+  @media(--breakpoint-medium-device) {
+    width: 33.3333%;
+  }
+}
+
+.customer-wrapper {
+  display: flex;
+  width: 50%;
+  align-items: center;
+  justify-content: center;
+  @media(--breakpoint-medium-device) {
+    width: 25%;
+  }
+}
+
+.customer-img {
+  width: 60%;
+  min-width: 130px;
+  max-height: 50px;
+  margin-bottom: 40px;
+  @media(--breakpoint-medium-device) {
+    width: 70%;
+    max-height: 60px;
+  }
+}
+
+.cta-wrapper {
+  padding: 48px 16px 96px 16px;
+  @media(--breakpoint-small-device) {
+    padding: 64px 0 112px 0;
+  }
+}
+
+.cta-header {
+  font-size: 1.875rem;
+  font-weight: 700;
+  letter-spacing: -.025em;
+
+  @media(--breakpoint-small-device) {
+    font-size: 2.25rem;
+  }
+  @media(--breakpoint-medium-device) {
+    font-size: 3rem;
+  }
+}
+
+.cta-img {
+  height: 2.5rem;
+  @media(--breakpoint-small-device) {
+    height: 3rem;
+  }
+  @media(--breakpoint-medium-device) {
+    height: 4.2rem;
+  }
+}

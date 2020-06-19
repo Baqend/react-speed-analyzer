@@ -22,40 +22,35 @@
 @import "~tachyons/src/_font-weight.css";
 @import "~tachyons/src/_display.css";
 
+@import "./_fonts.css";
+
 :root {
   --dark-blue: #162939;
 }
-
-/* html {
-  height: 100%;
-} */
 
 body {
   margin: 0;
   padding: 0;
   flex-grow: 1;
-  font-family: 'Open Sans', sans-serif;
+  font-family: Axiforma, sans-serif;
   font-size: 18px;
   line-height: 1.48;
-  color: color(#fff a(80%));
+  color: color(#fff);
+  @media (--breakpoint-small-device) {
+    font-size: 20px;
+  }
 }
 
 html, body, #speed-kit-analyzer, #wrapper {
   min-height: 100vh;
 }
 
-html {
-  background: #12212e;
-  /* min-height: 100%; */
-  /* background-color: linear-gradient(to bottom,#162939,#12212e); */
-}
-
 #speed-kit-analyzer {
-  /* background: var(--dark-blue); */
-  /* background: linear-gradient(to bottom, var(--dark-blue) 0%, #1a1a1a 100%); */
-  /* background: linear-gradient(to bottom, #000 0%, #000 66%, #1a1a1a 100%); */
-  /* background: linear-gradient(to bottom,#162939,#12212e); */
-  background-color: linear-gradient(to bottom,#162939,#12212e);
+  background-image: linear-gradient(153deg, #1201e8, #e808f2 101%);
+  @media (--breakpoint-medium-device) {
+      background-color: #f4f4f4;
+      background-image: none;
+  }
 }
 
 #speed-kit-analyzer, #main {
@@ -94,6 +89,13 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 400;
 }
 
+h2 {
+  font-size: 24px;
+  font-weight: bold;
+  @media (--breakpoint-small-device) {
+    font-size: 36px;
+  }
+}
 a {
   color: var(--blue);
   text-decoration: none;
@@ -101,8 +103,18 @@ a {
 
 .container {
   width: 100%;
-  max-width: 1170px;
+  max-width: 1270px;
   margin: 0 auto;
+  padding-right: 20px;
+  padding-left: 20px;
+  @media (--breakpoint-medium-device) {
+    padding-right: 40px;
+    padding-left: 40px;
+  }
+  @media (--breakpoint-large-device) {
+    padding-right: 60px;
+    padding-left: 60px;
+  }
 }
 
 .text-right {
@@ -117,11 +129,19 @@ a {
   text-align: center;
 }
 
+.dark-blue {
+   color: var(--custom-dark-blue);
+ }
+
+.purple {
+   color: var(--custom-purple);
+}
+
 hr {
   height: 1px;
-  margin: 0;
   border: 0;
-  background: linear-gradient(to right,rgba(232,232,232,.1),rgba(232,232,232,.9) 10%,rgba(232,232,232,.9) 90%,rgba(232,232,232,.1))
+  margin: 0;
+  background-color: #dedede;
 }
 
 input {
@@ -130,6 +150,13 @@ input {
   border: 1px solid #ccc;
   border-radius: 4px;
   box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+}
+
+.pr2-ns {
+  padding-right: 0;
+  @media (--breakpoint-small-device) {
+    padding-right: 20px;
+  }
 }
 
 textarea {

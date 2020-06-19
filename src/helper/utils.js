@@ -57,7 +57,7 @@ export const getObjectKey = (objectId) => {
  */
 export const isURL = (str) => {
   // Check is not a relative URL
-  if (str.startsWith('/')) {
+  if (str.match(/^\//)) {
     return false
   }
 
@@ -103,18 +103,6 @@ export const shuffle = (a) => {
     a[index] = temp
   }
   return a
-}
-
-/**
- * Verify whether the site was loaded in an IFrame or not.
- * @return {boolean}
- */
-export const isIFrame = () => {
-  try {
-    return window.self !== window.top
-  } catch (e) {
-    return true
-  }
 }
 
 /**

@@ -1,14 +1,34 @@
+@import "../../styles/_variables.css";
+
 footer {
-  align-self: stretch;
-  font-size: 16px;
-  .info {
-    background: color(#fff a(5%));
+  font-weight: 500;
+  font-size: 14px;
+  padding: 8px 0 32px;
+  color: color(#fff);
+  a {
+    color: color(#fff);
+  }
+  .company {
+    color: rgba(255, 255, 255, 0.64);
+  }
+  .result-page {
+    font-size: 1.125rem;
+    color: color(#fff) !important;
+    background-color: rgb(51, 53, 55) !important;
     a {
-      color: white;
-      white-space: nowrap;
-      @media(max-width: 400px) {
-        font-size: 14px;
-      }
+      color: color(#fff) !important;
+    }
+  }
+  @media (--breakpoint-small-device) {
+    font-size: 16px;
+  }
+  @media (--breakpoint-medium-device) {
+    color: #333537;
+    a {
+      color: #333537;
+    }
+    .company {
+      color: inherit;
     }
   }
 }

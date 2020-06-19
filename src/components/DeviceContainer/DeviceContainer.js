@@ -1,46 +1,30 @@
 import React, { Component } from 'react'
 import './DeviceContainer.css'
 
-const DeviceNodes = ({ children, img }) => (
-  <div className="device__wrapper-outer">
-    <div className="device__wrapper">
-      {img && (
-        <div
-          className="device__background-image animated fadeIn"
-          style={{ backgroundImage: `linear-gradient(rgba(17, 33, 47, 0.85), rgba(17, 33, 47, 1) 75%), url(${img})` }}>
-        </div>
-      )}
-      <div className="device__screen">
-        {children}
-      </div>
-    </div>
-  </div>
-)
-
 export default class DeviceContainer extends Component {
   render() {
-    const { showDevice, mobile, left, right, showRight, backgroundImage } = this.props
+    const { mobile, content, bgImage, embedded } = this.props
+    const showBgImage = bgImage && !mobile
     return (
-      <div className={`${showDevice ? 'device' : 'no-device'}`}>
+      <div className="device">
         <div className={`${mobile ? 'device__phone' : 'device__laptop'}`}>
-          <DeviceNodes img={backgroundImage && mobile ? null : backgroundImage }>
-            <div className="flex-grow-1 flex flex-column">
-              <div className={`flex-grow-1 flex justify-center items-center ${showRight && 'loading'}`}>
-                <div className="device-left">
-                  <DeviceNodes img={backgroundImage && mobile ? backgroundImage : null }>
-                    {left}
-                  </DeviceNodes>
+          { !embedded && <div className="device__wrapper-top"/> }
+          <div className={`device__wrapper-outer${embedded ? 'embedded' : ''}`}>
+            <div className={`device__wrapper${embedded ? 'embedded' : ''}`}>
+              <div className="device__screen">{content}</div>
+              {showBgImage && (
+                <div
+                  className="device__background"
+                  style={{ backgroundImage: `url(${bgImage})` }}>
                 </div>
-                {showRight &&
-                  <div className="device-right">
-                    <div className="carousel flex flex-grow-1 flex-column justify-center items-stretch pa2" style={{ flexBasis: '100%' }}>
-                      {right}
-                    </div>
-                  </div>
-                }
-              </div>
+              )}
             </div>
-          </DeviceNodes>
+          </div>
+          { !embedded && (
+            <div className="device__wrapper-bottom">
+              <div className="device-notch"/>
+            </div>
+          )}
         </div>
       </div>
     )

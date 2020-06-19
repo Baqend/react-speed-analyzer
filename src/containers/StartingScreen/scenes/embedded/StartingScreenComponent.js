@@ -23,7 +23,7 @@ class StartingScreenComponent extends Component {
     return (
       <div className="flex-grow-1 flex flex-column justify-center">
         <div className="text-center flex-grow-1 flex flex-column justify-end">
-          <h1 className="mv2">Page Speed Analyzer</h1>
+          <h1 className="header">Test Your Speed</h1>
         </div>
         <div className="mt4 flex-grow-1 flex flex-column">
           <ConfigForm
@@ -41,17 +41,17 @@ class StartingScreenComponent extends Component {
 
   render() {
     return (
-      <div className="loading-screen flex-column flex-grow-1 flex items-center">
+      <div className="flex-column flex-grow-1 flex items-center background-embedded">
         <DeviceContainer
-          showDevice={false}
-          mobile={this.props.config.mobile}
-          backgroundImage={this.props.result.testOverview.psiScreenshot}
-          left={
-            <div className="left">
-              {this.renderForm()}
+          embedded={true}
+          mobile={false}
+          content={
+            <div className={`flex-grow-1 flex justify-center`}>
+              <div className="flex-grow-1">
+                {this.renderForm()}
+              </div>
             </div>
           }
-          right={null}
         />
       </div>
     )

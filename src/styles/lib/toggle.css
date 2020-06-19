@@ -7,6 +7,7 @@
   background-color: transparent;
   border: 0;
   padding: 0;
+  margin: 0 12px;
 
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -38,12 +39,12 @@
 }
 
 .react-toggle-track {
-  width: 50px;
-  height: 24px;
+  width: 64px;
+  height: 32px;
   padding: 0;
   border-radius: 30px;
   background-color: none;
-  border: 1px solid color(#fff a(35%));
+  border: 1px solid color(#fff);
   -webkit-transition: all 0.2s ease;
   -moz-transition: all 0.2s ease;
   transition: all 0.2s ease;
@@ -107,13 +108,13 @@
 .react-toggle-thumb {
   transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1) 0ms;
   position: absolute;
-  top: 2px;
+  top: 3px;
   left: 2px;
-  width: 20px;
-  height: 20px;
+  width: 26px;
+  height: 26px;
   /* border: 1px solid #4D4D4D; */
   border-radius: 50%;
-  background-color: color(#fff a(35%));
+  background-color: color(#fff);
 
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -125,7 +126,7 @@
 }
 
 .react-toggle--checked .react-toggle-thumb {
-  left: 28px;
+  left: 36px;
   /* border-color: #19AB27; */
 }
 

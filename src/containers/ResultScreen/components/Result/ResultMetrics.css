@@ -1,0 +1,111 @@
+@import "../../../../styles/_variables.css";
+
+.factor-column {
+  width: 55%;
+  @media(--breakpoint-small-device) {
+    width: 33.3333%;
+  }
+}
+
+.metric-column {
+  width: 22.5%;
+  @media(--breakpoint-small-device) {
+    width: 33.3333%;
+  }
+}
+
+.details-toggle-wrapper {
+  position: relative;
+  margin-top: -20px;
+}
+
+.details-toggle {
+  border-radius: 100px;
+  border: solid 3px #dedede;
+  background-color: #ffffff;
+  font-weight: 500;
+  font-size: 16px;
+  margin: auto;
+  text-align: center;
+  cursor: pointer;
+  padding: 4px;
+  width: 235px;
+@media(--breakpoint-medium-device) {
+  font-size: 20px;
+}
+}
+
+.details-toggle-arrow {
+  margin-left: 2px;
+  margin-top: 4px;
+}
+
+.result-details-collapse {
+  position: relative;
+  border-radius: 8px;
+  border: solid 3px #dedede;
+  background-color: #ffffff;
+  min-height: 115px;
+  visibility: visible !important;
+  padding-bottom: 20px;
+}
+
+.fade-out:after {
+  content:'';
+  width:100%;
+  height:100%;
+  position:absolute;
+  left:0;
+  top:0;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) -50px, #ffffff)
+}
+
+.result__details-metrics {
+  font-size: 16px;
+  @media(--breakpoint-small-device) {
+    font-size: 18px;
+  }
+  .metricValue {
+    font-weight: 500;
+    @media(--breakpoint-medium-device) {
+      font-size: 26px;
+    }
+  }
+  .faster {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 16px;
+    font-weight: 600;
+    @media(--breakpoint-small-device) {
+      flex-direction: row;
+      font-size: 18px;
+    }
+    @media(--breakpoint-medium-device) {
+      font-size: 22px;
+    }
+  }
+  .faster-value {
+    padding-right: 0;
+    @media(--breakpoint-small-device) {
+      padding-right: 5px;
+    }
+  }
+  .factor {
+    font-weight: 500;
+  }
+  .competitor-metric-scale {
+    height: 40px;
+    border-radius: 4px;
+    background-color: var(--custom-dark-blue);
+  }
+  .speedKit-metric-scale {
+    border-radius: 4px;
+    background-color: var(--custom-purple);
+  }
+  .speedKit-metric-scale-save {
+    border-radius: 4px;
+    background-color: #8d0093;
+    width: 100%;
+  }
+}

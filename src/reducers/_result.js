@@ -8,15 +8,20 @@ import {
   TESTOVERVIEW_NEXT,
   RATE_LIMITER_GET,
   TEST_STATUS_GET,
+  UPDATE_TEST_PROGRESS,
   COMPETITOR_RESULT_LOAD,
   SPEED_KIT_RESULT_LOAD,
   TERMINATE_TEST,
   RESET_TEST_RESULT,
   RESET_TEST_STATUS,
+  SPEED_KIT_RESULT_NEXT,
+  COMPETITOR_RESULT_NEXT,
 } from '../actions/types'
 
 import { generateRules } from '../helper/configHelper'
 import { resultIsValid } from '../helper/resultHelper'
+
+const PROGRESS_SESSION_KEY = 'baqend-progress'
 
 const createScreenshot = (psiScreenshot) => {
   if (psiScreenshot) {
@@ -89,8 +94,11 @@ const initialState = {
   isPlesk: false,
   speedKitVersion: null,
   testOverview: {},
+  prewarmFinished: false,
+  finishedTests: 0,
   statusCode: null,
   statusText: '',
+  testProgress: 0,
   competitorSubscription: null,
   speedKitSubscription: null,
   competitorTest: {},
@@ -106,14 +114,29 @@ const initialState = {
 export default function result(state = initialState, action = {}) {
   switch (action.type) {
     case TESTOVERVIEW_LOAD:
-    case TESTOVERVIEW_NEXT:
       return {
-        ...state,
-        testOverview: {
-          ...action.payload,
-          psiScreenshot: createScreenshot(action.payload.psiScreenshot),
-        }
+        ...state, testOverview: { ...action.payload, psiScreenshot: createScreenshot(action.payload.psiScreenshot) }
       }
+    case TESTOVERVIEW_NEXT:
+      // Do not trigger update if the test is not started anymore e.g. because of backward navigation
+      if (!state.isStarted) {
+        return { ...state }
+      }
+      return {
+        ...state, testOverview: { ...action.payload, psiScreenshot: createScreenshot(action.payload.psiScreenshot) }
+      }
+    case COMPETITOR_RESULT_NEXT:
+      // Do not trigger update if the test is not started anymore e.g. because of backward navigation
+      if (!state.isStarted) {
+        return { ...state}
+      }
+      return { ...state, competitorTest: state.isStarted ? { ...action.payload } : state.competitorTest }
+    case SPEED_KIT_RESULT_NEXT:
+      // Do not trigger update if the test is not started anymore e.g. because of backward navigation
+      if (!state.isStarted) {
+        return { ...state}
+      }
+      return { ...state, speedKitTest: state.isStarted ? { ...action.payload } : state.speedKitTest }
     case TESTOVERVIEW_LOAD_FAIL:
       return { ...state, isFinished: true }
     case RATE_LIMITER_GET:
@@ -124,6 +147,10 @@ export default function result(state = initialState, action = {}) {
       return { ...state, isInitiated: true }
     case START_TEST:
       return { ...state, isStarted: true, startTime: new Date() }
+    case UPDATE_TEST_PROGRESS:
+      // Persist progress in session storage to make it usable on reload.
+      sessionStorage.setItem(PROGRESS_SESSION_KEY, action.payload)
+      return { ...state, testProgress: action.payload }
     case CONTINUE_TEST:
       return { ...state, isInitiated: true, isStarted: true }
     case TEST_STATUS_GET:
@@ -165,6 +192,7 @@ export default function result(state = initialState, action = {}) {
         isMonitored: false,
       }
     case RESET_TEST_RESULT:
+      sessionStorage.removeItem(PROGRESS_SESSION_KEY)
       return {
         ...initialState,
         isInitiated: state.isInitiated,

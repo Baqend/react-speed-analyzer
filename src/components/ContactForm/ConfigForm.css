@@ -1,5 +1,43 @@
 @import "../../styles/_variables.css";
 
 .contact__form {
-  color: #444;
+  color: #9b9b9b;
+  .single-input-wrapper {
+    width: 100%;
+    margin: auto;
+    @media (--breakpoint-small-device) {
+      width: 75%;
+    }
+    @media (--breakpoint-large-device) {
+      width: 62%;
+    }
+  }
+  .single-input {
+    width: 100%;
+    height: 60px;
+    font-size: 18px;
+    border-radius: 4px;
+    padding: 18px;
+    border: solid 2px #dedede;
+    background-color: #ffffff;
+    @media (--breakpoint-small-device) {
+      font-size: 22px;
+    }
+  }
+  .single-submit {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 60px;
+    font-size: 18px;
+    @media (--breakpoint-small-device) {
+      font-size: 20px;
+    }
+  }
+}
+
+::placeholder {
+  color: #9b9b9b;
+  opacity: 1;
 }

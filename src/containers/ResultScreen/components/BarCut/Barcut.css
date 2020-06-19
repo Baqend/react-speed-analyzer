@@ -1,0 +1,6 @@
+.bar-cut-image {
+  margin-left: -6px;
+  margin-right: -5px;
+  height: 100%;
+  z-index: 1;
+}

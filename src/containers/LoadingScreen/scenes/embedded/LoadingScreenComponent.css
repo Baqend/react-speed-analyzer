@@ -1,12 +1,19 @@
-@import "~tachyons/src/_media-queries.css";
+@import "../../../../styles/_variables.css";
+
 .loading-screen {
-  .spinner__wrapper {
-    position:relative;
-    width: 200px;
-    height: 200px;
-    @media (--breakpoint-not-small) {
-      width: 300px;
-      height: 300px;
+  .device__laptop {
+    .carousel__wrapper {
+      width: 95%;
+      margin: 40px 0 32px 0;
+      @media (--breakpoint-medium-device) {
+        width: 70%;
+      }
+    }
+    .progress__wrapper {
+      width: 180px;
+      @media (--breakpoint-small-device) {
+        width: 210px;
+      }
     }
   }
 }

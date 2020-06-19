@@ -1,107 +1,140 @@
 @import "../../styles/_variables.css";
 
 .config__form {
-  font-size: 14px;
-  &-input-wrapper {
-    position: relative;
-    .parsed-domain {
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      font-size: 18px;
-      color: #fff;
-      font-weight: 400;
-      line-height: 34px;
-      pointer-events: none;
+    &-input-wrapper {
+       display: flex;
+       flex-direction: column;
+       @media(--breakpoint-medium-device) {
+           flex-direction: row;
+           flex-wrap: wrap;
+       }
+     }
+    &-input {
+       font-size: 20px;
+       border-radius: 4px;
+       background-color: rgba(0, 0, 0, 0.24);
+       color: var(--white);
+       border: none;
+       flex-grow: 1;
+       padding: 14px 45px 14px 20px;
+       box-shadow: none;
+       min-height: 56px;
+       @media(--breakpoint-medium-device) {
+           min-height: 60px;
+       }
+       &.no-text {
+           color: transparent;
+           caret-color: white;
+       }
+       &::placeholder {
+           color: rgba(255, 255, 255, 0.64);
+       }
     }
-  }
-  &-input {
-    font-size: 18px;
-    background: color(var(--white) a(20%));
-    color: var(--white);
-    border: none;
-    border-radius: 3px;
-    font-weight: 400;
-    line-height: 34px;
-    &.no-text {
-      color: transparent;
-      caret-color: white;
+    &-submit {
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       border-radius: 4px;
+       border: solid 3px #ffffff;
+       font-size: 16px;
+       font-weight: 500;
+       letter-spacing: 0.15em;
+       cursor: pointer;
+       padding: 16px 40px;
+       margin-top: 15px;
+       margin-left: 0;
+       background: none;
+       color: color(#fff);
+       @media(--breakpoint-medium-device) {
+           margin-top: 0;
+           margin-left: 15px;
+           padding: 18px 40px;
+       }
     }
-    &::placeholder {
-      color: color(var(--white) a(75%));
+    &-settings {
+       border-radius: 50%;
+       width: 44px;
+       height: 44px;
+       border: none;
+       opacity: 0.8;
+       cursor: pointer;
+       &:hover {
+         opacity: 1;
+       }
     }
-  }
-  &-submit-wrapper {
-    position: absolute;
-    top: 11px;
-    right: 11px;
-  }
-  &-submit {
-    border-radius: 50%;
-    width: 44px;
-    height: 44px;
-    border: none;
-    background: color(var(--white) a(30%));
-    cursor: pointer;
-    .spinner__wrapper {
-      width: 25px;
-      height: 25px;
-      position: relative;
-      svg circle {
-        stroke-width: 4;
-        stroke-color: white;
+    .config__form-input-wrapper {
+        position: relative;
+    }
+    .config__form-submit-wrapper {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        @media(--breakpoint-medium-device) {
+            right: 225px;
+        }
+    }
+    .advanced {
+      width: 100%;
+      margin: 0 auto;
+      @media(--breakpoint-medium-device) {
+           max-width: 75%;
+      }
+      .CodeMirror {
+        height: auto;
+        font-size: 16px;
+        background-color: rgba(0, 0, 0, 0.24);
+        color: var(--white);
+        border-radius: 4px;
+        outline: none;
+        .CodeMirror-cursor {
+          border-color: white;
+        }
+        .CodeMirror-selected {
+          background: rgba(255,255,255,0.2);
+        }
       }
     }
-  }
-  &-settings {
-    border-radius: 50%;
-    width: 44px;
-    height: 44px;
-    border: none;
-    opacity: 0.8;
-    cursor: pointer;
-    &:hover {
-      opacity: 1;
-    }
-  }
-  .advanced {
-    width: 100%;
-    /* max-width: 720px; */
-    max-width: 75%;
-    margin: 0 auto;
-    h5 {
-      font-size: 16px;
-    }
-    .CodeMirror {
-      height: auto;
-      background: color(var(--white) a(10%));
-      color: var(--white);
-      border: 1px solid color(var(--white) a(30%));
-      color: white;
-      border-radius: 3px;
-      outline: none;
-      .CodeMirror-cursor {
-        border-color: white;
-      }
-      .CodeMirror-selected {
-        background: rgba(255,255,255,0.2);
+    .toggleAdvancedSettings-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-top: 15px;
+      .toggle {
+        display: flex;
+        justify-content: center;
+        padding: 8px 22px;
+        align-items: center;
+        border-radius: 21.5px;
+        border: solid 2px rgba(255, 255, 255, 0.24);
+        a {
+          font-size: 16px;
+          font-weight: 400;
+          color: #f4f4f4;
+          cursor: pointer;
+        }
       }
     }
-  }
-  .toggleAdvancedSettings {
-    text-align: center;
-    color: color(var(--white) a(50%));
-    font-size: 12px;
-    a {
-      color: color(var(--white) a(75%));
-      text-decoration: underline;
-      cursor: pointer;
-    }
-  }
 }
-
+.device__phone {
+    .config__form {
+        &-input-wrapper {
+            flex-direction: column;
+            @media(--breakpoint-medium-device) {
+                padding: 0 30px;
+            }
+        }
+        &-submit {
+            margin-top: 15px;
+            margin-left: 0;
+        }
+        .advanced {
+            @media(--breakpoint-medium-device) {
+                width: auto !important;
+                max-width: none;
+                margin: 0 20px;
+            }
+        }
+    }
+}
 
 .checkbox-custom {
   background-color: transparent;

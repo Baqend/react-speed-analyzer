@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
-import './Result.css'
+import './ResultVideos.css'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlay } from '@fortawesome/free-solid-svg-icons'
 import { isDeviceIOS, isIE, isEdge } from 'helper/utils'
 
 class ResultVideos extends Component {
@@ -17,20 +19,21 @@ class ResultVideos extends Component {
     this[videoLabel].currentTime = 0
     const playPromise = this[videoLabel].play()
     const secondVideo = videoLabel === 'speedKitVideo' ? 'competitorVideo' : 'speedKitVideo'
-    if(isIE() || isEdge()) {
+    if (isIE() || isEdge()) {
       if (this[secondVideo]) {
         this[secondVideo].currentTime = 0
         this[secondVideo].play()
       }
     } else if (!isDeviceIOS() && playPromise !== undefined) {
       playPromise.then(() => {
-        if(this[secondVideo]) {
+        if (this[secondVideo]) {
           this[secondVideo].currentTime = 0
           this[secondVideo].play()
         }
-      }).catch(error => {})
+      }).catch(error => {
+      })
     }
-  }
+  };
 
   handleCompetitorStarted = () => {
     this.setState({ isRunningCompetitor: false }, () => {
@@ -38,7 +41,7 @@ class ResultVideos extends Component {
         this.setState({ isRunningCompetitor: true })
       }, 100)
     })
-  }
+  };
 
   handleSpeedKitStarted = () => {
     this.setState({ isRunningSpeedKit: false }, () => {
@@ -46,31 +49,31 @@ class ResultVideos extends Component {
         this.setState({ isRunningSpeedKit: true })
       }, 100)
     })
-  }
+  };
 
   handleCompetitorProgress = () => {
     const percent = (this.competitorVideo.currentTime / this.competitorVideo.duration) + 0.05
     this.setState({
-      progressCompetitor: percent
+      progressCompetitor: percent,
     })
-  }
+  };
 
   handleSpeedKitProgress = () => {
     if (this.speedKitVideo) {
-      const percent = (this.speedKitVideo.currentTime / this.speedKitVideo.duration) + 0.05
+      const percent = (this.speedKitVideo.currentTime / this.speedKitVideo.duration) + 0.05;
       this.setState({
-        progressSpeedKit: percent
+        progressSpeedKit: percent,
       })
     }
-  }
+  };
 
   handleCompetitorEnded = () => {
     this.setState({ isRunningCompetitor: false })
-  }
+  };
 
   handleSpeedKitEnded = () => {
     this.setState({ isRunningSpeedKit: false })
-  }
+  };
 
   componentDidMount() {
     if (this.competitorVideo) {
@@ -101,52 +104,59 @@ class ResultVideos extends Component {
   }
 
   render() {
-    const { speedKitError } = this.props.result
+    const { competitorError, speedKitError } = this.props.result
+    const showErrorView = competitorError || speedKitError
     const competitorVideoPath = this.props.competitorTest.videoFileFirstView
     const speedKitVideoPath = this.props.speedKitTest.videoFileFirstView
-    // const data = this.props.testOverview.psiScreenshot
-    // <img src={`data:${data.mime_type};base64,${data.data.replace(/_/g, '/').replace(/-/g, '+')}`} />
-    // poster={`data:${data.mime_type};base64,${data.data.replace(/_/g, '/').replace(/-/g, '+')}`}
     return (
       <div className="flex justify-center">
-        <div className={`w-50 pa2 pv4-ns ph6-ns ${this.props.testOverview.mobile ? 'mobile' : ''}`}>
+        <div className={`w-50 competitor-video ${this.props.testOverview.mobile ? 'mobile' : ''}`}>
           <div className="video__wrapper">
             <div className="video__wrapper-inner">
-              <div className="relative">
-                <video id="competitorVideo"
-                  playsInline
-                  controls={false}
-                  muted
-                  autoPlay
-                  className="embedVideo"
-                  ref={(video) => {this.competitorVideo = video}}
-                  onClick={() => this.playVideos('competitorVideo')}
-                  onPlay={() => this.playVideos('competitorVideo')}
-                  src={competitorVideoPath && `https://${process.env.REACT_APP_BAQEND}.app.baqend.com/v1${competitorVideoPath}`} />
-                {/*<div style={{ backgroundImage: `url(data:${data.mime_type};base64,${data.data.replace(/_/g, '/').replace(/-/g, '+')})`}}></div>*/}
+              {!showErrorView ? (
+                <div className="relative">
+                  <video id="competitorVideo"
+                    playsInline
+                    controls={false}
+                    muted
+                    autoPlay
+                    className="embedVideo"
+                    ref={(video) => {this.competitorVideo = video}}
+                    onClick={() => this.playVideos('competitorVideo')}
+                    onPlay={() => this.playVideos('competitorVideo')}
+                    src={competitorVideoPath && `https://${process.env.REACT_APP_BAQEND}.app.baqend.com/v1${competitorVideoPath}`}/>
 
-                {this.competitorVideo && this.competitorVideo.paused && (
-                  <div className="video__wrapper-play" onClick={() => this.playVideos('competitorVideo')}>►</div>
-                )}
-                <div className="video__wrapper-progress">
-                  <div className="video__wrapper-progress-inner">
-                    <div
-                      className="video__wrapper-progress-bar"
-                      style={{
-                        transform: `scaleX(${this.state.progressCompetitor})`,
-                        transition: this.state.isRunningCompetitor ? 'all 0.5s linear' : 'all 0.01ms linear'
-                      }}>
+                  {this.competitorVideo && this.competitorVideo.paused && (
+                    <div className={'video__wrapper-play'}>
+                      <div className="video__wrapper-play-inner dark-blue" onClick={() => this.playVideos('competitorVideo')}>
+                        <FontAwesomeIcon icon={faPlay} className="play"/>
+                      </div>
+                    </div>
+                  )}
+                  <div className="video__wrapper-progress">
+                    <div className="video__wrapper-progress-inner">
+                      <div
+                        className="video__wrapper-progress-bar dark-blue"
+                        style={{
+                          transform: `scaleX(${this.state.progressCompetitor})`,
+                          transition: this.state.isRunningCompetitor ? 'all 0.5s linear' : 'all 0.01ms linear',
+                        }}>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <div className="relative" style={{paddingTop: '9%'}}>
+                  <div className="test-failed-before"/>
+                </div>
+              )}
             </div>
           </div>
         </div>
-        { !speedKitError && (
-          <div className={`w-50 speedKitVideo pa2 pv4-ns ph6-ns ${this.props.testOverview.mobile ? 'mobile' : ''}`}>
-            <div className="video__wrapper">
-              <div className="video__wrapper-inner">
+        <div className={`w-50 speedKit-video ${this.props.testOverview.mobile ? 'mobile' : ''}`}>
+          <div className="video__wrapper">
+            <div className="video__wrapper-inner">
+              {!showErrorView ? (
                 <div className="relative">
                   <video id="speedKitVideo"
                     playsInline
@@ -157,27 +167,34 @@ class ResultVideos extends Component {
                     ref={(video) => {this.speedKitVideo = video}}
                     onClick={() => this.playVideos('speedKitVideo')}
                     onPlay={() => this.playVideos('speedKitVideo')}
-                    src={speedKitVideoPath && `https://${process.env.REACT_APP_BAQEND}.app.baqend.com/v1${speedKitVideoPath}`} />
-                  {/*<div style={{ backgroundImage: `url(data:${data.mime_type};base64,${data.data.replace(/_/g, '/').replace(/-/g, '+')})`}}></div>*/}
+                    src={speedKitVideoPath && `https://${process.env.REACT_APP_BAQEND}.app.baqend.com/v1${speedKitVideoPath}`}/>
                   {this.speedKitVideo && this.speedKitVideo.paused && (
-                    <div className="video__wrapper-play" onClick={() => this.playVideos('speedKitVideo')}>►</div>
+                    <div className={'video__wrapper-play'}>
+                      <div className="video__wrapper-play-inner purple" onClick={() => this.playVideos('speedKitVideo')}>
+                        <FontAwesomeIcon icon={faPlay} className="play"/>
+                      </div>
+                    </div>
                   )}
                   <div className="video__wrapper-progress">
                     <div className="video__wrapper-progress-inner">
                       <div
-                        className="video__wrapper-progress-bar"
+                        className="video__wrapper-progress-bar purple"
                         style={{
                           transform: `scaleX(${this.state.progressSpeedKit})`,
-                          transition: this.state.isRunningSpeedKit ? 'all 0.5s linear' : 'all 0.01ms linear'
+                          transition: this.state.isRunningSpeedKit ? 'all 0.5s linear' : 'all 0.01ms linear',
                         }}>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <div className="relative" style={{paddingTop: '9%'}}>
+                  <div className="test-failed-after"/>
+                </div>
+              )}
             </div>
           </div>
-        )}
+        </div>
       </div>
     )
   }

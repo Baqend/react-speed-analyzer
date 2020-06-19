@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import renderHTML from 'react-render-html'
+import './ResultAction.css'
 
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -9,9 +10,8 @@ import { prepareTest, startTest } from 'actions/test'
 import { getObjectKey } from 'helper/utils'
 import { calculateAbsolute } from 'helper/resultHelper'
 
-import WordPressLogo from 'assets/wordpress.png'
-import check from 'assets/check.svg'
-import warning from 'assets/warning.svg'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCheckCircle, faExclamationCircle } from '@fortawesome/free-solid-svg-icons'
 import {
   categorizeClientCachingFact,
   categorizeCompressionFact, categorizeHTTPCachingFact,
@@ -32,19 +32,21 @@ class ResultAction extends Component {
     } catch (e) {}
   }
 
-  getCTAContent = () => {
+  getCTAContent = (showError) => {
     const improvements = []
     const applied = []
     const { isSpeedKitComparison } = this.props.testOverview
 
     // Request Latency
-    const competitorData = this.props.competitorTest.firstView
-    const speedKitData = this.props.speedKitTest.firstView
+    const competitorData = this.props.competitorTest.firstView || {}
+    const speedKitData = this.props.speedKitTest.firstView || {}
     categorizeTtfbFact(competitorData.ttfb, speedKitData.ttfb, isSpeedKitComparison, applied, improvements)
 
+    // Dummy values intended to ensure cta is rendered in background of error view
+    const { contentSize: competitorContentSize = { images: 50001, text: 50001 } } = competitorData
+    const { contentSize: speedKitContentSize = { images: 0, text: 0 } } = speedKitData
+
     // Image Optimization
-    const { contentSize: competitorContentSize = null } = competitorData
-    const { contentSize: speedKitContentSize = null } = speedKitData
     categorizeIOFact(competitorContentSize, speedKitContentSize, isSpeedKitComparison, applied, improvements)
 
     // SSL information
@@ -82,76 +84,21 @@ class ResultAction extends Component {
     return {improvements, applied}
   }
 
-  // all Tests failed
-  renderAllTestsFailed(error) {
-    const getErrorData = (error) => {
-      const defaultMessage = 'An error occurred while running your tests.'
-      const { message, status = 500 } = error || {}
-      if (!message) {
-        return { message: defaultMessage, status }
-      }
-
-      // Check if the message contains the URL of the Puppeteer
-      const containsPuppeteerUrl = message.indexOf('puppeteer.baqend.com') !== -1
-      if (containsPuppeteerUrl) {
-        // Avoid Puppeteer's URL from being displayed
-        return { message: message.replace(/http.*puppeteer\.baqend\.com.*?\s/, 'Puppeteer\xa0'), status }
-      }
-
-      return { message, status }
-    }
-
-    const { message, status } = getErrorData(error)
-    const contactPassage = status === 500 ? 'Please re-run the test and if the problem persists' : 'If you need help with this error'
-    return (
-      <div>
-        <div className="text-center pb2 pt2" style={{ maxWidth: 768, margin: '0 auto' }}>
-          <h2>Test Runs Failed</h2>
-          <p className="faded">{message}</p>
-          <p className="faded">{contactPassage}, <a style={{ cursor: 'pointer' }} onClick={this.props.toggleModal}>feel free to contact us!</a></p>
-        </div>
-        <div className="text-center">
-          <a className="btn btn-orange btn-ghost ma1" onClick={this.restartAnalyzer}>Re-run Test</a>
-        </div>
-      </div>
-    )
-  }
-
-  // Speedkit failed or we are not faster
-  renderSpeedKitFailed() {
-    return (
-      <div>
-        <div className="text-center pb2 pt2" style={{ maxWidth: 768, margin: '0 auto' }}>
-          <h2>Tuning Required</h2>
-          <span className="faded">It looks like some fine-tuning or configuration is required to measure your site. Please contact our web performance experts to adjust and re-run the test!</span>
-        </div>
-        {this.props.toggleModal && (
-          <div className="text-center">
-            <a className="btn btn-orange btn-ghost ma1" onClick={this.props.toggleModal}>Contact Us</a>
-          </div>
-        )}
-      </div>
-    )
-  }
-
   // success for wordpress page
-  renderWordpressCta() {
+  renderWordpressCta(showError) {
     return (
-      <div className="flex items-center pb2 pt2" style={{ maxWidth: 768, margin: '0 auto' }}>
-        <div className="ph2 dn db-ns">
-          <img className="pa2" height="200" src={WordPressLogo} alt="Wordpress Logo"/>
-        </div>
+      <div className="flex items-center pb2 pt2" style={{ maxWidth: 768, margin: `0 auto ${showError ? '250px' : '0'} auto` }}>
+        <div className="ph2 dn db-ns wordpress-image"/>
         <div className="ph2">
           <h2 className="mb1 dn db-ns">WordPress too slow?</h2>
           <h2 className="flex items-center justify-center dn-ns tc">
-            <img className="mr2" height="50" src={WordPressLogo} alt="Wordpress Logo"/>
             WordPress too slow?
           </h2>
           <div className="tc tl-ns">
             <span className="faded">One plugin that does it all: Instant response times for WordPress blogs, shops, and landing pages.</span>
           </div>
           <p className="tc tl-ns mt2">
-            <a target="_blank" rel="noopener noreferrer" className="btn btn-orange" href="https://wordpress.org/plugins/baqend/">Download Plugin</a>
+            <a target="_blank" rel="noopener noreferrer" className="btn btn-purple" href="https://wordpress.org/plugins/baqend/">Download Plugin</a>
           </p>
         </div>
       </div>
@@ -192,7 +139,8 @@ class ResultAction extends Component {
                 </h4>
               </div>
               <div className="w-10 text-center">
-                <img src={isSecured ? check : warning} alt="secure status" style={{ height: 30}} />
+                <FontAwesomeIcon icon={ isSecured ? faCheckCircle: faExclamationCircle }
+                  style={{ color: '#12b84f', width: '30px', height: '30px'}}/>
               </div>
             </div>
             {!configAnalysis.configMissing &&
@@ -208,7 +156,8 @@ class ResultAction extends Component {
                 </h4>
               </div>
               <div className="w-10 text-center">
-                <img src={swPathMatches ? check : warning} alt="service worker status" style={{ height: 30}} />
+                <FontAwesomeIcon icon={ isSecured ? faCheckCircle: faExclamationCircle }
+                  style={{ color: '#12b84f', width: '30px', height: '30px'}}/>
               </div>
             </div>
             }
@@ -223,20 +172,18 @@ class ResultAction extends Component {
                 </h4>
               </div>
               <div className="w-10 text-center">
-                <img src={!configMissing && !isDisabled ? check : warning} alt="config status" style={{ height: 30}} />
+                <FontAwesomeIcon icon={ isSecured ? faCheckCircle: faExclamationCircle }
+                  style={{ color: '#12b84f', width: '30px', height: '30px'}}/>
               </div>
             </div>
           </div>
           }
         </div>
         {showOptimization ? (
-          <div className="text-center pb2 pt2" style={{maxWidth: 700, margin: '0 auto'}}>
-            <h2 className="dn db-ns mb0">
-              Obtained Optimization: <span style={{color: '#F27354'}}>{absolute}</span>
+          <div className="text-center pb2 pt2">
+            <h2 className="mb0">
+              Obtained Optimization: <span className="purple">{absolute}</span>
             </h2>
-            <h3 className="dn-ns mb0">
-              Obtained Optimization: <span style={{color: '#F27354'}}>{absolute}</span>
-            </h3>
           </div>
         ) : (
           <div className="text-center pb2 pt2" style={{maxWidth: 700, margin: '0 auto'}}>
@@ -251,15 +198,15 @@ class ResultAction extends Component {
         {this.renderImprovements()}
         {this.props.toggleModal && (
           <div className="text-center">
-            <a className="btn btn-orange btn-ghost ma1" onClick={this.props.toggleModal}>Contact Us</a>
+            <a className="btn btn-purple btn-ghost ma1" onClick={this.props.toggleModal}>Contact Us</a>
           </div>
         )}
       </div>
     )
   }
 
-  renderImprovements() {
-    const ctaContent = this.getCTAContent()
+  renderImprovements(showError) {
+    const ctaContent = this.getCTAContent(showError)
 
     return (
       <div>
@@ -268,7 +215,7 @@ class ResultAction extends Component {
             <div key={index} className="w-100 w-50-ns mt2 mb2">
               <div className="flex ml2 mr2">
                 <div className="w-20 w-10-ns">
-                  <img src={ check } alt="speed kit feature" style={{ height: 30}} />
+                  <FontAwesomeIcon icon={ faCheckCircle } style={{ color: '#12b84f', width: '30px', height: '30px'}}/>
                 </div>
                 <div className="w-80 w-90-ns">
                   <h4 className="mb0 mt0 fw6">{ content[0] }</h4>
@@ -281,7 +228,7 @@ class ResultAction extends Component {
             <div key={index} className="w-100 w-50-ns mt2 mb2">
               <div className="flex ml2 mr2">
                 <div className="w-20 w-10-ns">
-                  <img src={ warning } alt="speed kit feature" style={{ height: 30}} />
+                  <FontAwesomeIcon icon={ faExclamationCircle } style={{ color: '#ff9d00', width: '30px', height: '30px'}}/>
                 </div>
                 <div className="w-80 w-90-ns">
                   <h4 className="mb0 mt0 fw6">{ content[0] }</h4>
@@ -296,28 +243,26 @@ class ResultAction extends Component {
   }
 
   // success
-  renderCta() {
+  renderCta(showError) {
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
-    const absolute = calculateAbsolute(competitorData[this.props.result.mainMetric], speedKitData[this.props.result.mainMetric])
+    const absolute = !showError ?
+      calculateAbsolute(competitorData[this.props.result.mainMetric], speedKitData[this.props.result.mainMetric]) : '400ms'
 
     return (
       <div>
-        <div className="text-center pb2 pt2" style={{ maxWidth: 700, margin: '0 auto' }}>
-          <h2 className="dn db-ns mb0">
-            How Speed Kit Can Accelerate Your Site by <span style={{ color: '#F27354' }}>{absolute}</span>
+        <div className="text-center pb3 pt6">
+          <h2 className="mb0">
+            Speed Kit Accelerates Your Website by <span className="purple">{absolute}</span>
           </h2>
-          <h3 className="dn-ns mb0">
-            How Speed Kit Can Accelerate Your Site by <span style={{ color: '#F27354' }}>{absolute}</span>
-          </h3>
         </div>
-        {this.renderImprovements()}
+        {this.renderImprovements(showError)}
         {this.props.toggleModal && (
           <div className="text-center">
-            <a className="btn btn-orange ma1"
+            <a className="btn btn-purple ma1"
               target="_blank" rel="noopener noreferrer"
               href="https://www.baqend.com/speedkit.html?_ga=2.224276178.858004496.1520933148-181229276.1509025941#sk-features">Learn more</a>
-            <a className="btn btn-orange btn-ghost ma1" onClick={this.props.toggleModal}>Contact Us</a>
+            <a className="btn btn-purple btn-ghost ma1" onClick={this.props.toggleModal}>Contact Us</a>
           </div>
         )}
       </div>
@@ -326,22 +271,18 @@ class ResultAction extends Component {
 
   render() {
     const { competitorError, speedKitError, testOverview } = this.props.result
-    // const speedKitError = this.props.speedKitError
     const isWordPress = testOverview.type === 'wordpress'
     const isPlesk = this.props.result.isPlesk
+    const showError = competitorError || speedKitError
     const { isSpeedKitComparison, speedKitVersion, configAnalysis } = testOverview
 
     if (isSpeedKitComparison && !speedKitError) {
       return this.renderIsSpeedKitCta(speedKitVersion, configAnalysis)
-    } else if (competitorError) {
-      return this.renderAllTestsFailed(testOverview.error)
-    } else if (!competitorError && speedKitError) {
-      return this.renderSpeedKitFailed()
-    } else if (!isPlesk && isWordPress){
-      return this.renderWordpressCta()
+    } else if (!isPlesk && isWordPress) {
+      return this.renderWordpressCta(showError)
     }
 
-    return this.renderCta()
+    return this.renderCta(showError)
   }
 }
 
