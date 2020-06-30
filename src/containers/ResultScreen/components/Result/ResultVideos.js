@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import './ResultVideos.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlay } from '@fortawesome/free-solid-svg-icons'
-import { isDeviceIOS, isIE, isEdge } from 'helper/utils'
+import { isIE, isEdge } from 'helper/utils'
 
 class ResultVideos extends Component {
   constructor(props) {
@@ -24,7 +24,7 @@ class ResultVideos extends Component {
         this[secondVideo].currentTime = 0
         this[secondVideo].play()
       }
-    } else if (!isDeviceIOS() && playPromise !== undefined) {
+    } else if (playPromise !== undefined) {
       playPromise.then(() => {
         if (this[secondVideo]) {
           this[secondVideo].currentTime = 0
