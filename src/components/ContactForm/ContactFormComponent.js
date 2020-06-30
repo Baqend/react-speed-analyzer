@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheckCircle, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
 import './ConfigForm.css'
 
 class ContactFormComponent extends Component {
@@ -39,10 +39,18 @@ class ContactFormComponent extends Component {
     this.props.onCancel && this.props.onCancel()
   }
 
-  render() {
+  renderMailForm() {
     return (
-      <form className="contact__form w-100 mb5" onSubmit={this.handleSubmit}>
-        {!this.props.onlyMail ? (
+      <div>
+        {this.state.formSent ? (
+          <div>
+            <div className="flex-column justify-center text-center">
+              <div>Thank you.</div>
+              <div className="mb2">We will get in touch with you shortly!</div>
+              <button className="btn btn-purple btn-ghost btn-small" onClick={this.handleAbort}>Got it</button>
+            </div>
+          </div>
+        ) : (
           <div>
             <div className="mb1">
               <label htmlFor="name">Name</label>
@@ -79,30 +87,41 @@ class ContactFormComponent extends Component {
               <button className="btn btn-purple btn-small" type="submit">Send</button>
             </div>
           </div>
-        ) : (
-          <div className="single-input-wrapper">
-            <div className="mt4">
-              <input
-                className="single-input"
-                type="text"
-                name="email"
-                placeholder="Enter Email Address"
-                value={this.state.data.email}
-                onChange={this.handleChange}
-                required />
-            </div>
-            <div className="mt3">
-              {this.state.formSent ? (
-                <button className="btn btn-purple single-submit" disabled={true} style={{cursor: 'auto'}}>
-                  <FontAwesomeIcon icon={faCheckCircle} className="mr1" style={{width: '26px', height: '26px'}}/>
-                  TEST REQUESTED
-                </button>
-              ) : (
-                <button className="btn btn-purple single-submit" type="submit">REQUEST MANUAL TEST</button>
-              )}
-            </div>
-          </div>
         )}
+      </div>
+    )
+  }
+
+  renderTestRequestForm() {
+    return (
+      <div className="single-input-wrapper">
+        <div className="mt4">
+          <input
+            className="single-input"
+            type="text"
+            name="email"
+            placeholder="Enter Email Address"
+            value={this.state.data.email}
+            onChange={this.handleChange}
+            required />
+        </div>
+        <div className="mt3">
+          {this.state.formSent ? (
+            <button className="btn btn-purple single-submit" disabled={true} style={{cursor: 'auto'}}>
+              <FontAwesomeIcon icon={faCheckCircle} className="mr1" style={{width: '26px', height: '26px'}}/>
+              TEST REQUESTED
+            </button>
+          ) : (
+            <button className="btn btn-purple single-submit" type="submit">REQUEST MANUAL TEST</button>
+          )}
+        </div>
+      </div>
+    )
+  }
+  render() {
+    return (
+      <form className="contact__form w-100" onSubmit={this.handleSubmit}>
+        {!this.props.onlyMail ? this.renderMailForm() : this.renderTestRequestForm()}
       </form>
     )
   }

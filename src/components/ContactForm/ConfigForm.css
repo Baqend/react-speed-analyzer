@@ -5,12 +5,6 @@
   .single-input-wrapper {
     width: 100%;
     margin: auto;
-    @media (--breakpoint-small-device) {
-      width: 75%;
-    }
-    @media (--breakpoint-large-device) {
-      width: 62%;
-    }
   }
   .single-input {
     width: 100%;
