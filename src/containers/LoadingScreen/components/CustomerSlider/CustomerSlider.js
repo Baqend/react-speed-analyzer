@@ -27,7 +27,7 @@ export default class CustomerSlider extends Component {
       <Slider ref={slider => (this.slider = slider)} {...settings}>
         {Customers.map(function(customer) {
           return (
-            <div key={customer.logo}>
+            <div key={customer.name}>
               <div className="flex text-center justify-center">
                 <div className={`item-img ${customer.className}`} />
               </div>
