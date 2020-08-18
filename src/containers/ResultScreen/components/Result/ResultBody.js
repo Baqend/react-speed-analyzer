@@ -18,8 +18,6 @@ import defshopLogo from 'assets/customers/DefShop_Logo.svg'
 import mydaysLogo from 'assets/customers/mydays.svg'
 import johnReedLogo from 'assets/customers/JohnReed_Logo.png'
 import justSpicesLogo from 'assets/customers/justspices.svg'
-import toolImage from 'assets/tool.svg'
-import ContactForm from '../../../../components/ContactForm/ContactForm'
 import Barcut from '../BarCut/Barcut'
 
 class ResultBody extends Component {
@@ -35,12 +33,12 @@ class ResultBody extends Component {
     return `/v1/code/openVideoComparison?ids=${competitorTest.id},${speedKitTest.id}`
   }
 
-  renderDetails(showError) {
+  renderDetails() {
     return (
       <div className="pt6 result-details">
         <h2 className="mb1">Performance Metrics</h2>
         <div className="purple pb2" style={{ fontWeight: "600"}}>
-          <a href={!showError ? this.createWaterfallLink() : ''} target="_blank">
+          <a href={this.createWaterfallLink() } target="_blank">
             <FontAwesomeIcon icon={ faLongArrowAltRight } /> WebPageTest Results
           </a>
         </div>
@@ -123,44 +121,22 @@ class ResultBody extends Component {
     )
   }
 
-  renderErrorOverlay() {
-    return (
-      <div className="error-overlay">
-        <div className="flex flex-column text-center error-overlay-inner">
-          <img className="tool-img" src={toolImage} alt="tool image"/>
-          <div className="header pt4">Configuration Required</div>
-          <div className="text pt2">Unfortunately, your website cannot be tested with our default test configuration.
-            Please request a manual test and our team will be in touch as soon as possible to unlock your performance
-            test results.
-          </div>
-          <ContactForm onlyMail={true}/>
-        </div>
-        {!this.props.embedded && this.renderCustomers()}
-      </div>
-    )
-  }
-
   render() {
     const embedded = this.props.embedded
-    const {competitorError, speedKitError} = this.props.result
-    const showError = competitorError || speedKitError
     return (
       <div className="flex-grow-1 flex flex-column result-body">
         <Papercut fillColor={"grey"} doRotation={false}/>
-        {this.props.result.isFinished && (
-          <div className="container result-body-inner">
-            {!showError && this.renderScale()}
-            {this.renderDetails(showError)}
-            <ResultAction { ...this.props } toggleModal={this.toggleModal}/>
-            {!embedded && !showError && <ResultWorthiness
-              competitorTest={this.props.competitorTest}
-              speedKitTest={this.props.speedKitTest}
-              mainMetric={this.props.result.mainMetric}
-            />}
-            {!embedded && !showError && this.renderCustomers()}
-            {showError && this.renderErrorOverlay()}
-          </div>
-        )}
+        <div className="container result-body-inner">
+          {this.renderScale()}
+          {this.renderDetails()}
+          <ResultAction { ...this.props } toggleModal={this.toggleModal}/>
+          {!embedded && <ResultWorthiness
+            competitorTest={this.props.competitorTest}
+            speedKitTest={this.props.speedKitTest}
+            mainMetric={this.props.result.mainMetric}
+          />}
+          {!embedded && this.renderCustomers()}
+        </div>
       </div>
     )
   }

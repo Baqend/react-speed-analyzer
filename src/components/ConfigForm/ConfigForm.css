@@ -45,6 +45,8 @@
        margin-left: 0;
        background: none;
        color: color(#fff);
+       outline: none !important;
+       box-shadow: none !important;
        @media(--breakpoint-medium-device) {
            margin-top: 0;
            margin-left: 15px;

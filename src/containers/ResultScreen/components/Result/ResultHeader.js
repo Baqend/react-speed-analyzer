@@ -63,12 +63,10 @@ class ResultHeader extends Component {
               </div>
             </div>
           )}
-          {this.props.result.isFinished && (
-            <div className="pt5">
-              {this.renderMainMetric()}
-              {this.renderVideos()}
-            </div>
-          )}
+          <div className="pt5">
+            {this.renderMainMetric()}
+            {this.renderVideos()}
+          </div>
         </div>
       </div>
     )

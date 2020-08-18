@@ -174,21 +174,3 @@
     }
   }
 }
-
-.test-failed-before {
-  background-image: url('../../../../assets/img/test-failed-before.png');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 101% 101%;
-  width: 100%;
-  height: 100%;
-}
-
-.test-failed-after {
-  background-image: url('../../../../assets/img/test-failed-after.png');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 101% 101%;
-  width: 100%;
-  height: 100%;
-}

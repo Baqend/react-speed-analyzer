@@ -32,7 +32,7 @@ class ResultAction extends Component {
     } catch (e) {}
   }
 
-  getCTAContent = (showError) => {
+  getCTAContent = () => {
     const improvements = []
     const applied = []
     const { isSpeedKitComparison } = this.props.testOverview
@@ -85,9 +85,9 @@ class ResultAction extends Component {
   }
 
   // success for wordpress page
-  renderWordpressCta(showError) {
+  renderWordpressCta() {
     return (
-      <div className="flex items-center pb2 pt2" style={{ maxWidth: 768, margin: `0 auto ${showError ? '250px' : '0'} auto` }}>
+      <div className="flex items-center pb2 pt2" style={{ maxWidth: 768, margin: `0 auto` }}>
         <div className="ph2 dn db-ns wordpress-image"/>
         <div className="ph2">
           <h2 className="mb1 dn db-ns">WordPress too slow?</h2>
@@ -205,8 +205,8 @@ class ResultAction extends Component {
     )
   }
 
-  renderImprovements(showError) {
-    const ctaContent = this.getCTAContent(showError)
+  renderImprovements() {
+    const ctaContent = this.getCTAContent()
 
     return (
       <div>
@@ -243,11 +243,10 @@ class ResultAction extends Component {
   }
 
   // success
-  renderCta(showError) {
+  renderCta() {
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
-    const absolute = !showError ?
-      calculateAbsolute(competitorData[this.props.result.mainMetric], speedKitData[this.props.result.mainMetric]) : '400ms'
+    const absolute = calculateAbsolute(competitorData[this.props.result.mainMetric], speedKitData[this.props.result.mainMetric])
 
     return (
       <div>
@@ -256,7 +255,7 @@ class ResultAction extends Component {
             Speed Kit Accelerates Your Website by <span className="purple">{absolute}</span>
           </h2>
         </div>
-        {this.renderImprovements(showError)}
+        {this.renderImprovements()}
         {this.props.toggleModal && (
           <div className="text-center">
             <a className="btn btn-purple ma1"
@@ -270,19 +269,18 @@ class ResultAction extends Component {
   }
 
   render() {
-    const { competitorError, speedKitError, testOverview } = this.props.result
+    const { speedKitError, testOverview } = this.props.result
     const isWordPress = testOverview.type === 'wordpress'
     const isPlesk = this.props.result.isPlesk
-    const showError = competitorError || speedKitError
     const { isSpeedKitComparison, speedKitVersion, configAnalysis } = testOverview
 
     if (isSpeedKitComparison && !speedKitError) {
       return this.renderIsSpeedKitCta(speedKitVersion, configAnalysis)
     } else if (!isPlesk && isWordPress) {
-      return this.renderWordpressCta(showError)
+      return this.renderWordpressCta()
     }
 
-    return this.renderCta(showError)
+    return this.renderCta()
   }
 }
 

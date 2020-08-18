@@ -120,39 +120,14 @@ class ResultMetrics extends Component {
     )
   }
 
-  renderErrorHighlightMetrics() {
-    const defaultMetrics = ['firstMeaningfulPaint', 'speedIndex', 'ttfb']
-
-    return (
-      <div className="flex flex-row items-center flex-wrap" style={{margin: '0 -10px'}}>
-        {defaultMetrics.map((metric, index) => (
-          <div key={index} className="flex flex-column justify-center box-wrapper" style={{margin: '10px', padding: '40px 24px', alignItems: 'center'}}>
-            <div className="mb2" style={{width: '200px', margin: 'auto'}}>
-              <div className="competitor-metric-scale mb1" style={{height: '40px'}}/>
-              <div className="flex flex-row" style={{height: '40px'}}>
-                <div className="speedKit-metric-scale" style={{width: '50%'}}/>
-                <img className="bar-cut-image" alt="bar cut" />
-                <div className="speedKit-metric-scale-save" style={{width: '50%'}}/>
-              </div>
-            </div>
-            <div className="text-light-grey mt3">{metrics.find(metricEntry => metricEntry.name === metric).label}</div>
-            <div className="faster" style={{ flexDirection: 'row' }}>400ms Faster (<span className="purple factor">2x</span>)
-            </div>
-          </div>
-        ))}
-      </div>
-    )
-  }
-
   renderCompetitorSpeedKitTable() {
-    // Dummy values intended to ensure table is rendered in background of error view
-    const competitorData = this.props.competitorTest.firstView || {firstMeaningfulPaint: 800}
-    const speedKitData = this.props.speedKitTest.firstView || {firstMeaningfulPaint: 400}
+    const competitorData = this.props.competitorTest.firstView
+    const speedKitData = this.props.speedKitTest.firstView
     return (
       <div className="result__details-metrics">
         {metrics.map((metric, index) => {
-          const factor = calculateFactor(competitorData[metric.name], speedKitData[metric.name]) || '2'
-          const absolute = calculateAbsolute(competitorData[metric.name], speedKitData[metric.name]) || '400ms'
+          const factor = calculateFactor(competitorData[metric.name], speedKitData[metric.name])
+          const absolute = calculateAbsolute(competitorData[metric.name], speedKitData[metric.name])
           return (
             <div key={index} className="flex justify-center">
               <div className="w-100">
@@ -192,11 +167,9 @@ class ResultMetrics extends Component {
   }
 
   render() {
-    const { competitorError, speedKitError } = this.props.result
-    const showError = competitorError || speedKitError
     return (
       <div className="result__details-metrics">
-        {!showError ? this.renderHighlightMetrics() : this.renderErrorHighlightMetrics()}
+        {this.renderHighlightMetrics()}
         <Collapse className={`result-details-collapse ${this.state.showDetails ? '' : 'fade-out'}`} isOpen={this.state.showDetails}>
           { this.renderCompetitorSpeedKitTable() }
         </Collapse>
