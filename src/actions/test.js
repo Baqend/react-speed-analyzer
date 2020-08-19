@@ -61,7 +61,9 @@ export const startTest = (useAdvancedConfig = true) => ({
       if (mobile && speedKitConfig) {
         // eslint-disable-next-line no-eval
         const speedKitConfigObj = eval(`(${speedKitConfig})`)
-        speedKitConfigObj.userAgentDetection = true
+        if (!speedKitConfigObj.userAgentDetection) {
+          speedKitConfigObj.userAgentDetection = true
+        }
         speedKitConfig = stringifyObject(speedKitConfigObj, { indent: '  ' })
       }
 
