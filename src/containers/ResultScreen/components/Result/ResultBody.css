@@ -29,54 +29,6 @@
   }
 }
 
-.error-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  backdrop-filter: blur(6px);
-  background-color: rgba(244, 244, 244, 0.72);
-}
-
-.error-overlay-inner {
-  width: 100%;
-  margin: auto;
-  padding: 100px 20px 0;
-  @media(--breakpoint-small-device) {
-    width: 75%;
-  }
-  @media(--breakpoint-medium-device) {
-    width: 55%;
-  }
-  .tool-img {
-    height: 90px;
-    @media(--breakpoint-small-device) {
-      height: 114px;
-    }
-  }
-  .header {
-    font-size: 24px;
-    font-weight: 900;
-    font-style: italic;
-    color: #333537;
-    @media(--breakpoint-small-device) {
-      font-size: 36px;
-    }
-  }
-  .text {
-    font-size: 18px;
-    font-weight: 500;
-    font-style: normal;
-    line-height: 1.5;
-    color: #333537;
-    @media(--breakpoint-small-device) {
-      font-size: 24px;
-    }
-  }
-}
-
 .result-details {
   color: #333537;
   text-align: center;

@@ -94,25 +94,24 @@ class ContactFormComponent extends Component {
 
   renderTestRequestForm() {
     return (
-      <div className="single-input-wrapper">
-        <div className="mt4">
+      <div>
+        <div className="config__form-input-wrapper">
           <input
-            className="single-input"
+            className="config__form-input"
             type="text"
             name="email"
             placeholder="Enter Email Address"
             value={this.state.data.email}
             onChange={this.handleChange}
-            required />
-        </div>
-        <div className="mt3">
+            required
+          />
           {this.state.formSent ? (
-            <button className="btn btn-purple single-submit" disabled={true} style={{cursor: 'auto'}}>
-              <FontAwesomeIcon icon={faCheckCircle} className="mr1" style={{width: '26px', height: '26px'}}/>
+            <button className="config__form-submit" disabled={true} style={{cursor: 'auto'}}>
+              <FontAwesomeIcon icon={faCheckCircle} className="mr1" style={{width: '18px', height: '18px'}}/>
               TEST REQUESTED
             </button>
           ) : (
-            <button className="btn btn-purple single-submit" type="submit">REQUEST MANUAL TEST</button>
+            <button className="config__form-submit">GET TEST RESULTS</button>
           )}
         </div>
       </div>
@@ -120,7 +119,7 @@ class ContactFormComponent extends Component {
   }
   render() {
     return (
-      <form className="contact__form w-100" onSubmit={this.handleSubmit}>
+      <form className="contact__form w-100" onSubmit={this.handleSubmit} autoComplete="off">
         {!this.props.onlyMail ? this.renderMailForm() : this.renderTestRequestForm()}
       </form>
     )

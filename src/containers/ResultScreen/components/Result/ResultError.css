@@ -1,0 +1,24 @@
+@import "../../../../styles/_variables.css";
+
+.error-info-box {
+  margin-top: 40px;
+  padding: 16px;
+  border-radius: 4px;
+  border: solid 2px rgba(255, 255, 255, 0.24);
+}
+
+@media (--breakpoint-medium-device) {
+  .error-info-box {
+    padding: 24px;
+  }
+}
+
+@media (--breakpoint-large-device) {
+  .device__wrapper-outer {
+    .device__wrapper {
+    > .device__screen {
+      padding: 80px 150px 40px !important;
+      }
+    }
+  }
+}

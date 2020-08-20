@@ -104,8 +104,6 @@ class ResultVideos extends Component {
   }
 
   render() {
-    const { competitorError, speedKitError } = this.props.result
-    const showErrorView = competitorError || speedKitError
     const competitorVideoPath = this.props.competitorTest.videoFileFirstView
     const speedKitVideoPath = this.props.speedKitTest.videoFileFirstView
     return (
@@ -113,85 +111,73 @@ class ResultVideos extends Component {
         <div className={`w-50 competitor-video ${this.props.testOverview.mobile ? 'mobile' : ''}`}>
           <div className="video__wrapper">
             <div className="video__wrapper-inner">
-              {!showErrorView ? (
-                <div className="relative">
-                  <video id="competitorVideo"
-                    playsInline
-                    controls={false}
-                    muted
-                    autoPlay
-                    className="embedVideo"
-                    ref={(video) => {this.competitorVideo = video}}
-                    onClick={() => this.playVideos('competitorVideo')}
-                    onPlay={() => this.playVideos('competitorVideo')}
-                    src={competitorVideoPath && `https://${process.env.REACT_APP_BAQEND}.app.baqend.com/v1${competitorVideoPath}`}/>
+              <div className="relative">
+                <video id="competitorVideo"
+                  playsInline
+                  controls={false}
+                  muted
+                  autoPlay
+                  className="embedVideo"
+                  ref={(video) => {this.competitorVideo = video}}
+                  onClick={() => this.playVideos('competitorVideo')}
+                  onPlay={() => this.playVideos('competitorVideo')}
+                  src={competitorVideoPath && `https://${process.env.REACT_APP_BAQEND}.app.baqend.com/v1${competitorVideoPath}`}/>
 
-                  {this.competitorVideo && this.competitorVideo.paused && (
-                    <div className={'video__wrapper-play'}>
-                      <div className="video__wrapper-play-inner dark-blue" onClick={() => this.playVideos('competitorVideo')}>
-                        <FontAwesomeIcon icon={faPlay} className="play"/>
-                      </div>
+                {this.competitorVideo && this.competitorVideo.paused && (
+                  <div className={'video__wrapper-play'}>
+                    <div className="video__wrapper-play-inner dark-blue" onClick={() => this.playVideos('competitorVideo')}>
+                      <FontAwesomeIcon icon={faPlay} className="play"/>
                     </div>
-                  )}
-                  <div className="video__wrapper-progress">
-                    <div className="video__wrapper-progress-inner">
-                      <div
-                        className="video__wrapper-progress-bar dark-blue"
-                        style={{
-                          transform: `scaleX(${this.state.progressCompetitor})`,
-                          transition: this.state.isRunningCompetitor ? 'all 0.5s linear' : 'all 0.01ms linear',
-                        }}>
-                      </div>
+                  </div>
+                )}
+                <div className="video__wrapper-progress">
+                  <div className="video__wrapper-progress-inner">
+                    <div
+                      className="video__wrapper-progress-bar dark-blue"
+                      style={{
+                        transform: `scaleX(${this.state.progressCompetitor})`,
+                        transition: this.state.isRunningCompetitor ? 'all 0.5s linear' : 'all 0.01ms linear',
+                      }}>
                     </div>
                   </div>
                 </div>
-              ) : (
-                <div className="relative" style={{paddingTop: '9%'}}>
-                  <div className="test-failed-before"/>
-                </div>
-              )}
+              </div>
             </div>
           </div>
         </div>
         <div className={`w-50 speedKit-video ${this.props.testOverview.mobile ? 'mobile' : ''}`}>
           <div className="video__wrapper">
             <div className="video__wrapper-inner">
-              {!showErrorView ? (
-                <div className="relative">
-                  <video id="speedKitVideo"
-                    playsInline
-                    controls={false}
-                    muted
-                    autoPlay
-                    className="embedVideo"
-                    ref={(video) => {this.speedKitVideo = video}}
-                    onClick={() => this.playVideos('speedKitVideo')}
-                    onPlay={() => this.playVideos('speedKitVideo')}
-                    src={speedKitVideoPath && `https://${process.env.REACT_APP_BAQEND}.app.baqend.com/v1${speedKitVideoPath}`}/>
-                  {this.speedKitVideo && this.speedKitVideo.paused && (
-                    <div className={'video__wrapper-play'}>
-                      <div className="video__wrapper-play-inner purple" onClick={() => this.playVideos('speedKitVideo')}>
-                        <FontAwesomeIcon icon={faPlay} className="play"/>
-                      </div>
+              <div className="relative">
+                <video id="speedKitVideo"
+                  playsInline
+                  controls={false}
+                  muted
+                  autoPlay
+                  className="embedVideo"
+                  ref={(video) => {this.speedKitVideo = video}}
+                  onClick={() => this.playVideos('speedKitVideo')}
+                  onPlay={() => this.playVideos('speedKitVideo')}
+                  src={speedKitVideoPath && `https://${process.env.REACT_APP_BAQEND}.app.baqend.com/v1${speedKitVideoPath}`}/>
+                {this.speedKitVideo && this.speedKitVideo.paused && (
+                  <div className={'video__wrapper-play'}>
+                    <div className="video__wrapper-play-inner purple" onClick={() => this.playVideos('speedKitVideo')}>
+                      <FontAwesomeIcon icon={faPlay} className="play"/>
                     </div>
-                  )}
-                  <div className="video__wrapper-progress">
-                    <div className="video__wrapper-progress-inner">
-                      <div
-                        className="video__wrapper-progress-bar purple"
-                        style={{
-                          transform: `scaleX(${this.state.progressSpeedKit})`,
-                          transition: this.state.isRunningSpeedKit ? 'all 0.5s linear' : 'all 0.01ms linear',
-                        }}>
-                      </div>
+                  </div>
+                )}
+                <div className="video__wrapper-progress">
+                  <div className="video__wrapper-progress-inner">
+                    <div
+                      className="video__wrapper-progress-bar purple"
+                      style={{
+                        transform: `scaleX(${this.state.progressSpeedKit})`,
+                        transition: this.state.isRunningSpeedKit ? 'all 0.5s linear' : 'all 0.01ms linear',
+                      }}>
                     </div>
                   </div>
                 </div>
-              ) : (
-                <div className="relative" style={{paddingTop: '9%'}}>
-                  <div className="test-failed-after"/>
-                </div>
-              )}
+              </div>
             </div>
           </div>
         </div>
