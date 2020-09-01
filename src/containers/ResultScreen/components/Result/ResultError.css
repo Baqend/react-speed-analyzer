@@ -14,7 +14,7 @@
 }
 
 @media (--breakpoint-large-device) {
-  .device__wrapper-outer {
+  .result-error .device__wrapper-outer {
     .device__wrapper {
     > .device__screen {
       padding: 80px 150px 40px !important;

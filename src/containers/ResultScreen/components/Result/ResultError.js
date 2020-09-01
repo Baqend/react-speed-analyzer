@@ -32,7 +32,7 @@ class ResultError extends Component {
 
   render() {
     return (
-      <div className="flex-column flex-grow-1 flex items-center">
+      <div className="flex-column flex-grow-1 flex items-center result-error">
         <Header changeColorOnResize={true} />
         <DeviceContainer
           embedded={false}
