@@ -45,6 +45,7 @@ class ConfigFormComponent extends Component {
       showAdvancedConfig: props.showAdvancedConfig,
       speedKitConfig: props.showAdvancedConfig ? stringifyObject(getDefaultSpeedKitConfig(this.props.config.url, this.props.config.mobile), { indent: '  ' }) : null,
       whiteListCandidates: [],
+      restartAllowed: window.location.pathname.indexOf('/presentation') === -1,
     }
   }
 
@@ -137,7 +138,9 @@ class ConfigFormComponent extends Component {
 
   handleSubmit = (event) => {
     event.preventDefault()
-    this.props.onSubmit()
+    if (this.state.restartAllowed) {
+      this.props.onSubmit()
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -250,12 +253,12 @@ class ConfigFormComponent extends Component {
               placeholder="https://www.example.com"
               noValidate
             />
-            <div className="config__form-submit-wrapper flex">
+            <div className={`config__form-submit-wrapper ${!this.state.restartAllowed ? 'presentation' : ''} flex`}>
               {this.props.showConfigToggle && (<a onClick={this.toggleConfig} className="config__form-settings flex justify-center items-center mr1" style={{ width: 'auto', background: 'none' }}>
                 <img width="24" src={settings} alt="settings" />
               </a>)}
             </div>
-            <button className="config__form-submit" type="submit">START TEST</button>
+            {this.state.restartAllowed && <button className="config__form-submit" type="submit">START TEST</button>}
           </div>
           {this.state.showConfig &&
             <div className="mv2 flex-grow-1 flex flex-column justify-between">

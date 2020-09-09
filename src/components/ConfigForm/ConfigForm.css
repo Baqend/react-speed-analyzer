@@ -71,8 +71,10 @@
         position: absolute;
         top: 8px;
         right: 8px;
-        @media(--breakpoint-medium-device) {
-            right: 225px;
+        &:not(.presentation) {
+            @media(--breakpoint-medium-device) {
+                right: 225px;
+            }
         }
     }
     .advanced {

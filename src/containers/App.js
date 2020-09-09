@@ -65,6 +65,13 @@ class App extends Component {
                   </div>
                 </div>
               )}/>
+              <Route exact path="/test/:testId/presentation" render={props => (
+                <div id="main">
+                  <div className="content">
+                    <ResultScreen { ...props } />
+                  </div>
+                </div>
+              )}/>
             </Switch>
           </BrowserRouter>
           <ToastContainer />
