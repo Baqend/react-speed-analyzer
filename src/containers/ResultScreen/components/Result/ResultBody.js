@@ -28,7 +28,7 @@ class ResultBody extends Component {
   createWaterfallLink = () => {
     const {competitorTest, speedKitTest} = this.props.result
     if (process.env.NODE_ENV === 'development' || process.env.REACT_APP_TYPE === 'modules') {
-      return `https://${process.env.REACT_APP_BAQEND}.app.baqend.com/v1/code/openVideoComparison?ids=${competitorTest.id},${speedKitTest.id}`
+      return `https://${process.env.REACT_APP_BAQEND}/v1/code/openVideoComparison?ids=${competitorTest.id},${speedKitTest.id}`
     }
     return `/v1/code/openVideoComparison?ids=${competitorTest.id},${speedKitTest.id}`
   }

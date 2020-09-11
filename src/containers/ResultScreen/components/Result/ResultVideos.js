@@ -121,7 +121,7 @@ class ResultVideos extends Component {
                   ref={(video) => {this.competitorVideo = video}}
                   onClick={() => this.playVideos('competitorVideo')}
                   onPlay={() => this.playVideos('competitorVideo')}
-                  src={competitorVideoPath && `https://${process.env.REACT_APP_BAQEND}.app.baqend.com/v1${competitorVideoPath}`}/>
+                  src={competitorVideoPath && `https://${process.env.REACT_APP_BAQEND}/v1${competitorVideoPath}`}/>
 
                 {this.competitorVideo && this.competitorVideo.paused && (
                   <div className={'video__wrapper-play'}>
@@ -158,7 +158,7 @@ class ResultVideos extends Component {
                   ref={(video) => {this.speedKitVideo = video}}
                   onClick={() => this.playVideos('speedKitVideo')}
                   onPlay={() => this.playVideos('speedKitVideo')}
-                  src={speedKitVideoPath && `https://${process.env.REACT_APP_BAQEND}.app.baqend.com/v1${speedKitVideoPath}`}/>
+                  src={speedKitVideoPath && `https://${process.env.REACT_APP_BAQEND}/v1${speedKitVideoPath}`}/>
                 {this.speedKitVideo && this.speedKitVideo.paused && (
                   <div className={'video__wrapper-play'}>
                     <div className="video__wrapper-play-inner purple" onClick={() => this.playVideos('speedKitVideo')}>

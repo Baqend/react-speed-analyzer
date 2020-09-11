@@ -25,7 +25,7 @@ const PROGRESS_SESSION_KEY = 'baqend-progress'
 
 const createScreenshot = (psiScreenshot) => {
   if (psiScreenshot) {
-    return `https://${process.env.REACT_APP_BAQEND}.app.baqend.com/v1${psiScreenshot}`
+    return `https://${process.env.REACT_APP_BAQEND}/v1${psiScreenshot}`
   }
   return null
 }

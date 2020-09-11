@@ -24,7 +24,7 @@ window.speedKitAnalyzer = {
 }
 
 if (process.env.NODE_ENV === 'development') {
-  window.startTest = (url) => fetch(`https://${process.env.REACT_APP_BAQEND}.app.baqend.com/v1/code/bulkTest`, {
+  window.startTest = (url) => fetch(`https://${process.env.REACT_APP_BAQEND}/v1/code/bulkTest`, {
     method: 'POST',
     body: JSON.stringify({
       "tests": [{ "url": url, "priority": 0 }]
