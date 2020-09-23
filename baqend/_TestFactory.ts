@@ -69,7 +69,8 @@ export class TestFactory implements AsyncFactory<model.TestResult> {
     return {
       url,
       appName,
-      isSpeedKitComparison: speedKit !== null,
+      // Check if puppeteer found Speed Kit and if a config was found it is not disabled.
+      isSpeedKitComparison: speedKit !== null && (speedKit.config ? speedKit.config.disabled !== true : true),
       isTestWithSpeedKit: isClone,
       activityTimeout: params.activityTimeout,
       skipPrewarm: params.skipPrewarm,

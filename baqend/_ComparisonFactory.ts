@@ -85,7 +85,8 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
     comparison.url = url
     comparison.displayUrl = displayUrl
     comparison.puppeteer = puppeteer
-    comparison.isSpeedKitComparison = speedKit !== null
+    // Check if puppeteer found Speed Kit and if a config was found it is not disabled.
+    comparison.isSpeedKitComparison = speedKit !== null && (speedKit.config ? speedKit.config.disabled !== true : true)
     comparison.speedKitVersion = speedKitVersion
     comparison.isSecured = url.startsWith('https://')
     comparison.type = puppeteer.type.framework
