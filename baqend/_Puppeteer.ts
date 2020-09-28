@@ -216,7 +216,7 @@ export class Puppeteer {
   private async postToServer(query: string, mobile: boolean, language: string, timeout: number | null, ...segments: PuppeteerSegment[]): Promise<PuppeteerResponse> {
     const host = credentials.puppeteer_host
     const defaultBody = { query, mobile, language, segments }
-    const bodyObject = timeout ? Object.assign(defaultBody, timeout) : defaultBody
+    const bodyObject = timeout ? Object.assign(defaultBody, { timeout } ) : defaultBody
 
     const response = await this.sendJsonRequest(`http://${host}/`, bodyObject)
     if (response.status !== 200) {
