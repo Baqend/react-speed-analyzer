@@ -10,7 +10,7 @@ import credentials from './credentials'
  * @return An array of the raw visual progress data.
  */
 function getDataFromHtml(htmlString: string): Array<[number, number]> {
-  const regex = /google\.visualization\.arrayToDataTable\((\[(.|\n)*])\);/gm
+  const regex = /google\.visualization\.arrayToDataTable\((\[(.|\n)*?])\);/gm
   const matchArray = regex.exec(htmlString)
 
   if (!matchArray || !matchArray[1]) {
