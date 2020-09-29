@@ -6,12 +6,13 @@ const analyzerCodeUrl = `${analyzerAPIUrl}/code`
 /**
  * @param {string} siteUrl
  * @param {*} expectedParams
+ * @param {string} location
  * @return {Promise<void>}
  */
-async function testAnalyzer(siteUrl, expectedParams) {
+async function testAnalyzer(siteUrl, expectedParams, location = 'eu-central-1-docker:Chrome.FIOSNoLatency') {
   const comparisonBody = {
     url: siteUrl,
-    location: 'eu-central-1-docker:Chrome.Native',
+    location,
     mobile: false,
     speedKitConfig: expectedParams.speedKitConfig,
     withPuppeteer: false,
@@ -198,6 +199,8 @@ async function executeAnalyzerTest() {
   try {
     writeln('Testing kicker.de (no Speed Kit installed)')
     await execNonSpeedKit()
+    writeln('Testing plesk.com (US location)')
+    await execNonSpeedKitUS()
     writeln('Testing speed-kit-test.com (with Speed Kit installed)')
     await execSpeedKit()
   } catch(err) {
@@ -221,6 +224,23 @@ async function execNonSpeedKit() {
   }
 
   return testAnalyzer(url, expectedParams)
+}
+
+async function execNonSpeedKitUS() {
+  const url = 'plesk.com'
+  const speedKitConfigString = '{"appName": "makefast", "whitelist": [{ "host": [ /.*plesk\\.com/ ] }], "userAgentDetection": false }'
+  const expectedParams = {
+    url: 'https://www.plesk.com/',
+    displayUrl: 'https://www.plesk.com/',
+    mobile: false,
+    isSpeedKitComparison: false,
+    hasSpeedKitVersion: false,
+    speedKitConfig: speedKitConfigString,
+    configAnalysis: null,
+    isSecured: true
+  }
+
+  return testAnalyzer(url, expectedParams, 'us-east-1-docker:Chrome.FIOSNoLatency')
 }
 
 async function execSpeedKit() {
