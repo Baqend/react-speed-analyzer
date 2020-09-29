@@ -108,7 +108,7 @@ export function categorizeCompressionFact(competitorContentSize, speedKitContent
 
     if (textSizeDiff > 0) {
       if (isSpeedKitComparison) {
-        compressionFact.push(`By compressing text resources with GZip, Speed Kit reduces page weight by <strong>${formatFileSize(textSizeDiff)}</strong>.`)
+        compressionFact.push(`By compressing text resources with Brotli, Speed Kit reduces page weight by <strong>${formatFileSize(textSizeDiff)}</strong>.`)
         applied.push(compressionFact)
 
         return
@@ -116,7 +116,7 @@ export function categorizeCompressionFact(competitorContentSize, speedKitContent
 
       // Threshold for whether improvement potential is reasonable
       if (textSizeDiff > 5000) {
-        compressionFact.push(`By compressing text resources with GZip, Speed Kit will reduce page weight by <strong>${formatFileSize(textSizeDiff)}</strong>.`)
+        compressionFact.push(`By compressing text resources with Brotli, Speed Kit will reduce page weight by <strong>${formatFileSize(textSizeDiff)}</strong>.`)
         improvements.push(compressionFact)
 
         return
