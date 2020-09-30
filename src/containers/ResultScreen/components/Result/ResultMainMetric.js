@@ -7,6 +7,7 @@ import ReactTooltip from 'react-tooltip'
 const tooltipText = {
   'speedIndex': 'Speed Index',
   'firstMeaningfulPaint': 'First Meaningful Paint',
+  'largestContentfulPaint': 'Largest Contentful Paint',
   'ttfb': 'Time To First Byte',
 }
 
@@ -19,7 +20,6 @@ class ResultMainMetric extends Component {
     const { competitorError, speedKitError } = this.props.result
     const competitorData = this.props.competitorTest.firstView
     const speedKitData = this.props.speedKitTest.firstView
-
     const competitorMainMetric = !competitorError ? competitorData[mainMetric] : null
     const speedKitMainMetric = !speedKitError ? speedKitData[mainMetric] : null
 

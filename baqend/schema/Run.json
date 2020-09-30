@@ -115,6 +115,11 @@
       "name": "documentRequestFailed",
       "type": "/db/Boolean",
       "order": 20
+    },
+    "largestContentfulPaint": {
+      "name": "largestContentfulPaint",
+      "type": "/db/Integer",
+      "order": 21
     }
   }
 }

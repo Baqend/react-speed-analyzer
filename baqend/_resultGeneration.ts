@@ -157,6 +157,7 @@ async function createRun(db: baqend, data: WptView | undefined, testId: string, 
   run.contentSize = new db.ContentSize(countContentSize(data.requests))
   run.documentRequestFailed = hasDocumentRequestFailed(testUrl, data.requests)
   run.basePageCDN = data.base_page_cdn
+  run.largestContentfulPaint = getLCPFromWebPagetest(data)
 
   // Set visual completeness
   const completeness = new db.Completeness()
@@ -284,6 +285,20 @@ async function createDomainList(data: WptView): Promise<model.Domain[]> {
   } catch (e) {
     return []
   }
+}
+
+/**
+ * Gets the LCP calculated by WebPagetest.
+ */
+function getLCPFromWebPagetest(data: WptView): number {
+  // Search Largest Contentful Paint from timing
+  const { chromeUserTiming = [] } = data
+  const largestContentfulPaintObject =
+    chromeUserTiming
+      .reverse()
+      .find(entry => entry.name === 'LargestContentfulPaint')
+
+  return largestContentfulPaintObject ? largestContentfulPaintObject.time : 0
 }
 
 /**

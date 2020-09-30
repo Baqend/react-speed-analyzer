@@ -14,6 +14,11 @@ const userMetrics = [
     tooltip: 'Represents the time when a page\'s primary content appears on the screen.'
   },
   {
+    name: 'largestContentfulPaint',
+    label: 'Largest Contentful Paint',
+    tooltip: 'Represents the time when the largest content element in the viewport becomes visible.'
+  },
+  {
     name: 'speedIndex',
     label: 'Speed Index',
     tooltip: 'Represents how quickly the page rendered the user-visible content.'
@@ -72,17 +77,21 @@ class ResultMetrics extends Component {
 
     const positiveFactors = Object.entries(testOverview.factors)
       .map(([metric, factor]) => ({metric, factor}))
-      .filter(entry => entry.factor > 1 && entry.metric !== 'load') // Load event should not be displayed as metric
+      .filter(entry => {
+        const mainMetric = this.props.result.mainMetric
+        const metricToRemove = mainMetric === 'largestContentfulPaint' ? 'firstMeaningfulPaint' : 'largestContentfulPaint'
+        return entry.factor > 1 && entry.metric !== metricToRemove && entry.metric !== 'load'
+      }) // Load event should not be displayed as metric
       .sort((curr, prev) => {
         if (curr.metric === 'ttfb') {
           return -1
         }
 
-        if (curr.metric === 'firstMeaningfulPaint' && prev.metric !== 'ttfb') {
+        if (curr.metric === this.props.result.mainMetric && prev.metric !== 'ttfb') {
           return -1
         }
 
-        if (prev.metric === 'firstMeaningfulPaint' || prev.metric === 'ttfb') {
+        if (prev.metric === this.props.result.mainMetric || prev.metric === 'ttfb') {
           return 1
         }
 
@@ -125,7 +134,11 @@ class ResultMetrics extends Component {
     const speedKitData = this.props.speedKitTest.firstView
     return (
       <div className="result__details-metrics">
-        {metrics.map((metric, index) => {
+        {metrics.filter(entry => {
+          const mainMetric = this.props.result.mainMetric
+          const metricToRemove = mainMetric === 'largestContentfulPaint' ? 'firstMeaningfulPaint' : 'largestContentfulPaint'
+          return entry.name !== metricToRemove
+        }).map((metric, index) => {
           const factor = calculateFactor(competitorData[metric.name], speedKitData[metric.name])
           const absolute = calculateAbsolute(competitorData[metric.name], speedKitData[metric.name])
           return (

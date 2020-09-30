@@ -280,6 +280,7 @@ declare module 'baqend' {
       contentSize: ContentSize;
       fmpData: FMPData;
       documentRequestFailed: boolean;
+      largestContentfulPaint: number;
     }
 
     interface ConfigAnalysis extends binding.Managed {
@@ -318,6 +319,7 @@ declare module 'baqend' {
       fullyLoaded: number;
       lastVisualChange: number;
       load: number;
+      largestContentfulPaint: number;
     }
 
     interface UrlAnalysis extends binding.Managed {

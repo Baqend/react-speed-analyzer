@@ -28,6 +28,15 @@ const parseQueryString = (queryString) => {
   return params
 }
 
+const renderResultView = (props) => (
+  <div id="main">
+    <div className="content">
+      <ResultScreen { ...props } />
+    </div>
+  </div>
+)
+
+
 class App extends Component {
   render() {
     return (
@@ -58,20 +67,9 @@ class App extends Component {
                   <Footer isResultPage={false}/>
                 </div>
               )}/>
-              <Route exact path="/test/:testId/result" render={props => (
-                <div id="main">
-                  <div className="content">
-                    <ResultScreen { ...props } />
-                  </div>
-                </div>
-              )}/>
-              <Route exact path="/test/:testId/presentation" render={props => (
-                <div id="main">
-                  <div className="content">
-                    <ResultScreen { ...props } />
-                  </div>
-                </div>
-              )}/>
+              <Route exact path="/test/:testId/result" render={props => renderResultView(props)}/>
+              <Route exact path="/test/:testId/presentation" render={props => renderResultView(props)}/>
+              <Route exact path="/test/:testId/overview" render={props => renderResultView(props)}/>
             </Switch>
           </BrowserRouter>
           <ToastContainer />

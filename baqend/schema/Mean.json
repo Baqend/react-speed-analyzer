@@ -40,6 +40,11 @@
       "name": "lastVisualChange",
       "type": "/db/Double",
       "order": 5
+    },
+    "largestContentfulPaint": {
+      "name": "largestContentfulPaint",
+      "type": "/db/Double",
+      "order": 6
     }
   }
 }
