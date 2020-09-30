@@ -22,6 +22,7 @@ class ResultScreen extends Component {
       showAdvancedConfig: params.indexOf('advanced') > -1,
     }
 
+    this.loadChatBot()
     const { testId } = this.props.match.params
     if (testId) {
       this.loadTestResult(testId)
@@ -43,6 +44,18 @@ class ResultScreen extends Component {
       prevProps.actions.resetResult()
       this.loadTestResult(nextProps.match.params.testId)
     }
+  }
+
+  loadChatBot() {
+    const Tawk_API = window.Tawk_API||{}
+    const Tawk_LoadStart = new Date()
+    const s1=document.createElement('script')
+    const s0=document.getElementsByTagName('script')[0]
+    s1.async=true
+    s1.src='https://embed.tawk.to/57ad679ae9f0aee203a9e864/1c712pb61'
+    s1.charset='UTF-8'
+    s1.setAttribute('crossorigin','*')
+    s0.parentNode.insertBefore(s1,s0)
   }
 
   onSubmit = async () => {
