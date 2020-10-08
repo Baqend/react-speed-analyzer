@@ -137,7 +137,7 @@ export class TestScript {
     return this.push(`setUserAgent ${userAgent}`)
   }
 
-  private push(line: string): this {
+  push(line: string): this {
     this.lines.push(line)
     return this
   }
