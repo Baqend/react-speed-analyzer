@@ -82,6 +82,16 @@
       "name": "olMedian",
       "type": "/db/Double",
       "order": 13
+    },
+    "ttfb": {
+      "name": "ttfb",
+      "type": "/db/collection.List[/db/ChromeUXReportData]",
+      "order": 14
+    },
+    "ttfbMedian": {
+      "name": "ttfbMedian",
+      "type": "/db/Double",
+      "order": 15
     }
   }
 }

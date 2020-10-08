@@ -25,12 +25,13 @@ const BIG_QUERY = new BigQuery({
 });
 
 const DEVICES = ['all', 'desktop', 'tablet', 'phone'];
-const METRICS: string[] = ['firstContentfulPaint', 'firstPaint', 'domContentLoaded', 'onLoad'];
+const METRICS: string[] = ['firstContentfulPaint', 'firstPaint', 'domContentLoaded', 'onLoad', 'ttfb'];
 const MEDIAN_NAME_MAPPING: Map<string, string> = new Map([
   [METRICS[0], 'fcpMedian'],
   [METRICS[1], 'fpMedian'],
   [METRICS[2], 'dclMedian'],
   [METRICS[3], 'olMedian'],
+  [METRICS[4], 'ttfbMedian'],
 ]);
 
 /**
@@ -296,9 +297,10 @@ exports.post = async function (db: baqend, req: Request, res: Response) {
   const fpHistogramData = await queryHistograms(db, 'first_paint', queryData);
   const dclHistogramData = await queryHistograms(db, 'dom_content_loaded', queryData);
   const olHistogramData = await queryHistograms(db, 'onload', queryData);
+  const ttfbHistogramData = await queryHistograms(db, 'experimental.time_to_first_byte', queryData);
   // return: {start, device [all, desktop, phone, tablet], density}
 
-  if (!fcpHistogramData || !fpHistogramData || !dclHistogramData || !olHistogramData) {
+  if (!fcpHistogramData || !fpHistogramData || !dclHistogramData || !olHistogramData || !ttfbHistogramData) {
     await Promise.all(reports.map(report => report.partialUpdate().set('status', 'FAILED').execute()));
 
     res.status(400);
@@ -313,6 +315,7 @@ exports.post = async function (db: baqend, req: Request, res: Response) {
   histogramData.set('firstPaint', fpHistogramData);
   histogramData.set('domContentLoaded', dclHistogramData);
   histogramData.set('onLoad', olHistogramData);
+  histogramData.set('ttfb', ttfbHistogramData);
 
   // goal: { desktop: {start, density}[], phone: ChromeUXReportData[], ... }
   for (const report of reports) {
@@ -335,7 +338,8 @@ exports.post = async function (db: baqend, req: Request, res: Response) {
       !report.firstContentfulPaint.length ||
       !report.firstPaint.length ||
       !report.domContentLoaded.length ||
-      !report.onLoad.length;
+      !report.onLoad.length ||
+      !report.ttfb.length;
 
     report.status = isFailed ? 'FAILED' : 'SUCCESS';
     await report.save();

@@ -1,4 +1,4 @@
-import { binding, model, PuppeteerServiceWorkers } from 'baqend'
+import { binding, model } from 'baqend'
 
 declare module 'baqend' {
 
@@ -452,6 +452,8 @@ declare module 'baqend' {
       dclMedian: number;
       onLoad: ChromeUXReportData[];
       olMedian: number;
+      ttfb: ChromeUXReportData[];
+      ttfbMedian: number;
     }
 
     interface ChromeUXReportData {
