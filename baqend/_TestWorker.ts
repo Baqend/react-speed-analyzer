@@ -334,17 +334,6 @@ export class TestWorker {
   }
 
   /**
-   * Builds a test script for a minimal whitelist.
-   */
-  private buildScriptWithMinimalWhitelist({ url, isTestWithSpeedKit, activityTimeout, testOptions }: model.TestInfo): string {
-    const { mobile, location } = testOptions
-    const minimal = this.configGenerator.generateMinimal(url, mobile)
-    const config = this.serializer.serialize(minimal, DataType.JAVASCRIPT)
-
-    return this.testScriptBuilder.createTestScript(url, isTestWithSpeedKit, config, location, mobile, activityTimeout)
-  }
-
-  /**
    * Gets the config for a given test.
    * If the test has no config set, a fallback will be generated.
    */
