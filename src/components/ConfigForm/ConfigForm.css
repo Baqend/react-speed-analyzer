@@ -30,6 +30,24 @@
            color: rgba(255, 255, 255, 0.64);
        }
     }
+    &-cookie {
+        font-size: 16px;
+        border-radius: 4px;
+        background-color: rgba(0, 0, 0, 0.24);
+        color: var(--white);
+        border: none;
+        flex-grow: 1;
+        padding: 14px 45px 14px 20px;
+        box-shadow: none;
+        height: 42px;
+        &.no-text {
+             color: transparent;
+             caret-color: white;
+         }
+        &::placeholder {
+             color: rgba(255, 255, 255, 0.64);
+         }
+    }
     &-submit {
        display: flex;
        align-items: center;

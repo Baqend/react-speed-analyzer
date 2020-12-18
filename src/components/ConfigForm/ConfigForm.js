@@ -7,6 +7,7 @@ import ConfigFormComponent from './ConfigFormComponent'
 
 import {
   handleUrlInput,
+  handleCookieInput,
   handleLocationChange,
   handleTimeoutChange,
   handleSpeedKitConfigChange,
@@ -17,6 +18,10 @@ import {
 class ConfigForm extends Component {
   onUrlChange = (data) => {
     this.props.actions.handleUrlInput(data)
+  }
+
+  onCookieChange = (data) => {
+    this.props.actions.handleCookieInput(data)
   }
 
   onLocationChange = (data) => {
@@ -50,6 +55,7 @@ class ConfigForm extends Component {
         isInitiated={this.props.isInitiated}
         onSubmit={this.props.onSubmit}
         onUrlChange={this.onUrlChange}
+        onCookieChange={this.onCookieChange}
         onLocationChange={this.onLocationChange}
         onTimeoutChange={this.onTimeoutChange}
         onSpeedKitConfigChange={this.onSpeedKitConfigChange}
@@ -89,6 +95,7 @@ function mapDispatchToProps(dispatch) {
   return {
     actions: bindActionCreators({
       handleUrlInput,
+      handleCookieInput,
       handleLocationChange,
       handleTimeoutChange,
       handleSpeedKitConfigChange,

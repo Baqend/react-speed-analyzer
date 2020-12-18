@@ -1,6 +1,7 @@
 import {
   RESET_CONFIG,
   CHANGE_URL,
+  CHANGE_COOKIE,
   CHANGE_LOCATION,
   CHANGE_TIMEOUT,
   CHANGE_SPEED_KIT_CONFIG,
@@ -15,9 +16,16 @@ export function resetConfig() {
   }
 }
 
-export function handleUrlInput(url) {
+export function handleUrlInput(cookie) {
   return {
     type: CHANGE_URL,
+    payload: cookie,
+  }
+}
+
+export function handleCookieInput(url) {
+  return {
+    type: CHANGE_COOKIE,
     payload: url,
   }
 }

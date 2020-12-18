@@ -46,6 +46,7 @@ class ConfigFormComponent extends Component {
       speedKitConfig: props.showAdvancedConfig ? stringifyObject(getDefaultSpeedKitConfig(this.props.config.url, this.props.config.mobile), { indent: '  ' }) : null,
       whiteListCandidates: [],
       restartAllowed: window.location.pathname.indexOf('/presentation') === -1,
+      showCookies: window.location.search.indexOf('showCookie') !== -1,
     }
   }
 
@@ -54,7 +55,7 @@ class ConfigFormComponent extends Component {
   handleUrlChange = (changeEvent) => {
     const url = changeEvent.target.value.trim()
     this.props.onUrlChange(url)
-
+    this.props.onCookieChange('')
     // if(splitUrl(this.props.config.url)[1] !== splitUrl(changeEvent.target.value)[1]) {
     let speedKitConfig
     if (this.state.showAdvancedConfig) {
@@ -67,6 +68,10 @@ class ConfigFormComponent extends Component {
       this.props.onSpeedKitConfigChange(speedKitConfig)
     })
     // }
+  }
+
+  handleCookieChange = (changeEvent) => {
+    this.props.onCookieChange(changeEvent.target.value)
   }
 
   handleLocationChange = (changeEvent) => {
@@ -232,6 +237,21 @@ class ConfigFormComponent extends Component {
                 </div>
               )}
             </div>
+            {this.state.showCookies && (
+              <div className="pt1">
+                <div className="config__form-input-wrapper">
+                  <input
+                    className="config__form-cookie"
+                    type="text"
+                    spellCheck="false"
+                    value={this.props.config.cookie}
+                    onChange={this.handleCookieChange}
+                    placeholder="Enter cookies here"
+                    noValidate
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -283,6 +303,7 @@ class ConfigFormComponent extends Component {
 ConfigFormComponent.propTypes = {
   config: PropTypes.object,
   onUrlChange: PropTypes.func,
+  onCookieChange: PropTypes.func,
   onLocationChange: PropTypes.func,
   onMobileSwitch: PropTypes.func,
   onTimeoutChange: PropTypes.func,

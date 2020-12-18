@@ -48,12 +48,12 @@ export const startTest = (useAdvancedConfig = true) => ({
     dispatch({
       type: RESET_TEST_RESULT
     })
-    const { url, location, caching, mobile, activityTimeout } = getState().config
+    const { url, location, caching, mobile, activityTimeout, cookie } = getState().config
     try {
       dispatch({
         type: START_TEST,
       })
-      const { testOverview, config } = getState().result
+      const { testOverview } = getState().result
 
       const speedKit = testOverview.isSpeedKitComparison
       let speedKitConfig = !speedKit || (speedKit && useAdvancedConfig) ? getState().config.speedKitConfig : null
@@ -76,6 +76,7 @@ export const startTest = (useAdvancedConfig = true) => ({
         mobile,
         speedKitConfig,
         activityTimeout,
+        cookie,
         withPuppeteer: false,
       })
     } catch(e) {

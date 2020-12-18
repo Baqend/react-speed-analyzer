@@ -4,9 +4,10 @@ import {
   CHANGE_LOCATION,
   CHANGE_TIMEOUT,
   CHANGE_SPEED_KIT_CONFIG,
+  CHANGE_COOKIE,
   SWITCH_MOBILE,
   SWITCH_CACHING,
-  TESTOVERVIEW_LOAD,
+  TESTOVERVIEW_LOAD, COMPETITOR_RESULT_LOAD,
 } from '../actions/types'
 
 const initialState = {
@@ -17,6 +18,7 @@ const initialState = {
   isSpeedKitComparison: false,
   speedKitConfig: null,
   activityTimeout: 75,
+  cookie: '',
 }
 
 const ensureLocationCorrectness = (location) => {
@@ -47,6 +49,8 @@ export default function config(state = initialState, action = {}) {
       return { ...state, activityTimeout: action.payload }
     case CHANGE_SPEED_KIT_CONFIG:
       return { ...state, speedKitConfig: action.payload }
+    case CHANGE_COOKIE:
+      return { ...state, cookie: action.payload }
     case SWITCH_MOBILE:
       const mobile = action.payload
       const location = state.location.substr(0, state.location.lastIndexOf('.') + 1)
@@ -57,6 +61,8 @@ export default function config(state = initialState, action = {}) {
       }
     case SWITCH_CACHING:
       return { ...state, caching: action.payload }
+    case COMPETITOR_RESULT_LOAD:
+      return { ...state, cookie: action.payload.testInfo.cookie }
     case TESTOVERVIEW_LOAD:
       return {
         ...state,
