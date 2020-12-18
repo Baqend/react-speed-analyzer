@@ -1,6 +1,7 @@
 import { format, parse } from 'url'
 import { DEFAULT_ACTIVITY_TIMEOUT, DEFAULT_TIMEOUT } from './_TestBuilder'
 import { TestScript, testScript } from './_TestScript'
+import { URL } from 'url';
 import credentials from './credentials'
 
 export class TestScriptBuilder {
@@ -10,6 +11,7 @@ export class TestScriptBuilder {
    * @param location        The location where the test is executed.
    * @param isMobile        true if the mobile site is tested, false otherwise.
    * @param activityTimeout The activity timeout.
+   * @param cookie         The cookie string to be set.
    * @param timeout         The timeout.
    * @return                The created Web Page Test script.
    */
@@ -19,6 +21,7 @@ export class TestScriptBuilder {
     location: string,
     isMobile: boolean,
     activityTimeout: number,
+    cookie: string,
     timeout: number
   ): TestScript {
     if (/https:\/\/\w*:\w*@oleo.io/.test(url)) {
@@ -39,6 +42,8 @@ export class TestScriptBuilder {
     }*/
 
     const ts = testScript()
+
+    this.addCookies(ts, cookie, url);
 
     if (isMobile) {
     //   ts.setViewport(480, 987); // Maximum viewport
@@ -285,6 +290,7 @@ export class TestScriptBuilder {
    * @param location        The location where the test is executed.
    * @param isMobile        true if the mobile site is tested, false otherwise.
    * @param activityTimeout The activity timeout.
+   * @param cookie          The cookie string to be set.
    * @param timeout         The timeout.
    * @return                The created Web Page Test script.
    */
@@ -295,6 +301,7 @@ export class TestScriptBuilder {
     location: string,
     isMobile: boolean,
     activityTimeout: number,
+    cookie: string,
     timeout: number,
   ): TestScript {
     const basicAuthRegex = /\w*:\w*@/;
@@ -373,6 +380,8 @@ export class TestScriptBuilder {
 
     // SW always needs to be installed
     const ts = testScript()
+
+    this.addCookies(ts, cookie, url);
 
     if (isMobile) {
     //   ts.setViewport(480, 987); // Maximum viewport
@@ -627,6 +636,19 @@ export class TestScriptBuilder {
   }
 
   /**
+   * Adds cookies to the given test script.
+   *
+   * @param ts        The test script to add the cookies to.
+   * @param cookie    A string of cookies to be added to the test script
+   * @param url       The url under test
+   */
+  private addCookies(ts: TestScript, cookie: string, url: string): void {
+    const origin = new URL(url).origin;
+    const cookieList = cookie.split(';');
+    cookieList.forEach(cookie => ts.setCookie(cookie, origin));
+  }
+
+  /**
    * Creates a Web Page Test script to execute.
    *
    * @param url                   The URL to create the test script for.
@@ -636,6 +658,7 @@ export class TestScriptBuilder {
    * @param isMobile              true if the mobile site is tested, false otherwise.
    * @param activityTimeout       The activity timeout.
    * @param appName               The name of the baqend app.
+   * @param cookie                The cookie string to be set.
    * @param timeout               The timeout.
    * @return                      The created Web Page Test script.
    */
@@ -647,13 +670,23 @@ export class TestScriptBuilder {
     isMobile: boolean = false,
     activityTimeout = DEFAULT_ACTIVITY_TIMEOUT,
     appName: string | null = null,
+    cookie: string = '',
     timeout = DEFAULT_TIMEOUT,
   ): string {
     // Resolve Speed Kit config
     if (isTestWithSpeedKit) {
-      return this.buildForSpeedKitTest(url, appName, speedKitConfig, location, isMobile, activityTimeout, timeout).toString()
+      return this.buildForSpeedKitTest(
+        url,
+        appName,
+        speedKitConfig,
+        location,
+        isMobile,
+        activityTimeout,
+        cookie,
+        timeout
+      ).toString()
     }
 
-    return this.buildForCompetitorTest(url, appName, location, isMobile, activityTimeout, timeout).toString()
+    return this.buildForCompetitorTest(url, appName, location, isMobile, activityTimeout, cookie, timeout).toString()
   }
 }

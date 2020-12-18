@@ -50,6 +50,7 @@ declare module 'baqend' {
       mobile: boolean
       preload: boolean
       multiComparisonId: string | null
+      cookie: string
     }
 
     interface Domain extends UrlAware {
@@ -157,6 +158,7 @@ declare module 'baqend' {
       preload: boolean
       ignoreConfig: boolean
       testOptions: TestOptions
+      cookie: string
       appName: string | null
     }
 

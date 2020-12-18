@@ -26,6 +26,7 @@ export const DEFAULT_PARAMS: Required<TestParams> = {
   speedKitExpected: false,
   preload: false,
   ignoreConfig: false,
+  cookie: '',
 }
 
 /**

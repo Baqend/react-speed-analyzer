@@ -76,6 +76,11 @@ export interface TestParams {
    * If an existing Speed Kit config should be ignored.
    */
   ignoreConfig?: boolean
+
+  /**
+   * A string of cookies to be set when running the test.
+   */
+  cookie?: string
 }
 
 export interface MultiTestParams extends TestParams {
