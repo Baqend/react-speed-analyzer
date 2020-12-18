@@ -60,7 +60,13 @@ export class ComparisonWorker implements TestListener {
 
     // Set comparison to running
     if (comparison.status !== Status.RUNNING) {
-      await comparison.optimisticSave(() => setRunning(comparison))
+      try {
+        await comparison.optimisticSave(() => setRunning(comparison))
+      } catch(e) {
+        this.db.log.info(`Retry status update after out of date exception for comparison ${comparison.id}`)
+        await comparison.load({ depth: 1, refresh: true })
+        await comparison.optimisticSave(() => setRunning(comparison))
+      }
     }
 
     const { competitorTestResult: competitor, speedKitTestResult: speedKit } = comparison
