@@ -1,7 +1,7 @@
 import { toFile } from './_toFile'
 import { getAdSet } from './_adBlocker'
 import credentials from './credentials'
-import { API, WptRun, WptTestResult, WptTestResultOptions, WptView } from './_Pagetest'
+import { API, WptRequest, WptRun, WptTestResult, WptTestResultOptions, WptView } from './_Pagetest'
 import { countHits } from './_countHits'
 import { getFMPData } from './_getFMPData'
 import { baqend, binding, model } from 'baqend'
@@ -29,11 +29,16 @@ export async function generateTestResult(wptTestId: string, pendingTest: model.T
   pendingTest.testDataMissing = false
 
   if (!isValidRun(rawData.runs['1'])) {
+    const run = new db.Run()
+    const firstView = rawData.runs['1'].firstView
+    run.documentRequestFailed = firstView && hasDocumentRequestFailed(firstView.requests)
+    pendingTest.firstView = run;
+
     throw new Error(`No valid test run found in ${rawData.id}`)
   }
 
   const [testResult, videos] = await Promise.all([
-    createTestResult(db, rawData, wptTestId, rawData.testUrl, '1',),
+    createTestResult(db, rawData, wptTestId, rawData.testUrl, '1'),
     createVideos(db, wptTestId, '1'),
   ])
 
@@ -155,7 +160,8 @@ async function createRun(db: baqend, data: WptView | undefined, testId: string, 
   run.bytes = data.bytesIn
   run.hits = new db.Hits(countHits(data.requests))
   run.contentSize = new db.ContentSize(countContentSize(data.requests))
-  run.documentRequestFailed = hasDocumentRequestFailed(testUrl, data.requests)
+  // Document request can not be failed if this code is executed because of validity check
+  run.documentRequestFailed = false
   run.basePageCDN = data.base_page_cdn
   run.largestContentfulPaint = getLCPFromWebPagetest(data)
 
@@ -178,10 +184,9 @@ async function createRun(db: baqend, data: WptView | undefined, testId: string, 
 /**
  * Checks whether the document request failed.
  *
- * @param testUrl The url of the test.
  * @param requests An array of request objects.
  */
-function hasDocumentRequestFailed(testUrl: string, requests: any[]): boolean {
+function hasDocumentRequestFailed(requests: WptRequest[]): boolean {
   const firstDocument = requests.find((req) => {
     const requestUrl = req.url
     const servedByBaqend = req.headers.response.indexOf('via: baqend') !== -1
@@ -189,7 +194,7 @@ function hasDocumentRequestFailed(testUrl: string, requests: any[]): boolean {
       return false;
     }
 
-    return requestUrl === `/v1/asset/${testUrl}`
+    return requestUrl.startsWith('/v1/asset/')
   })
 
   return firstDocument ? firstDocument.responseCode >= 400 : false;

@@ -12,6 +12,7 @@ export interface WptResult<T> {
 }
 
 export interface WptRequest {
+  url: string
   responseCode: number
   headers: { response: string[] }
 }
