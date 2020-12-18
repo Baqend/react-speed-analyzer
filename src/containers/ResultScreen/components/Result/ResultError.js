@@ -14,9 +14,15 @@ class ResultError extends Component {
     return (
       <div>
         <div className="text-center mb5">
-          <h1 className="header">Manual Test Required</h1>
+          {this.props.result.testOverview.documentRequestFailed ? (
+            <h1 className="header">We where blocked by your infrastructure</h1>
+          ) : (
+            <div>
+              <h1 className="header">Manual Test Required</h1>
+              <ContactForm onlyMail={true}/>
+            </div>
+          )}
         </div>
-        <ContactForm onlyMail={true}/>
       </div>
     )
   }
@@ -24,8 +30,17 @@ class ResultError extends Component {
   renderErrorInfo() {
     return (
       <div className="text-center error-info-box">
-        Unfortunately, your website cannot be tested with our default test configuration.
-        Please enter your email address and our team will quickly get back to you with a manual performance test.
+        {this.props.result.testOverview.documentRequestFailed ? (
+          <div>
+            Unfortunately, your website cannot be analyzed because our request that is used
+            to test the performance of your website was blocked by your infrastructure.
+          </div>
+        ) : (
+          <div>
+            Unfortunately, your website cannot be tested with our default test configuration.
+            Please enter your email address and our team will quickly get back to you with a manual performance test.
+          </div>
+        )}
       </div>
     )
   }
