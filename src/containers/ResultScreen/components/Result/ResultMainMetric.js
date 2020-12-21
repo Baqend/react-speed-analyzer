@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import './ResultMainMetric.css'
 import { isWholeNumberToHundreds, roundToNearestTen } from '../../../../helper/maths'
-import { calculateFactor } from '../../../../helper/resultHelper'
+import { calculateFactor, calculatePercent } from '../../../../helper/resultHelper'
 import ReactTooltip from 'react-tooltip'
 
 const tooltipText = {
@@ -47,12 +47,14 @@ class ResultMainMetric extends Component {
     const { mainMetric } = this.props.result
     const { competitorMainMetric, speedKitMainMetric } = this.roundMainMetrics(mainMetric)
     const factor = calculateFactor(competitorMainMetric, speedKitMainMetric)
+    const percent = calculatePercent(competitorMainMetric, speedKitMainMetric)
+    const factorValue = this.props.result.useFactor ? `${factor}x` : `${percent}%`
     return (
       <div>
         <div className="flex items-center relative">
           {(factor >= 1.1 && mainMetric !== 'ttfb') && (
             <i className="flex flex-column main-factor-cycle text-center" title={tooltipText[mainMetric]}>
-              <span className={"main-factor-value"}>{factor}x</span>
+              <span className={"main-factor-value"}>{factorValue}</span>
               Faster
             </i>
           )}

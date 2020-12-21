@@ -25,13 +25,14 @@ class ResultScreen extends Component {
     const { testId } = this.props.match.params
     if (testId) {
       const showLCP = this.props.match.path.indexOf('/overview') !== -1
-      this.loadTestResult(testId, showLCP ? 'largestContentfulPaint' : 'firstMeaningfulPaint')
+      const useFactor = this.props.match.path.indexOf('/summary') === -1
+      this.loadTestResult(testId, showLCP ? 'largestContentfulPaint' : 'firstMeaningfulPaint', useFactor)
     }
   }
 
-  loadTestResult = async (testId, mainMetric) => {
+  loadTestResult = async (testId, mainMetric, useFactor) => {
     try {
-      await this.props.actions.loadResult(testId, false, mainMetric)
+      await this.props.actions.loadResult(testId, false, mainMetric, useFactor)
     } catch(e) {
       console.log(e)
     }

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import ReactTooltip from 'react-tooltip'
 import './ResultMetrics.css'
-import { calculateFactor, calculateAbsolute } from 'helper/resultHelper'
+import { calculateFactor, calculateAbsolute, calculatePercent } from '../../../../helper/resultHelper';
 import Collapse from 'react-css-collapse'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
@@ -67,6 +67,11 @@ class ResultMetrics extends Component {
     this.setState({ showDetails: !this.state.showDetails })
   }
 
+  getFactorValue(competitorMetric, speedKitMetric) {
+    const factor = calculateFactor(competitorMetric, speedKitMetric)
+    const percent = calculatePercent(competitorMetric, speedKitMetric)
+    return this.props.result.useFactor ? `${factor}x` : `${percent}%`
+  }
 
   getHighlightMetrics() {
     const highlightMetrics = []
@@ -121,7 +126,7 @@ class ResultMetrics extends Component {
             </div>
             <div className="text-light-grey mt3">{metrics.find(metricEntry => metricEntry.name === metric).label}</div>
             <div className="faster" style={{ flexDirection: 'row' }}>{calculateAbsolute(competitorData[metric], speedKitData[metric])} Faster
-              (<span className="purple factor">{calculateFactor(competitorData[metric], speedKitData[metric])}x</span>)
+              (<span className="purple factor">{this.getFactorValue(competitorData[metric], speedKitData[metric])}</span>)
             </div>
           </div>
         ))}
@@ -139,8 +144,10 @@ class ResultMetrics extends Component {
           const metricToRemove = mainMetric === 'largestContentfulPaint' ? 'firstMeaningfulPaint' : 'largestContentfulPaint'
           return entry.name !== metricToRemove
         }).map((metric, index) => {
-          const factor = calculateFactor(competitorData[metric.name], speedKitData[metric.name])
           const absolute = calculateAbsolute(competitorData[metric.name], speedKitData[metric.name])
+          const factor = calculateFactor(competitorData[metric.name], speedKitData[metric.name])
+          const percent = calculatePercent(competitorData[metric.name], speedKitData[metric.name])
+          const factorValue = this.props.result.useFactor ? `${factor}x` : `${percent}%`
           return (
             <div key={index} className="flex justify-center">
               <div className="w-100">
@@ -157,7 +164,7 @@ class ResultMetrics extends Component {
                       {(absolute && factor) && (
                         <div className="faster">
                           <div className="faster-value">{absolute}{factor > 1 ? ' Faster' : ''}</div>
-                          <div>(<span className="purple factor">{factor}x</span>)</div>
+                          <div>(<span className="purple factor">{factorValue}</span>)</div>
                         </div>
                       )}
                     </div>

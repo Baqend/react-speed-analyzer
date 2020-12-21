@@ -1,4 +1,4 @@
-import { roundToTenths, zeroSafeDiv, formatPercentage } from './maths'
+import { roundToTenths, zeroSafeDiv } from './maths'
 
 /**
  * @param competitorMetric Metric from the competitor's site.
@@ -16,7 +16,7 @@ export function calculateFactor(competitorMetric, speedKitMetric) {
 /**
  * @param competitorMetric Metric from the competitor's site.
  * @param speedKitMetric Metric from Speed Kit.
- * @return {number}
+ * @return {string|null}
  */
 export function calculateAbsolute(competitorMetric, speedKitMetric) {
   if (!competitorMetric || !speedKitMetric) {
@@ -28,6 +28,25 @@ export function calculateAbsolute(competitorMetric, speedKitMetric) {
     return `${Math.round(improvement / 1000 * 10) / 10} s`
   }
   return `${improvement} ms`
+}
+
+/**
+ * @param competitorMetric Metric from the competitor's site.
+ * @param speedKitMetric Metric from Speed Kit.
+ * @return {number | null}
+ */
+export function calculatePercent(competitorMetric, speedKitMetric) {
+  if (!competitorMetric || !speedKitMetric) {
+    return null
+  }
+
+  const absolute = competitorMetric - speedKitMetric
+  if (absolute <= 0) {
+    return 0
+  }
+
+  const percentage = (100 / competitorMetric) * absolute
+  return Math.round(percentage).toFixed(0)
 }
 
 /**

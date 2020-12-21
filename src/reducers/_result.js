@@ -92,6 +92,7 @@ const initialState = {
   isBaqendApp: false,
   isSpeedKitComparison: false,
   isPlesk: false,
+  useFactor: true,
   speedKitVersion: null,
   testOverview: {},
   prewarmFinished: false,
@@ -178,12 +179,14 @@ export default function result(state = initialState, action = {}) {
     case TERMINATE_TEST:
       const metrics = verifyMainMetric(action.payload.mainMetric, state)
       const isPlesk = action.payload.isPlesk
+      const useFactor = action.payload.useFactor
       const errors = getResultErrors({ ...state, ...metrics }, isPlesk)
       return {
         ...state,
         ...errors,
         ...metrics,
         isPlesk,
+        useFactor,
         competitorSubscription: null,
         speedKitSubscription: null,
         isInitiated: false,

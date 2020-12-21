@@ -19,7 +19,7 @@ export const resetResult = () => ({
   }
 })
 
-export const loadResult = (testId, isPlesk = false, mainMetric = null) => ({
+export const loadResult = (testId, isPlesk = false, mainMetric = null, useFactor = true) => ({
   'BAQEND': async ({ dispatch, getState, db }) => {
     let testOverview
     try {
@@ -53,7 +53,7 @@ export const loadResult = (testId, isPlesk = false, mainMetric = null) => ({
       })
       dispatch({
         type: TERMINATE_TEST,
-        payload: { isPlesk, mainMetric }
+        payload: { isPlesk, mainMetric, useFactor }
       })
     } catch(e) {
       throw new Error("Test Result could not be loaded")
