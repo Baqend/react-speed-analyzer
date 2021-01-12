@@ -315,7 +315,7 @@ export class TestScriptBuilder {
       speedKitConfig = speedKitConfig.replace(splitRegex, 'split: 1.0')
     }
 
-    if(url.startsWith("https://mobile.yoox.com")) {
+    if(url.startsWith("https://mobile.yoox.com") && url.includes('#')) {
       url = url.substr(0, url.indexOf('#'))
     }
 

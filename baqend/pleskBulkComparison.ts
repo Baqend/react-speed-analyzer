@@ -132,6 +132,7 @@ export async function get(db: baqend, request: Request, response: Response) {
     if (bulkComparison.hasFinished) {
       const comparison = Object.assign(defaultComparison, { url })
       response.send({ bulkComparisonId, url, comparison })
+      return
     }
 
     // The corresponding bulkComparison is not finished yet. There will be a bulkTest result generated in the future

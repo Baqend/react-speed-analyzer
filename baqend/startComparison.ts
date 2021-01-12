@@ -1,5 +1,6 @@
 import { baqend, model } from 'baqend'
 import { Request, Response } from 'express'
+import { start } from 'repl'
 import { bootstrap } from './_compositionRoot'
 import { TestParams } from './_TestParams'
 
@@ -22,22 +23,25 @@ export async function post(db: baqend, req: Request, res: Response) {
     return puppeteerInfo
   }
 
-  const callPuppeteerWithRetries = async (params: TestParams, retries = 0): Promise<model.Puppeteer> => {
+  const callPuppeteerWithRetries = async (db:baqend, params: TestParams, retries = 0): Promise<model.Puppeteer> => {
+    const startTime = Date.now();
     try {
       return await callPuppeteer(params, retries)
     } catch (err) {
+      const timeAfterStart = Math.ceil((Date.now() - startTime) / 1000);
+      db.log.error(`Puppeteer call no. ${retries + 1} has failed after ${timeAfterStart} seconds.`);
       if (retries <= MAX_PUPPETEER_RETRIES) {
         await new Promise(resolve => setTimeout(() => resolve(), 5000));
-        return callPuppeteerWithRetries(params, retries + 1);
+        return callPuppeteerWithRetries(db, params, retries + 1);
       }
 
       throw err
     }
   }
 
-  const updateWithPuppeteer = async (params: TestParams, comparison: model.TestOverview) => {
+  const updateWithPuppeteer = async (db: baqend, params: TestParams, comparison: model.TestOverview) => {
     try {
-      const puppeteerInfo = await callPuppeteerWithRetries(params)
+      const puppeteerInfo = await callPuppeteerWithRetries(db, params)
       const updatedComparison = await comparisonFactory.updateComparison(comparison, puppeteerInfo, params)
       comparisonWorker.next(updatedComparison).catch((err) => db.log.error(err.message, err))
 
@@ -52,7 +56,7 @@ export async function post(db: baqend, req: Request, res: Response) {
   const comparison = await comparisonFactory.createComparison(params.url)
 
   if (withPuppeteer) {
-    const updatedComparison = await updateWithPuppeteer(params, comparison)
+    const updatedComparison = await updateWithPuppeteer(db, params, comparison)
 
     res.status(200)
     res.send(updatedComparison)
@@ -60,7 +64,7 @@ export async function post(db: baqend, req: Request, res: Response) {
   }
 
   // async call to update the testOverview with the puppeteer data
-  updateWithPuppeteer(params, comparison)
+  updateWithPuppeteer(db, params, comparison)
 
   res.status(200)
   res.send(comparison)
