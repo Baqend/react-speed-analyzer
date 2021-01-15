@@ -43,6 +43,38 @@
     <meta name="og:url" content="https://test.speed-kit.com/">
     <meta name="og:site_name" content="Page Speed Analyzer">
     <meta name="og:type" content="website">
+    <script>
+      window.pipedriveLeadboosterConfig = {
+        base: 'leadbooster-chat.pipedrive.com',
+        companyId: 1360735,
+        playbookUuid: 'b401ebce-9a65-4382-be2e-4943f20d5424',
+        version: 2
+      };
+      (function() {
+        var w = window;
+        if (w.LeadBooster) {
+          console.warn('LeadBooster already exists');
+        } else {
+          w.LeadBooster = {
+            q: [],
+            on: function(n, h) {
+              this.q.push({
+                t: 'o',
+                n: n,
+                h: h
+              });
+            },
+            trigger: function(n) {
+              this.q.push({
+                t: 't',
+                n: n
+              });
+            },
+          };
+        }
+      })();
+    </script>
+    <script src="https://leadbooster-chat.pipedrive.com/assets/loader.js" async></script>
   </head>
   <body>
     <noscript>
