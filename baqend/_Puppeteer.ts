@@ -152,6 +152,11 @@ export class Puppeteer {
     timeout: number = DEFAULT_TIMEOUT,
   ): Promise<model.Puppeteer> {
     try {
+      const isBlocked = ['2020.smartuk.net', '2020-old.smartuk.net'].some(e => url.includes(e));
+      if (isBlocked) {
+        throw new Error(`URL ${url} is blocked.`);
+      }
+
       const language = location.startsWith('us') ? 'en-US' : 'de-DE'
       const data = await this.postToServer(
         url,
