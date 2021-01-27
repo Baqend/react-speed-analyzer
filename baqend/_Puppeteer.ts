@@ -152,8 +152,8 @@ export class Puppeteer {
     timeout: number = DEFAULT_TIMEOUT,
   ): Promise<model.Puppeteer> {
     try {
-      const isBlocked = ['2020.smartuk.net', '2020-old.smartuk.net'].some(e => url.includes(e));
-      if (isBlocked) {
+      const shouldBlock = ['2020.smartuk.net', '2020-old.smartuk.net', 'www.agarzp.com'].some(e => url.includes(e));
+      if (shouldBlock) {
         throw new Error(`URL ${url} is blocked.`);
       }
 
