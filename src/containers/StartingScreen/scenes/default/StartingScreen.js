@@ -23,6 +23,14 @@ class StartingScreen extends Component {
     }
 
     const params = this.parseQueryString(this.props.location.search)
+    if (params.advanced) {
+      showAdvancedConfig = true
+    }
+
+    this.state = {
+      showAdvancedConfig
+    }
+
     if (params.url) {
       const { history } = this.props
       const url = decodeURIComponent(params.url)
@@ -30,12 +38,6 @@ class StartingScreen extends Component {
       history.push('/')
       this.props.actions.handleUrlInput(url)
       this.startTest(url)
-    }
-    if (params.advanced) {
-      showAdvancedConfig = true
-    }
-    this.state = {
-      showAdvancedConfig
     }
   }
 
