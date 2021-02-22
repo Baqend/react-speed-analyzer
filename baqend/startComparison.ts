@@ -1,6 +1,5 @@
 import { baqend, model } from 'baqend'
 import { Request, Response } from 'express'
-import { start } from 'repl'
 import { bootstrap } from './_compositionRoot'
 import { TestParams } from './_TestParams'
 
