@@ -20,6 +20,7 @@ class ResultScreen extends Component {
       showDetails: params.indexOf('details') > -1,
       showConfig: params.indexOf('config') > -1 || params.indexOf('advanced') > -1,
       showAdvancedConfig: params.indexOf('advanced') > -1,
+      showROI: params.indexOf('roi') > -1,
     }
 
     const { testId } = this.props.match.params

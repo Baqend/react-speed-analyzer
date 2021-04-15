@@ -20,7 +20,7 @@ class Footer extends Component {
     return (
       <footer>
         <div className="flex justify-center flex-wrap result-page" style={{ fontWeight: 400 }}>
-          <span className="pa1">© 2020 Baqend</span>
+          <span className="pa1">© 2021 Baqend</span>
           <span style={{ alignSelf: "center" }}>-</span>
           <a
             className="pa1"

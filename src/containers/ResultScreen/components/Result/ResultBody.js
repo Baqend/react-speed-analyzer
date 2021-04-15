@@ -123,6 +123,7 @@ class ResultBody extends Component {
 
   render() {
     const embedded = this.props.embedded
+    const showROI = this.props.showROI
     return (
       <div className="flex-grow-1 flex flex-column result-body">
         <Papercut fillColor={"grey"} doRotation={false}/>
@@ -130,7 +131,7 @@ class ResultBody extends Component {
           {this.renderScale()}
           {this.renderDetails()}
           <ResultAction { ...this.props } toggleModal={this.toggleModal}/>
-          {!embedded && <ResultWorthiness
+          {(!embedded && showROI) && <ResultWorthiness
             competitorTest={this.props.competitorTest}
             speedKitTest={this.props.speedKitTest}
             mainMetric={this.props.result.mainMetric}
