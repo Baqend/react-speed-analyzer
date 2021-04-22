@@ -160,8 +160,7 @@ async function createRun(db: baqend, data: WptView | undefined, testId: string, 
   run.bytes = data.bytesIn
   run.hits = new db.Hits(countHits(data.requests))
   run.contentSize = new db.ContentSize(countContentSize(data.requests))
-  // Document request can not be failed if this code is executed because of validity check
-  run.documentRequestFailed = false
+  run.documentRequestFailed = hasDocumentRequestFailed(data.requests)
   run.basePageCDN = data.base_page_cdn
   run.largestContentfulPaint = getLCPFromWebPagetest(data)
 

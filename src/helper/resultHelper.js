@@ -75,6 +75,10 @@ export function resultIsValid(competitorResult, speedKitResult, mainMetric, seco
     return false
   }
 
+  if (competitorResult.firstView.documentRequestFailed || speedKitResult.firstView.documentRequestFailed) {
+    return false
+  }
+
   if ((speedKitResult.testInfo && speedKitResult.testInfo.isSpeedKitComparison) || isPlesk) {
     return true
   }
