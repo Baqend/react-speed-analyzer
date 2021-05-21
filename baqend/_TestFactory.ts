@@ -1,5 +1,6 @@
 import { baqend, model } from 'baqend'
 import { AsyncFactory } from './_AsyncFactory'
+import { truncateUrl } from './_helpers'
 import { setFailed, setQueued } from './_Status'
 import { TestBuilder } from './_TestBuilder'
 import { TestParams } from './_TestParams'
@@ -22,7 +23,8 @@ export class TestFactory implements AsyncFactory<model.TestResult> {
       this.db.log.info('flags: %s', commandLine)
     }
 
-    const testResult = new this.db.TestResult({ url, isClone, location, priority, speedKitConfig })
+    const truncatedUrl = truncateUrl(url)
+    const testResult = new this.db.TestResult({ url: truncatedUrl, isClone, location, priority, speedKitConfig })
     setQueued(testResult)
     testResult.testInfo = this.createTestInfo(puppeteer, isClone, params)
     testResult.webPagetests = []

@@ -1,5 +1,6 @@
 import { baqend, model } from 'baqend'
 import { AsyncFactory } from './_AsyncFactory'
+import { truncateUrl } from './_helpers'
 import { setQueued, setFailed } from './_Status'
 import { TestBuilder } from './_TestBuilder'
 import { TestParams } from './_TestParams'
@@ -32,8 +33,9 @@ export class MultiComparisonFactory implements AsyncFactory<model.BulkTest> {
     }
 
     const multiComparison: model.BulkTest = new this.db.BulkTest()
+    const truncatedUrl = truncateUrl(puppeteer ? puppeteer.url : params.url)
     puppeteer ? setQueued(multiComparison) : setFailed(multiComparison)
-    multiComparison.url = puppeteer ? puppeteer.url : params.url
+    multiComparison.url = truncatedUrl
     multiComparison.puppeteer = puppeteer
     multiComparison.createdBy = createdBy
     multiComparison.testOverviews = []

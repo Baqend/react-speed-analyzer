@@ -1,6 +1,6 @@
 import { baqend, model } from 'baqend'
 import { Request, Response } from 'express'
-import { booleanOf, mapObj, take } from './_helpers'
+import { booleanOf, mapObj, take, truncateUrl } from './_helpers'
 import { Status } from './_Status'
 
 function swap<U>(input: any): any {
@@ -17,14 +17,34 @@ function swap<U>(input: any): any {
   return result
 }
 
-export async function getLatestComparison(db: baqend, url: string, isSpeedKitComparison: boolean): Promise<any> {
-  const latestComparison: model.TestOverview | null = await db.TestOverview.find()
+/**
+ * Loads a TestOverview for a given Url.
+ */
+async function loadTestOverview(db: baqend, url: string, isSpeedKitComparison: boolean): Promise<model.TestOverview | null> {
+  const truncatedUrl = truncateUrl(url)
+  const testOverview = await db.TestOverview.find()
+    .eq('url', truncatedUrl)
+    .eq('isSpeedKitComparison', isSpeedKitComparison)
+    .eq('status', Status.SUCCESS)
+    .isNotNull('factors')
+    .descending('updatedAt')
+    .singleResult({ depth: 1 })
+
+  if (testOverview) {
+    return testOverview
+  }
+
+  return db.TestOverview.find()
     .eq('url', url)
     .eq('isSpeedKitComparison', isSpeedKitComparison)
     .eq('status', Status.SUCCESS)
     .isNotNull('factors')
     .descending('updatedAt')
     .singleResult({ depth: 1 })
+}
+
+export async function getLatestComparison(db: baqend, url: string, isSpeedKitComparison: boolean): Promise<any> {
+  const latestComparison = await loadTestOverview(db, url, isSpeedKitComparison)
 
   if (!latestComparison) {
     return { url, speedKit: isSpeedKitComparison, id: null, fields: null }

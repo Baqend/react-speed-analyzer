@@ -1,6 +1,6 @@
 import { baqend, model } from 'baqend'
 import { Request, Response } from 'express'
-import { generateHash, getDateString } from './_helpers'
+import { generateHash, getDateString, truncateUrl } from './_helpers'
 import { Status } from './_Status'
 import { startBulkComparison } from './startBulkComparison'
 import { DEFAULT_PLESK_PRIORITY } from './_TestBuilder'
@@ -52,7 +52,7 @@ function findBestComparison(multiComparison: model.BulkTest): model.TestOverview
 }
 
 /**
- * Checks if something is a string array
+ * Checks if something is a string array.
  */
 function isStringArray(it: any) {
   if (it instanceof Array) {
@@ -60,6 +60,26 @@ function isStringArray(it: any) {
   }
 
   return false
+}
+
+/**
+ * Loads a TestOverview for a given Url.
+ */
+async function loadTestOverview(db: baqend, url: string, depth: number): Promise<model.TestOverview | null> {
+  const truncatedUrl = truncateUrl(url)
+  const testOverview = await db.TestOverview.find()
+    .eq('url', truncatedUrl)
+    .descending('createdAt')
+    .singleResult({depth: depth - 2})
+
+  if (testOverview) {
+    return testOverview
+  }
+
+  return db.TestOverview.find()
+    .eq('url', url)
+    .descending('createdAt')
+    .singleResult({depth: depth - 2})
 }
 
 /**
@@ -75,7 +95,7 @@ export async function get(db: baqend, request: Request, response: Response) {
   }
 
   if (!bulkComparisonId) {
-    const comparison = await db.TestOverview.find().eq('url', url).descending('createdAt').singleResult({depth: depth - 2})
+    const comparison = await loadTestOverview(db, url, depth)
     if (!comparison) {
       throw new Abort('There could be no test analysis found for your url.')
     }

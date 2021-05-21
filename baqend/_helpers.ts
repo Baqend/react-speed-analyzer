@@ -202,3 +202,19 @@ export function booleanOf(value: string | boolean): boolean {
 
   throw new Error(`Invalid boolean value: "${value}".`)
 }
+
+/**
+ * Truncates a url string to a maximum of 900 characters and returns a new string.
+ */
+export function truncateUrl(url: string): string {
+  if (url.length <= 900) {
+    return url;
+  }
+
+  const lastParamIndex = url.lastIndexOf('&') !== -1 ? url.lastIndexOf('&') : url.lastIndexOf('?');
+  if (lastParamIndex === -1) {
+    return url.substr(0, 900)
+  }
+
+  return truncateUrl(url.substr(0, lastParamIndex));
+}

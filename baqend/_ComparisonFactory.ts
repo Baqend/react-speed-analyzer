@@ -2,9 +2,10 @@ import { baqend, model } from 'baqend'
 import { AsyncFactory } from './_AsyncFactory'
 import { ConfigCache } from './_ConfigCache'
 import { ConfigGenerator } from './_ConfigGenerator'
-import { getRootPath, getTLD } from './_getSpeedKitUrl'
+import { getTLD } from './_getSpeedKitUrl'
+import { truncateUrl } from './_helpers'
 import { DataType, Serializer } from './_Serializer'
-import { setFailed, setQueued, setRunning, Status } from './_Status'
+import { setFailed, setQueued, setRunning } from './_Status'
 import { TestBuilder } from './_TestBuilder'
 import { TestFactory } from './_TestFactory'
 import { TestParams } from './_TestParams'
@@ -52,7 +53,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
 
     // Initialize
     const comparison = new this.db.TestOverview({ id })
-    comparison.url = url
+    comparison.url = truncateUrl(url)
     setQueued(comparison)
 
     return comparison.save()
@@ -82,7 +83,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
 
     // Copy Puppeteer info
     const speedKitVersion = speedKit !== null ? `${speedKit.major}.${speedKit.minor}.${speedKit.patch}` : null
-    comparison.url = url
+    comparison.url = truncateUrl(url)
     comparison.displayUrl = displayUrl
     comparison.puppeteer = puppeteer
     // Check if puppeteer found Speed Kit and if a config was found it is not disabled.
