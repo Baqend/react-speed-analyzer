@@ -64,13 +64,16 @@ choosePort(HOST, DEFAULT_PORT)
       proxyConfig,
       urls.lanUrlForConfig
     );
-    const devServer = new WebpackDevServer(compiler, serverConfig);
+
+    const devServer = new WebpackDevServer(webpack(compiler, serverConfig),{})
+    //const devServer = new WebpackDevServer(compiler, serverConfig); // todo: remove one of those
+
     // Launch WebpackDevServer.
     devServer.listen(port, HOST, err => {
       if (err) {
         return console.log(err);
       }
-      if (isInteractive) {
+      if (isInteractive) {DefinePlugin
         clearConsole();
       }
       console.log(chalk.cyan('Starting the development server...\n'));
