@@ -54,12 +54,6 @@ choosePort(HOST, DEFAULT_PORT)
     const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
     const appName = require(paths.appPackageJson).name;
     const urls = prepareUrls(protocol, HOST, port);
-    const devSocket = {
-      warnings: warnings =>
-        devServer.sockWrite(devServer.sockets, 'warnings', warnings),
-      errors: errors =>
-        devServer.sockWrite(devServer.sockets, 'errors', errors),
-    };
     // Create a webpack compiler that is configured with custom messages.
     const compiler = createCompiler({
       webpack,
@@ -67,8 +61,6 @@ choosePort(HOST, DEFAULT_PORT)
       appName,
       urls,
       useYarn,
-      useTypeScript: true,
-      devSocket
     });
 
     // Load proxy config
