@@ -54,8 +54,23 @@ choosePort(HOST, DEFAULT_PORT)
     const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
     const appName = require(paths.appPackageJson).name;
     const urls = prepareUrls(protocol, HOST, port);
+    const devSocket = {
+      warnings: warnings =>
+        devServer.sockWrite(devServer.sockets, 'warnings', warnings),
+      errors: errors =>
+        devServer.sockWrite(devServer.sockets, 'errors', errors),
+    };
     // Create a webpack compiler that is configured with custom messages.
-    const compiler = createCompiler(webpack, config, appName, urls, useYarn);
+    const compiler = createCompiler({
+      webpack,
+      config,
+      appName,
+      urls,
+      useYarn,
+      useTypeScript: true,
+      devSocket
+    });
+
     // Load proxy config
     const proxySetting = require(paths.appPackageJson).proxy;
     const proxyConfig = prepareProxy(proxySetting, paths.appPublic);
@@ -65,15 +80,14 @@ choosePort(HOST, DEFAULT_PORT)
       urls.lanUrlForConfig
     );
 
-    const devServer = new WebpackDevServer(webpack(compiler, serverConfig),{})
-    //const devServer = new WebpackDevServer(compiler, serverConfig); // todo: remove one of those
+    const devServer = new WebpackDevServer(compiler, serverConfig);
 
     // Launch WebpackDevServer.
     devServer.listen(port, HOST, err => {
       if (err) {
         return console.log(err);
       }
-      if (isInteractive) {DefinePlugin
+      if (isInteractive) {webpack.DefinePlugin
         clearConsole();
       }
       console.log(chalk.cyan('Starting the development server...\n'));
