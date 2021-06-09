@@ -4,7 +4,7 @@ const isRegexp = require('is-regexp');
 const isObj = require('is-obj');
 const getOwnEnumPropSymbols = require('get-own-enumerable-property-symbols').default;
 
-module.exports = (val, opts, pad) => {
+export function stringifyObject(val, opts, pad) {
 	const seen = [];
 
 	return (function stringify(val, opts, pad) {

@@ -104,6 +104,8 @@ module.exports = {
       net: false,
       tls: false,
       child_process: false,
+      util: false,
+      stream: false
     },
   },
   module: {
@@ -158,7 +160,7 @@ module.exports = {
               {
                 loader: require.resolve('postcss-loader'),
                 options: {
-                  config: {
+                  postcssOptions: {
                     path: path.resolve(__dirname, 'postcss/postcss.config.js'),
                   },
                 },
