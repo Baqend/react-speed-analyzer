@@ -37,7 +37,7 @@ export const DEFAULT_TEST_OPTIONS: Partial<model.TestOptions> = {
   video: true,
   noopt: true,
   pageSpeed: false,
-  requests: false,
+  requests: true,
   breakDown: false,
   domains: false,
   bodies: false,
@@ -47,7 +47,7 @@ export const DEFAULT_TEST_OPTIONS: Partial<model.TestOptions> = {
   time: 1, // capture at least one second
   chromeTrace: false,
   netLog: false,
-  noheaders: true,
+  noheaders: false,
   noimages: true,
   ignoreSSL: true,
   block: 'favicon', // exclude favicons for fair comparison, as not handled by SWs
