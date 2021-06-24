@@ -226,6 +226,7 @@ declare module 'baqend' {
       hasMultiComparison: boolean;
       documentRequestFailed: boolean;
       error?: { message: string, status: number };
+      metaData?: { hostname: string };
     }
 
     interface Hits extends binding.Managed {

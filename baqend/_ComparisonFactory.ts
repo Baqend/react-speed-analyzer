@@ -46,7 +46,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
   /**
    * Create the comparison object itself.
    */
-  async createComparison(url: string) {
+  async createComparison(url: string, hostname?: string) {
     const uniqueId = await generateUniqueId(this.db, 'TestOverview')
     const tld = getTLD(url, this.db.log)
     const id = uniqueId + tld.split('.')[0]
@@ -54,6 +54,11 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
     // Initialize
     const comparison = new this.db.TestOverview({ id })
     comparison.url = truncateUrl(url)
+
+    if (hostname) {
+      comparison.metaData = { hostname }
+    }
+
     setQueued(comparison)
 
     return comparison.save()
