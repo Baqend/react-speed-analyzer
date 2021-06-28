@@ -78,6 +78,7 @@ export const startTest = (useAdvancedConfig = true) => ({
         activityTimeout,
         cookie,
         withPuppeteer: false,
+        hostname: window.location.hostname,
       })
     } catch(e) {
       trackURL('failedComparison', url)

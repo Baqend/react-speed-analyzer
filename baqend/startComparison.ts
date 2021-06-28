@@ -9,7 +9,6 @@ const MAX_PUPPETEER_RETRIES = 2;
  * Baqend code API call.
  */
 export async function post(db: baqend, req: Request, res: Response) {
-  const { hostname } = req;
   const { comparisonWorker, comparisonFactory, puppeteer } = bootstrap(db)
 
   const callPuppeteer = async (params: TestParams, retries: number) => {
@@ -53,6 +52,7 @@ export async function post(db: baqend, req: Request, res: Response) {
   }
 
   const { withPuppeteer = true, ...params } = req.body as { withPuppeteer?: boolean } & TestParams
+  const hostname = params.hostname || req.hostname;
   const comparison = await comparisonFactory.createComparison(params.url, hostname)
 
   if (withPuppeteer) {

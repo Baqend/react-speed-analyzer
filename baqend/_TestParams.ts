@@ -81,6 +81,11 @@ export interface TestParams {
    * A string of cookies to be set when running the test.
    */
   cookie?: string
+
+  /**
+   * The host from where the test was started.
+   */
+  hostname?: string;
 }
 
 export interface MultiTestParams extends TestParams {

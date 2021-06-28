@@ -27,6 +27,7 @@ export const DEFAULT_PARAMS: Required<TestParams> = {
   preload: false,
   ignoreConfig: false,
   cookie: '',
+  hostname: '',
 }
 
 /**
