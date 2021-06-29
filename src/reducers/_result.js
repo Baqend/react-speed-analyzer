@@ -64,7 +64,7 @@ const verifyMainMetric = (passedMainMetric, { mainMetric, secondaryMetric }) => 
 
 const getWhiteListCandidates = (state, speedKitTest) => {
   const url = state.testOverview.url
-  const whitelist = state.testOverview.whitelist || {}
+  const whitelist = state.testOverview.whitelist || []
   const domains = speedKitTest.firstView && speedKitTest.firstView.domains
 
   if (domains) {

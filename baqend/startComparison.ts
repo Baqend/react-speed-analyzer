@@ -30,7 +30,7 @@ export async function post(db: baqend, req: Request, res: Response) {
       const timeAfterStart = Math.ceil((Date.now() - startTime) / 1000);
       db.log.error(`Puppeteer call no. ${retries + 1} has failed after ${timeAfterStart} seconds.`);
       if (retries <= MAX_PUPPETEER_RETRIES) {
-        await new Promise(resolve => setTimeout(() => resolve(), 5000));
+        await new Promise<void>(resolve => setTimeout(() => resolve(), 5000));
         return callPuppeteerWithRetries(db, params, retries + 1);
       }
 

@@ -3,7 +3,7 @@ import { Request, Response } from 'express'
 import { booleanOf, mapObj, take, truncateUrl } from './_helpers'
 import { Status } from './_Status'
 
-function swap<U>(input: any): any {
+function swap<U>(input: {[key: string]: {}}): any {
   const result = Object.create(null)
   for (const [key, value] of Object.entries(input)) {
     for (const [key2, value2] of Object.entries(value)) {

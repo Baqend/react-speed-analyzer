@@ -169,7 +169,7 @@ export class ConfigBuilder {
     this._size += 1
 
     for (const rule of this.blacklist) {
-      const condition: Condition | undefined = rule[section]
+      const condition: Condition | string | undefined = rule[section]
       // Add to existing entry
       if (condition) {
         if (condition instanceof Array) {

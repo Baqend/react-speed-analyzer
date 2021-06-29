@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import Toggle from 'react-toggle'
 
-import stringifyObject from 'lib/stringify-object'
+import { stringifyObject } from '../../lib/stringify-object'
 import { Controlled as CodeMirror } from 'react-codemirror2'
 
 import { generateDefaultConfig } from '../../helper/configHelper'
