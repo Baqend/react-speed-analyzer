@@ -48,7 +48,6 @@
   &:not(.btn-ghost) {
     color: white;
     background: var(--blue);
-    // padding-bottom: 7px;
   }
   &.btn-ghost {
     color: var(--blue);

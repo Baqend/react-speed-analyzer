@@ -2,7 +2,7 @@
 'use strict';
 import isRegexp from 'is-regexp';
 import isObject from 'is-obj';
-const getOwnEnumPropSymbols = require('get-own-enumerable-property-symbols').default;
+import getOwnEnumPropSymbols from 'get-own-enumerable-property-symbols'
 
 export function stringifyObject(val, opts = {}, pad = '', seen = []) {
   opts.indent = opts.indent || '\t';
