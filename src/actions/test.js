@@ -13,7 +13,7 @@ import {
 } from './types'
 
 import { isURL, trackURL } from '../helper/utils'
-import stringifyObject from 'lib/stringify-object'
+import { stringifyObject } from '../lib/stringify-object'
 
 /**
  * Prepares the test before its execution (check rate limiting and normalize url).

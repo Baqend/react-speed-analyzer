@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import renderHTML from 'react-render-html'
+import parse from 'html-react-parser'
 import './ResultAction.css'
 
 import { bindActionCreators } from 'redux'
@@ -219,7 +219,7 @@ class ResultAction extends Component {
                 </div>
                 <div className="w-80 w-90-ns">
                   <h4 className="mb0 mt0 fw6">{ content[0] }</h4>
-                  <span className="font-small">{ renderHTML(content[1]) }</span>
+                  <span className="font-small">{ parse(content[1]) }</span>
                 </div>
               </div>
             </div>
@@ -232,7 +232,7 @@ class ResultAction extends Component {
                 </div>
                 <div className="w-80 w-90-ns">
                   <h4 className="mb0 mt0 fw6">{ content[0] }</h4>
-                  <span className="font-small">{ renderHTML(content[1]) }</span>
+                  <span className="font-small">{ parse(content[1]) }</span>
                 </div>
               </div>
             </div>

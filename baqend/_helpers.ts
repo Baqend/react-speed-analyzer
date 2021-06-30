@@ -70,15 +70,14 @@ export function dollarRegExp(regExp: RegExp): RegExp {
 /**
  * Cleans all entries of an object which contain an empty value.
  */
-export function cleanObject<T extends { [key: string]: any }>(obj: T): Required<T> {
-  const result: Required<T> = Object.create(null)
+export function cleanObject<T extends { [key: string]: any }>(obj: T): T {
   for (const [key, value] of Object.entries(obj)) {
-    if (value !== null && value !== undefined) {
-      result[key] = value
+    if (value === null || value === undefined) {
+      delete obj[key]
     }
   }
 
-  return result
+  return obj
 }
 
 /**

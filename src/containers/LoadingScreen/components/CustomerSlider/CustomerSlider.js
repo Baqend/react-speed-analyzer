@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import Slider from 'react-slick'
-import Parser from 'html-react-parser'
+import parse from 'html-react-parser'
 import { Customers } from './Customers'
 
 import './CustomSlider.css'
@@ -32,7 +32,7 @@ export default class CustomerSlider extends Component {
                 <div className={`item-img ${customer.className}`} />
               </div>
               <p className="item-header">{customer.name} - {customer.title}</p>
-              <p className="item-text">{Parser(customer.copy)}</p>
+              <p className="item-text">{parse(customer.copy)}</p>
             </div>
           )
         })}

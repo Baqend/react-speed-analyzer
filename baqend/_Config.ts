@@ -15,7 +15,7 @@ export interface Rule {
   host?: Condition
   pathname?: Condition
   cookie?: Condition
-  contentType?: string
+  contentType?: Condition
   mobile?: true
   desktop?: true
   tablet?: true

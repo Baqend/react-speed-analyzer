@@ -15,8 +15,8 @@ class ResultScreenComponent extends Component {
           <div>
             {isFinished && (
               <div>
-                <ResultHeader embedded={false} {...this.props} />
-                <ResultBody embedded={false} {...this.props} />
+                <ResultHeader embedded={true} {...this.props} />
+                <ResultBody embedded={true} {...this.props} />
               </div>
             )}
           </div>

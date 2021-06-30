@@ -46,11 +46,21 @@ html, body, #speed-kit-analyzer, #wrapper {
 }
 
 #speed-kit-analyzer {
+  margin: 0;
+  padding: 0;
+  flex-grow: 1;
+  font-family: Axiforma, sans-serif;
+  font-size: 18px;
+  line-height: 1.48;
+  color: color(#fff);
   background-image: linear-gradient(153deg, #1201e8, #e808f2 101%);
-  @media (--breakpoint-medium-device) {
-      background-color: #f4f4f4;
-      background-image: none;
-  }
+@media (--breakpoint-small-device) {
+  font-size: 20px;
+}
+@media (--breakpoint-medium-device) {
+  background-color: #f4f4f4;
+  background-image: none;
+}
 }
 
 #speed-kit-analyzer, #main {
