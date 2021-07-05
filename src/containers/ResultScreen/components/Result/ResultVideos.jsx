@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import './ResultVideos.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlay } from '@fortawesome/free-solid-svg-icons'
-import { isIE, isEdge } from '/helper/utils'
+import { isIE, isEdge } from '/src/helper/utils'
 
 class ResultVideos extends Component {
   constructor(props) {

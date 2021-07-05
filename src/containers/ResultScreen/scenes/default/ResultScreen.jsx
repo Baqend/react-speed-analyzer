@@ -6,10 +6,10 @@ import { connect } from 'react-redux'
 
 import ResultScreenComponent from './ResultScreenComponent'
 
-import { startTest, prepareTest } from '/actions/test'
-import { loadResult, resetResult } from '/actions/result'
+import { startTest, prepareTest } from '/src/actions/test'
+import { loadResult, resetResult } from '/src/actions/result'
 
-import { getObjectKey } from '/helper/utils'
+import { getObjectKey } from '/src/helper/utils'
 
 class ResultScreen extends Component {
   constructor(props) {

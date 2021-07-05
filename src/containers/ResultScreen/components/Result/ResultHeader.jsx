@@ -3,8 +3,8 @@ import { isSpeedKitInstalledCorrectly } from '../../../../helper/resultHelper'
 import ResultVideos from './ResultVideos'
 import './ResultHeader.css'
 import ResultMainMetric from './ResultMainMetric'
-import Header from '/components/Header/Header'
-import ConfigForm from '/components/ConfigForm/ConfigForm'
+import Header from '/src/components/Header/Header'
+import ConfigForm from '/src/components/ConfigForm/ConfigForm'
 
 class ResultHeader extends Component {
   constructor(props) {

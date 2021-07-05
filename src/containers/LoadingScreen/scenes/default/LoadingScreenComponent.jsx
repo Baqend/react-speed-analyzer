@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import DeviceContainer from '/components/DeviceContainer/DeviceContainer'
+import DeviceContainer from '/src/components/DeviceContainer/DeviceContainer'
 
 import CustomerSlider from '../../components/CustomerSlider/CustomerSlider'
 import CircularProgress from '../../components/CircularProgress/CircularProgress'

@@ -6,9 +6,9 @@ import './ResultAction.css'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
-import { prepareTest, startTest } from '/actions/test'
-import { getObjectKey } from '/helper/utils'
-import { calculateAbsolute } from '/helper/resultHelper'
+import { prepareTest, startTest } from '/src/actions/test'
+import { getObjectKey } from '/src/helper/utils'
+import { calculateAbsolute } from '/src/helper/resultHelper'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle, faExclamationCircle } from '@fortawesome/free-solid-svg-icons'

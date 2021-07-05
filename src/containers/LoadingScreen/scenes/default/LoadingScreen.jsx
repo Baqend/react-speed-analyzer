@@ -6,9 +6,9 @@ import { connect } from 'react-redux'
 import './LoadingScreen.css'
 import LoadingScreenComponent from './LoadingScreenComponent'
 
-import { resetConfig } from '/actions/config'
-import { resetResult } from '/actions/result'
-import { monitorTest } from '/actions/test'
+import { resetConfig } from '/src/actions/config'
+import { resetResult } from '/src/actions/result'
+import { monitorTest } from '/src/actions/test'
 
 
 class LoadingScreen extends Component {

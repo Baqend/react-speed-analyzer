@@ -4,10 +4,10 @@ import PropTypes from 'prop-types'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
-import { startTest, prepareTest } from '/actions/test'
-import { loadResult } from '/actions/result'
+import { startTest, prepareTest } from '/src/actions/test'
+import { loadResult } from '/src/actions/result'
 
-import { getObjectKey } from '/helper/utils'
+import { getObjectKey } from '/src/helper/utils'
 
 import ResultScreenComponent from './ResultScreenComponent'
 

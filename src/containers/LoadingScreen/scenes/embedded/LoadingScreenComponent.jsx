@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import './LoadingScreenComponent.css'
 
-import DeviceContainer from '/components/DeviceContainer/DeviceContainer'
+import DeviceContainer from '/src/components/DeviceContainer/DeviceContainer'
 import CircularProgress from '../../components/CircularProgress/CircularProgress'
 import CustomerSlider from '../../components/CustomerSlider/CustomerSlider'
 

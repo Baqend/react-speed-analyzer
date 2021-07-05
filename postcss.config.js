@@ -5,6 +5,5 @@ module.exports = (ctx) => ({
     'postcss-calc': {},
     'postcss-flexbugs-fixes': {},
     'postcss-cssnext': { browsers: ['last 2 versions', '> 5%'], },
-    cssnano: ctx.env === 'production' ? {} : false
   }
 })

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import './ResultError.css'
 import Header from '../../../../components/Header/Header'
-import DeviceContainer from '/components/DeviceContainer/DeviceContainer'
+import DeviceContainer from '/src/components/DeviceContainer/DeviceContainer'
 import Footer from '../../../../components/Footer/Footer'
 import ContactForm from '../../../../components/ContactForm/ContactForm'
 

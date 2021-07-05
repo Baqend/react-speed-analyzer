@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import ConfigForm from '/components/ConfigForm/ConfigForm'
+import ConfigForm from '/src/components/ConfigForm/ConfigForm'
 
-import DeviceContainer from '/components/DeviceContainer/DeviceContainer'
+import DeviceContainer from '/src/components/DeviceContainer/DeviceContainer'
 import Header from '../../../../components/Header/Header'
 
 class StartingScreenComponent extends Component {

@@ -6,11 +6,11 @@ import { connect } from 'react-redux'
 import './StartingScreen.css'
 import StartingScreenComponent from './StartingScreenComponent'
 
-import { getObjectKey } from '/helper/utils'
+import { getObjectKey } from '/src/helper/utils'
 
-import { handleUrlInput, resetConfig } from '/actions/config'
-import { resetResult, resetTestStatus } from '/actions/result'
-import { prepareTest, startTest } from '/actions/test'
+import { handleUrlInput, resetConfig } from '/src/actions/config'
+import { resetResult, resetTestStatus } from '/src/actions/result'
+import { prepareTest, startTest } from '/src/actions/test'
 
 
 class StartingScreen extends Component {

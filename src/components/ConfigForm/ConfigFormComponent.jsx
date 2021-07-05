@@ -10,7 +10,7 @@ import 'codemirror/keymap/sublime';
 import 'codemirror/theme/monokai.css';
 
 import { generateDefaultConfig } from '../../helper/configHelper'
-import settings from '/assets/settings.svg'
+import settings from '/src/assets/settings.svg'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons'

@@ -7,6 +7,8 @@ import Embedded from './containers/Embedded'
 
 import 'whatwg-fetch'
 
+console.log(import.meta.env.VITE_REACT_APP_SCREEN_TYPE)
+
 window.speedKitAnalyzer = {
   renderResult: (testId, { isPlesk = false, mainMetric = 'speedIndex' } = {}) => {
     ReactDOM.unmountComponentAtNode(document.getElementById('speed-kit-analyzer'))
@@ -33,4 +35,18 @@ if (import.meta.env.DEV) {
     },
   }).then(r => r.json()
     .then(r => r[0].testOverviews[0].replace('/db/TestOverview/', '')))
+
+  if (import.meta.env.VITE_REACT_APP_SCREEN_TYPE === 'analyzer') {
+    window.speedKitAnalyzer.renderAnalyzer({ url: 'www.bild.de' })
+  }
+  else if (import.meta.env.VITE_REACT_APP_SCREEN_TYPE === 'result') {
+    window.speedKitAnalyzer.renderResult('S5oS1Zalibaba')
+  }
+  else if (import.meta.env.VITE_REACT_APP_SCREEN_TYPE === 'test') {
+    window.startTest('www.alibaba.com').then(res => {
+      window.speedKitAnalyzer.renderTest(res, () => {
+        alert("test finished")
+      })
+    })
+  }
 }

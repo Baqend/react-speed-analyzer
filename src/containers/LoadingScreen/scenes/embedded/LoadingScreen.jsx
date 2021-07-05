@@ -5,9 +5,9 @@ import { connect } from 'react-redux'
 
 import LoadingScreenComponent from './LoadingScreenComponent'
 
-import { resetConfig } from '/actions/config'
-import { monitorTest } from '/actions/test'
-import { resetResult } from '/actions/result'
+import { resetConfig } from '/src/actions/config'
+import { monitorTest } from '/src/actions/test'
+import { resetResult } from '/src/actions/result'
 
 
 class Spinner extends Component {

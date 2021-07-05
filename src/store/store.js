@@ -1,12 +1,10 @@
 import { applyMiddleware, combineReducers } from 'redux'
 
-import { db } from 'baqend/realtime'
+import { db } from 'baqend'
 import { createStoreWithBaqend, baqendReducer } from 'redux-baqend'
 
 import middlewares from '../middleware'
 import reducers from '../reducers'
-
-console.log(import.meta.env.VITE_REACT_APP_BAQEND)
 
 export default (initialState = {}) => {
   const reducer = combineReducers({
