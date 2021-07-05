@@ -1,6 +1,9 @@
-@import "~tachyons/src/_media-queries.css";
+@import "tachyons/src/_media-queries.css";
 
 :root {
+  --dark-blue: #162939;
+  --white: #fff;
+
   --spacing-none: 0;
   --spacing-extra-small: 8px;
   --spacing-small: 16px;
