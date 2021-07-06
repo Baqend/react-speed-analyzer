@@ -16,7 +16,7 @@ export default defineConfig({
     }
   ],
   build: {
-    outDir: path.join(__dirname, "build-modules"),
+    outDir: normalizePath("./build-modules"),
     rollupOptions: {
       input: path.join(__dirname, 'index_modules.html'),
     }

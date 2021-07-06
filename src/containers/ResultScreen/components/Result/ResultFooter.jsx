@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import './ResultFooter.css'
 import Papercut from '../Papercut/Papercut'
 import instantly from '/src/assets/instantly.svg'
-// import onePager from '/src/assets/SPEED_KIT-Onepager.pdf'
+import onePager from '/src/assets/SPEED_KIT-Onepager.pdf?url'
 import facebookLogo from '/src/assets/footer/facebook.png'
 import githubLogo from '/src/assets/footer/github.png'
 import mediumLogo from '/src/assets/footer/medium.svg'
@@ -63,6 +63,7 @@ class ResultFooter extends Component {
             <span className="btn btn-purple mb2 mr0 mr3-ns" style={{display: "flex", alignItems: "center"}} onClick={this.toggleModal}>
               CONTACT SALES
             </span>
+            <a className="btn btn-white mb2" href={onePager} target="_blank">DOWNLOAD ONEPAGER</a>
           </div>
         </div>
       </div>
