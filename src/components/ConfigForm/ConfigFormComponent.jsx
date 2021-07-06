@@ -4,10 +4,11 @@ import PropTypes from 'prop-types'
 import Toggle from 'react-toggle'
 
 import { stringifyObject } from '../../lib/stringify-object'
+import { debounce } from "lodash"
 
-import CodeMirror from '@uiw/react-codemirror';
-import 'codemirror/keymap/sublime';
-import 'codemirror/theme/monokai.css';
+import CodeMirror from '@uiw/react-codemirror'
+import 'codemirror/keymap/sublime'
+import 'codemirror/theme/monokai.css'
 
 import { generateDefaultConfig } from '../../helper/configHelper'
 import settings from '/src/assets/settings.svg'
@@ -151,6 +152,15 @@ class ConfigFormComponent extends Component {
     }
   }
 
+  handleCodeChange = (editor, data) => {
+    debounce(() => {
+      const value = data.text.join("\n")
+      this.setState({ speedKitConfig: value }, () => {
+        this.props.onSpeedKitConfigChange(value)
+      })
+    }, 500)
+  }
+
   componentDidUpdate(prevProps, prevState) {
     const nextProps = this.props
     if (nextProps.whiteListCandidates !== prevProps.whiteListCandidates) {
@@ -221,12 +231,7 @@ class ConfigFormComponent extends Component {
                     tabSize: 2,
                     lineNumbers: false
                   }}
-                  onChange={(editor, data) => {
-                    const value = data.text.join("\n")
-                    this.setState({ speedKitConfig: value }, () => {
-                      this.props.onSpeedKitConfigChange(value)
-                    })
-                  }}
+                  onChange={this.handleCodeChange}
                 />
               </div>
               {this.state.whiteListCandidates.length > 0 && (

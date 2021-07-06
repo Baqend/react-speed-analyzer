@@ -1,12 +1,14 @@
-import { defineConfig } from 'vite'
+import { defineConfig, normalizePath } from 'vite'
 import reactRefresh from '@vitejs/plugin-react-refresh'
-import path from "path";
+import path from "path"
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  envDir: path.join(__dirname, "envs"),
-  plugins: [reactRefresh()],
+  envDir: normalizePath("./envs"),
+  plugins: [
+    reactRefresh()
+  ],
   build: {
-    outDir: path.join(__dirname, "build"),
-  }
+    outDir: normalizePath("./build")
+  },
 })
