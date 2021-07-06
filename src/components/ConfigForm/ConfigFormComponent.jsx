@@ -219,8 +219,10 @@ class ConfigFormComponent extends Component {
                   value={this.state.speedKitConfig}
                   options={{
                     tabSize: 2,
+                    lineNumbers: false
                   }}
-                  onBeforeChange={(editor, data, value) => {
+                  onChange={(editor, data) => {
+                    const value = data.text.join("\n")
                     this.setState({ speedKitConfig: value }, () => {
                       this.props.onSpeedKitConfigChange(value)
                     })
