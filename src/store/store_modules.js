@@ -1,6 +1,6 @@
 import { applyMiddleware, combineReducers } from 'redux'
-
-import { db } from 'baqend/realtime'
+import './import-rxjs'
+import { db } from 'baqend'
 import { createStoreWithBaqend, baqendReducer } from 'redux-baqend'
 
 import middlewares from '../middleware'

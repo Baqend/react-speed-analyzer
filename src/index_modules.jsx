@@ -7,8 +7,6 @@ import Embedded from './containers/Embedded'
 
 import 'whatwg-fetch'
 
-console.log(import.meta.env.VITE_REACT_APP_SCREEN_TYPE)
-
 window.speedKitAnalyzer = {
   renderResult: (testId, { isPlesk = false, mainMetric = 'speedIndex' } = {}) => {
     ReactDOM.unmountComponentAtNode(document.getElementById('speed-kit-analyzer'))
