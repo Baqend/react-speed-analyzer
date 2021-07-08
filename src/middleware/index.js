@@ -2,7 +2,7 @@ import { createLogger } from 'redux-logger'
 
 let middlewares
 
-if (process.env.NODE_ENV === 'development') {
+if (import.meta.env.DEV) {
   middlewares = [
     createLogger()
   ]

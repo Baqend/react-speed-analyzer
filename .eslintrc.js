@@ -12,8 +12,5 @@ module.exports = {
     "react/jsx-filename-extension": "off",
     "react/forbid-prop-types": "off",
     "jsx-a11y/href-no-hash": "off",
-  },
-  "env": {
-    "jest": true
   }
 }

@@ -1,11 +1,9 @@
-@import "~tachyons/src/_normalize.css";
-@import "~tachyons/src/_flexbox.css";
-@import "~tachyons/src/_widths.css";
-@import "~tachyons/src/_spacing.css";
-@import "~tachyons/src/_position.css";
-
-@import "~codemirror/lib/codemirror.css";
-@import "~tachyons/src/_media-queries.css";
+@import "tachyons/src/_normalize.css";
+@import "tachyons/src/_flexbox.css";
+@import "tachyons/src/_widths.css";
+@import "tachyons/src/_spacing.css";
+@import "tachyons/src/_position.css";
+@import "tachyons/src/_media-queries.css";
 
 @import "./lib/animate.css";
 @import "./lib/toggle.css";
@@ -18,15 +16,11 @@
 @import "./_slick.css";
 @import "./_slick-theme.css";
 
-@import "~tachyons/src/_text-align.css";
-@import "~tachyons/src/_font-weight.css";
-@import "~tachyons/src/_display.css";
+@import "tachyons/src/_text-align.css";
+@import "tachyons/src/_font-weight.css";
+@import "tachyons/src/_display.css";
 
 @import "./_fonts.css";
-
-:root {
-  --dark-blue: #162939;
-}
 
 body {
   margin: 0;
