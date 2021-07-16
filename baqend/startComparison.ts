@@ -55,6 +55,28 @@ export async function post(db: baqend, req: Request, res: Response) {
   const hostname = params.hostname || req.hostname;
   const comparison = await comparisonFactory.createComparison(params.url, hostname)
 
+  if (params.url.includes('www.etihad.com')) {
+    const url = new URL(params.url);
+    const defaultPuppeteer = new db.Puppeteer({
+      url: params.url,
+      displayUrl: params.url,
+      scheme: '',
+      host: url.host,
+      protocol: url.protocol,
+      domains: [],
+      screenshot: null,
+      type: new db.PuppeteerType({ framework: '', language: '', server: '' }),
+      stats: new db.PuppeteerStats({ domains: 0, requests: 0, size: 0 }),
+      speedKit: null,
+      smartConfig: params.speedKitConfig,
+      serviceWorkers: null,
+    })
+
+    comparisonFactory.updateComparison(comparison, defaultPuppeteer, params)
+    res.status(200)
+    res.send(comparison)
+  }
+
   if (withPuppeteer) {
     const updatedComparison = await updateWithPuppeteer(db, params, comparison)
 
