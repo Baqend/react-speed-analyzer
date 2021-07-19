@@ -3,6 +3,7 @@ import { ConfigGenerator } from './_ConfigGenerator'
 import { parallelize } from './_helpers'
 import { DataType, Serializer } from './_Serializer'
 import { isFinished, isIncomplete, isUnfinished, setCanceled, setFailed, setRunning, Status } from './_Status'
+import { DEFAULT_TIMEOUT } from './_TestBuilder'
 import { TestScriptBuilder } from './_TestScriptBuilder'
 import { Pagetest } from './_Pagetest'
 import { TestType, WebPagetestResultHandler } from './_WebPagetestResultHandler'
@@ -327,7 +328,7 @@ export class TestWorker {
    */
   private buildScriptForTestWithConfig(test: model.TestResult): string {
     const { testInfo, location } = test
-    const { url, isTestWithSpeedKit, activityTimeout, appName, testOptions, cookie } = testInfo
+    const { url, isTestWithSpeedKit, activityTimeout, appName, testOptions, cookie, navigateUrls } = testInfo
     const config = this.getConfigForTest(test).replace(/{/, '{ preloadBloomFilter: false,')
 
     return this.testScriptBuilder.createTestScript(
@@ -339,6 +340,8 @@ export class TestWorker {
       activityTimeout,
       appName,
       cookie,
+      DEFAULT_TIMEOUT,
+      navigateUrls,
     )
   }
 

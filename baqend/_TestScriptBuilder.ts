@@ -13,6 +13,7 @@ export class TestScriptBuilder {
    * @param activityTimeout The activity timeout.
    * @param cookie         The cookie string to be set.
    * @param timeout         The timeout.
+   * @param navigateUrls    The additional Urls to navigate to.
    * @return                The created Web Page Test script.
    */
   private buildForCompetitorTest(
@@ -22,7 +23,8 @@ export class TestScriptBuilder {
     isMobile: boolean,
     activityTimeout: number,
     cookie: string,
-    timeout: number
+    timeout: number,
+    navigateUrls: string[] = [],
   ): TestScript {
     if (/https:\/\/\w*:\w*@oleo.io/.test(url)) {
       activityTimeout = 5000;
@@ -280,6 +282,8 @@ export class TestScriptBuilder {
       .setTimeout(timeout)
       .navigate(url)
 
+    navigateUrls.forEach(navigateUrl => ts.navigate(navigateUrl))
+
     return ts
   }
 
@@ -292,6 +296,7 @@ export class TestScriptBuilder {
    * @param activityTimeout The activity timeout.
    * @param cookie          The cookie string to be set.
    * @param timeout         The timeout.
+   * @param navigateUrls    The additional Urls to navigate to.
    * @return                The created Web Page Test script.
    */
   private buildForSpeedKitTest(
@@ -303,6 +308,7 @@ export class TestScriptBuilder {
     activityTimeout: number,
     cookie: string,
     timeout: number,
+    navigateUrls: string[] = [],
   ): TestScript {
     const basicAuthRegex = /\w*:\w*@/;
     if (basicAuthRegex.test(url)) {
@@ -630,9 +636,9 @@ export class TestScriptBuilder {
       ts.push('block browser-update.org/update.show.min.js');
     }
 
+    ts.logData(true).navigate(url)
+    navigateUrls.forEach(navigateUrl => ts.navigate(navigateUrl))
     return ts
-      .logData(true)
-      .navigate(url)
   }
 
   /**
@@ -660,6 +666,7 @@ export class TestScriptBuilder {
    * @param appName               The name of the baqend app.
    * @param cookie                The cookie string to be set.
    * @param timeout               The timeout.
+   * @param navigateUrls    The additional Urls to navigate to.
    * @return                      The created Web Page Test script.
    */
   createTestScript(
@@ -672,6 +679,7 @@ export class TestScriptBuilder {
     appName: string | null = null,
     cookie: string = '',
     timeout = DEFAULT_TIMEOUT,
+    navigateUrls: string[] = [],
   ): string {
     // Resolve Speed Kit config
     if (isTestWithSpeedKit) {
@@ -683,10 +691,20 @@ export class TestScriptBuilder {
         isMobile,
         activityTimeout,
         cookie,
-        timeout
+        timeout,
+        navigateUrls
       ).toString()
     }
 
-    return this.buildForCompetitorTest(url, appName, location, isMobile, activityTimeout, cookie, timeout).toString()
+    return this.buildForCompetitorTest(
+      url,
+      appName,
+      location,
+      isMobile,
+      activityTimeout,
+      cookie,
+      timeout,
+      navigateUrls
+    ).toString()
   }
 }

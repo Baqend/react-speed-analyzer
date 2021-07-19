@@ -45,11 +45,16 @@ export interface WptView {
   visualComplete99: number
   visualComplete: number
   chromeUserTiming?: Array<{ name: string, time: number }>
+  numSteps: number;
+}
+
+export interface WptStepView extends WptView {
+  steps?: WptView[]
 }
 
 export interface WptRun {
-  firstView: WptView
-  repeatView?: WptView
+  firstView: WptStepView
+  repeatView?: WptStepView
 }
 
 export interface WptTestResult {
@@ -244,11 +249,11 @@ export class Pagetest {
   async getTestResults(testId: string, options: Partial<WptTestResultOptions>): Promise<WptResult<WptTestResult>> {
     // Make the result call more reliable
     const result = await this.wptGetTestResults(testId, options)
-    const run = result.data.runs['1']
-    const firstMissing = run.firstView.lastVisualChange <= 0
-    const secondMissing = run.repeatView && run.repeatView.lastVisualChange <= 0
+    const view = result.data.runs['1'].firstView
+    const step = view ? (view.steps ? view.steps[view.numSteps - 1] : view) : null
 
-    if (!firstMissing && !secondMissing) {
+    const firstMissing = !step || step.lastVisualChange <= 0
+    if (!firstMissing) {
       return result
     }
 
@@ -263,10 +268,11 @@ export class Pagetest {
    * @param testId The ID of the test.
    * @param run The index of the run.
    * @param view The index of the view.
+   * @param step The index of the step.
    * @returns Return the video ID or null, if it not exists.
    */
-  createVideo(testId: string, run: string, view: number): Promise<string> {
-    const video = `${testId}-r:${run}-c:${view}`
+  createVideo(testId: string, run: number, view: number, step: number): Promise<string> {
+    const video = `${testId}-r:${run}-c:${view}-s:${step}`
     return new Promise((resolve, reject) => {
       this.wpt.createVideo(video, {}, (err, result) => {
         if (err) {

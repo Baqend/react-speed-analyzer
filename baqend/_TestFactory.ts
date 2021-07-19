@@ -80,6 +80,7 @@ export class TestFactory implements AsyncFactory<model.TestResult> {
       ignoreConfig: params.ignoreConfig,
       testOptions: this.testBuilder.buildOptions(params, url, isClone, commandLine),
       cookie: params.cookie,
+      navigateUrls: params.navigateUrls,
     }
   }
 }

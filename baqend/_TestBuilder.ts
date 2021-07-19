@@ -28,6 +28,7 @@ export const DEFAULT_PARAMS: Required<TestParams> = {
   ignoreConfig: false,
   cookie: '',
   hostname: '',
+  navigateUrls: [],
 }
 
 /**

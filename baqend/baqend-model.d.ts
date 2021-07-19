@@ -160,6 +160,7 @@ declare module 'baqend' {
       testOptions: TestOptions
       cookie: string
       appName: string | null
+      navigateUrls: string[]
     }
 
     interface TestResult extends binding.Entity {
