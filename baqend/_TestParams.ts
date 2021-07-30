@@ -28,6 +28,11 @@ export interface TestParams {
   activityTimeout?: number
 
   /**
+   * The whitelist that should be merged with the smart config.
+   */
+  whitelist?: string
+
+  /**
    * Whether browser caching is enabled.
    */
   caching?: boolean

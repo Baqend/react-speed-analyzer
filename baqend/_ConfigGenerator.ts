@@ -55,6 +55,7 @@ export class ConfigGenerator {
    * @param {boolean} imageOptimization true if images should be optimized, false otherwise.
    * @param {boolean} preload true if css and fonts should be preloaded, false otherwise.
    * @param {string} app The name of the Baqend app to connect to.
+   * @param {string[]} whitelist The custom whitelist to be merged with smart whitelist.
    * @param {string} host The host of the tested site.
    * @param {string[]} domains The domains loaded by the tested site.
    * @param {PuppeteerResource[]} resources The resources loaded by the tested site.
@@ -67,6 +68,7 @@ export class ConfigGenerator {
     imageOptimization: boolean,
     preload: boolean,
     app: string,
+    whitelist: string[],
     { host, domains, resources }: { host: string, domains: string[], resources: PuppeteerResource[] }): Promise<Config>
   {
     const configBuilder = new ConfigBuilder(app, mobile)
@@ -80,11 +82,16 @@ export class ConfigGenerator {
     const hostMatcher = this.matchAllSubdomains(host)
     configBuilder.whitelistHost(hostMatcher)
 
+    // Add custom whitelist
+    whitelist
+      .map(url => this.stripResourceUrl(url))
+      .forEach(url => configBuilder.whitelistUrl(url))
+
     // Blacklist jQuery callback URLs
     resources
       .filter(resource => this.isJQueryCallback(resource))
       .filter(resource => thirdParty || resource.host.match(hostMatcher))
-      .map(resource => this.stripResourceUrl(resource))
+      .map(resource => this.stripResourceUrl(resource.url))
       .filter(removeDuplicates)
       .forEach(url => configBuilder.blacklistUrl(url))
 
@@ -134,20 +141,20 @@ export class ConfigGenerator {
         .filter(resource => !resource.cookies.length)
         .filter(resource => resource.url.match(/\.min\.(?:css|js)$/))
         .filter(resource => !resource.host.match(hostMatcher)) // filter already whitelisted urls
-        .map(resource => this.stripResourceUrl(resource))
+        .map(resource => this.stripResourceUrl(resource.url))
         .forEach(url => configBuilder.whitelistUrl(url))
 
       // Whitelist cacheable Google requests.
       resources
         .filter(resource => this.isCacheableGoogleRequest(resource))
         .filter(resource => !resource.host.match(hostMatcher)) // filter already whitelisted urls
-        .map(resource => this.stripResourceUrl(resource))
+        .map(resource => this.stripResourceUrl(resource.url))
         .forEach(url => configBuilder.whitelistUrl(url))
 
       // Whitelist https://apis.google.com/js/plusone.js if it is used
       resources
         .filter(resource => thirdParty && resource.url === 'https://apis.google.com/js/plusone.js')
-        .map(resource => this.stripResourceUrl(resource))
+        .map(resource => this.stripResourceUrl(resource.url))
         .forEach(url => configBuilder.whitelistUrl(url))
     }
 
@@ -245,8 +252,8 @@ export class ConfigGenerator {
   /**
    * Strip resource URL.
    */
-  private stripResourceUrl(resource: PuppeteerResource) {
-    return resource.url
+  private stripResourceUrl(url: string) {
+    return url
       .replace(/^https?:\/\//, '')
       .replace(/\?[^?]*$/, '')
   }

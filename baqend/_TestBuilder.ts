@@ -14,6 +14,7 @@ export const DEFAULT_TIMEOUT = 30
  */
 export const DEFAULT_PARAMS: Required<TestParams> = {
   url: '',
+  whitelist: '',
   app: credentials.app,
   activityTimeout: DEFAULT_ACTIVITY_TIMEOUT,
   caching: false,

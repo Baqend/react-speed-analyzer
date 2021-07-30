@@ -51,6 +51,7 @@ declare module 'baqend' {
       preload: boolean
       multiComparisonId: string | null
       cookie: string
+      whitelist: string;
     }
 
     interface Domain extends UrlAware {
