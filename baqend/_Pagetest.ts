@@ -273,15 +273,30 @@ export class Pagetest {
    */
   createVideo(testId: string, run: number, view: number, step: number): Promise<string> {
     const video = `${testId}-r:${run}-c:${view}-s:${step}`
-    return new Promise((resolve, reject) => {
+    const videoCreation: Promise<string> = new Promise((resolve, reject) => {
       this.wpt.createVideo(video, {}, (err, result) => {
-        if (err) {
-          return reject(err)
+        if (err || !result.data || !result.data.videoId) {
+          return reject('Could not create video id by wpt package')
         }
 
-        resolve(result.data && result.data.videoId || '')
+        resolve(result.data.videoId)
       })
-    })
+    });
+
+    // if we could not get the video it is because the wpt master sends a redirect
+    // since the wpt api cannot cope with that, we have to get the video id manually
+    return videoCreation.catch(err => {
+      return fetch(`http://${credentials.wpt_dns}/video/video.php?tests=${video}`, { redirect: 'manual'})
+        .then(res => {
+          const location = res.headers.get('location');
+          if (!location) {
+            return ''
+          }
+
+          const match = location.match(/video\/(.*)\.mp4/)
+          return match ? match[1] : ''
+        });
+    });
   }
 
   /**
