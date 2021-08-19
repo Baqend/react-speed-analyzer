@@ -25,8 +25,12 @@ class ResultScreen extends Component {
 
     const { testId } = this.props.match.params
     if (testId) {
-      const showLCP = this.props.match.path.indexOf('/overview') !== -1
-      const useFactor = this.props.match.path.indexOf('/summary') === -1
+      const isSummaryView = this.props.match.path.indexOf('/summary') !== -1
+      const isOverviewView = this.props.match.path.indexOf('/overview') !== -1
+      const isOutcomeView = this.props.match.path.indexOf('/outcome') !== -1
+
+      const showLCP = isOverviewView || isOutcomeView
+      const useFactor = !isSummaryView && !isOutcomeView
       this.loadTestResult(testId, showLCP ? 'largestContentfulPaint' : 'firstMeaningfulPaint', useFactor)
     }
   }

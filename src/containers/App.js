@@ -71,6 +71,7 @@ class App extends Component {
               <Route exact path="/test/:testId/presentation" render={props => renderResultView(props)}/>
               <Route exact path="/test/:testId/overview" render={props => renderResultView(props)}/>
               <Route exact path="/test/:testId/summary" render={props => renderResultView(props)}/>
+              <Route exact path="/test/:testId/outcome" render={props => renderResultView(props)}/>
             </Switch>
           </BrowserRouter>
           <ToastContainer />
