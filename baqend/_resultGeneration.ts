@@ -104,7 +104,7 @@ function constructVideoLink(testId: string, videoId: string): string {
   const date = `${testId.substr(0, 2)}/${testId.substr(2, 2)}/${testId.substr(4, 2)}`
   const videoLink = videoId.substr(videoId.indexOf('_') + 1, videoId.length)
 
-  return `http://${credentials.wpt_dns}/results/video/${date}/${videoLink}/video.mp4`
+  return `http://${credentials.wpt_dns}/work/video/${videoLink}.mp4`
 }
 
 /**
