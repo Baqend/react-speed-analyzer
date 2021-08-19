@@ -15,7 +15,7 @@ class ResultError extends Component {
       <div>
         <div className="text-center mb5">
           {this.props.result.testOverview.documentRequestFailed ? (
-            <h1 className="header">We where blocked by your infrastructure</h1>
+            <h1 className="header">We were blocked by your infrastructure</h1>
           ) : (
             <div>
               <h1 className="header">Manual Test Required</h1>
