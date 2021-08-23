@@ -85,26 +85,23 @@ async function createVideos(db: baqend, testId: string, stepIndex: number): Prom
     API.createVideo(testId, 1, 0, stepIndex),
     API.createVideo(testId, 1, 1, stepIndex),
   ])
-  const videoFirstViewPromise = toFile(db, constructVideoLink(testId, firstVideo), `/www/videoFirstView/${testId}.mp4`)
+
+  const videoFirstViewPromise = toFile(db, constructVideoLink(firstVideo), `/www/videoFirstView/${testId}.mp4`)
 
   let videoRepeatViewPromise: Promise<binding.File | null> = Promise.resolve(null)
   if (repeatedVideo) {
-    videoRepeatViewPromise = toFile(db, constructVideoLink(testId, repeatedVideo), `/www/videoRepeatView/${testId}.mp4`)
+    videoRepeatViewPromise = toFile(db, constructVideoLink(repeatedVideo), `/www/videoRepeatView/${testId}.mp4`)
   }
 
   return Promise.all([videoFirstViewPromise, videoRepeatViewPromise])
 }
 
 /**
- * @param testId
  * @param videoId
  * @return
  */
-function constructVideoLink(testId: string, videoId: string): string {
-  const date = `${testId.substr(0, 2)}/${testId.substr(2, 2)}/${testId.substr(4, 2)}`
-  const videoLink = videoId.substr(videoId.indexOf('_') + 1, videoId.length)
-
-  return `http://${credentials.wpt_dns}/work/video/${videoLink}.mp4`
+function constructVideoLink(videoId: string): string {
+  return `http://${credentials.wpt_dns}/work/video/${videoId}.mp4`
 }
 
 /**

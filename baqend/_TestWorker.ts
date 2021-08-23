@@ -9,7 +9,9 @@ import { Pagetest } from './_Pagetest'
 import { TestType, WebPagetestResultHandler } from './_WebPagetestResultHandler'
 import credentials from './credentials'
 
-const ONE_HOUR = 1000 * 60 * 60
+const ONE_MINUTE = 1000 * 60
+const ONE_HOUR = ONE_MINUTE * 60
+
 const PING_BACK_URL = `https://${credentials.app}.app.baqend.com/v1/code/testResultPingback`
 
 const prewarmOptions = {
@@ -82,7 +84,8 @@ export class TestWorker {
       }
 
       // Is WebPagetest still running this test? Check the status and start over.
-      if (this.hasNotFinishedWebPagetests(test)) {
+      const isOlderThanTwoMinutes = (new Date().getTime() - test.updatedAt.getTime()) / ONE_MINUTE > 2
+      if (isOlderThanTwoMinutes && this.hasNotFinishedWebPagetests(test)) {
         this.checkWebPagetestsStatus(test)
           .catch((err) => this.db.log.error(`TestWorker.checkWebPagetestsStatus failed: ${err.message}`, err))
 
