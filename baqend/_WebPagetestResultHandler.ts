@@ -1,5 +1,5 @@
 import { baqend, model } from 'baqend'
-import { generateTestResult } from './_resultGeneration'
+import { generateTestResult, ViewportError } from './_resultGeneration'
 import { setFailed, setSuccess } from './_Status'
 
 export enum TestType {
@@ -65,6 +65,9 @@ export class WebPagetestResultHandler {
 
         } catch(error) {
           this.db.log.error(`Generating test result failed: ${error.message}`, { test: test.id, wptTestId, error: error.stack })
+          if (error instanceof ViewportError) {
+            return this.handleViewportError(test, webPagetest)
+          }
 
           // Now the test is finished without data
           return test.optimisticSave(() => {
@@ -82,6 +85,18 @@ export class WebPagetestResultHandler {
         throw new Error(`Unexpected test type: ${webPagetest.testType}.`)
       }
     }
+  }
+
+  /**
+   * Removes the WPT test entry from the test result if there was a viewport error.
+   */
+  private handleViewportError(test: model.TestResult, webPagetest: model.WebPagetest): Promise<model.TestResult> {
+    const retries = test.retries || 0
+    return test.optimisticSave(() => {
+      const wptIndex = test.webPagetests.findIndex(wptTest => wptTest.testId === webPagetest.testId)
+      test.webPagetests.splice(wptIndex, 1)
+      test.retries = retries + 1
+    })
   }
 
   /**

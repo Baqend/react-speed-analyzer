@@ -1,4 +1,5 @@
 import { truncateUrl } from './_helpers'
+import { VIEWPORT_HEIGHT_DESKTOP, VIEWPORT_WIDTH_DESKTOP } from './_TestScriptBuilder'
 import { toFile } from './_toFile'
 import { getAdSet } from './_adBlocker'
 import credentials from './credentials'
@@ -6,6 +7,8 @@ import { API, WptRequest, WptTestResult, WptTestResultOptions, WptView } from '.
 import { countHits } from './_countHits'
 import { getFMPData } from './_getFMPData'
 import { baqend, binding, model } from 'baqend'
+
+export class ViewportError extends Error {}
 
 /**
  * Generates a test result from the given test and returns the updated test database object.
@@ -30,7 +33,7 @@ export async function generateTestResult(wptTestId: string, pendingTest: model.T
   pendingTest.testDataMissing = false
 
   const view = rawData.runs['1'].firstView
-  const stepIndex = view.numSteps;
+  const stepIndex = view.numSteps
   const step = view ? (view.steps ? view.steps[stepIndex - 1] : view) : null
 
   if (!step || !isValidStep(step)) {
@@ -39,6 +42,14 @@ export async function generateTestResult(wptTestId: string, pendingTest: model.T
     pendingTest.firstView = run;
 
     throw new Error(`No valid test run found in ${rawData.id}`)
+  }
+
+  const viewport = view.viewport
+  const retriesLeft = pendingTest.retries < 2;
+  const isDesktop = !pendingTest.testInfo.testOptions.mobile
+  const hasViewportError = viewport.width !== VIEWPORT_WIDTH_DESKTOP || viewport.height !== VIEWPORT_HEIGHT_DESKTOP
+  if (isDesktop && hasViewportError && retriesLeft) {
+    throw new ViewportError(`WPT viewport (${viewport.width} x ${viewport.height}) not equals configured (${VIEWPORT_WIDTH_DESKTOP} x ${VIEWPORT_HEIGHT_DESKTOP})`)
   }
 
   const [testResult, videos] = await Promise.all([

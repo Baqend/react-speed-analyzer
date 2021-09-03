@@ -4,6 +4,9 @@ import { TestScript, testScript } from './_TestScript'
 import { URL } from 'url';
 import credentials from './credentials'
 
+export const VIEWPORT_WIDTH_DESKTOP = 1366
+export const VIEWPORT_HEIGHT_DESKTOP = 768
+
 export class TestScriptBuilder {
   /**
    * @param url             The competitor's URL to test.
@@ -50,7 +53,7 @@ export class TestScriptBuilder {
     if (isMobile) {
     //   ts.setViewport(480, 987); // Maximum viewport
     } else {
-      ts.setViewport(1366, 768); // Good desktop viewport
+      ts.setViewport(VIEWPORT_WIDTH_DESKTOP, VIEWPORT_HEIGHT_DESKTOP); // Good desktop viewport
     }
 
     // Hack to circumvent zip code protection for "shop.rewe.de"
@@ -392,7 +395,7 @@ export class TestScriptBuilder {
     if (isMobile) {
     //   ts.setViewport(480, 987); // Maximum viewport
     } else {
-      ts.setViewport(1366, 768); // Good desktop viewport
+      ts.setViewport(VIEWPORT_WIDTH_DESKTOP, VIEWPORT_HEIGHT_DESKTOP); // Good desktop viewport
     }
 
     ts.setActivityTimeout(activityTimeout)

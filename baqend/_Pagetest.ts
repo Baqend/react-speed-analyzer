@@ -24,6 +24,12 @@ export interface WptDomain {
   connections: number
 }
 
+export interface WPTViewport {
+  width: number
+  dpr: number
+  height: number
+}
+
 export interface WptView {
   domains: { [domainName: string]: WptDomain }
   lastVisualChange: number
@@ -45,7 +51,8 @@ export interface WptView {
   visualComplete99: number
   visualComplete: number
   chromeUserTiming?: Array<{ name: string, time: number }>
-  numSteps: number;
+  numSteps: number
+  viewport: WPTViewport
 }
 
 export interface WptStepView extends WptView {
