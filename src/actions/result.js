@@ -43,6 +43,8 @@ export const loadResult = (testId, isPlesk = false, mainMetric = null, useFactor
         trackURL('errorTestResult', testOverview.url)
       }
 
+      await updatePageViewCount(testId, db)
+
       dispatch({
         type: COMPETITOR_RESULT_LOAD,
         payload: loadedCompetitorTestResult
@@ -88,3 +90,19 @@ const getTestOverview = (testId) => ({
     return testOverview
   }
 })
+
+const updatePageViewCount = async (testId, db) => {
+  try {
+    const testOverview = await db.TestOverview.load(testId)
+    const pageViews = testOverview.metaData.pageViews || 0
+
+    // Detect Page Reload - pageViews in database is not incremented in that case
+    // Navigation from Loading Screen is treated as reload and therefore is not counted
+    if (performance.navigation.type !== performance.navigation.TYPE_RELOAD) {
+      const metaData = Object.assign(testOverview.metaData, { pageViews: pageViews + 1 })
+      await testOverview.partialUpdate().set('metaData', metaData).execute()
+    }
+  } catch (error) {
+    // Ignore error
+  }
+}
