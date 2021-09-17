@@ -7,6 +7,22 @@ import credentials from './credentials'
 export const VIEWPORT_WIDTH_DESKTOP = 1366
 export const VIEWPORT_HEIGHT_DESKTOP = 768
 
+const DEFAULT_COOKIES: string[] = [
+  'CookieConsent={stamp:%27YBfo6EciJckze6IhqdD2yJwlDeZV7jyMgT1vEuMan0GbdUD+29Byug==%27%2Cnecessary:true%2Cpreferences:false%2Cstatistics:false%2Cmarketing:false%2Cver:1%2Cutc:1627636379762%2Cregion:%27de%27}',
+  'dw_cookies_accepted=1',
+  'cmapi_cookie_privacy=permit_1|2|3_',
+  'notice_gdpr_prefs=0|1|2',
+  'euconsent-v2=BPJyc09PJyc09AfapBDEDXAAAAA4uADAAqACIBxY',
+  'OptanonAlertBoxClosed=2021-08-18T14:48:52.156Z',
+  'iqos-age-verified=yes',
+  'OptanonAlertBoxClosed=2021-08-18T14:48:52.156Z',
+  'cookieconsent_status=dismiss',
+  'MC_PRIVACY=marketing',
+  'hideCookiePolicyForSession=true',
+  'cookie-notification=ACCEPTED',
+  'cookiesConsent=0|0|0'
+]
+
 export class TestScriptBuilder {
   /**
    * @param url             The competitor's URL to test.
@@ -653,7 +669,7 @@ export class TestScriptBuilder {
    */
   private addCookies(ts: TestScript, cookie: string, url: string): void {
     const origin = new URL(url).origin;
-    const cookieList = cookie.split(';');
+    const cookieList = DEFAULT_COOKIES.concat(cookie.split(';'));
     cookieList.forEach(cookie => ts.setCookie(cookie, origin));
   }
 
