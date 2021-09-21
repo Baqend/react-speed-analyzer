@@ -93,15 +93,21 @@ const getTestOverview = (testId) => ({
 
 const updatePageViewCount = async (testId, db) => {
   try {
-    const testOverview = await db.TestOverview.load(testId)
-    const pageViews = testOverview.metaData.pageViews || 0
+    const wasReload = performance.navigation.type === performance.navigation.TYPE_RELOAD
+    const wasInternal = document.referrer.indexOf('bbi.baqend') !== -1 ||
+      document.referrer.indexOf('google.com') !== -1
 
     // Detect Page Reload - pageViews in database is not incremented in that case
     // Navigation from Loading Screen is treated as reload and therefore is not counted
-    if (performance.navigation.type !== performance.navigation.TYPE_RELOAD) {
-      const metaData = Object.assign(testOverview.metaData, { pageViews: pageViews + 1 })
-      await testOverview.partialUpdate().set('metaData', metaData).execute()
+    if (wasReload || wasInternal) {
+      return
     }
+
+    const testOverview = await db.TestOverview.load(testId)
+    const metaData = testOverview.metaData || {}
+
+    const pageViews = testOverview.metaData.pageViews || 0
+    await testOverview.partialUpdate().set('metaData', Object.assign(metaData, { pageViews: pageViews + 1 })).execute()
   } catch (error) {
     // Ignore error
   }
