@@ -103,6 +103,11 @@
       "name": "puppeteer",
       "type": "/db/Puppeteer",
       "order": 17
+    },
+    "displayUrl": {
+      "name": "displayUrl",
+      "type": "/db/String",
+      "order": 18
     }
   }
 }

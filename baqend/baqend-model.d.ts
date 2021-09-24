@@ -89,6 +89,7 @@ declare module 'baqend' {
       urlAnalysis: UrlAnalysis;
       params: any;
       puppeteer: Puppeteer | null;
+      displayUrl: String;
     }
 
     interface Role extends binding.Entity {
