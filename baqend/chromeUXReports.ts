@@ -1,38 +1,39 @@
 // Imports the Google Cloud client library.
-import {BigQuery} from '@google-cloud/bigquery';
-import {URL} from 'url';
-import credentials from './credentials';
-import {baqend, model} from "baqend";
+import {BigQuery} from '@google-cloud/bigquery'
+import {URL} from 'url'
+import credentials from './credentials'
+import {baqend, model} from "baqend"
 import {Request, Response} from 'express'
+import fetch from "node-fetch"
 
 interface QueriedParams {
-  url: string;
+  url: string
   year: number,
   month: number | string,
 }
 
 interface ChromeUXReportQueryData extends QueriedParams {
-  origin: string;
+  origin: string
 }
 
 interface ChromeUXReportFromQuery extends model.ChromeUXReportData {
-  device: string;
+  device: string
 }
 
 const BIG_QUERY = new BigQuery({
   projectId: "baqend-1217",
   credentials: credentials.bigQueryCredentials
-});
+})
 
-const DEVICES = ['all', 'desktop', 'tablet', 'phone'];
-const METRICS: string[] = ['firstContentfulPaint', 'firstPaint', 'domContentLoaded', 'onLoad', 'ttfb'];
+const DEVICES = ['all', 'desktop', 'tablet', 'phone']
+const METRICS: string[] = ['firstContentfulPaint', 'firstPaint', 'domContentLoaded', 'onLoad', 'ttfb']
 const MEDIAN_NAME_MAPPING: Map<string, string> = new Map([
   [METRICS[0], 'fcpMedian'],
   [METRICS[1], 'fpMedian'],
   [METRICS[2], 'dclMedian'],
   [METRICS[3], 'olMedian'],
   [METRICS[4], 'ttfbMedian'],
-]);
+])
 
 /**
  * Sends query to Google BigQuery
@@ -45,30 +46,30 @@ async function asyncQuery(db: baqend, sqlQuery: string): Promise<any | null> {
   const options = {
     query: sqlQuery,
     useLegacySql: false, // Use standard SQL syntax for queries.
-  };
+  }
 
   // Runs the query as a job
   try {
-    const results = await BIG_QUERY.createQueryJob(options);
-    const job = results[0];
-    db.log.info(`Job ${job.id} started.`);
+    const results = await BIG_QUERY.createQueryJob(options)
+    const job = results[0]
+    db.log.info(`Job ${job.id} started.`)
 
-    await job.promise();
-    const metadata = await job.getMetadata();
+    await job.promise()
+    const metadata = await job.getMetadata()
     // Check the job's status for errors
-    const errors = metadata[0].status.errors;
+    const errors = metadata[0].status.errors
     if (errors && errors.length > 0) {
-      db.log.error('ERROR:', errors);
-      return null;
+      db.log.error('ERROR:', errors)
+      return null
     }
 
-    db.log.info(`Job ${job.id} completed.`);
-    const jobResults = await job.getQueryResults();
-    db.log.info('Job Result', jobResults);
-    return jobResults[0];
+    db.log.info(`Job ${job.id} completed.`)
+    const jobResults = await job.getQueryResults()
+    db.log.info('Job Result', jobResults)
+    return jobResults[0]
   } catch (err) {
-    db.log.error('ERROR:', err);
-    return null;
+    db.log.error('ERROR:', err)
+    return null
   }
 }
 
@@ -101,9 +102,9 @@ async function queryHistograms(db: baqend, metric: string, data: ChromeUXReportQ
     "UNNEST(" + metric + ".histogram.bin) AS bin " +
     "WHERE origin = '" + data.origin + "' " +
     "GROUP BY start, device " +
-    "ORDER BY start, device";
+    "ORDER BY start, device"
 
-  db.log.info(`Start Chrome User Experience Report for ${data.origin}`, {month: data.month, year: data.year, metric});
+  db.log.info(`Start Chrome User Experience Report for ${data.origin}`, {month: data.month, year: data.year, metric})
 
   return await asyncQuery(db, query)
 }
@@ -115,25 +116,25 @@ async function queryHistograms(db: baqend, metric: string, data: ChromeUXReportQ
  * @returns
  */
 function calculateMedian(histogram: model.ChromeUXReportData[], totalDensity: number): number {
-  let result = 0;
-  let cumulativeDistribution = 0;
-  const medianDensity = totalDensity * 0.5;
+  let result = 0
+  let cumulativeDistribution = 0
+  const medianDensity = totalDensity * 0.5
 
   for (let i = 0; i < histogram.length - 1; i++) {
-    const bucketDensity = histogram[i].density;
-    const densityBeforeBucket = cumulativeDistribution;
-    const densityAfterBucket = cumulativeDistribution + bucketDensity;
-    cumulativeDistribution = densityAfterBucket;
+    const bucketDensity = histogram[i].density
+    const densityBeforeBucket = cumulativeDistribution
+    const densityAfterBucket = cumulativeDistribution + bucketDensity
+    cumulativeDistribution = densityAfterBucket
 
     if (cumulativeDistribution >= medianDensity) {
-      const binStart = histogram[i].start;
-      const binSize = histogram[i + 1].start - binStart;
-      const densityTillMedian = medianDensity - densityBeforeBucket;
+      const binStart = histogram[i].start
+      const binSize = histogram[i + 1].start - binStart
+      const densityTillMedian = medianDensity - densityBeforeBucket
 
-      return Math.round(binStart + binSize * (densityTillMedian / bucketDensity));
+      return Math.round(binStart + binSize * (densityTillMedian / bucketDensity))
     }
   }
-  return result;
+  return result
 }
 
 /**
@@ -143,16 +144,16 @@ function calculateMedian(histogram: model.ChromeUXReportData[], totalDensity: nu
  * @param data
  */
 async function getOrigin(db: baqend, data: QueriedParams): Promise<any> {
-  const host = new URL(data.url).host;
-  db.log.info('query origin for host:', host);
+  const host = new URL(data.url).host
+  db.log.info('query origin for host:', host)
   const query =
     "SELECT DISTINCT origin," +
     "REGEXP_CONTAINS(origin, r'^[https?:\\/\\/]*(w{0}|w{3}[.])?" + host + "') as is_valid " +
     "FROM `chrome-ux-report.all." + data.year + data.month + "` " +
-    "WHERE origin LIKE '%" + host + "'";
+    "WHERE origin LIKE '%" + host + "'"
 
-  db.log.info(`Find origin in Chrome UX Reports for ${data.url}`, {month: data.month, year: data.year});
-  return asyncQuery(db, query);
+  db.log.info(`Find origin in Chrome UX Reports for ${data.url}`, {month: data.month, year: data.year})
+  return asyncQuery(db, query)
 }
 
 /**
@@ -163,33 +164,33 @@ async function getOrigin(db: baqend, data: QueriedParams): Promise<any> {
  * @returns origin or null, if queried url does not exist
  */
 async function getOriginFromReports(db: baqend, data: QueriedParams): Promise<string | null> {
-  const dataResult = await getOrigin(db, data);
+  const dataResult = await getOrigin(db, data)
 
   // if there is still no data return null
   if (!dataResult) {
-    return null;
+    return null
   }
 
   // if there is only one solution and it's valid, return it
   if (dataResult.length === 1 && dataResult[0].is_valid) {
-    return dataResult[0].origin;
+    return dataResult[0].origin
   }
 
-  let chooseOrigin = dataResult.filter((result: any) => new URL(result.origin).protocol === 'https:' && result.is_valid)[0].origin;
+  let chooseOrigin = dataResult.filter((result: any) => new URL(result.origin).protocol === 'https:' && result.is_valid)[0].origin
 
   // choose the origin which matches most to the queried url
-  const queriedUrl = new URL(data.url);
-  const containsWww = /www\./.test(queriedUrl.hostname);
+  const queriedUrl = new URL(data.url)
+  const containsWww = /www\./.test(queriedUrl.hostname)
   dataResult.forEach((result: any) => {
-    const sameProtocol = new URL(result.origin).protocol === queriedUrl.protocol;
-    const sameOrigin = /www\./.test(new URL(result.origin).hostname) === containsWww;
+    const sameProtocol = new URL(result.origin).protocol === queriedUrl.protocol
+    const sameOrigin = /www\./.test(new URL(result.origin).hostname) === containsWww
     if (sameProtocol && sameOrigin && result.is_valid) {
-      chooseOrigin = result.origin;
+      chooseOrigin = result.origin
     }
-  });
+  })
 
   // else return https and valid result
-  return chooseOrigin;
+  return chooseOrigin
 }
 
 /**
@@ -200,16 +201,16 @@ async function getOriginFromReports(db: baqend, data: QueriedParams): Promise<st
  * @returns {Promise<T>}
  */
 async function loadExisting(db: baqend, data: QueriedParams): Promise<model.ChromeUXReport | null> {
-  const {url, month, year} = data;
-  const host = new URL(url).host;
-  db.log.info('url to look for', url);
+  const {url, month, year} = data
+  const host = new URL(url).host
+  db.log.info('url to look for', url)
 
   return db.ChromeUXReport.find()
     .matches('url', '^.*' + host)
     .equal('month', month)
     .equal('year', year)
     .equal('device', 'all')
-    .singleResult();
+    .singleResult()
 }
 
 /**
@@ -220,18 +221,18 @@ async function loadExisting(db: baqend, data: QueriedParams): Promise<model.Chro
  * @returns The normalized report
  */
 function normalizeReport(db: baqend, report: model.ChromeUXReport): model.ChromeUXReport {
-  const totalDensity = report.totalDensity;
+  const totalDensity = report.totalDensity
 
   for (const key of METRICS) {
     report[key] = report[key].map((element: model.ChromeUXReportData) => {
-      const data = new db.ChromeUXReportData();
-      data.start = element.start;
-      data.density = totalDensity !== 0 ? element.density / totalDensity : element.density;
-      return data as model.ChromeUXReportData;
-    });
+      const data = new db.ChromeUXReportData()
+      data.start = element.start
+      data.density = totalDensity !== 0 ? element.density / totalDensity : element.density
+      return data as model.ChromeUXReportData
+    })
   }
 
-  return report;
+  return report
 }
 
 /**
@@ -240,7 +241,7 @@ function normalizeReport(db: baqend, report: model.ChromeUXReport): model.Chrome
  * @param histogram
  */
 function calculateTotalDensity(histogram: model.ChromeUXReportData[]): number {
-  return histogram.reduce((acc, cur) => acc + cur.density, 0);
+  return histogram.reduce((acc, cur) => acc + cur.density, 0)
 }
 
 /**
@@ -251,31 +252,31 @@ function calculateTotalDensity(histogram: model.ChromeUXReportData[]): number {
  * @param res
  */
 exports.post = async function (db: baqend, req: Request, res: Response) {
-  const params: QueriedParams = req.body;
-  const { url, month, year } = params;
+  const params: QueriedParams = req.body
+  const { url, month, year } = params
 
   if (!url || !month || !year) {
-    res.status(400);
-    res.send({error: 'Please be sure that either domain, month and year is given.'});
+    res.status(400)
+    res.send({error: 'Please be sure that either domain, month and year is given.'})
   }
 
   // first check if there is an existing entry with the given url
-  const existing = await loadExisting(db, params);
+  const existing = await loadExisting(db, params)
   if (existing) {
-    res.status(400);
-    res.send({message: `The queried data for ${existing.url} (${existing.month}/${existing.year}) already exist.`});
-    return;
+    res.status(400)
+    res.send({message: `The queried data for ${existing.url} (${existing.month}/${existing.year}) already exist.`})
+    return
   }
 
   // params.month holds the manipulated month for querying data from Google
-  params.month = `0${params.month}`.slice(-2);
+  params.month = `0${params.month}`.slice(-2)
   // Find origin in Chrome User Experience Report to avoid multiple queries for the same url
-  const origin = await getOriginFromReports(db, params);
+  const origin = await getOriginFromReports(db, params)
 
   if (!origin) {
-    res.status(400);
-    res.send({message: `There is no data for the given domain ${url}.`});
-    return;
+    res.status(400)
+    res.send({message: `There is no data for the given domain ${url}.`})
+    return
   }
 
   const reports: model.ChromeUXReport[] = await Promise.all(DEVICES.map((device) => {
@@ -285,37 +286,37 @@ exports.post = async function (db: baqend, req: Request, res: Response) {
       year,
       device,
       status: 'RUNNING'
-    });
+    })
 
-    return report.save();
-  }));
+    return report.save()
+  }))
 
-  const queryData: ChromeUXReportQueryData = {url, month: params.month, year, origin};
+  const queryData: ChromeUXReportQueryData = {url, month: params.month, year, origin}
 
   // Single queries are faster but a bit more expensive than one query for all metrics
-  const fcpHistogramData = await queryHistograms(db, 'first_contentful_paint', queryData);
-  const fpHistogramData = await queryHistograms(db, 'first_paint', queryData);
-  const dclHistogramData = await queryHistograms(db, 'dom_content_loaded', queryData);
-  const olHistogramData = await queryHistograms(db, 'onload', queryData);
-  const ttfbHistogramData = await queryHistograms(db, 'experimental.time_to_first_byte', queryData);
+  const fcpHistogramData = await queryHistograms(db, 'first_contentful_paint', queryData)
+  const fpHistogramData = await queryHistograms(db, 'first_paint', queryData)
+  const dclHistogramData = await queryHistograms(db, 'dom_content_loaded', queryData)
+  const olHistogramData = await queryHistograms(db, 'onload', queryData)
+  const ttfbHistogramData = await queryHistograms(db, 'experimental.time_to_first_byte', queryData)
   // return: {start, device [all, desktop, phone, tablet], density}
 
   if (!fcpHistogramData || !fpHistogramData || !dclHistogramData || !olHistogramData || !ttfbHistogramData) {
-    await Promise.all(reports.map(report => report.partialUpdate().set('status', 'FAILED').execute()));
+    await Promise.all(reports.map(report => report.partialUpdate().set('status', 'FAILED').execute()))
 
-    res.status(400);
+    res.status(400)
     res.send({
       message: `The queried domain ${url} (${month}/${year}) could not be analyzed.`,
-    });
-    return;
+    })
+    return
   }
 
-  const histogramData: Map<string, any[]> = new Map();
-  histogramData.set('firstContentfulPaint', fcpHistogramData);
-  histogramData.set('firstPaint', fpHistogramData);
-  histogramData.set('domContentLoaded', dclHistogramData);
-  histogramData.set('onLoad', olHistogramData);
-  histogramData.set('ttfb', ttfbHistogramData);
+  const histogramData: Map<string, any[]> = new Map()
+  histogramData.set('firstContentfulPaint', fcpHistogramData)
+  histogramData.set('firstPaint', fpHistogramData)
+  histogramData.set('domContentLoaded', dclHistogramData)
+  histogramData.set('onLoad', olHistogramData)
+  histogramData.set('ttfb', ttfbHistogramData)
 
   // goal: { desktop: {start, density}[], phone: ChromeUXReportData[], ... }
   for (const report of reports) {
@@ -325,31 +326,69 @@ exports.post = async function (db: baqend, req: Request, res: Response) {
           return new db.ChromeUXReportData({
             start: histogram.start,
             density: histogram.density,
-          });
-        });
+          })
+        })
 
       // calculate totalDensity
-      report.totalDensity = calculateTotalDensity(report[metric]);
-      const medianName = MEDIAN_NAME_MAPPING.get(metric) as string;
-      report[medianName] = calculateMedian(report[metric], report.totalDensity);
-    });
+      report.totalDensity = calculateTotalDensity(report[metric])
+      const medianName = MEDIAN_NAME_MAPPING.get(metric) as string
+      report[medianName] = calculateMedian(report[metric], report.totalDensity)
+    })
 
     const isFailed =
       !report.firstContentfulPaint.length ||
       !report.firstPaint.length ||
       !report.domContentLoaded.length ||
       !report.onLoad.length ||
-      !report.ttfb.length;
+      !report.ttfb.length
 
-    report.status = isFailed ? 'FAILED' : 'SUCCESS';
-    await report.save();
+    report.status = isFailed ? 'FAILED' : 'SUCCESS'
+    await report.save()
 
     if (report.device !== 'all') {
-      const normalizedReport = normalizeReport(db, report);
-      await normalizedReport.save();
+      const normalizedReport = normalizeReport(db, report)
+      await normalizedReport.save()
     }
   }
-  res.status(200);
-  res.send({message: 'The queried domain was analyzed successfully.'});
-  return;
-};
+  res.status(200)
+  res.send({message: 'The queried domain was analyzed successfully.'})
+  return
+}
+
+exports.get = async function (db: baqend, req: Request, res: Response) {
+  const param = req.query.url
+  const input = new URL(param)
+  try {
+    const API_KEY = credentials.cruxApi
+    var response = await fetch(
+      `https://chromeuxreport.googleapis.com/v1/records:queryRecord?key=${API_KEY}`,
+      {
+        method: "POST",
+        body: JSON.stringify({origin: param}),
+      }
+    )
+    const json = await response.json()
+    db.log.info("CRUX Response: ", json)
+    const metrics = json.record.metrics
+    const fastString = metrics["largest_contentful_paint"].histogram[0].density.toLocaleString(undefined, {
+      style: 'percent',
+      minimumFractionDigits: 1
+    })
+    const mediumString = metrics["largest_contentful_paint"].histogram[1].density.toLocaleString(undefined, {
+      style: 'percent',
+      minimumFractionDigits: 1
+    })
+    const slowString = metrics["largest_contentful_paint"].histogram[2].density.toLocaleString(undefined, {
+      style: 'percent',
+      minimumFractionDigits: 1
+    })
+    const fast = parseFloat(String(metrics["largest_contentful_paint"].histogram[0].density * 100)) + "%"
+    const medium = parseFloat(String(metrics["largest_contentful_paint"].histogram[1].density * 100)) + "%"
+    const slow = parseFloat(String(metrics["largest_contentful_paint"].histogram[2].density * 100)) + "%"
+    res.status(200)
+    res.send({hostname: input.hostname, fastString, mediumString, slowString, fast, medium, slow})
+  } catch (error) {
+    res.status(500)
+    res.send("Failed Request: " + error)
+  }
+}

@@ -10,6 +10,7 @@ import { startTest, prepareTest } from 'actions/test'
 import { loadResult, resetResult } from 'actions/result'
 
 import { getObjectKey } from 'helper/utils'
+import {addError} from "../../../../actions/errors";
 
 class ResultScreen extends Component {
   constructor(props) {
@@ -105,6 +106,7 @@ function mapDispatchToProps(dispatch) {
       resetResult,
       prepareTest,
       startTest,
+      addError,
     }, dispatch),
   }
 }
