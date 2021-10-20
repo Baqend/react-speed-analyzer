@@ -47,7 +47,7 @@ export async function generateTestResult(wptTestId: string, pendingTest: model.T
   const viewport = view.viewport
   const retriesLeft = pendingTest.retries < 2;
   const isDesktop = !pendingTest.testInfo.testOptions.mobile
-  const hasViewportError = viewport.width !== VIEWPORT_WIDTH_DESKTOP || viewport.height !== VIEWPORT_HEIGHT_DESKTOP
+  const hasViewportError = viewport && (viewport.width !== VIEWPORT_WIDTH_DESKTOP || viewport.height !== VIEWPORT_HEIGHT_DESKTOP)
   if (isDesktop && hasViewportError && retriesLeft) {
     throw new ViewportError(`WPT viewport (${viewport.width} x ${viewport.height}) not equals configured (${VIEWPORT_WIDTH_DESKTOP} x ${VIEWPORT_HEIGHT_DESKTOP})`)
   }
