@@ -12,7 +12,7 @@ export async function post(db: baqend, req: Request, res: Response) {
   const { comparisonWorker, comparisonFactory, puppeteer } = bootstrap(db)
 
   const callPuppeteer = async (params: TestParams, retries: number) => {
-    const puppeteerInfo = await puppeteer.analyze(params.url, params.mobile, params.location, true, params.preload, params.app)
+    const puppeteerInfo = await puppeteer.analyze(params.url, params.mobile, params.location, true, params.preload, params.app, params.whitelist)
     // Retry Puppeteer analysis if Speed Kit is excepted to be installed but no installation was found.
     // Only consider this error when it is not the last retry.
     if (params.speedKitExpected && !puppeteerInfo.speedKit && retries <= MAX_PUPPETEER_RETRIES - 1) {
@@ -54,6 +54,28 @@ export async function post(db: baqend, req: Request, res: Response) {
   const { withPuppeteer = true, ...params } = req.body as { withPuppeteer?: boolean } & TestParams
   const hostname = params.hostname || req.hostname;
   const comparison = await comparisonFactory.createComparison(params.url, hostname)
+
+  if (params.url.includes('www.etihad.com')) {
+    const url = new URL(params.url);
+    const defaultPuppeteer = new db.Puppeteer({
+      url: params.url,
+      displayUrl: params.url,
+      scheme: '',
+      host: url.host,
+      protocol: url.protocol,
+      domains: [],
+      screenshot: null,
+      type: new db.PuppeteerType({ framework: '', language: '', server: '' }),
+      stats: new db.PuppeteerStats({ domains: 0, requests: 0, size: 0 }),
+      speedKit: null,
+      smartConfig: params.speedKitConfig,
+      serviceWorkers: null,
+    })
+
+    comparisonFactory.updateComparison(comparison, defaultPuppeteer, params)
+    res.status(200)
+    res.send(comparison)
+  }
 
   if (withPuppeteer) {
     const updatedComparison = await updateWithPuppeteer(db, params, comparison)

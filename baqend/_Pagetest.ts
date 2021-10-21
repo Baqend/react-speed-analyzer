@@ -24,6 +24,12 @@ export interface WptDomain {
   connections: number
 }
 
+export interface WPTViewport {
+  width: number
+  dpr: number
+  height: number
+}
+
 export interface WptView {
   domains: { [domainName: string]: WptDomain }
   lastVisualChange: number
@@ -45,11 +51,17 @@ export interface WptView {
   visualComplete99: number
   visualComplete: number
   chromeUserTiming?: Array<{ name: string, time: number }>
+  numSteps: number
+  viewport: WPTViewport
+}
+
+export interface WptStepView extends WptView {
+  steps?: WptView[]
 }
 
 export interface WptRun {
-  firstView: WptView
-  repeatView?: WptView
+  firstView: WptStepView
+  repeatView?: WptStepView
 }
 
 export interface WptTestResult {
@@ -244,11 +256,11 @@ export class Pagetest {
   async getTestResults(testId: string, options: Partial<WptTestResultOptions>): Promise<WptResult<WptTestResult>> {
     // Make the result call more reliable
     const result = await this.wptGetTestResults(testId, options)
-    const run = result.data.runs['1']
-    const firstMissing = run.firstView.lastVisualChange <= 0
-    const secondMissing = run.repeatView && run.repeatView.lastVisualChange <= 0
+    const view = result.data.runs['1'].firstView
+    const step = view ? (view.steps ? view.steps[view.numSteps - 1] : view) : null
 
-    if (!firstMissing && !secondMissing) {
+    const firstMissing = !step || step.lastVisualChange <= 0
+    if (!firstMissing) {
       return result
     }
 
@@ -263,19 +275,35 @@ export class Pagetest {
    * @param testId The ID of the test.
    * @param run The index of the run.
    * @param view The index of the view.
+   * @param step The index of the step.
    * @returns Return the video ID or null, if it not exists.
    */
-  createVideo(testId: string, run: string, view: number): Promise<string> {
-    const video = `${testId}-r:${run}-c:${view}`
-    return new Promise((resolve, reject) => {
+  createVideo(testId: string, run: number, view: number, step: number): Promise<string> {
+    const video = `${testId}-r:${run}-c:${view}-s:${step}`
+    const videoCreation: Promise<string> = new Promise((resolve, reject) => {
       this.wpt.createVideo(video, {}, (err, result) => {
-        if (err) {
-          return reject(err)
+        if (err || !result.data || !result.data.videoId) {
+          return reject('Could not create video id by wpt package')
         }
 
-        resolve(result.data && result.data.videoId || '')
+        resolve(result.data.videoId)
       })
-    })
+    });
+
+    // if we could not get the video it is because the wpt master sends a redirect
+    // since the wpt api cannot cope with that, we have to get the video id manually
+    return videoCreation.catch(err => {
+      return fetch(`http://${credentials.wpt_dns}/video/video.php?tests=${video}`, { redirect: 'manual'})
+        .then(res => {
+          const location = res.headers.get('location');
+          if (!location) {
+            return ''
+          }
+
+          const match = location.match(/video\/(.*)\.mp4/)
+          return match ? match[1] : ''
+        });
+    });
   }
 
   /**

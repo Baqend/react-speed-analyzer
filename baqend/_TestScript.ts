@@ -40,11 +40,11 @@ export class TestScript {
   /**
    * Sets the setActivityTimeout in the script.
    *
-   * @param seconds The timeout value in seconds.
+   * @param milliseconds The timeout value in milliseconds.
    * @return This is a chainable method.
    */
-  setActivityTimeout(seconds: number): this {
-    return this.push(`setActivityTimeout ${seconds}`)
+  setActivityTimeout(milliseconds: number): this {
+    return this.push(`setActivityTimeout ${milliseconds}`)
   }
 
   /**

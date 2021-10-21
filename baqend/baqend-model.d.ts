@@ -51,6 +51,7 @@ declare module 'baqend' {
       preload: boolean
       multiComparisonId: string | null
       cookie: string
+      whitelist: string;
     }
 
     interface Domain extends UrlAware {
@@ -88,6 +89,7 @@ declare module 'baqend' {
       urlAnalysis: UrlAnalysis;
       params: any;
       puppeteer: Puppeteer | null;
+      displayUrl: String;
     }
 
     interface Role extends binding.Entity {
@@ -160,6 +162,7 @@ declare module 'baqend' {
       testOptions: TestOptions
       cookie: string
       appName: string | null
+      navigateUrls: string[]
     }
 
     interface TestResult extends binding.Entity {
@@ -226,7 +229,7 @@ declare module 'baqend' {
       hasMultiComparison: boolean;
       documentRequestFailed: boolean;
       error?: { message: string, status: number };
-      metaData?: { hostname: string };
+      metaData?: { hostname: string, pageViews: number };
     }
 
     interface Hits extends binding.Managed {

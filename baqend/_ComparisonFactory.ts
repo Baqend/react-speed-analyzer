@@ -56,7 +56,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
     comparison.url = truncateUrl(url)
 
     if (hostname) {
-      comparison.metaData = { hostname }
+      comparison.metaData = { hostname, pageViews: 0 }
     }
 
     setQueued(comparison)

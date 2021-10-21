@@ -6,7 +6,7 @@ export const DEFAULT_SINGLE_PRIORITY = Priority.HIGHEST
 export const DEFAULT_BULK_PRIORITY = Priority.LOWEST
 export const DEFAULT_PLESK_PRIORITY = Priority.LESS_HIGH
 export const DEFAULT_LOCATION = 'eu-central-1-docker:Chrome.FIOSNoLatency'
-export const DEFAULT_ACTIVITY_TIMEOUT = 75
+export const DEFAULT_ACTIVITY_TIMEOUT = 5000
 export const DEFAULT_TIMEOUT = 30
 
 /**
@@ -14,6 +14,7 @@ export const DEFAULT_TIMEOUT = 30
  */
 export const DEFAULT_PARAMS: Required<TestParams> = {
   url: '',
+  whitelist: '',
   app: credentials.app,
   activityTimeout: DEFAULT_ACTIVITY_TIMEOUT,
   caching: false,
@@ -28,6 +29,7 @@ export const DEFAULT_PARAMS: Required<TestParams> = {
   ignoreConfig: false,
   cookie: '',
   hostname: '',
+  navigateUrls: [],
 }
 
 /**

@@ -3,12 +3,15 @@ import { ConfigGenerator } from './_ConfigGenerator'
 import { parallelize } from './_helpers'
 import { DataType, Serializer } from './_Serializer'
 import { isFinished, isIncomplete, isUnfinished, setCanceled, setFailed, setRunning, Status } from './_Status'
+import { DEFAULT_TIMEOUT } from './_TestBuilder'
 import { TestScriptBuilder } from './_TestScriptBuilder'
 import { Pagetest } from './_Pagetest'
 import { TestType, WebPagetestResultHandler } from './_WebPagetestResultHandler'
 import credentials from './credentials'
 
-const ONE_HOUR = 1000 * 60 * 60
+const ONE_MINUTE = 1000 * 60
+const ONE_HOUR = ONE_MINUTE * 60
+
 const PING_BACK_URL = `https://${credentials.app}.app.baqend.com/v1/code/testResultPingback`
 
 const prewarmOptions = {
@@ -81,7 +84,8 @@ export class TestWorker {
       }
 
       // Is WebPagetest still running this test? Check the status and start over.
-      if (this.hasNotFinishedWebPagetests(test)) {
+      const isOlderThanTwoMinutes = (new Date().getTime() - test.updatedAt.getTime()) / ONE_MINUTE > 2
+      if (isOlderThanTwoMinutes && this.hasNotFinishedWebPagetests(test)) {
         this.checkWebPagetestsStatus(test)
           .catch((err) => this.db.log.error(`TestWorker.checkWebPagetestsStatus failed: ${err.message}`, err))
 
@@ -327,7 +331,7 @@ export class TestWorker {
    */
   private buildScriptForTestWithConfig(test: model.TestResult): string {
     const { testInfo, location } = test
-    const { url, isTestWithSpeedKit, activityTimeout, appName, testOptions, cookie } = testInfo
+    const { url, isTestWithSpeedKit, activityTimeout, appName, testOptions, cookie, navigateUrls } = testInfo
     const config = this.getConfigForTest(test).replace(/{/, '{ preloadBloomFilter: false,')
 
     return this.testScriptBuilder.createTestScript(
@@ -339,6 +343,8 @@ export class TestWorker {
       activityTimeout,
       appName,
       cookie,
+      DEFAULT_TIMEOUT,
+      navigateUrls,
     )
   }
 

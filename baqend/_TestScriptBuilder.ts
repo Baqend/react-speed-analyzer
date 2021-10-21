@@ -4,6 +4,25 @@ import { TestScript, testScript } from './_TestScript'
 import { URL } from 'url';
 import credentials from './credentials'
 
+export const VIEWPORT_WIDTH_DESKTOP = 1366
+export const VIEWPORT_HEIGHT_DESKTOP = 768
+
+const DEFAULT_COOKIES: string[] = [
+  'CookieConsent={stamp:%27YBfo6EciJckze6IhqdD2yJwlDeZV7jyMgT1vEuMan0GbdUD+29Byug==%27%2Cnecessary:true%2Cpreferences:false%2Cstatistics:false%2Cmarketing:false%2Cver:1%2Cutc:1627636379762%2Cregion:%27de%27}',
+  'dw_cookies_accepted=1',
+  'cmapi_cookie_privacy=permit_1|2|3_',
+  'notice_gdpr_prefs=0|1|2',
+  'euconsent-v2=BPJyc09PJyc09AfapBDEDXAAAAA4uADAAqACIBxY',
+  'OptanonAlertBoxClosed=2021-08-18T14:48:52.156Z',
+  'iqos-age-verified=yes',
+  'OptanonAlertBoxClosed=2021-08-18T14:48:52.156Z',
+  'cookieconsent_status=dismiss',
+  'MC_PRIVACY=marketing',
+  'hideCookiePolicyForSession=true',
+  'cookie-notification=ACCEPTED',
+  'cookiesConsent=0|0|0'
+]
+
 export class TestScriptBuilder {
   /**
    * @param url             The competitor's URL to test.
@@ -13,6 +32,7 @@ export class TestScriptBuilder {
    * @param activityTimeout The activity timeout.
    * @param cookie         The cookie string to be set.
    * @param timeout         The timeout.
+   * @param navigateUrls    The additional Urls to navigate to.
    * @return                The created Web Page Test script.
    */
   private buildForCompetitorTest(
@@ -22,7 +42,8 @@ export class TestScriptBuilder {
     isMobile: boolean,
     activityTimeout: number,
     cookie: string,
-    timeout: number
+    timeout: number,
+    navigateUrls: string[] = [],
   ): TestScript {
     if (/https:\/\/\w*:\w*@oleo.io/.test(url)) {
       activityTimeout = 5000;
@@ -48,7 +69,7 @@ export class TestScriptBuilder {
     if (isMobile) {
     //   ts.setViewport(480, 987); // Maximum viewport
     } else {
-      ts.setViewport(1366, 768); // Good desktop viewport
+      ts.setViewport(VIEWPORT_WIDTH_DESKTOP, VIEWPORT_HEIGHT_DESKTOP); // Good desktop viewport
     }
 
     // Hack to circumvent zip code protection for "shop.rewe.de"
@@ -280,6 +301,8 @@ export class TestScriptBuilder {
       .setTimeout(timeout)
       .navigate(url)
 
+    navigateUrls.forEach(navigateUrl => ts.navigate(navigateUrl))
+
     return ts
   }
 
@@ -292,6 +315,7 @@ export class TestScriptBuilder {
    * @param activityTimeout The activity timeout.
    * @param cookie          The cookie string to be set.
    * @param timeout         The timeout.
+   * @param navigateUrls    The additional Urls to navigate to.
    * @return                The created Web Page Test script.
    */
   private buildForSpeedKitTest(
@@ -303,6 +327,7 @@ export class TestScriptBuilder {
     activityTimeout: number,
     cookie: string,
     timeout: number,
+    navigateUrls: string[] = [],
   ): TestScript {
     const basicAuthRegex = /\w*:\w*@/;
     if (basicAuthRegex.test(url)) {
@@ -386,7 +411,7 @@ export class TestScriptBuilder {
     if (isMobile) {
     //   ts.setViewport(480, 987); // Maximum viewport
     } else {
-      ts.setViewport(1366, 768); // Good desktop viewport
+      ts.setViewport(VIEWPORT_WIDTH_DESKTOP, VIEWPORT_HEIGHT_DESKTOP); // Good desktop viewport
     }
 
     ts.setActivityTimeout(activityTimeout)
@@ -630,9 +655,9 @@ export class TestScriptBuilder {
       ts.push('block browser-update.org/update.show.min.js');
     }
 
+    ts.logData(true).navigate(url)
+    navigateUrls.forEach(navigateUrl => ts.navigate(navigateUrl))
     return ts
-      .logData(true)
-      .navigate(url)
   }
 
   /**
@@ -644,7 +669,7 @@ export class TestScriptBuilder {
    */
   private addCookies(ts: TestScript, cookie: string, url: string): void {
     const origin = new URL(url).origin;
-    const cookieList = cookie.split(';');
+    const cookieList = DEFAULT_COOKIES.concat(cookie.split(';'));
     cookieList.forEach(cookie => ts.setCookie(cookie, origin));
   }
 
@@ -660,6 +685,7 @@ export class TestScriptBuilder {
    * @param appName               The name of the baqend app.
    * @param cookie                The cookie string to be set.
    * @param timeout               The timeout.
+   * @param navigateUrls    The additional Urls to navigate to.
    * @return                      The created Web Page Test script.
    */
   createTestScript(
@@ -672,6 +698,7 @@ export class TestScriptBuilder {
     appName: string | null = null,
     cookie: string = '',
     timeout = DEFAULT_TIMEOUT,
+    navigateUrls: string[] = [],
   ): string {
     // Resolve Speed Kit config
     if (isTestWithSpeedKit) {
@@ -683,10 +710,20 @@ export class TestScriptBuilder {
         isMobile,
         activityTimeout,
         cookie,
-        timeout
+        timeout,
+        navigateUrls
       ).toString()
     }
 
-    return this.buildForCompetitorTest(url, appName, location, isMobile, activityTimeout, cookie, timeout).toString()
+    return this.buildForCompetitorTest(
+      url,
+      appName,
+      location,
+      isMobile,
+      activityTimeout,
+      cookie,
+      timeout,
+      navigateUrls
+    ).toString()
   }
 }

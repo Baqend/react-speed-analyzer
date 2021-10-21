@@ -28,6 +28,11 @@ export interface TestParams {
   activityTimeout?: number
 
   /**
+   * The whitelist that should be merged with the smart config.
+   */
+  whitelist?: string
+
+  /**
    * Whether browser caching is enabled.
    */
   caching?: boolean
@@ -86,6 +91,11 @@ export interface TestParams {
    * The host from where the test was started.
    */
   hostname?: string;
+
+  /**
+   * A list of URLs which should be navigated to (multi navigation tests).
+   */
+  navigateUrls?: string[];
 }
 
 export interface MultiTestParams extends TestParams {

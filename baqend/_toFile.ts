@@ -27,7 +27,7 @@ async function httpUriToResourceInfo(db: baqend, url: string, maxRetries = MAX_D
   // Retry on error
   if (!response.status || (response.status >= 400 && response.status < 600)) {
     if (maxRetries <= 0) {
-      db.log.error(`Downloading video failed with status code: ${response.status}.`)
+      db.log.error(`Downloading video failed with status code: ${response.status}.`, { url });
       throw new Error(`Maximum number of ${MAX_DOWNLOAD_RETRIES} retries reached without success.`)
     }
 

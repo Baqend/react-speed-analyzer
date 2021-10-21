@@ -1,11 +1,14 @@
 import { truncateUrl } from './_helpers'
+import { VIEWPORT_HEIGHT_DESKTOP, VIEWPORT_WIDTH_DESKTOP } from './_TestScriptBuilder'
 import { toFile } from './_toFile'
 import { getAdSet } from './_adBlocker'
 import credentials from './credentials'
-import { API, WptRequest, WptRun, WptTestResult, WptTestResultOptions, WptView } from './_Pagetest'
+import { API, WptRequest, WptTestResult, WptTestResultOptions, WptView } from './_Pagetest'
 import { countHits } from './_countHits'
 import { getFMPData } from './_getFMPData'
 import { baqend, binding, model } from 'baqend'
+
+export class ViewportError extends Error {}
 
 /**
  * Generates a test result from the given test and returns the updated test database object.
@@ -29,18 +32,29 @@ export async function generateTestResult(wptTestId: string, pendingTest: model.T
   pendingTest.summaryUrl = rawData.summary
   pendingTest.testDataMissing = false
 
-  if (!isValidRun(rawData.runs['1'])) {
+  const view = rawData.runs['1'].firstView
+  const stepIndex = view.numSteps
+  const step = view ? (view.steps ? view.steps[stepIndex - 1] : view) : null
+
+  if (!step || !isValidStep(step)) {
     const run = new db.Run()
-    const firstView = rawData.runs['1'].firstView
-    run.documentRequestFailed = firstView && hasDocumentRequestFailed(firstView.requests)
+    run.documentRequestFailed = step && hasDocumentRequestFailed(step.requests)
     pendingTest.firstView = run;
 
     throw new Error(`No valid test run found in ${rawData.id}`)
   }
 
+  const viewport = view.viewport
+  const retriesLeft = pendingTest.retries < 2;
+  const isDesktop = !pendingTest.testInfo.testOptions.mobile
+  const hasViewportError = viewport && (viewport.width !== VIEWPORT_WIDTH_DESKTOP || viewport.height !== VIEWPORT_HEIGHT_DESKTOP)
+  if (isDesktop && hasViewportError && retriesLeft) {
+    throw new ViewportError(`WPT viewport (${viewport.width} x ${viewport.height}) not equals configured (${VIEWPORT_WIDTH_DESKTOP} x ${VIEWPORT_HEIGHT_DESKTOP})`)
+  }
+
   const [testResult, videos] = await Promise.all([
-    createTestResult(db, rawData, wptTestId, rawData.testUrl, '1'),
-    createVideos(db, wptTestId, '1'),
+    createTestResult(db, step, wptTestId, rawData.testUrl, stepIndex),
+    createVideos(db, wptTestId, stepIndex),
   ])
 
   // Copy view data
@@ -73,58 +87,53 @@ function getResultRawData(wptTestId: string): Promise<WptTestResult> {
 /**
  * @param db The Baqend instance.
  * @param testId
- * @param runIndex
+ * @param stepIndex
  */
-async function createVideos(db: baqend, testId: string, runIndex: string): Promise<[binding.File, binding.File | null]> {
+async function createVideos(db: baqend, testId: string, stepIndex: number): Promise<[binding.File, binding.File | null]> {
   db.log.info(`Creating video: ${testId}`)
 
   const [firstVideo, repeatedVideo] = await Promise.all([
-    API.createVideo(testId, runIndex, 0),
-    API.createVideo(testId, runIndex, 1),
+    API.createVideo(testId, 1, 0, stepIndex),
+    API.createVideo(testId, 1, 1, stepIndex),
   ])
-  const videoFirstViewPromise = toFile(db, constructVideoLink(testId, firstVideo), `/www/videoFirstView/${testId}.mp4`)
+
+  const videoFirstViewPromise = toFile(db, constructVideoLink(firstVideo), `/www/videoFirstView/${testId}.mp4`)
 
   let videoRepeatViewPromise: Promise<binding.File | null> = Promise.resolve(null)
   if (repeatedVideo) {
-    videoRepeatViewPromise = toFile(db, constructVideoLink(testId, repeatedVideo), `/www/videoRepeatView/${testId}.mp4`)
+    videoRepeatViewPromise = toFile(db, constructVideoLink(repeatedVideo), `/www/videoRepeatView/${testId}.mp4`)
   }
 
   return Promise.all([videoFirstViewPromise, videoRepeatViewPromise])
 }
 
 /**
- * @param testId
  * @param videoId
  * @return
  */
-function constructVideoLink(testId: string, videoId: string): string {
-  const date = `${testId.substr(0, 2)}/${testId.substr(2, 2)}/${testId.substr(4, 2)}`
-  const videoLink = videoId.substr(videoId.indexOf('_') + 1, videoId.length)
-
-  return `http://${credentials.wpt_dns}/results/video/${date}/${videoLink}/video.mp4`
+function constructVideoLink(videoId: string): string {
+  return `http://${credentials.wpt_dns}/work/video/${videoId}.mp4`
 }
 
 /**
  * Creates the test result and returns which run was used for that.
  *
  * @param db The Baqend instance.
- * @param wptData The data from the WPT test.
+ * @param step The data from the WPT test.
  * @param testId The id of the test to create the result for.
  * @param {string} testUrl The url of the test to create the result for.
- * @param {string} runIndex The index of the run to create the result for.
+ * @param {number} stepIndex The index of the step to create the result for.
  * @return {Promise} The test result with its views.
  */
-function createTestResult(db: baqend, wptData: WptTestResult, testId: string, testUrl: string, runIndex: string): Promise<[model.Run | null, model.Run | null]> {
-  const resultRun = wptData.runs[runIndex]
-
+function createTestResult(db: baqend, step: WptView, testId: string, testUrl: string, stepIndex: number): Promise<[model.Run | null, model.Run | null]> {
   return Promise.all([
-    createRun(db, resultRun.firstView, testId, testUrl, runIndex),
-    createRun(db, resultRun.repeatView, testId, testUrl, runIndex),
+    createRun(db, step, testId, testUrl, stepIndex),
+    createRun(db, step, testId, testUrl, stepIndex),
   ])
 }
 
-function isValidRun(run: WptRun): boolean {
-  return run.firstView && run.firstView.SpeedIndex > 0 && run.firstView.lastVisualChange > 0
+function isValidStep(step: WptView): boolean {
+  return step.SpeedIndex > 0 && step.lastVisualChange > 0
 }
 
 /**
@@ -132,10 +141,10 @@ function isValidRun(run: WptRun): boolean {
  * @param {object} data The data to create the run of.
  * @param testId The test id to create the run for.
  * @param testUrl The test url to create the run for.
- * @param runIndex The index of the run to create the run for.
+ * @param stepIndex The index of the step to create the run for.
  * @return A promise resolving with the created run.
  */
-async function createRun(db: baqend, data: WptView | undefined, testId: string, testUrl: string, runIndex: string): Promise<model.Run | null> {
+async function createRun(db: baqend, data: WptView | undefined, testId: string, testUrl: string, stepIndex: number): Promise<model.Run | null> {
   if (!data) {
     return null
   }
@@ -174,7 +183,7 @@ async function createRun(db: baqend, data: WptView | undefined, testId: string, 
   completeness.p100 = data.visualComplete
   run.visualCompleteness = completeness
 
-  const [FMPData, domains] = await Promise.all([getFMPData(db, data, testId, runIndex), createDomainList(data)])
+  const [FMPData, domains] = await Promise.all([getFMPData(db, data, testId, stepIndex), createDomainList(data)])
   run.fmpData = FMPData
   run.domains = domains
 

@@ -49,7 +49,10 @@ export async function get(db: baqend, request: Request, response: Response) {
  * POST: Start comparison for given domain.
  */
 export async function post(db: baqend, request: Request, response: Response) {
-  const { body } = request
+  let { body } = request;
+  if (typeof body === 'string') {
+    body = JSON.parse(body);
+  }
   const { url, script } = body as { url?: string, script?: string }
   if (!url && !script) {
     response.status(400)

@@ -62,7 +62,7 @@ export class BulkComparisonWorker implements MultiComparisonListener {
 
       // Start next multi comparison
       const { runs, ...params } = bulkComparison.comparisonsToStart[nextIndex]
-      const puppeteer = await this.getPuppeteerInfo(params.url, params.mobile, params.location, params.preload, params.app)
+      const puppeteer = await this.getPuppeteerInfo(params.url, params.mobile, params.location, params.preload, params.app, params.whitelist)
 
       const multiComparison = await this.multiComparisonFactory.create(puppeteer, params, createdBy, runs)
 
@@ -89,10 +89,10 @@ export class BulkComparisonWorker implements MultiComparisonListener {
   /**
    * Gets the Puppeteer information of a given url
    */
-  async getPuppeteerInfo(url: string, mobile: boolean, location: string, preload: boolean, app: string): Promise<model.Puppeteer | null> {
+  async getPuppeteerInfo(url: string, mobile: boolean, location: string, preload: boolean, app: string, whitelist: string): Promise<model.Puppeteer | null> {
     const { puppeteer } = bootstrap(this.db)
     try {
-      return await this.callPuppeteerWithRetries(puppeteer, url, mobile, location, preload, app)
+      return await this.callPuppeteerWithRetries(puppeteer, url, mobile, location, preload, app, whitelist)
     } catch ({ message, stack }) {
       this.db.log.error(`Puppeteer failed for ${url}: ${message}`, { stack })
       return null
@@ -134,14 +134,15 @@ export class BulkComparisonWorker implements MultiComparisonListener {
     location: string,
     preload: boolean,
     app: string,
+    whitelist: string,
     retries = 0
   ): Promise<model.Puppeteer> {
     try {
-      return await puppeteer.analyze(url, mobile, location, true, preload, app)
+      return await puppeteer.analyze(url, mobile, location, true, preload, app, whitelist)
     } catch (err) {
       if (retries < 3) {
         await new Promise<void>(resolve => setTimeout(() => resolve(), 5000))
-        return this.callPuppeteerWithRetries(puppeteer, url, mobile, location, preload, app, retries + 1)
+        return this.callPuppeteerWithRetries(puppeteer, url, mobile, location, preload, app, whitelist, retries + 1)
       }
 
       throw err

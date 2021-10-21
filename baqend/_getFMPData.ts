@@ -76,8 +76,8 @@ function parseCandidates(db: baqend, data: Array<[number, number]>): model.Candi
 /**
  * Calculates ΔVisualCompleteness from the WebPagetest
  */
-async function prepareCandidates(db: baqend, testId: string, runIndex: string): Promise<model.Candidate[]> {
-  const url = `http://${credentials.wpt_dns}/video/compare.php?tests=${testId}-r:${runIndex}-c:0`
+async function prepareCandidates(db: baqend, testId: string, stepIndex: number): Promise<model.Candidate[]> {
+  const url = `http://${credentials.wpt_dns}/video/compare.php?tests=${testId}-r:1-c:0-s:${stepIndex}`
   const response = await fetch(url)
   const htmlString = await response.text()
   const data = getDataFromHtml(htmlString)
@@ -153,15 +153,15 @@ function createFMPData(db: baqend, suggestedCandidate: model.Candidate, candidat
  * @param db The Baqend instance.
  * @param wpt The data to calculate the FMP of.
  * @param testId The ID of the test to calculate the FMP for.
- * @param runIndex The run index to calculate the FMP for.
+ * @param stepIndex The step index to calculate the FMP for.
  */
-export async function getFMPData(db: baqend, wpt: WptView, testId: string, runIndex: string): Promise<model.FMPData|null> {
+export async function getFMPData(db: baqend, wpt: WptView, testId: string, stepIndex: number): Promise<model.FMPData|null> {
   const wptFMP = getFMPFromWebPagetest(wpt)
   try {
     db.log.info('Start FMP calculation', { wptFMP })
 
     // Calculate the ΔVCs
-    const candidates = await prepareCandidates(db, testId, runIndex)
+    const candidates = await prepareCandidates(db, testId, stepIndex)
 
     const topCandidates = chooseTopCandidates(db, candidates);
     const validCandidate = getMatchingCandidate(wptFMP, topCandidates)

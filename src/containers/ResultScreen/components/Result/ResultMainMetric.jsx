@@ -49,6 +49,7 @@ class ResultMainMetric extends Component {
     const factor = calculateFactor(competitorMainMetric, speedKitMainMetric)
     const percent = calculatePercent(competitorMainMetric, speedKitMainMetric)
     const factorValue = this.props.result.useFactor ? `${factor}x` : `${percent}%`
+
     return (
       <div>
         <div className="flex items-center relative">
