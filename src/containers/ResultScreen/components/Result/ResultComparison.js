@@ -3,6 +3,8 @@ import "./ResultComparison.css";
 import ReactTooltip from 'react-tooltip'
 import {db} from "baqend";
 
+const MAX_COMPETITORS = 5
+
 class ResultComparison extends Component {
 
   constructor(props) {
@@ -11,7 +13,7 @@ class ResultComparison extends Component {
       beforeSpeedKit: "",
       companyArray: [],
       inputValue: "",
-      showSpinner: false
+      showSpinner: false,
     }
   }
 
@@ -52,7 +54,6 @@ class ResultComparison extends Component {
 
   async beforeSpeedKit() {
     try {
-      console.log(this.props.config.url)
       const url = new URL(this.props.config.url)
       const data = await db.modules.get("chromeUXReports", `url=${(url)}`);
       this.setState((state) => Object.assign(state, {
@@ -124,7 +125,7 @@ class ResultComparison extends Component {
           }
       })
       const temp = JSON.parse(this.state.beforeSpeedKit)
-      if (!found && (temp.hostname !== this.prettyURL(data.hostname.toString()))) {
+      if (!found && (temp.hostname !== this.prettyURL(data.hostname.toString())) && this.state.companyArray.length + 1 < MAX_COMPETITORS) {
         this.addCompetitor({
           hostname: this.prettyURL(data.hostname),
           fastString: data.fastString,
@@ -134,7 +135,8 @@ class ResultComparison extends Component {
           medium: data.medium,
           slow: data.slow})
       } else {
-        this.props.actions.addError("Already in list")
+        const errorMessage = this.state.companyArray.length + 1 === MAX_COMPETITORS ? "Only " +  MAX_COMPETITORS + " allowed." : "Already in list."
+        this.props.actions.addError(errorMessage)
       }
       this.setState({showSpinner: false})
     } catch (error) {

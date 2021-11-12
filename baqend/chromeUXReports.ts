@@ -8,8 +8,8 @@ import fetch from "node-fetch"
 
 interface QueriedParams {
   url: string
-  year: number,
-  month: number | string,
+  year: number
+  month: number | string
 }
 
 interface ChromeUXReportQueryData extends QueriedParams {
@@ -356,9 +356,9 @@ exports.post = async function (db: baqend, req: Request, res: Response) {
 }
 
 exports.get = async function (db: baqend, req: Request, res: Response) {
-  const param = req.query.url
-  const input = new URL(param)
   try {
+    const param = req.query.url
+    const input = new URL(param)
     const API_KEY = credentials.cruxApi
     var response = await fetch(
       `https://chromeuxreport.googleapis.com/v1/records:queryRecord?key=${API_KEY}`,
