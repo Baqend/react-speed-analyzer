@@ -24,15 +24,11 @@ export default class CustomerSlider extends Component {
   }
 
   randomCustomers() {
-    const min = 0;
-    const max = Customers.length - 1
-    var randomCustomers = []
-    var counter = 0;
+    const randomCustomers = []
     while (randomCustomers.length !== 6) {
-      var randomNumber = Math.floor(Math.random() * (max - min + 1) + min)
+      const randomNumber = Math.floor(Math.random() * Customers.length)
       if (!randomCustomers.find((customer) => customer.className === Customers[randomNumber].className)) {
-        randomCustomers[counter] = Customers[randomNumber]
-        counter++
+        randomCustomers.push(Customers[randomNumber])
       }
     }
     return randomCustomers
