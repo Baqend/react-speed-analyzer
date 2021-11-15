@@ -31,6 +31,7 @@ import bmw from "assets/customers/bmw-black.svg";
 import newportLogo from 'assets/customers/newport-black.svg'
 import baurLogo from 'assets/customers/baur-black.svg'
 import Barcut from '../BarCut/Barcut'
+import ResultComparison from "./ResultComparison";
 
 class ResultBody extends Component {
   constructor(props) {
@@ -185,6 +186,7 @@ class ResultBody extends Component {
           {this.renderScale()}
           {this.renderDetails()}
           <ResultAction { ...this.props } toggleModal={this.toggleModal}/>
+          <ResultComparison {...this.props} />
           {(!embedded && showROI) && <ResultWorthiness
             competitorTest={this.props.competitorTest}
             speedKitTest={this.props.speedKitTest}

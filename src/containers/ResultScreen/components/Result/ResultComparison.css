@@ -1,0 +1,211 @@
+@import "../../../../styles/_variables.css";
+
+.margin-bottom {
+  margin-bottom: 10px;
+}
+.companyName {
+  font-size: 22px;
+  font-weight: 500;
+}
+.box-wrapper {
+  padding: 40px 20px 40px 20px;
+}
+.boxFont {
+  font-size: 16px;
+}
+.greenBox {
+  width: 25px;
+  height: 24px;
+  border-radius: 4px;
+  background-color: #12b84f;
+}
+.orangeBox {
+  width: 25px;
+  height: 24px;
+  border-radius: 4px;
+  background-color: #ff9d00;
+}
+.redBox {
+  width: 25px;
+  height: 24px;
+  border-radius: 4px;
+  background-color: #dd4b39;
+}
+.barRowContainerWrapper {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  margin-bottom: 20px;
+}
+.barRowContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: space-between;
+  width: 100%;
+}
+.threeBars {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+.greenBar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+  background-color: #12b84f;
+  height: 45px;
+  margin-right: 2px;
+}
+.orangeBar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+  background-color: #ff9d00;
+  height: 45px;
+  margin-right: 2px;
+}
+.redBar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+  background-color: #dd4b39;
+  height: 45px;
+}
+.text-box-width {
+  width: 200px;
+  margin-bottom: 8px;
+}
+.barText {
+  font-size: 20px;
+  font-weight: 500;
+  color: white;
+  padding: 10px;
+}
+.text-input-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 18px;
+}
+.text-input {
+  height: 100%;
+  width: 100%;
+  padding: 22px 22px 18px;
+}
+.comparison-row-inner {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.comparison-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #e808f2;
+  border-radius: 4px;
+  outline: none;
+  border: none;
+  width: 100%;
+  height: 60px;
+}
+.comparison-button-text {
+  color: white;
+}
+.comparison-bottom-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+.comparison-button:hover {
+  cursor: pointer;
+}
+.ul-new {
+  margin: 0;
+  padding: 0;
+}
+.loader,
+.loader:after {
+  border-radius: 50%;
+  width: 5em;
+  height: 5em;
+}
+.loader {
+  margin: 60px auto;
+  font-size: 10px;
+  position: relative;
+  text-indent: -9999em;
+  border-top: 0.5em solid rgba(255, 255, 255, 0.2);
+  border-right: 0.5em solid rgba(255, 255, 255, 0.2);
+  border-bottom: 0.5em solid rgba(255, 255, 255, 0.2);
+  border-left: 0.5em solid #ffffff;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-animation: load8 1.1s infinite linear;
+  animation: load8 1.1s infinite linear;
+}
+@-webkit-keyframes load8 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@keyframes load8 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+@media (--breakpoint-extra-large-device) {
+  .boxFont {
+    font-size: 20px;
+  }
+  .greenBox {
+    width: 40px;
+  }
+  .orangeBox {
+    width: 40px;
+  }
+  .redBox {
+    width: 40px;
+  }
+  .threeBars {
+    width: 750px;
+  }
+  .barRowContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+  .text-input-wrapper {
+    width: 500px;
+    height: 60px;
+  }
+  .comparison-button {
+    width: 250px;
+    height: 60px;
+  }
+  .comparison-row-inner {
+    display: flex;
+    flex-direction: row;
+    width: 750px;
+  }
+  .box-wrapper {
+    padding: 40px 60px 40px 60px;
+  }
+}
+

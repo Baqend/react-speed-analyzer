@@ -9,6 +9,7 @@ interface Credentials {
   delete_cronjob_user: string
   delete_cronjob_password: string
   bigQueryCredentials: any
+  cruxApi: string
 }
 
 declare const credentials: Credentials

@@ -1,14 +1,18 @@
 import {
-  ADD_ERROR,
-  REMOVE_ERROR
+  ADD_ERROR, INIT_TEST,
+  REMOVE_ERROR, RESET_TEST_RESULT
 } from "./types"
+import {isURL} from "../helper/utils";
 
-export function addError(error) {
-  return {
-    type: ADD_ERROR,
-    payload: error,
+export const addError = (error) => ({
+  'BAQEND': async ({ dispatch, getState, db }) => {
+    console.log("ERRRRRROOOOOR", error)
+    dispatch({
+      type: ADD_ERROR,
+      payload: error,
+    })
   }
-}
+})
 
 export function removeError(error) {
   return {
