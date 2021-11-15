@@ -27,7 +27,7 @@ import pieperLogo from 'assets/customers/parfuemerie-pieper-black.svg'
 import pleskLogo from 'assets/customers/plesk-black.svg'
 import awnLogo from 'assets/customers/awn-black.png'
 import fussballdatenLogo from 'assets/customers/fussballdaten-black.svg'
-import pierreCardinLogo from 'assets/customers/pierre-cardin-black.png'
+import bmw from "assets/customers/bmw-black.svg";
 import newportLogo from 'assets/customers/newport-black.svg'
 import baurLogo from 'assets/customers/baur-black.svg'
 import Barcut from '../BarCut/Barcut'
@@ -162,7 +162,7 @@ class ResultBody extends Component {
             <img className="customer-img" src={fussballdatenLogo} alt="Fussballdaten logo"/>
           </div>
           <div className="customer-wrapper">
-            <img className="customer-img" src={pierreCardinLogo} alt="Pierre Cardin logo"/>
+            <img className="customer-img" src={bmw} alt="BMW Logo"/>
           </div>
           <div className="customer-wrapper">
             <img className="customer-img" src={newportLogo} alt="Newport logo"/>

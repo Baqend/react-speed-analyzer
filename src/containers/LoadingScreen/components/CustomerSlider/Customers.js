@@ -1,5 +1,53 @@
 export const Customers = [
   {
+    className: 'customer galeria',
+    name: 'Lars Mehler',
+    title: 'VP Platform Management',
+    copy:
+      'Speed Kit has delivered a clearly noticeable performance increase for our online shop.'
+  },
+  {
+    className: 'customer decathlon',
+    name: 'Florian Bischoff',
+    title: 'Director E-Commerce',
+    copy:
+      'Speed Kit accelerated our site by 2.5x […]. There is no doubt about the great ROI.'
+  },
+  {
+    className: 'customer carhartt',
+    name: 'Marc Lohausen',
+    title: 'Head of E-Commerce',
+    copy:
+      'Go live within a matter of days […] across our biggest markets, Germany, France, and UK.'
+  },
+  {
+    className: 'customer orsay',
+    name: 'Rudolf Orth',
+    title: 'Head of E-Commerce',
+    copy:
+      'Accelerating millions of users happened flawlessly and without additional efforts.'
+  },
+  {
+    className: 'customer awn',
+    name: 'Ado Nolte',
+    title: 'Head of E-Commerce',
+    copy:
+      'Speed Kit accelerated loads on our website […] led to a double digit uplift in conversion rate.'
+  },
+  {
+    className: 'customer mydays',
+    name: 'Nihad Zehic',
+    copy:
+      'Google rating for fast First Contentful Paint increased by 68%.'
+  },
+  {
+    className: 'customer besamex',
+    name: 'Torben Berning',
+    title: 'Managing Director',
+    copy:
+      'Speed Kit offers an easy to use approach that delivered impressive results.'
+  },
+  {
     className: 'customer appelrath',
     name: 'Jerrit Kube',
     title: 'Head of Digital & Marketing',
@@ -34,6 +82,13 @@ export const Customers = [
     title: 'CEO of Fussballdaten.de',
     copy:
       "Speed Kit not only makes page loads for Fussballdaten.de twice as fast. Our servers could also handle the notorious end-of-season load peaks with ease."
+  },
+  {
+    className: 'customer stylefile',
+    name: 'Sebastian Gerhart',
+    title: 'Team Lead Platforms',
+    copy:
+      'With Speed Kit, we achieved more than 2x faster paints for our mobile users. We particularly like the scientific approach of the team.'
   },
   {
     className: 'customer stylefile',
