@@ -15,7 +15,12 @@ export default class CustomerSlider extends Component {
   }
 
   componentDidMount(): void {
-    this.state.randomCustomers = this.randomCustomers();
+    this.state.randomCustomers = this.randomCustomers()
+    this.interval = setInterval(() => this.slider.slickNext(), 5000)
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval)
   }
 
   randomCustomers() {
