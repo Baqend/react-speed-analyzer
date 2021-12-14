@@ -11,6 +11,7 @@ export enum Status {
   CANCELED = 'CANCELED',
   INCOMPLETE = 'INCOMPLETE',
   FAILED = 'FAILED',
+  PENDING = 'PENDING'
 }
 
 export interface StatefulEntity {
@@ -32,6 +33,10 @@ export function isFinished(entity: StatefulEntity) {
 
 export function isIncomplete(entity: StatefulEntity) {
   return entity.hasFinished && hasStatus(entity, Status.CANCELED, Status.INCOMPLETE, Status.FAILED)
+}
+
+export function isPending(entity: StatefulEntity) {
+  return !entity.hasFinished && hasStatus(entity, Status.PENDING)
 }
 
 /**
@@ -81,3 +86,12 @@ export function setFailed(entity: StatefulEntity) {
   entity.status = Status.FAILED
   entity.hasFinished = true
 }
+
+/**
+ * Sets the given entity to the failed state.
+ */
+export function setPending(entity: StatefulEntity) {
+  entity.status = Status.PENDING
+  entity.hasFinished = false
+}
+
