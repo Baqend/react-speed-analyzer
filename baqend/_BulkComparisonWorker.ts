@@ -4,7 +4,7 @@ import { MultiComparisonFactory } from './_MultiComparisonFactory'
 import { MultiComparisonListener, MultiComparisonWorker } from './_MultiComparisonWorker'
 import { Puppeteer } from './_Puppeteer'
 import {
-  isFinished, isIncomplete, isUnfinished, setCanceled, setIncomplete, setRunning, setSuccess,
+  isFinished, isIncomplete, isPending, isUnfinished, setCanceled, setIncomplete, setPending, setRunning, setSuccess,
   Status,
 } from './_Status'
 import { parallelize } from './_helpers'
@@ -30,7 +30,7 @@ export class BulkComparisonWorker implements MultiComparisonListener {
       }
 
       // Set bulk comparison to running
-      if (bulkComparison.status !== Status.RUNNING) {
+      if (bulkComparison.status !== Status.RUNNING && bulkComparison.status !== Status.PENDING) {
         await bulkComparison.optimisticSave(() => setRunning(bulkComparison))
       }
 
@@ -38,7 +38,9 @@ export class BulkComparisonWorker implements MultiComparisonListener {
 
       // Is there an active multi comparison which is not finished?
       const currentMultiComparison = multiComparisons[multiComparisons.length - 1]
-      if (currentMultiComparison && !currentMultiComparison.hasFinished) {
+      if (currentMultiComparison
+        && !currentMultiComparison.hasFinished
+        && currentMultiComparison.status !== Status.PENDING) {
         return
       }
 
@@ -51,8 +53,13 @@ export class BulkComparisonWorker implements MultiComparisonListener {
         }
 
         // Save is finished state
+        const isPending = await this.isBulkPending(bulkComparison);
         const isIncomplete = await this.isBulkIncomplete(bulkComparison)
         await bulkComparison.optimisticSave(() => {
+          if (isPending) {
+            setPending(bulkComparison)
+            return
+          }
           isIncomplete ? setIncomplete(bulkComparison) : setSuccess(bulkComparison)
         })
 
@@ -84,6 +91,14 @@ export class BulkComparisonWorker implements MultiComparisonListener {
   async isBulkIncomplete(bulkComparison: model.BulkComparison): Promise<boolean> {
     const multiComparisons = await Promise.all(bulkComparison.multiComparisons.map(multiComparison => multiComparison.load()))
     return multiComparisons.some(multiComparison => isIncomplete(multiComparison))
+  }
+
+  /**
+   * Checks whether one of the corresponding testOverview is incomplete
+   */
+  async isBulkPending(bulkComparison: model.BulkComparison): Promise<boolean> {
+    const multiComparisons = await Promise.all(bulkComparison.multiComparisons.map(multiComparison => multiComparison.load()))
+    return multiComparisons.some(multiComparison => isPending(multiComparison))
   }
 
   /**

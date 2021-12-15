@@ -8,11 +8,14 @@ import {
   isUnfinished,
   setCanceled,
   setIncomplete,
+  setPending,
   setRunning,
   setSuccess,
   Status,
 } from './_Status'
 import { updateMultiComparison } from './_updateMultiComparison'
+
+const ONE_MINUTE = 1000 * 60
 
 export interface MultiComparisonListener {
   handleMultiComparisonFinished(multiComparison: model.BulkTest): any
@@ -55,6 +58,11 @@ export class MultiComparisonWorker implements ComparisonListener {
       // Are all comparisons finished?
       const currentComparison = testOverviews[testOverviews.length - 1]
       if (currentComparison && isUnfinished(currentComparison)) {
+        // Is WebPagetest still running this test? Check the status and start over.
+        const isOlderThanFiveMinutes = (new Date().getTime() - multiComparison.updatedAt.getTime()) / ONE_MINUTE > 5
+        if (isOlderThanFiveMinutes) {
+          setPending(multiComparison)
+        }
         return
       }
 
