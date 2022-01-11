@@ -77,13 +77,6 @@ export const Customers = [
       'The Plesk interface enables intuitive server administration, while Speed Kit accelerates the selected websites with a single click.'
   },
   {
-    className: 'customer fussballdaten',
-    name: 'Dennis Wedderkop',
-    title: 'CEO of Fussballdaten.de',
-    copy:
-      "Speed Kit not only makes page loads for Fussballdaten.de twice as fast. Our servers could also handle the notorious end-of-season load peaks with ease."
-  },
-  {
     className: 'customer stylefile',
     name: 'Sebastian Gerhart',
     title: 'Team Lead Platforms',

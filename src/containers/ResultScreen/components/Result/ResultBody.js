@@ -12,9 +12,9 @@ import carharttLogo from 'assets/customers/carhartt-black.svg'
 import orsayLogo from 'assets/customers/orsay-black.svg'
 import snipesLogo from 'assets/customers/snipes-black.svg'
 import mydaysLogo from 'assets/customers/mydays-black.svg'
-import jsLogo from 'assets/customers/jochen-schweizer-black.svg'
+import redBullLogo from 'assets/customers/redbull-black.svg'
 import hsvLogo from 'assets/customers/hsv-black.svg'
-import easyApothekeLogo from 'assets/customers/easyapotheke-black.png'
+import titusLogo from 'assets/customers/titus-black.svg'
 import justSpicesLogo from 'assets/customers/justspices-black.svg'
 import defshopLogo from 'assets/customers/DefShop_Logo.svg'
 import edwinLogo from 'assets/customers/edwin-black.png'
@@ -23,13 +23,17 @@ import brogleLogo from 'assets/customers/brogle-black.png'
 import soleboxLogo from 'assets/customers/solebox-black.svg'
 import weinfuerstLogo from 'assets/customers/weinfuerst-black.svg'
 import besamexLogo from 'assets/customers/besamex-black.png'
-import pieperLogo from 'assets/customers/parfuemerie-pieper-black.svg'
+import melittaLogo from 'assets/customers/melitta-black.svg'
 import pleskLogo from 'assets/customers/plesk-black.svg'
 import awnLogo from 'assets/customers/awn-black.png'
-import fussballdatenLogo from 'assets/customers/fussballdaten-black.svg'
+import goertzLogo from 'assets/customers/goertz-black.svg'
 import bmw from "assets/customers/bmw-black.svg";
 import newportLogo from 'assets/customers/newport-black.svg'
 import baurLogo from 'assets/customers/baur-black.svg'
+import elevenTeamsportsLogo from 'assets/customers/11teamsports-black.svg'
+import interfloraLogo from 'assets/customers/interflora-black.svg'
+import globusLogo from 'assets/customers/globus-ch-black.svg'
+import virginmediaLogo from 'assets/customers/virginmedia-black.svg'
 import Barcut from '../BarCut/Barcut'
 import ResultComparison from "./ResultComparison";
 
@@ -110,7 +114,7 @@ class ResultBody extends Component {
             <img className="customer-img" src={mydaysLogo} alt="Mydays logo"/>
           </div>
           <div className="customer-wrapper">
-            <img className="customer-img" src={jsLogo} alt="Jochen Schweizer logo"/>
+            <img className="customer-img" src={redBullLogo} alt="RedBull logo"/>
           </div>
           <div className="customer-wrapper">
             <img className="customer-img" src={defshopLogo} alt="DefShop logo"/>
@@ -121,7 +125,7 @@ class ResultBody extends Component {
             <img className="customer-img" src={hsvLogo} alt="HSV logo"/>
           </div>
           <div className="customer-wrapper">
-            <img className="customer-img" src={easyApothekeLogo} alt="Easy Apotheke logo"/>
+            <img className="customer-img" src={titusLogo} alt="Titus logo"/>
           </div>
           <div className="customer-wrapper">
             <img className="customer-img" src={justSpicesLogo} alt="Just Spices logo"/>
@@ -149,7 +153,7 @@ class ResultBody extends Component {
             <img className="customer-img" src={besamexLogo} alt="Besamex logo"/>
           </div>
           <div className="customer-wrapper">
-            <img className="customer-img" src={pieperLogo} alt="Parmuemerie Pieper logo"/>
+            <img className="customer-img" src={melittaLogo} alt="Melitta logo"/>
           </div>
           <div className="customer-wrapper">
             <img className="customer-img" src={pleskLogo} alt="Plesk logo"/>
@@ -160,7 +164,7 @@ class ResultBody extends Component {
         </div>
         <div className="flex flex-wrap justify-center">
           <div className="customer-wrapper">
-            <img className="customer-img" src={fussballdatenLogo} alt="Fussballdaten logo"/>
+            <img className="customer-img" src={goertzLogo} alt="Goertz logo"/>
           </div>
           <div className="customer-wrapper">
             <img className="customer-img" src={bmw} alt="BMW Logo"/>
@@ -170,6 +174,20 @@ class ResultBody extends Component {
           </div>
           <div className="customer-wrapper">
             <img className="customer-img" src={baurLogo} alt="Baur logo"/>
+          </div>
+        </div>
+        <div className="flex flex-wrap justify-center">
+          <div className="customer-wrapper">
+            <img className="customer-img" src={elevenTeamsportsLogo} alt="11 Teamsports logo"/>
+          </div>
+          <div className="customer-wrapper">
+            <img className="customer-img" src={interfloraLogo} alt="Interflora Logo"/>
+          </div>
+          <div className="customer-wrapper">
+            <img className="customer-img" src={globusLogo} alt="Globus logo"/>
+          </div>
+          <div className="customer-wrapper">
+            <img className="customer-img" src={virginmediaLogo} alt="Virgin Media logo"/>
           </div>
         </div>
       </div>
