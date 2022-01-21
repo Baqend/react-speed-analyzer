@@ -11,7 +11,7 @@ export async function post(db: baqend, req: Request, res: Response) {
     )
 
     const webPageTestIds = publishedURLs.map(publishedURL => new URL(publishedURL).searchParams.get('test'))
-    const videoComparisonURL = `https://www.webpagetest.org/video/compare.php?tests=${webPageTestIds.join()}&thumbSize=200&ival=100&end=visual`
+    const videoComparisonURL = `https://www.webpagetest.org/video/compare.php?tests=${webPageTestIds.join()}&thumbSize=50&ival=100&end=visual`
     res.send(videoComparisonURL)
   } catch (error) {
     db.log.error(error.message)
