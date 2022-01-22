@@ -115,7 +115,7 @@
     "is-obj": "^3.0.0",
     "is-regexp": "^3.0.0",
     "mini-css-extract-plugin": "^1.6.2",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^3.1.1",
     "postcss-calc": "^6.0.1",
     "postcss-cssnext": "^3.1.0",
     "postcss-flexbugs-fixes": "^5.0.2",
