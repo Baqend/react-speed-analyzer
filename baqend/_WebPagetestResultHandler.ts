@@ -69,6 +69,11 @@ export class WebPagetestResultHandler {
             return this.handleViewportError(test, webPagetest)
           }
 
+          if (!test.speedKitConfig.includes('SCRAPING')) {
+            this.db.log.info(`Retry test with scraping`, { test: test.id, wptTestId, error: error.stack })
+            return this.retryTestWithScraping(test, webPagetest)
+          }
+
           // Now the test is finished without data
           return test.optimisticSave(() => {
             setFailed(webPagetest);
@@ -93,6 +98,23 @@ export class WebPagetestResultHandler {
   private handleViewportError(test: model.TestResult, webPagetest: model.WebPagetest): Promise<model.TestResult> {
     const retries = test.retries || 0
     return test.optimisticSave(() => {
+      const wptIndex = test.webPagetests.findIndex(wptTest => wptTest.testId === webPagetest.testId)
+      test.webPagetests.splice(wptIndex, 1)
+      test.retries = retries + 1
+    })
+  }
+
+  /**
+   * Removes the WPT test entry from the test result and retries it with scraping variation.
+   */
+  private retryTestWithScraping(test: model.TestResult, webPagetest: model.WebPagetest): Promise<model.TestResult> {
+    const retries = test.retries || 0
+    return test.optimisticSave(() => {
+      test.speedKitConfig = test.speedKitConfig.replace('{', '{ customVariation: [{\n' +
+        '    rules: [{ contentType: ["navigate", "fetch"] }],\n' +
+        '    variationFunction: () => "SCRAPING"\n' +
+        '  }],')
+
       const wptIndex = test.webPagetests.findIndex(wptTest => wptTest.testId === webPagetest.testId)
       test.webPagetests.splice(wptIndex, 1)
       test.retries = retries + 1

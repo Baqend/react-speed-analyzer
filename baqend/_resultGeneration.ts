@@ -36,11 +36,15 @@ export async function generateTestResult(wptTestId: string, pendingTest: model.T
   const stepIndex = view.numSteps
   const step = view ? (view.steps ? view.steps[stepIndex - 1] : view) : null
 
-  if (!step || !isValidStep(step)) {
+  if (step && hasDocumentRequestFailed(step.requests)) {
     const run = new db.Run()
-    run.documentRequestFailed = step && hasDocumentRequestFailed(step.requests)
+    run.documentRequestFailed = true
     pendingTest.firstView = run;
 
+    throw new Error(`Document request failed for ${rawData.id}`)
+  }
+
+  if (!step || !isValidStep(step)) {
     throw new Error(`No valid test run found in ${rawData.id}`)
   }
 
@@ -170,7 +174,7 @@ async function createRun(db: baqend, data: WptView | undefined, testId: string, 
   run.bytes = data.bytesIn
   run.hits = new db.Hits(countHits(data.requests))
   run.contentSize = new db.ContentSize(countContentSize(data.requests))
-  run.documentRequestFailed = hasDocumentRequestFailed(data.requests)
+  run.documentRequestFailed = false
   run.basePageCDN = data.base_page_cdn
   run.largestContentfulPaint = getLCPFromWebPagetest(data)
 

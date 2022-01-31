@@ -94,7 +94,7 @@ export class ComparisonWorker implements TestListener {
 
       await comparison.optimisticSave(() => {
         isIncomplete(competitor) || isIncomplete(speedKit) ? setIncomplete(comparison) : setSuccess(comparison)
-        comparison.speedKitConfig = speedKit.speedKitConfig
+        // comparison.speedKitConfig = speedKit.speedKitConfig
         comparison.factors = this.calculateFactors(competitor, speedKit)
         comparison.documentRequestFailed = speedKit.firstView ? speedKit.firstView.documentRequestFailed : false
       })
