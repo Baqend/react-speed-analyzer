@@ -5,6 +5,7 @@ function hasStatus(entity: StatefulEntity, ...expected: StatusString[]): boolean
 }
 
 export enum Status {
+  WAIT_FOR_PUPPETEER = 'WAIT_FOR_PUPPETEER',
   QUEUED = 'QUEUED',
   RUNNING = 'RUNNING',
   SUCCESS = 'SUCCESS',
@@ -17,6 +18,10 @@ export enum Status {
 export interface StatefulEntity {
   status: StatusString
   hasFinished: boolean
+}
+
+export function isWaitForPuppeteer(entity: StatefulEntity) {
+  return !entity.hasFinished && hasStatus(entity, Status.WAIT_FOR_PUPPETEER)
 }
 
 export function isQueued(entity: StatefulEntity) {
@@ -46,6 +51,15 @@ export function setQueued(entity: StatefulEntity) {
   entity.status = Status.QUEUED
   entity.hasFinished = false
 }
+
+/**
+ * Sets the given entity to the queued state.
+ */
+export function setWaitForPuppeteer(entity: StatefulEntity) {
+  entity.status = Status.WAIT_FOR_PUPPETEER
+  entity.hasFinished = false
+}
+
 
 /**
  * Sets the given entity to the running state.

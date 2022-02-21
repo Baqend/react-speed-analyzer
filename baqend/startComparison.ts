@@ -11,27 +11,27 @@ const MAX_PUPPETEER_RETRIES = 2;
 export async function post(db: baqend, req: Request, res: Response) {
   const { comparisonWorker, comparisonFactory, puppeteer } = bootstrap(db)
 
-  const callPuppeteer = async (params: TestParams, retries: number) => {
+  const callPuppeteer = async (params: TestParams, tries: number) => {
     const puppeteerInfo = await puppeteer.analyze(params.url, params.mobile, params.location, true, params.preload, params.app, params.whitelist)
     // Retry Puppeteer analysis if Speed Kit is excepted to be installed but no installation was found.
     // Only consider this error when it is not the last retry.
-    if (params.speedKitExpected && !puppeteerInfo.speedKit && retries <= MAX_PUPPETEER_RETRIES - 1) {
+    if (params.speedKitExpected && !puppeteerInfo.speedKit && tries <= MAX_PUPPETEER_RETRIES) {
       throw new Error('Expected result to be Speed Kit, but was not.')
     }
 
     return puppeteerInfo
   }
 
-  const callPuppeteerWithRetries = async (db:baqend, params: TestParams, retries = 0): Promise<model.Puppeteer> => {
+  const callPuppeteerWithRetries = async (db:baqend, params: TestParams, tries = 1): Promise<model.Puppeteer> => {
     const startTime = Date.now();
     try {
-      return await callPuppeteer(params, retries)
+      return await callPuppeteer(params, tries)
     } catch (err) {
       const timeAfterStart = Math.ceil((Date.now() - startTime) / 1000);
-      db.log.error(`Puppeteer call no. ${retries + 1} has failed after ${timeAfterStart} seconds.`);
-      if (retries <= MAX_PUPPETEER_RETRIES) {
-        await new Promise<void>(resolve => setTimeout(() => resolve(), 5000));
-        return callPuppeteerWithRetries(db, params, retries + 1);
+      db.log.error(`Puppeteer call no. ${tries} has failed after ${timeAfterStart} seconds.`, {params});
+      if (tries <= MAX_PUPPETEER_RETRIES) {
+        await new Promise<void>(resolve => setTimeout(() => resolve(), 10000));
+        return callPuppeteerWithRetries(db, params, tries + 1);
       }
 
       throw err

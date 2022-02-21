@@ -2,7 +2,7 @@ import { binding, model } from 'baqend'
 
 declare module 'baqend' {
 
-  export type StatusString = 'QUEUED' | 'RUNNING' | 'SUCCESS' | 'CANCELED' | 'INCOMPLETE' | 'FAILED' | 'PENDING'
+  export type StatusString = 'WAIT_FOR_PUPPETEER' | 'QUEUED' | 'RUNNING' | 'SUCCESS' | 'CANCELED' | 'INCOMPLETE' | 'FAILED' | 'PENDING'
 
   interface baqend {
     BulkComparison: binding.EntityFactory<model.BulkComparison>;

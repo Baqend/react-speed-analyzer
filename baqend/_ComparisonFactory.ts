@@ -5,7 +5,7 @@ import { ConfigGenerator } from './_ConfigGenerator'
 import { getTLD } from './_getSpeedKitUrl'
 import { truncateUrl } from './_helpers'
 import { DataType, Serializer } from './_Serializer'
-import { setFailed, setQueued, setRunning } from './_Status'
+import { setFailed, setRunning, setWaitForPuppeteer } from './_Status'
 import { TestBuilder } from './_TestBuilder'
 import { TestFactory } from './_TestFactory'
 import { TestParams } from './_TestParams'
@@ -59,7 +59,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
       comparison.metaData = { hostname, pageViews: 0 }
     }
 
-    setQueued(comparison)
+    setWaitForPuppeteer(comparison)
 
     return comparison.save()
   }

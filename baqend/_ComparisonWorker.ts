@@ -2,7 +2,14 @@ import { baqend, model } from 'baqend'
 import { ComparisonFactory } from './_ComparisonFactory'
 import { parallelize } from './_helpers'
 import {
-  isFinished, isIncomplete, isQueued, isUnfinished, setCanceled, setIncomplete, setRunning, setSuccess,
+  isFinished,
+  isIncomplete,
+  isUnfinished,
+  isWaitForPuppeteer,
+  setCanceled,
+  setIncomplete,
+  setRunning,
+  setSuccess,
   Status,
 } from './_Status'
 import { factorize } from './_updateMultiComparison'
@@ -44,16 +51,16 @@ export class ComparisonWorker implements TestListener {
     // Ensure comparison is loaded with depth 1
     await comparison.load({ depth: 1, refresh: true })
 
-    // Is this comparison already finished?
+    // Is this comparison already finished or is it still waiting for Puppeteer result
     if (isFinished(comparison)) {
       return
     }
 
     // Check if comparison is still queued
-    if (isQueued(comparison)) {
+    if (isWaitForPuppeteer(comparison)) {
       const started = Math.ceil((Date.now() - comparison.updatedAt.getTime()) / 1000)
       if (started > 300) {
-        const message = `Comparison was still queued after ${started} seconds.`
+        const message = `Comparison was still not finished after ${started} seconds.`
         await this.comparisonFactory.updateComparisonWithError(comparison, message, 599)
       }
 

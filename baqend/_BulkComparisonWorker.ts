@@ -156,7 +156,7 @@ export class BulkComparisonWorker implements MultiComparisonListener {
       return await puppeteer.analyze(url, mobile, location, true, preload, app, whitelist)
     } catch (err) {
       if (retries < 3) {
-        await new Promise<void>(resolve => setTimeout(() => resolve(), 5000))
+        await new Promise<void>(resolve => setTimeout(() => resolve(), 10000))
         return this.callPuppeteerWithRetries(puppeteer, url, mobile, location, preload, app, whitelist, retries + 1)
       }
 
