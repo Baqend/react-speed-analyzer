@@ -113,7 +113,7 @@ export class MultiComparisonWorker implements ComparisonListener {
   async handleComparisonFinished(comparison: model.TestOverview): Promise<void> {
     const multiComparison = await this.db.BulkTest.find().in('testOverviews', comparison.id).singleResult()
     if (multiComparison) {
-      console.log(`Comparison finished: ${comparison.id}`)
+      this.db.log.info(`Comparison finished: ${comparison.id}`)
 
       await updateMultiComparison(this.db, multiComparison)
 

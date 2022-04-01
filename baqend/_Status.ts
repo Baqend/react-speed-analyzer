@@ -44,6 +44,10 @@ export function isPending(entity: StatefulEntity) {
   return !entity.hasFinished && hasStatus(entity, Status.PENDING)
 }
 
+export function isFailed(entity: StatefulEntity) {
+  return entity.hasFinished && hasStatus(entity, Status.FAILED)
+}
+
 /**
  * Sets the given entity to the queued state.
  */

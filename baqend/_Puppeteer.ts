@@ -14,7 +14,6 @@ export enum PuppeteerSegment {
   RESOURCES = 'resources',
   SCREENSHOT = 'screenshot',
   SCREENSHOT_DATA = 'screenshotData',
-  SECURITY = 'security',
   SERVICE_WORKERS = 'serviceWorkers',
   SPEED_KIT = 'speedKit',
   STATS = 'stats',
@@ -212,7 +211,7 @@ export class Puppeteer {
 
       return puppeteer
     } catch (error) {
-      this.db.log.error('Puppeteer error', { error: error.stack, url })
+      this.db.log.error('Puppeteer error', { error: error.stack, url, status: error.status })
       throw error
     }
   }
@@ -248,7 +247,7 @@ export class Puppeteer {
     const method = 'POST'
     const headers = { 'content-type': 'application/json' }
     const body = JSON.stringify(bodyObj)
-    const timeout = 30000
+    const timeout = DEFAULT_TIMEOUT
 
     return fetch(url, { method, headers, body, timeout })
   }

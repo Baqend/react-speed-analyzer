@@ -37,7 +37,7 @@ export class MultiComparisonFactory implements AsyncFactory<model.BulkTest> {
     puppeteer ? setRunning(multiComparison) : setFailed(multiComparison)
     multiComparison.url = truncatedUrl
     multiComparison.displayUrl = params.url;
-    multiComparison.puppeteer = puppeteer
+    multiComparison.puppeteer = puppeteer || new this.db.Puppeteer()
     multiComparison.createdBy = createdBy
     multiComparison.testOverviews = []
     multiComparison.location = location
