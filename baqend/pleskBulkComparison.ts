@@ -66,7 +66,7 @@ function isStringArray(it: any) {
  * Loads a TestOverview for a given Url.
  */
 async function loadTestOverview(db: baqend, url: string, depth: number): Promise<model.TestOverview | null> {
-  const truncatedUrl = truncateUrl(url)
+  const truncatedUrl = await truncateUrl(url)
   const testOverview = await db.TestOverview.find()
     .eq('url', truncatedUrl)
     .descending('createdAt')

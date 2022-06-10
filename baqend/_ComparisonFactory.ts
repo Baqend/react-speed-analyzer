@@ -53,7 +53,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
 
     // Initialize
     const comparison = new this.db.TestOverview({ id })
-    comparison.url = truncateUrl(url)
+    comparison.url = await truncateUrl(url)
 
     if (hostname) {
       comparison.metaData = { hostname, pageViews: 0 }
@@ -88,7 +88,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
 
     // Copy Puppeteer info
     const speedKitVersion = speedKit !== null ? `${speedKit.major}.${speedKit.minor}.${speedKit.patch}` : null
-    comparison.url = truncateUrl(url)
+    comparison.url = await truncateUrl(url)
     comparison.displayUrl = displayUrl
     comparison.puppeteer = puppeteer
     // Check if puppeteer found Speed Kit and if a config was found it is not disabled.

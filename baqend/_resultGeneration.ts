@@ -28,7 +28,7 @@ export async function generateTestResult(wptTestId: string, pendingTest: model.T
 
   const rawData = await getResultRawData(wptTestId)
   pendingTest.location = rawData.location
-  pendingTest.url = truncateUrl(rawData.testUrl)
+  pendingTest.url = await truncateUrl(rawData.testUrl)
   pendingTest.summaryUrl = rawData.summary
   pendingTest.testDataMissing = false
 

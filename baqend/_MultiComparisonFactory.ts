@@ -20,9 +20,9 @@ export class MultiComparisonFactory implements AsyncFactory<model.BulkTest> {
    *
    * @return A promise which resolves with the created object.
    */
-  create(puppeteer: model.Puppeteer | null, params: TestParams, createdBy: string | null = null, runs: number = 1): Promise<model.BulkTest> {
+  async create(puppeteer: model.Puppeteer | null, params: TestParams, createdBy: string | null = null, runs: number = 1): Promise<model.BulkTest> {
     const usedParams = this.testBuilder.buildSingleTestParams(params, null, 9)
-    const { location, mobile, priority } = usedParams
+    const { location, mobile, priority, url } = usedParams
 
     // Repopulate the class
     if (puppeteer && !(puppeteer instanceof this.db.Puppeteer)) {
@@ -33,11 +33,15 @@ export class MultiComparisonFactory implements AsyncFactory<model.BulkTest> {
     }
 
     const multiComparison: model.BulkTest = new this.db.BulkTest()
-    const truncatedUrl = truncateUrl(puppeteer ? puppeteer.url : params.url)
+    const truncatedUrl = await truncateUrl(puppeteer ? puppeteer.url : url)
     puppeteer ? setRunning(multiComparison) : setFailed(multiComparison)
     multiComparison.url = truncatedUrl
-    multiComparison.displayUrl = params.url;
-    multiComparison.puppeteer = puppeteer || new this.db.Puppeteer()
+    multiComparison.displayUrl = truncatedUrl;
+    usedParams.url = truncatedUrl;
+    if (puppeteer) {
+      multiComparison.puppeteer = puppeteer
+    }
+
     multiComparison.createdBy = createdBy
     multiComparison.testOverviews = []
     multiComparison.location = location

@@ -15,7 +15,7 @@ export class TestFactory implements AsyncFactory<model.TestResult> {
   ) {
   }
 
-  create(puppeteer: model.Puppeteer, isClone: boolean, params: Required<TestParams>): Promise<model.TestResult> {
+  async create(puppeteer: model.Puppeteer, isClone: boolean, params: Required<TestParams>): Promise<model.TestResult> {
     const { url } = puppeteer
     const { priority, speedKitConfig, location } = params
     const commandLine = this.createCommandLineFlags(url, isClone)
@@ -23,7 +23,7 @@ export class TestFactory implements AsyncFactory<model.TestResult> {
       this.db.log.info('flags: %s', commandLine)
     }
 
-    const truncatedUrl = truncateUrl(url)
+    const truncatedUrl = await truncateUrl(url)
     const testResult = new this.db.TestResult({ url: truncatedUrl, isClone, location, priority, speedKitConfig })
     setQueued(testResult)
     testResult.testInfo = this.createTestInfo(puppeteer, isClone, params)

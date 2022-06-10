@@ -1,4 +1,5 @@
 import { concat, filter, map, mapValues, mergeWith, pick, reduce } from 'lodash'
+import {Blob} from 'buffer'
 
 /**
  * @param {number[]} numbers
@@ -203,17 +204,18 @@ export function booleanOf(value: string | boolean): boolean {
 }
 
 /**
- * Truncates a url string to a maximum of 900 characters and returns a new string.
+ * Truncates a url string to a maximum of 700 characters and returns a new string.
  */
-export function truncateUrl(url: string): string {
-  if (url.length <= 900) {
-    return url;
+export async function truncateUrl(url: string): Promise<string> {
+  const blob = new Blob([url])
+  if (blob.size < 1024) {
+    return url
   }
 
-  const lastParamIndex = url.lastIndexOf('&') !== -1 ? url.lastIndexOf('&') : url.lastIndexOf('?');
+  const lastParamIndex = url.lastIndexOf('&') !== -1 ? url.lastIndexOf('&') : url.lastIndexOf('?')
   if (lastParamIndex === -1) {
-    return url.substr(0, 900)
+    return blob.slice(0, 1023).text()
   }
 
-  return truncateUrl(url.substr(0, lastParamIndex));
+  return truncateUrl(url.substr(0, lastParamIndex))
 }
