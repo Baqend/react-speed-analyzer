@@ -88,14 +88,23 @@ export async function chooseFMP(competitor: model.TestResult, speedKit: model.Te
 
     if (isSpeedKitWinner(speedKitVC, competitorVC)) {
       const competitorCandidate = getLoserCandidate(speedKitVC, competitorFMPData)
-      speedKit.firstView.firstMeaningfulPaint = compareCandidateTimings(suggestedSpeedKitCandidate, competitorCandidate);
-      competitor.firstView.firstMeaningfulPaint = compareCandidateTimings(competitorCandidate, suggestedSpeedKitCandidate);
+      updateFMP(speedKit, suggestedSpeedKitCandidate, competitorCandidate)
+      updateFMP(competitor, competitorCandidate, suggestedSpeedKitCandidate)
     } else {
       const speedKitCandidate = getLoserCandidate(competitorVC, speedKitFMPData)
-      speedKit.firstView.firstMeaningfulPaint = compareCandidateTimings(speedKitCandidate, suggestedCompetitorCandidate);
-      competitor.firstView.firstMeaningfulPaint = compareCandidateTimings(suggestedCompetitorCandidate, speedKitCandidate);
+      updateFMP(speedKit, speedKitCandidate, suggestedCompetitorCandidate)
+      updateFMP(competitor, suggestedCompetitorCandidate, speedKitCandidate)
     }
   }
 
   return await Promise.all([competitor.save(), speedKit.save()])
+}
+
+function updateFMP(testResult: model.TestResult, candidate: model.Candidate, compareCandidate: model.Candidate) {
+  const candidateFMP = compareCandidateTimings(candidate, compareCandidate)
+  if (candidateFMP <= 0) {
+    return
+  }
+
+  testResult.firstView!.firstMeaningfulPaint = candidateFMP
 }

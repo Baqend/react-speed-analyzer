@@ -156,7 +156,7 @@ async function createRun(db: baqend, data: WptView | undefined, testId: string, 
   const run = new db.Run()
 
   // Copy fields
-  const fields: Array<keyof WptView> = ['loadTime', 'fullyLoaded', 'firstPaint', 'lastVisualChange', 'domElements']
+  const fields: Array<keyof WptView> = ['loadTime', 'fullyLoaded', 'firstPaint', 'lastVisualChange', 'domElements', 'firstMeaningfulPaint']
   for (const field of fields) {
     run[field] = Math.round(data[field] as number)
   }

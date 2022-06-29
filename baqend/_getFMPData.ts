@@ -30,7 +30,11 @@ function getDataFromHtml(htmlString: string): Array<[number, number]> {
  */
 function getFMPFromWebPagetest(data: WptView): number {
   // Search First Meaningful Paint from timing
-  const { chromeUserTiming = [] } = data
+  const { firstMeaningfulPaint, chromeUserTiming = [] } = data
+  if (firstMeaningfulPaint) {
+    return firstMeaningfulPaint
+  }
+
   const firstMeaningfulPaintObject =
     chromeUserTiming
       .reverse()
@@ -64,7 +68,7 @@ function parseCandidates(db: baqend, data: Array<[number, number]>): model.Candi
     const candidate = new db.Candidate()
     candidate.visualCompleteness = visualProgress
     candidate.deltaVC = diff
-    candidate.startTime = Math.round(time * 1000 - 100)
+    candidate.startTime = Math.round(time * 1000 - 10)
     candidate.endTime = Math.round(time * 1000)
     candidate.wptFMP = null
     diffs.push(candidate)

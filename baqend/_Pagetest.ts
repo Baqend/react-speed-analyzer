@@ -39,6 +39,7 @@ export interface WptView {
   loadTime: number
   fullyLoaded: number
   firstPaint: number
+  firstMeaningfulPaint: number
   domElements: number
   render: number
   SpeedIndex: number
