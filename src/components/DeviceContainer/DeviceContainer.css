@@ -7,7 +7,7 @@
   --device-padding: 16px;
   --device-color: #fff;
   --device-background-from: rgb(18, 1, 232);
-  --device-background-to: rgb(232, 8, 242);
+  --device-background-to: rgb(18, 1, 232);
 }
 
 .device {

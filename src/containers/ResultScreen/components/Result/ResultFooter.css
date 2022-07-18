@@ -1,26 +1,75 @@
 @import "../../../../styles/_variables.css";
-
+@font-face {
+  font-family: Poppins;
+  font-weight: bold;
+  src: url("/src/styles/fonts/Poppins-SemiBold.ttf");
+}
 .result-footer {
   background: #f4f4f4;
 }
 
 .footer-wrapper {
-  width: 100%;
+  
+  width: 100vw;
+  color: #282C39;
+  display: flex;
+  justify-content:center;
+  align-items: center;
   text-align: center;
   margin: auto;
-  @media(--breakpoint-small-device) {
-    max-width: 576px;
-    text-align: left;
-  }
+
   @media(--breakpoint-medium-device) {
-    max-width: 768px;
+    
+    max-width:70vw;
+    padding-bottom:20vh;
   }
-  @media(--breakpoint-large-device) {
-    max-width:  992px;
+
+}
+.footer-content{
+  display: flex;
+  font-style: normal;
+  gap:1rem;
+  width: 100vw;
+  justify-content: space-between;
+  flex-direction: column;
+ 
+  
+  
+  @media (--breakpoint-large-device){
+    flex-direction: row;
   }
-  @media(--breakpoint-extra-large-device) {
-    max-width: 1280px;
+  
+}
+.logoCol{
+  @media(--breakpoint-large-device){
+    width: 20%;
   }
+  
+}
+.column{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.content-wrapper{
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  font-size: 1.2rem;
+  justify-content: space-between;
+
+}
+.spacebetween{
+  justify-content: space-between;
+  height: 100%;
+}
+.marginFree{
+  margin: 0;
+  font-size: 0.9rem;
+}
+.heading{
+  font-size:1.6rem;
+  font-weight: bold;
 }
 
 .footer-menu-column{
@@ -48,7 +97,23 @@
   width: 100%;
   height: 2px;
 }
+.pVonLogo{
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  
+}
+.logowirklich{
+  height: 3.8rem;
+  width: 100%;
+  object-fit: contain;
+  
+  aspect-ratio: 5.25/1;
+  @media(--breakpoint-large-device){
+    width: 170px;
+  }
 
+}
 .footer-icon {
   padding-right: 0.25rem;
   padding-left: 0.25rem;
@@ -103,6 +168,17 @@
     padding: 64px 0 112px 0;
   }
 }
+.cta{
+  height: 80vh;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  @media(--breakpoint-large-device){
+    height: 65vh;
+  }
+}
 
 .cta-header {
   font-size: 1.875rem;
@@ -126,3 +202,13 @@
     height: 4.2rem;
   }
 }
+.blue{
+  background-color: var(--custom-purple);
+}
+.alignCenter{
+  align-items: center;
+}
+.subText{
+  font-size: 1.2rem;
+}
+

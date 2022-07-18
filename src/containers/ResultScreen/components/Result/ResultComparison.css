@@ -106,7 +106,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #e808f2;
+  background-color: var(--custom-purple);
   border-radius: 4px;
   outline: none;
   border: none;

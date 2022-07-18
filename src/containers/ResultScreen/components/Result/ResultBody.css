@@ -71,13 +71,13 @@
 
 .scale-competitor {
   border-radius: 4px;
-  background-color: #1201e8;
+  background-color: var(--custom-dark-blue);
   padding: 9px 14px;
 }
 
 .scale-speedKit {
-  border-radius: 4px;
-  background-color: #e808f2;
+  border-radius: 4px 0px 0px 4px;
+  background-color:var(--custom-purple);
   padding: 9px 14px;
   min-width: 75px;
   @media(--breakpoint-small-device) {
@@ -93,8 +93,8 @@
 }
 
 .scale-save {
-  border-radius: 4px;
-  background-color: #8d0093;
+  border-radius:  0px 4px 4px 0px;
+  background-color: #0152cc;
   text-align: center;
   padding: 9px 14px;
   width: 100%;

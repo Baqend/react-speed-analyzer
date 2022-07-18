@@ -70,6 +70,10 @@
            margin-left: 15px;
            padding: 18px 40px;
        }
+       &:hover{
+        background:#ffffff;
+        color: var(--custom-purple);
+       }
     }
     &-settings {
        border-radius: 50%;

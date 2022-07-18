@@ -100,12 +100,12 @@
     background-color: var(--custom-dark-blue);
   }
   .speedKit-metric-scale {
-    border-radius: 4px;
+    border-radius: 4px 0px 0px 4px;
     background-color: var(--custom-purple);
   }
   .speedKit-metric-scale-save {
-    border-radius: 4px;
-    background-color: #8d0093;
+    border-radius: 0px 4px 4px 0px ;
+    background-color: #0152cc;
     width: 100%;
   }
 }
