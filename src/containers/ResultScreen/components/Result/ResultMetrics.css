@@ -21,7 +21,7 @@
 
 .details-toggle {
   border-radius: 100px;
-  border: solid 3px #dedede;
+  border: solid 1px #E1E8F0;
   background-color: #ffffff;
   font-weight: 500;
   font-size: 16px;
@@ -42,8 +42,8 @@
 
 .result-details-collapse {
   position: relative;
-  border-radius: 8px;
-  border: solid 3px #dedede;
+  border-radius: 4px;
+  border: solid 1px #E1E8F0;
   background-color: #ffffff;
   min-height: 115px;
   visibility: visible !important;

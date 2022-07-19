@@ -106,15 +106,16 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: var(--custom-purple);
+
+  background-color: #EEF2F7;
+  border: solid 1px #E1E8F0;
   border-radius: 4px;
   outline: none;
-  border: none;
   width: 100%;
   height: 60px;
 }
 .comparison-button-text {
-  color: white;
+  color: #6B7C96;
 }
 .comparison-bottom-row {
   display: flex;

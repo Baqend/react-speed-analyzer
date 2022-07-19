@@ -2,7 +2,7 @@
 
 .result-body {
   margin-top: -30px;
-  background: #f4f4f4;
+  background: #EEF2F7;
   color: #444;
   @media(--breakpoint-small-device) {
     margin-top: -70px;
@@ -52,9 +52,9 @@
 
 .box-wrapper {
   flex: 1;
-  border-radius: 8px;
+  border-radius: 4px;
   white-space: nowrap;
-  border: solid 3px #dedede;
+  border: solid 1px #E1E8F0;
   background-color: #ffffff;
   padding: 40px 24px;
 }
