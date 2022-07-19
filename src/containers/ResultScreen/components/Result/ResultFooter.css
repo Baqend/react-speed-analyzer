@@ -17,7 +17,7 @@
   align-items: center;
   text-align: left;
   margin: auto;
-
+  padding-top: 20px;
   @media(--breakpoint-medium-device) {
     
     max-width:70vw;
@@ -175,8 +175,8 @@
   justify-content: center;
   align-items: center;
   @media(--breakpoint-large-device){
-   padding-top: 2rem;
-   padding-bottom: 2rem;
+   padding-top: 3rem;
+   padding-bottom: 3rem;
   }
   @media(--breakpoint-extra-large-device){
    

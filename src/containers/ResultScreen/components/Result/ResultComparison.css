@@ -91,11 +91,21 @@
   align-items: center;
   width: 100%;
   margin-bottom: 18px;
+  
 }
 .text-input {
   height: 100%;
   width: 100%;
+  background-color: #EEF2F7;
   padding: 22px 22px 18px;
+  border: 1px solid #E1E8F0;
+  border-radius: 4px;
+  box-shadow: inset 0px 0px 0px 0px red;
+
+  
+}
+.text-input::placeholder{
+  color:#6B7C96;
 }
 .comparison-row-inner {
   display: flex;
@@ -106,16 +116,15 @@
   display: flex;
   justify-content: center;
   align-items: center;
-
-  background-color: #EEF2F7;
-  border: solid 1px #E1E8F0;
+  background-color: var(--custom-purple);
   border-radius: 4px;
   outline: none;
+  border: none;
   width: 100%;
   height: 60px;
 }
 .comparison-button-text {
-  color: #6B7C96;
+  color: white;
 }
 .comparison-bottom-row {
   display: flex;
