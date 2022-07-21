@@ -9,7 +9,6 @@ import ResultWorthiness from "../ResultWorthiness/ResultWorthiness";
 import galeriaLogo from "assets/customers/galeria-black.svg";
 import decathlonLogo from "assets/customers/decathlon-black.svg";
 import carharttLogo from "assets/customers/carhartt-black.svg";
-import orsayLogo from "assets/customers/orsay-black.svg";
 import snipesLogo from "assets/customers/snipes-black.svg";
 import mydaysLogo from "assets/customers/mydays-black.svg";
 import redBullLogo from "assets/customers/redbull-black.svg";
@@ -134,9 +133,6 @@ class ResultBody extends Component {
               src={carharttLogo}
               alt="Carhartt logo"
             />
-          </div>
-          <div className="customer-wrapper">
-            <img className="customer-img" src={orsayLogo} alt="Orsay logo" />
           </div>
         </div>
         <div className="flex flex-wrap justify-center">
