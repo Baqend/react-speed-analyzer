@@ -17,7 +17,8 @@
   align-items: center;
   text-align: left;
   margin: auto;
-  padding-top: 20px;
+  padding: 20px;
+
   @media(--breakpoint-medium-device) {
     
     max-width:70vw;
