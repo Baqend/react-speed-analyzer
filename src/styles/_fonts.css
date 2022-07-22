@@ -179,3 +179,8 @@
     font-family: "Poppins";
     src: url("./fonts/Poppins-Regular.ttf");
 }
+@font-face {
+    font-family: "Poppins";
+    src: url("./fonts/Poppins-SemiBold.ttf");
+    font-weight: bold;
+}

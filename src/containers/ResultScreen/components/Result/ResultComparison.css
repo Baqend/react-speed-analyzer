@@ -113,6 +113,8 @@
   width: 100%;
 }
 .comparison-button {
+  font-family: "Poppins";
+  font-weight: bold;
   display: flex;
   justify-content: center;
   align-items: center;
