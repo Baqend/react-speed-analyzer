@@ -215,4 +215,6 @@
 .subText{
   font-size: 1.2rem;
 }
-
+.btn{
+  font-weight: bold;
+}
