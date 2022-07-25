@@ -25,7 +25,7 @@
     "@types/form-data": "^2.2.1",
     "baqend": "^2.12.0",
     "form-data": "^2.3.3",
-    "lodash": "^4.17.10",
+    "lodash": "^4.17.21",
     "node-fetch": "^2.1.2",
     "webpagetest": "^0.3.8"
   }
