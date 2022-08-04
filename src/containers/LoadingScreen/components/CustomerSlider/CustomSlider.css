@@ -65,9 +65,6 @@ a {
     &.carhartt {
      background-image: url('../../../../assets/customers/carhartt-white.svg');
     }
-    &.orsay {
-     background-image: url('../../../../assets/customers/orsay-white.svg');
-    }
     &.awn {
      background-image: url('../../../../assets/customers/awn-white.png');
     }

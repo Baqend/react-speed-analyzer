@@ -175,3 +175,12 @@
     url('./fonts/3A22BE_13_0.woff') format('woff'),
     url('./fonts/3A22BE_13_0.ttf') format('truetype');
 }
+@font-face {
+    font-family: "Poppins";
+    src: url("./fonts/Poppins-Regular.ttf");
+}
+@font-face {
+    font-family: "Poppins";
+    src: url("./fonts/Poppins-SemiBold.ttf");
+    font-weight: bold;
+}

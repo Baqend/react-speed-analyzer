@@ -6,8 +6,8 @@
   --device-border-width-xs: 24px;
   --device-padding: 16px;
   --device-color: #fff;
-  --device-background-from: rgb(18, 1, 232);
-  --device-background-to: rgb(232, 8, 242);
+  --device-background-from: #0568FD;
+  --device-background-to: #0568FD;
 }
 
 .device {

@@ -91,11 +91,21 @@
   align-items: center;
   width: 100%;
   margin-bottom: 18px;
+  
 }
 .text-input {
   height: 100%;
   width: 100%;
+  background-color: #EEF2F7;
   padding: 22px 22px 18px;
+  border: 1px solid #E1E8F0;
+  border-radius: 4px;
+  box-shadow: inset 0px 0px 0px 0px red;
+
+  
+}
+.text-input::placeholder{
+  color:#6B7C96;
 }
 .comparison-row-inner {
   display: flex;
@@ -103,10 +113,12 @@
   width: 100%;
 }
 .comparison-button {
+  font-family: "Poppins";
+  font-weight: bold;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #e808f2;
+  background-color: var(--custom-purple);
   border-radius: 4px;
   outline: none;
   border: none;
