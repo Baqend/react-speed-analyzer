@@ -29,25 +29,12 @@ class ResultComparison extends Component {
   }
 
   handleLazyUserInput(domain) {
-    if (!domain.includes("www.")) {
-      domain = "www." + domain;
-    }
-    if (!domain.includes("https://")) {
-      domain = "https://" + domain;
-    }
-    return domain;
+    domain = domain.replace(/(https?:\/\/)?(www.)?/, "");
+    return `https://www.${domain}`;
   }
 
   prettyURL(domain) {
-    if (domain.includes("www.")) {
-      domain = domain.replace("www.", "");
-    }
-    if (domain.includes("https://")) {
-      domain = domain.replace("https://", "");
-    }
-    if (domain.includes("/")) {
-      domain = domain.replace("/", "");
-    }
+    domain = domain.replace(/(https?:\/\/)?(www.)?(\/)?/g, "");
     return domain;
   }
 
