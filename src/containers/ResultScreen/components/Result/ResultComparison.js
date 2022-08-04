@@ -28,6 +28,7 @@ class ResultComparison extends Component {
     this.setState({ inputValue: event.target.value });
   }
 
+
   handleLazyUserInput(domain, secondRun) {
     domain = domain.replace(/(https?:\/\/)?(www.)?/, "");
     return secondRun ? `https://${domain}` : `https://www.${domain}`;
@@ -35,6 +36,7 @@ class ResultComparison extends Component {
 
   prettyURL(domain) {
     domain = domain.replace(/(https?:\/\/)?(www.)?(\/)?/g, "");
+
     return domain;
   }
 
@@ -60,6 +62,7 @@ class ResultComparison extends Component {
         })
       );
     } catch (error) {
+
       if (secondRun) {
         this.setState({ error: true });
         console.log(error);
@@ -131,8 +134,10 @@ class ResultComparison extends Component {
           found = true;
         }
       });
+
       console.log(this.state.beforeSpeedKit);
       if (!found && this.state.companyArray.length + 1 < MAX_COMPETITORS) {
+
         this.addCompetitor({
           hostname: this.prettyURL(data.hostname),
           fastString: data.fastString,
@@ -152,12 +157,14 @@ class ResultComparison extends Component {
       this.setState({ showSpinner: false });
     } catch (error) {
       // CRUX Data does not exist or too many api requests
+
       if (secondRun) {
         this.setState({ showSpinner: false });
         this.props.actions.addError("CRUX Data could not be found");
       } else {
         await this.getCruxReportData(true);
       }
+
     }
   }
 
@@ -189,11 +196,13 @@ class ResultComparison extends Component {
             <div className="flex flex-row items-center mr4">
               <div className="orangeBox mr1"></div>
               <span className="boxFont">Average</span>
+
             </div>
             <div className="flex flex-row items-center">
               <div className="redBox mr1"></div>
               <span className="boxFont">Slow</span>
             </div>
+
           </div>
           <div className="flex flex-column">
             {this.createBeforeSpeedKit()}
