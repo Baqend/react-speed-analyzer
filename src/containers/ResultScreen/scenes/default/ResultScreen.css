@@ -1,7 +1,6 @@
 @import "../../../../styles/_variables.css";
 
 #speed-kit-analyzer {
-
   .results__wrapper {
     width: 100%;
     min-height: 100vh;
