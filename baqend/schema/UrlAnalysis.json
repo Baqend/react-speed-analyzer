@@ -41,20 +41,25 @@
       "type": "/db/Boolean",
       "order": 5
     },
+    "enabled": {
+      "name": "enabled",
+      "type": "/db/Boolean",
+      "order": 6
+    },
     "speedKitEnabled": {
       "name": "speedKitEnabled",
       "type": "/db/Boolean",
-      "order": 6
+      "order": 7
     },
     "speedKitVersion": {
       "name": "speedKitVersion",
       "type": "/db/String",
-      "order": 7
+      "order": 8
     },
     "speedKitUrl": {
       "name": "speedKitUrl",
       "type": "/db/String",
-      "order": 8
+      "order": 9
     }
   }
 }

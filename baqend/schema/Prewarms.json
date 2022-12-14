@@ -14,79 +14,79 @@
   },
   "metadata": {},
   "fields": {
-    "hash": {
-      "name": "hash",
+    "href": {
+      "name": "href",
       "type": "/db/String",
       "order": 0
-    },
-    "url": {
-      "name": "url",
-      "type": "/db/String",
-      "order": 1
     },
     "userAgent": {
       "name": "userAgent",
       "type": "/db/String",
-      "order": 2
+      "order": 1
     },
     "cardinality": {
       "name": "cardinality",
       "type": "/db/Integer",
-      "order": 3
+      "order": 2
     },
     "status": {
       "name": "status",
       "type": "/db/String",
-      "order": 4
-    },
-    "done": {
-      "name": "done",
-      "type": "/db/Integer",
-      "order": 5
-    },
-    "left": {
-      "name": "left",
-      "type": "/db/Integer",
-      "order": 6
-    },
-    "timePerJob": {
-      "name": "timePerJob",
-      "type": "/db/Integer",
-      "order": 7
-    },
-    "passed": {
-      "name": "passed",
-      "type": "/db/Integer",
-      "order": 8
-    },
-    "passedFmt": {
-      "name": "passedFmt",
-      "type": "/db/String",
-      "order": 9
-    },
-    "eta": {
-      "name": "eta",
-      "type": "/db/Integer",
-      "order": 10
-    },
-    "etaFmt": {
-      "name": "etaFmt",
-      "type": "/db/String",
-      "order": 11
+      "order": 3
     },
     "appName": {
       "name": "appName",
       "type": "/db/String",
-      "order": 12
+      "order": 4
     },
     "appIP": {
       "name": "appIP",
       "type": "/db/String",
+      "order": 5
+    },
+    "startedAt": {
+      "name": "startedAt",
+      "type": "/db/DateTime",
+      "order": 6
+    },
+    "finishedAt": {
+      "name": "finishedAt",
+      "type": "/db/DateTime",
+      "order": 7
+    },
+    "customScript": {
+      "name": "customScript",
+      "type": "/db/String",
+      "order": 8
+    },
+    "disableRequestFilters": {
+      "name": "disableRequestFilters",
+      "type": "/db/Boolean",
+      "order": 9
+    },
+    "finishedCount": {
+      "name": "finishedCount",
+      "type": "/db/Integer",
+      "order": 10
+    },
+    "pendingCount": {
+      "name": "pendingCount",
+      "type": "/db/Integer",
+      "order": 11
+    },
+    "erroredCount": {
+      "name": "erroredCount",
+      "type": "/db/Integer",
+      "order": 12
+    },
+    "prewarmState": {
+      "name": "prewarmState",
+      "type": "/db/PrewarmState",
       "order": 13
     },
-    "area": {
-      "name": "area",
-      "type": "/db/String",
+    "enableCrawler": {
+      "name": "enableCrawler",
+      "type": "/db/Boolean",
       "order": 14
     }
   }

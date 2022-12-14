@@ -12,6 +12,7 @@
       "/db/Role/1": "allow"
     }
   },
+  "metadata": {},
   "fields": {
     "url": {
       "name": "url",

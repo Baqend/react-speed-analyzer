@@ -1,5 +1,5 @@
 {
-  "class": "/db/ChromeUXReportData",
+  "class": "/db/ResourceStatus",
   "acl": {
     "schemaAdd": {
       "/db/Role/1": "allow"
@@ -11,14 +11,14 @@
   "embedded": true,
   "metadata": {},
   "fields": {
-    "start": {
-      "name": "start",
-      "type": "/db/Integer",
+    "headers": {
+      "name": "headers",
+      "type": "/db/JsonObject",
       "order": 0
     },
-    "density": {
-      "name": "density",
-      "type": "/db/Double",
+    "hash": {
+      "name": "hash",
+      "type": "/db/String",
       "order": 1
     }
   }

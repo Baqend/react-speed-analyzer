@@ -2,6 +2,18 @@
   "class": "/db/TestOverview",
   "superClass": "/db/Object",
   "acl": {
+    "insert": {
+      "/db/Role/2": "allow",
+      "/db/Role/1": "allow"
+    },
+    "update": {
+      "/db/Role/2": "allow",
+      "/db/Role/1": "allow"
+    },
+    "delete": {
+      "/db/Role/2": "allow",
+      "/db/Role/1": "allow"
+    },
     "schemaAdd": {
       "/db/Role/1": "allow"
     },
@@ -148,6 +160,11 @@
       "name": "documentRequestFailed",
       "type": "/db/Boolean",
       "order": 26
+    },
+    "metaData": {
+      "name": "metaData",
+      "type": "/db/JsonObject",
+      "order": 27
     }
   }
 }

@@ -2,6 +2,18 @@
   "class": "/db/BulkComparison",
   "superClass": "/db/Object",
   "acl": {
+    "insert": {
+      "/db/Role/2": "allow",
+      "/db/Role/1": "allow"
+    },
+    "update": {
+      "/db/Role/2": "allow",
+      "/db/Role/1": "allow"
+    },
+    "delete": {
+      "/db/Role/2": "allow",
+      "/db/Role/1": "allow"
+    },
     "schemaAdd": {
       "/db/Role/1": "allow"
     },

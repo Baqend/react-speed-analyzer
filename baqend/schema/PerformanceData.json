@@ -1,5 +1,5 @@
 {
-  "class": "/db/Role",
+  "class": "/db/PerformanceData",
   "superClass": "/db/Object",
   "acl": {
     "schemaAdd": {
@@ -12,22 +12,26 @@
       "/db/Role/1": "allow"
     }
   },
-  "metadata": {},
   "fields": {
-    "name": {
-      "name": "name",
+    "customerName": {
+      "name": "customerName",
       "type": "/db/String",
       "order": 0
     },
-    "users": {
-      "name": "users",
-      "type": "/db/collection.Set[/db/User]",
+    "origin": {
+      "name": "origin",
+      "type": "/db/String",
       "order": 1
     },
-    "assumableBy": {
-      "name": "assumableBy",
-      "type": "/db/collection.Set[/db/String]",
+    "ttfbScore": {
+      "name": "ttfbScore",
+      "type": "/db/Integer",
       "order": 2
+    },
+    "overallScore": {
+      "name": "overallScore",
+      "type": "/db/Integer",
+      "order": 3
     }
   }
 }

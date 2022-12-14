@@ -1,0 +1,52 @@
+{
+  "class": "/db/CRUXDomainData",
+  "superClass": "/db/Object",
+  "acl": {
+    "insert": {
+      "/db/Role/2": "allow"
+    },
+    "update": {
+      "/db/Role/2": "allow"
+    },
+    "delete": {
+      "/db/Role/2": "allow"
+    },
+    "schemaAdd": {
+      "/db/Role/1": "allow"
+    },
+    "schemaReplace": {
+      "/db/Role/1": "allow"
+    },
+    "schemaSubclass": {
+      "/db/Role/1": "allow"
+    }
+  },
+  "metadata": {},
+  "fields": {
+    "fast": {
+      "name": "fast",
+      "type": "/db/Double",
+      "order": 0
+    },
+    "average": {
+      "name": "average",
+      "type": "/db/Double",
+      "order": 1
+    },
+    "slow": {
+      "name": "slow",
+      "type": "/db/Double",
+      "order": 2
+    },
+    "avg_fp": {
+      "name": "avg_fp",
+      "type": "/db/Double",
+      "order": 3
+    },
+    "month": {
+      "name": "month",
+      "type": "/db/Integer",
+      "order": 4
+    }
+  }
+}
