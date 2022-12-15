@@ -1,4 +1,4 @@
-import { roundToTenths, zeroSafeDiv } from './maths'
+import { roundToTenths, zeroSafeDiv } from "./maths";
 
 /**
  * @param competitorMetric Metric from the competitor's site.
@@ -7,10 +7,10 @@ import { roundToTenths, zeroSafeDiv } from './maths'
  */
 export function calculateFactor(competitorMetric, speedKitMetric) {
   if (!competitorMetric || !speedKitMetric) {
-    return null
+    return null;
   }
 
-  return roundToTenths(zeroSafeDiv(competitorMetric, speedKitMetric))
+  return roundToTenths(zeroSafeDiv(competitorMetric, speedKitMetric));
 }
 
 /**
@@ -20,14 +20,14 @@ export function calculateFactor(competitorMetric, speedKitMetric) {
  */
 export function calculateAbsolute(competitorMetric, speedKitMetric) {
   if (!competitorMetric || !speedKitMetric) {
-    return null
+    return null;
   }
 
-  const improvement = competitorMetric - speedKitMetric
+  const improvement = competitorMetric - speedKitMetric;
   if (Math.abs(improvement) > 999) {
-    return `${Math.round(improvement / 1000 * 10) / 10} s`
+    return `${Math.round((improvement / 1000) * 10) / 10} s`;
   }
-  return `${improvement} ms`
+  return `${improvement} ms`;
 }
 
 /**
@@ -37,16 +37,16 @@ export function calculateAbsolute(competitorMetric, speedKitMetric) {
  */
 export function calculatePercent(competitorMetric, speedKitMetric) {
   if (!competitorMetric || !speedKitMetric) {
-    return null
+    return null;
   }
 
-  const absolute = competitorMetric - speedKitMetric
+  const absolute = competitorMetric - speedKitMetric;
   if (absolute <= 0) {
-    return 0
+    return 0;
   }
 
-  const percentage = (100 / competitorMetric) * absolute
-  return Math.round(percentage).toFixed(0)
+  const percentage = (100 / competitorMetric) * absolute;
+  return Math.round(percentage).toFixed(0);
 }
 
 /**
@@ -54,13 +54,13 @@ export function calculatePercent(competitorMetric, speedKitMetric) {
  * @param isWordPress Whether the domain is a WordPress domain
  * @returns {boolean} true, if speed kit was installed correctly
  */
-export function isSpeedKitInstalledCorrectly(configAnalysis = {}, isWordPress = false) {
-  const { configMissing, isDisabled, swPath, swPathMatches } = configAnalysis
-  if (!isWordPress && (!swPath || swPath.length <= 0)) {
-    return false
+export function isSpeedKitInstalledCorrectly(configAnalysis = {}) {
+  const { configMissing, isDisabled, swPath, swPathMatches } = configAnalysis;
+  if (!swPath || swPath.length <= 0) {
+    return false;
   }
 
-  return !configMissing && !isDisabled && swPathMatches
+  return !configMissing && !isDisabled && swPathMatches;
 }
 
 /**
@@ -71,33 +71,55 @@ export function isSpeedKitInstalledCorrectly(configAnalysis = {}, isWordPress = 
  * @param isPlesk Flag tha indicates whether the test was started by plesk.
  * @return {boolean}
  */
-export function resultIsValid(competitorResult, speedKitResult, mainMetric, secondaryMetric, isPlesk) {
+export function resultIsValid(
+  competitorResult,
+  speedKitResult,
+  mainMetric,
+  secondaryMetric,
+  isPlesk
+) {
+  console.log(speedKitResult);
   if (!competitorResult.firstView || !speedKitResult.firstView) {
-    return false
+    return false;
   }
 
-  if (competitorResult.firstView.documentRequestFailed || speedKitResult.firstView.documentRequestFailed) {
-    return false
+  if (
+    competitorResult.firstView.documentRequestFailed ||
+    speedKitResult.firstView.documentRequestFailed
+  ) {
+    return false;
   }
 
-  if ((speedKitResult.testInfo && speedKitResult.testInfo.isSpeedKitComparison) || isPlesk) {
-    return true
+  if (
+    (speedKitResult.testInfo && speedKitResult.testInfo.isSpeedKitComparison) ||
+    isPlesk
+  ) {
+    const mainCompetitor = competitorResult.firstView[mainMetric];
+    const mainSpeedKit = speedKitResult.firstView[mainMetric];
+    const factor = calculateFactor(mainCompetitor, mainSpeedKit);
+
+    return factor < 4.9;
   }
 
-  const mainCompetitor = competitorResult.firstView[mainMetric]
-  const mainSpeedKit = speedKitResult.firstView[mainMetric]
-  const secondaryCompetitor = competitorResult.firstView[secondaryMetric]
-  const secondarySpeedKit = speedKitResult.firstView[secondaryMetric]
+  const mainCompetitor = competitorResult.firstView[mainMetric];
+  const mainSpeedKit = speedKitResult.firstView[mainMetric];
+  const secondaryCompetitor = competitorResult.firstView[secondaryMetric];
+  const secondarySpeedKit = speedKitResult.firstView[secondaryMetric];
+  const factor = calculateFactor(mainCompetitor, mainSpeedKit);
+  if (factor < 4.9) return false;
 
   if (mainCompetitor > 0 && mainSpeedKit > 0) {
-    if ((mainSpeedKit / mainCompetitor < 0.95) || (mainCompetitor - mainSpeedKit > 200)) {
-      return true
+    if (
+      mainSpeedKit / mainCompetitor < 0.95 ||
+      mainCompetitor - mainSpeedKit > 200
+    ) {
+      return true;
     } else if (mainSpeedKit + 50 <= mainCompetitor) {
-      if(secondarySpeedKit / secondaryCompetitor < 0.9) {
-        return true
+      if (secondarySpeedKit / secondaryCompetitor < 0.9) {
+        return true;
       }
     }
-    return false
+    return false;
   }
-  return false
+  return false;
 }
