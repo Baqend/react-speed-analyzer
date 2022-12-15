@@ -1,40 +1,14 @@
 import React, { Component } from "react";
-import Papercut from "../Papercut/Papercut";
 import "./ResultBody.css";
 import ResultMetrics from "./ResultMetrics";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLongArrowAltRight } from "@fortawesome/free-solid-svg-icons";
+
 import ResultAction from "../ResultAction/ResultAction";
 import ResultWorthiness from "../ResultWorthiness/ResultWorthiness";
-import galeriaLogo from "assets/customers/galeria-black.svg";
-import decathlonLogo from "assets/customers/decathlon-black.svg";
-import carharttLogo from "assets/customers/carhartt-black.svg";
-import snipesLogo from "assets/customers/snipes-black.svg";
-import mydaysLogo from "assets/customers/mydays-black.svg";
-import redBullLogo from "assets/customers/redbull-black.svg";
-import hsvLogo from "assets/customers/hsv-black.svg";
-import titusLogo from "assets/customers/titus-black.svg";
-import justSpicesLogo from "assets/customers/justspices-black.svg";
-import defshopLogo from "assets/customers/DefShop_Logo.svg";
-import edwinLogo from "assets/customers/edwin-black.png";
-import bugabooLogo from "assets/customers/bugaboo-black.png";
-import brogleLogo from "assets/customers/brogle-black.png";
-import soleboxLogo from "assets/customers/solebox-black.svg";
-import weinfuerstLogo from "assets/customers/weinfuerst-black.svg";
-import besamexLogo from "assets/customers/besamex-black.png";
-import melittaLogo from "assets/customers/melitta-black.svg";
-import pleskLogo from "assets/customers/plesk-black.svg";
-import awnLogo from "assets/customers/awn-black.png";
-import goertzLogo from "assets/customers/goertz-black.svg";
-import bmw from "assets/customers/bmw-black.svg";
-import newportLogo from "assets/customers/newport-black.svg";
-import baurLogo from "assets/customers/baur-black.svg";
-import elevenTeamsportsLogo from "assets/customers/11teamsports-black.svg";
-import interfloraLogo from "assets/customers/interflora-black.svg";
-import globusLogo from "assets/customers/globus-ch-black.svg";
-import virginmediaLogo from "assets/customers/virginmedia-black.svg";
 
 import ResultComparison from "./ResultComparison";
+import { CUSTOMER_MAP } from "../../../../assets/customers/customerMap";
 
 class ResultBody extends Component {
   constructor(props) {
@@ -107,166 +81,29 @@ class ResultBody extends Component {
   }
 
   renderCustomers() {
+    const customerTemplate = (customer, customerSrc) => (
+      <div className="customer-wrapper" key={customer}>
+        <img
+          className="customer-img"
+          src={customerSrc}
+          alt={`${customer} Logo`}
+        />
+      </div>
+    );
+    const genArray = () => {
+      const customerArray = [];
+      for (const [key, val] of Object.entries(CUSTOMER_MAP)) {
+        customerArray.push(customerTemplate(key, val));
+      }
+      return customerArray;
+    };
+
     return (
       <div className="flex flex-column text-center pt7 pb6 container">
         <div style={{ color: "#333537", fontWeight: "500" }}>
           JOIN MORE THAN 7,000 WEBSITES THAT LOAD INSTANTLY
         </div>
-        <div className="flex flex-wrap justify-center pt5">
-          <div className="customer-wrapper">
-            <img
-              className="customer-img"
-              src={galeriaLogo}
-              alt="Galeria logo"
-            />
-          </div>
-          <div className="customer-wrapper">
-            <img
-              className="customer-img"
-              src={decathlonLogo}
-              alt="Decathlon logo"
-            />
-          </div>
-          <div className="customer-wrapper">
-            <img
-              className="customer-img"
-              src={carharttLogo}
-              alt="Carhartt logo"
-            />
-          </div>
-        </div>
-        <div className="flex flex-wrap justify-center">
-          <div className="customer-wrapper">
-            <img className="customer-img" src={snipesLogo} alt="Snipes logo" />
-          </div>
-          <div className="customer-wrapper">
-            <img className="customer-img" src={mydaysLogo} alt="Mydays logo" />
-          </div>
-          <div className="customer-wrapper">
-            <img
-              className="customer-img"
-              src={redBullLogo}
-              alt="RedBull logo"
-            />
-          </div>
-          <div className="customer-wrapper">
-            <img
-              className="customer-img"
-              src={defshopLogo}
-              alt="DefShop logo"
-            />
-          </div>
-        </div>
-        <div className="flex flex-wrap justify-center">
-          <div className="customer-wrapper">
-            <img className="customer-img" src={hsvLogo} alt="HSV logo" />
-          </div>
-          <div className="customer-wrapper">
-            <img className="customer-img" src={titusLogo} alt="Titus logo" />
-          </div>
-          <div className="customer-wrapper">
-            <img
-              className="customer-img"
-              src={justSpicesLogo}
-              alt="Just Spices logo"
-            />
-          </div>
-          <div className="customer-wrapper">
-            <img className="customer-img" src={edwinLogo} alt="Edwin logo" />
-          </div>
-        </div>
-        <div className="flex flex-wrap justify-center">
-          <div className="customer-wrapper">
-            <img
-              className="customer-img"
-              src={bugabooLogo}
-              alt="Bugaboo logo"
-            />
-          </div>
-          <div className="customer-wrapper">
-            <img className="customer-img" src={brogleLogo} alt="Brogle logo" />
-          </div>
-          <div className="customer-wrapper">
-            <img
-              className="customer-img"
-              src={soleboxLogo}
-              alt="Solebox logo"
-            />
-          </div>
-          <div className="customer-wrapper">
-            <img
-              className="customer-img"
-              src={weinfuerstLogo}
-              alt="Weinfuerst logo"
-            />
-          </div>
-        </div>
-        <div className="flex flex-wrap justify-center">
-          <div className="customer-wrapper">
-            <img
-              className="customer-img"
-              src={besamexLogo}
-              alt="Besamex logo"
-            />
-          </div>
-          <div className="customer-wrapper">
-            <img
-              className="customer-img"
-              src={melittaLogo}
-              alt="Melitta logo"
-            />
-          </div>
-          <div className="customer-wrapper">
-            <img className="customer-img" src={pleskLogo} alt="Plesk logo" />
-          </div>
-          <div className="customer-wrapper">
-            <img className="customer-img" src={awnLogo} alt="AWN logo" />
-          </div>
-        </div>
-        <div className="flex flex-wrap justify-center">
-          <div className="customer-wrapper">
-            <img className="customer-img" src={goertzLogo} alt="Goertz logo" />
-          </div>
-          <div className="customer-wrapper">
-            <img className="customer-img" src={bmw} alt="BMW Logo" />
-          </div>
-          <div className="customer-wrapper">
-            <img
-              className="customer-img"
-              src={newportLogo}
-              alt="Newport logo"
-            />
-          </div>
-          <div className="customer-wrapper">
-            <img className="customer-img" src={baurLogo} alt="Baur logo" />
-          </div>
-        </div>
-        <div className="flex flex-wrap justify-center">
-          <div className="customer-wrapper">
-            <img
-              className="customer-img"
-              src={elevenTeamsportsLogo}
-              alt="11 Teamsports logo"
-            />
-          </div>
-          <div className="customer-wrapper">
-            <img
-              className="customer-img"
-              src={interfloraLogo}
-              alt="Interflora Logo"
-            />
-          </div>
-          <div className="customer-wrapper">
-            <img className="customer-img" src={globusLogo} alt="Globus logo" />
-          </div>
-          <div className="customer-wrapper">
-            <img
-              className="customer-img"
-              src={virginmediaLogo}
-              alt="Virgin Media logo"
-            />
-          </div>
-        </div>
+        <div className="flex flex-wrap mt4 justify-center">{genArray()}</div>
       </div>
     );
   }
