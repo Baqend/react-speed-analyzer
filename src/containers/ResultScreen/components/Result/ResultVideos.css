@@ -4,43 +4,33 @@
   width: 100%;
   border-radius: 3px 3px 3px 3px;
   border: 1px solid #e8e8e8;
-  box-shadow: 0 2px 4px rgba(0,0,0,.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .competitor-video {
   padding: 16px 6px 16px 0;
-  @media(--breakpoint-small-device) {
+  @media (--breakpoint-small-device) {
     padding: 32px 16px 32px 0;
   }
-  @media(--breakpoint-medium-device) {
+  @media (--breakpoint-medium-device) {
     padding: 48px 23px 48px 0;
   }
 }
 
 .speedKit-video {
   padding: 16px 0 16px 6px;
-  @media(--breakpoint-small-device) {
+  @media (--breakpoint-small-device) {
     padding: 32px 0 32px 16px;
   }
-  @media(--breakpoint-medium-device) {
+  @media (--breakpoint-medium-device) {
     padding: 48px 0 48px 23px;
   }
 }
 
 .video__wrapper {
   position: relative;
-  &:not(.auto):before {
-    content: "";
-    display: block;
-    position: relative;
-    padding-top: 56.5%;
-    top: 1px;
-    .mobile & {
-      padding-top: 67.5%;
-    }
-  }
   .video__wrapper-inner {
-    position: absolute;
+    position: relative;
     z-index: 0;
     top: 0;
     right: 0;
@@ -50,20 +40,12 @@
     border-radius: 4px;
     box-shadow: 0 4px 32px 0 rgba(51, 53, 55, 0.44);
     .relative {
-      width: 100%;
-      height: 116.35%;
-      display: flex;
       flex-direction: column;
       align-items: center;
-      margin-top: -9.35%;
       background-color: black;
       video {
-        width: 104%;
-        /* min-height: 120.5%; */
-        /* background: #f8f8f8; */
         border: none;
         z-index: 1;
-        /* min-height: 100%; */
         flex-shrink: 0;
         flex-grow: 1;
       }
@@ -84,7 +66,7 @@
   }
   .video__wrapper-play {
     position: absolute;
-    top: 50%;
+    top: 45%;
     left: 50%;
     margin-left: -22.5px;
     margin-top: -22.5px;
@@ -101,7 +83,7 @@
     &:hover {
       color: white;
     }
-    @media(--breakpoint-small-device) {
+    @media (--breakpoint-small-device) {
       width: 100px;
       height: 100px;
       margin-left: -48.5px;
@@ -129,10 +111,10 @@
       cursor: auto;
       padding-left: 0;
       &:hover {
-         opacity: 1.0;
+        opacity: 1;
       }
     }
-    @media(--breakpoint-small-device) {
+    @media (--breakpoint-small-device) {
       width: 78px;
       height: 78px;
       font-size: 30px;
@@ -142,7 +124,7 @@
     }
     .locked {
       width: 16px;
-      @media(--breakpoint-small-device) {
+      @media (--breakpoint-small-device) {
         width: 26px;
       }
     }
@@ -153,14 +135,18 @@
     width: 100%;
     left: 0;
     display: flex;
-    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.75));
+    background-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0),
+      rgba(0, 0, 0, 0.75)
+    );
     height: 20px;
     z-index: 2;
     .video__wrapper-progress-inner {
       width: 100%;
       margin: 8px;
       overflow: hidden;
-      background: rgba(255,255,255,.55);
+      background: rgba(255, 255, 255, 0.55);
       .video__wrapper-progress-bar {
         height: 6px;
         /* flex-basis: 0%; */
