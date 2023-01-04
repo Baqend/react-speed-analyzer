@@ -3,10 +3,11 @@ import { ComparisonFactory } from './_ComparisonFactory'
 import { ComparisonListener, ComparisonWorker } from './_ComparisonWorker'
 import { parallelize } from './_helpers'
 import {
+  isFailed,
   isFinished,
   isIncomplete,
   isUnfinished,
-  setCanceled,
+  setCanceled, setFailed,
   setIncomplete,
   setPending,
   setRunning,
@@ -132,20 +133,26 @@ export class MultiComparisonWorker implements ComparisonListener {
     }
 
     // Save is finished state
-    const isIncomplete = await this.isComparisonIncomplete(multiComparison)
-    await multiComparison.optimisticSave(() => {
-      isIncomplete ? setIncomplete(multiComparison) : setSuccess(multiComparison)
-    })
+    await this.updateFinishStatus(multiComparison)
 
     // Inform the listener that this multi comparison has finished
     this.listener && this.listener.handleMultiComparisonFinished(multiComparison)
   }
 
   /**
-   * Checks whether one of the corresponding testOverview is incomplete
+   * Updated the status of the corresponding multiComparison after all its testOverviews were finished
    */
-  private async isComparisonIncomplete(multiComparison: model.BulkTest): Promise<boolean> {
+  private async updateFinishStatus(multiComparison: model.BulkTest): Promise<void> {
     const testOverviews = await Promise.all(multiComparison.testOverviews.map(testOverview => testOverview.load()))
-    return testOverviews.some(testOverview => isIncomplete(testOverview))
+    const failed = testOverviews.every(testOverview => isFailed(testOverview))
+    if (failed) {
+      await multiComparison.optimisticSave(() => setFailed(multiComparison))
+      return
+    }
+
+    await multiComparison.optimisticSave(() => {
+      const incomplete = testOverviews.some(testOverview => isIncomplete(testOverview))
+      incomplete ? setIncomplete(multiComparison) : setSuccess(multiComparison)
+    })
   }
 }

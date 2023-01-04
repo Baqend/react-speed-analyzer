@@ -2,11 +2,12 @@ import { baqend, model } from 'baqend'
 import { ComparisonFactory } from './_ComparisonFactory'
 import { parallelize } from './_helpers'
 import {
+  isFailed,
   isFinished,
   isIncomplete,
   isUnfinished,
   isWaitForPuppeteer,
-  setCanceled,
+  setCanceled, setFailed,
   setIncomplete,
   setRunning,
   setSuccess,
@@ -100,7 +101,10 @@ export class ComparisonWorker implements TestListener {
       await chooseFMP(competitor, speedKit)
 
       await comparison.optimisticSave(() => {
-        isIncomplete(competitor) || isIncomplete(speedKit) ? setIncomplete(comparison) : setSuccess(comparison)
+        const failed = isFailed(competitor) && isFailed(speedKit)
+        const incomplete = isIncomplete(competitor) || isIncomplete(speedKit)
+        failed ? setFailed(comparison) : (incomplete ? setIncomplete(comparison) : setSuccess(comparison))
+
         // comparison.speedKitConfig = speedKit.speedKitConfig
         comparison.factors = this.calculateFactors(competitor, speedKit)
         comparison.documentRequestFailed = speedKit.firstView ? speedKit.firstView.documentRequestFailed : false
