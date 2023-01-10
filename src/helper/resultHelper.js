@@ -51,11 +51,12 @@ export function calculatePercent(competitorMetric, speedKitMetric) {
 
 /**
  * @param configAnalysis The information of the speed kit installation status
+ * @param isWordPress Whether the domain is a WordPress domain
  * @returns {boolean} true, if speed kit was installed correctly
  */
-export function isSpeedKitInstalledCorrectly(configAnalysis = {}) {
+export function isSpeedKitInstalledCorrectly(configAnalysis = {}, isWordPress = false) {
   const { configMissing, isDisabled, swPath, swPathMatches } = configAnalysis
-  if (!swPath || swPath.length <= 0) {
+  if (!isWordPress && (!swPath || swPath.length <= 0)) {
     return false
   }
 

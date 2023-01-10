@@ -46,6 +46,7 @@ class ResultHeader extends Component {
   render() {
     const { isPlesk, embedded } = this.props
     const { testOverview } = this.props.result
+    const isWordPress = testOverview.type === 'wordpress'
     const { isSpeedKitComparison, speedKitVersion, configAnalysis } = testOverview
 
     return (
@@ -56,8 +57,8 @@ class ResultHeader extends Component {
           {isSpeedKitComparison && (
             <div className="text-center" style={{ padding: '0px 16px' }}>
               <div className="flex justify-center" style={{ alignItems: 'center' }}>
-                <h4>{isSpeedKitInstalledCorrectly(configAnalysis) ? (
-                  "Thank you for using Speed Kit " + speedKitVersion) : (
+                <h4>{isSpeedKitInstalledCorrectly(configAnalysis, isWordPress) ? (
+                  "Thank you for using Speed Kit " + (isWordPress ? '' : speedKitVersion)) : (
                   "Thank you for installing Speed Kit, the configuration is not done yet. Please see below for more information."
                 )}</h4>
               </div>
