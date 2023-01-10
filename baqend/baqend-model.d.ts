@@ -148,6 +148,7 @@ declare module 'baqend' {
       timeline?: boolean,
       timeout: number,
       video?: boolean,
+      extensions?: string,
       [key: string]: any
     }
 

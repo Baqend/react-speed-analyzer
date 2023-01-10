@@ -8,6 +8,8 @@ export const DEFAULT_PLESK_PRIORITY = Priority.LESS_HIGH
 export const DEFAULT_LOCATION = 'eu-central-1-docker:Chrome.FIOSNoLatency'
 export const DEFAULT_ACTIVITY_TIMEOUT = 5000
 export const DEFAULT_TIMEOUT = 30
+// Extension id of "I still don't care about cookies"
+export const DEFAULT_EXTENSIONS = 'edibdbjcniadpccecjdfdjjppcpchdlm'
 
 /**
  * The default test params.
@@ -55,6 +57,7 @@ export const DEFAULT_TEST_OPTIONS: Partial<model.TestOptions> = {
   ignoreSSL: true,
   block: 'favicon', // exclude favicons for fair comparison, as not handled by SWs
   iq: 100,
+  extensions: DEFAULT_EXTENSIONS,
   timeout: 2 * DEFAULT_TIMEOUT,
 }
 
