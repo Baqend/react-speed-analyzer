@@ -81,7 +81,7 @@ function parseCandidates(db: baqend, data: Array<[number, number]>): model.Candi
  * Calculates ΔVisualCompleteness from the WebPagetest
  */
 async function prepareCandidates(db: baqend, testId: string, stepIndex: number): Promise<model.Candidate[]> {
-  const url = `http://${credentials.wpt_dns}/video/compare.php?tests=${testId}-r:1-c:0-s:${stepIndex}`
+  const url = `${credentials.wpt_dns}/video/compare.php?tests=${testId}-r:1-c:0-s:${stepIndex}`
   const response = await fetch(url)
   const htmlString = await response.text()
   const data = getDataFromHtml(htmlString)

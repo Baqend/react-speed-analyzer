@@ -294,7 +294,7 @@ export class Pagetest {
     // if we could not get the video it is because the wpt master sends a redirect
     // since the wpt api cannot cope with that, we have to get the video id manually
     return videoCreation.catch(err => {
-      return fetch(`http://${credentials.wpt_dns}/video/video.php?tests=${video}`, { redirect: 'manual'})
+      return fetch(`${credentials.wpt_dns}/video/video.php?tests=${video}`, { redirect: 'manual'})
         .then(res => {
           const location = res.headers.get('location');
           if (!location) {
@@ -354,7 +354,7 @@ export class Pagetest {
       formData.append(key, value.toString())
     }
 
-    const url = `http://${credentials.wpt_dns}/runtest.php?f=json&k=${credentials.wpt_api_key}`
+    const url = `${credentials.wpt_dns}/runtest.php?f=json&k=${credentials.wpt_api_key}`
     const res = await fetch(url, { method: 'POST', body: formData })
     return await res.json()
   }

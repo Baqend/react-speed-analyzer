@@ -116,7 +116,7 @@ async function createVideos(db: baqend, testId: string, stepIndex: number): Prom
  * @return
  */
 function constructVideoLink(videoId: string): string {
-  return `http://${credentials.wpt_dns}/work/video/${videoId}.mp4`
+  return `${credentials.wpt_dns}/work/video/${videoId}.mp4`
 }
 
 /**
