@@ -26,6 +26,7 @@
 
 :root {
   --dark-blue: #162939;
+  --white: #ffffff;
 }
 
 body {
@@ -41,7 +42,10 @@ body {
   }
 }
 
-html, body, #speed-kit-analyzer, #wrapper {
+html,
+body,
+#speed-kit-analyzer,
+#wrapper {
   min-height: 100vh;
 }
 
@@ -54,16 +58,17 @@ html, body, #speed-kit-analyzer, #wrapper {
   line-height: 1.48;
   color: color(#fff);
   background-color: var(--custom-purple);
-@media (--breakpoint-small-device) {
-  font-size: 20px;
-}
-@media (--breakpoint-medium-device) {
-  background-color: #f4f4f4;
-  background-image: none;
-}
+  @media (--breakpoint-small-device) {
+    font-size: 20px;
+  }
+  @media (--breakpoint-medium-device) {
+    background-color: #f4f4f4;
+    background-image: none;
+  }
 }
 
-#speed-kit-analyzer, #main {
+#speed-kit-analyzer,
+#main {
   display: flex;
   flex-grow: 1;
 }
@@ -95,7 +100,12 @@ html, body, #speed-kit-analyzer, #wrapper {
   } */
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: 400;
 }
 
@@ -140,11 +150,11 @@ a {
 }
 
 .dark-blue {
-   color: var(--custom-dark-blue);
- }
+  color: var(--custom-dark-blue);
+}
 
 .purple {
-   color: var(--custom-purple);
+  color: var(--custom-purple);
 }
 
 hr {
@@ -159,7 +169,7 @@ input {
   background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 4px;
-  box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
 }
 
 .pr2-ns {
@@ -176,10 +186,10 @@ textarea {
   background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 4px;
-  box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
 }
 
 .__react_component_tooltip.type-dark {
-  background-color: rgba(0,0,0,0.95);
+  background-color: rgba(0, 0, 0, 0.95);
   font-weight: 400;
 }
