@@ -92,4 +92,13 @@ a {
     &.stylefile {
          background-image: url('../../../../assets/customers/Stylefile_Logo_White.svg');
     }
+    &.empiriecom{
+         background-image: url('../../../../assets/customers/empiriecom_Logo_White.svg');
+    }
+    &.fussballdaten{
+         background-image: url('../../../../assets/customers/fussballdaten_Logo_White.svg');
+    }
+    &.jaimieJacobs{
+        background-image: url('../../../../assets/customers/JaimieJacobs_White.png');
+    }
 }
