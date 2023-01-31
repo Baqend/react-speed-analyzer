@@ -86,4 +86,7 @@ a {
   &.soliver {
     background-image: url("../../../../assets/customers/soliver-white.svg");
   }
+  &.bmw {
+    background-image: url("../../../../assets/customers/bmw-white.svg");
+  }
 }
