@@ -106,7 +106,8 @@ export function resultIsValid(
   const secondaryCompetitor = competitorResult.firstView[secondaryMetric];
   const secondarySpeedKit = speedKitResult.firstView[secondaryMetric];
   const factor = calculateFactor(mainCompetitor, mainSpeedKit);
-  if (factor < 4.9) return false;
+
+  if (factor > 4.9) return false;
 
   if (mainCompetitor > 0 && mainSpeedKit > 0) {
     if (
