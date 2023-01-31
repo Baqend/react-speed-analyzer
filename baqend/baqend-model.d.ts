@@ -190,6 +190,7 @@ declare module 'baqend' {
       webPagetests: Array<WebPagetest>;
       retries: number;
       checked: Date;
+      wptScreenshot: binding.File | null;
     }
 
     interface Prewarms extends binding.Entity {
@@ -209,7 +210,7 @@ declare module 'baqend' {
       psiDomains: number;
       psiRequests: number;
       psiResponseSize: string;
-      psiScreenshot: binding.File;
+      psiScreenshot: binding.File | null;
       location: string;
       caching: boolean;
       mobile: boolean;

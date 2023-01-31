@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "target": "es2017",
+    "target": "es2020",
     "module": "commonjs",
     "moduleResolution": "node",
-    "lib": ["es2017", "dom"],
+    "lib": ["es2020", "dom"],
     "outDir": "out",
     "esModuleInterop": true,
     "downlevelIteration": true,

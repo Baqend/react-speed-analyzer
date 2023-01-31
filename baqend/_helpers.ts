@@ -1,5 +1,8 @@
+import { baqend, binding } from 'baqend'
 import { concat, filter, map, mapValues, mergeWith, pick, reduce } from 'lodash'
 import {Blob} from 'buffer'
+import { toFile } from './_toFile'
+import credentials from './credentials'
 
 /**
  * @param {number[]} numbers

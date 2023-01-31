@@ -1,9 +1,7 @@
 import { baqend, model } from 'baqend'
 import fetch, { Response } from 'node-fetch'
 import { ConfigGenerator } from './_ConfigGenerator'
-import { generateHash, urlToFilename } from './_helpers'
 import { DataType, Serializer } from './_Serializer'
-import { toFile } from './_toFile'
 import credentials from './credentials'
 
 const DEFAULT_TIMEOUT: number = 60_000;
@@ -12,8 +10,6 @@ export enum PuppeteerSegment {
   DOMAINS = 'domains',
   PDF = 'pdf',
   RESOURCES = 'resources',
-  SCREENSHOT = 'screenshot',
-  SCREENSHOT_DATA = 'screenshotData',
   SERVICE_WORKERS = 'serviceWorkers',
   SPEED_KIT = 'speedKit',
   STATS = 'stats',
@@ -56,8 +52,6 @@ export interface PuppeteerResponse {
   domains?: string[]
   pdf?: string
   resources?: PuppeteerResource[]
-  screenshot?: string
-  screenshotData?: string
   serviceWorkers?: Array<{ scope: string, source: string }>
   speedKit?: PuppeteerSpeedKit | null
   stats?: { [key: string]: number }
@@ -168,7 +162,6 @@ export class Puppeteer {
         PuppeteerSegment.STATS,
         PuppeteerSegment.TYPE,
         PuppeteerSegment.SPEED_KIT,
-        PuppeteerSegment.SCREENSHOT_DATA,
         PuppeteerSegment.DOMAINS,
         PuppeteerSegment.SERVICE_WORKERS,
       )
@@ -196,7 +189,6 @@ export class Puppeteer {
       puppeteer.host = host
       puppeteer.protocol = protocol
       puppeteer.domains = domains
-      puppeteer.screenshot = await toFile(this.db, data.screenshotData!, `/www/screenshots/${urlToFilename(url)}/${mobile ? 'mobile' : 'desktop'}/${generateHash()}.jpg`)
       puppeteer.type = new this.db.PuppeteerType(data.type!)
       puppeteer.stats = new this.db.PuppeteerStats(data.stats!)
       puppeteer.speedKit = data.speedKit ? new this.db.PuppeteerSpeedKit(data.speedKit) : null

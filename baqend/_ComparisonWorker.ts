@@ -1,6 +1,6 @@
-import { baqend, model } from 'baqend'
+import { baqend, binding, model } from 'baqend'
 import { ComparisonFactory } from './_ComparisonFactory'
-import { parallelize } from './_helpers'
+import { generateHash, parallelize, urlToFilename } from './_helpers'
 import {
   isFailed,
   isFinished,
@@ -13,10 +13,12 @@ import {
   setSuccess,
   Status,
 } from './_Status'
+import { toFile } from './_toFile'
 import { factorize } from './_updateMultiComparison'
 import { chooseFMP } from './_chooseFMP'
 import { callPageSpeed } from './_callPageSpeed'
 import { TestListener, TestWorker } from './_TestWorker'
+import credentials from './credentials'
 
 const PSI_TYPE = 'psi'
 
@@ -149,6 +151,14 @@ export class ComparisonWorker implements TestListener {
     try {
       const comparison = await this.findComparisonByTest(test)
       if (!comparison) throw new Error('Could not find comparison by test')
+      if (test.testInfo.isTestWithSpeedKit) {
+        const { url, webPagetests } = test
+        const isDesktop = !test.testInfo.testOptions.mobile
+        const testId = webPagetests[webPagetests.length - 1].testId
+        const wptScreenshot = await this.createScreenshot(testId, url, isDesktop)
+        await comparison.ready()
+        await comparison.optimisticSave((comp: model.TestOverview) => comp.psiScreenshot = wptScreenshot)
+      }
 
       this.db.log.info(`Test finished: ${test.id}`)
       this.next(comparison).catch((err) => this.db.log.error(err.message, err))
@@ -185,7 +195,6 @@ export class ComparisonWorker implements TestListener {
         test.psiDomains = pageSpeedInsights.domains
         test.psiRequests = pageSpeedInsights.requests
         test.psiResponseSize = `${pageSpeedInsights.bytes}`
-        test.psiScreenshot = pageSpeedInsights.screenshot
       })
     } catch (error) {
       this.db.log.warn('Could not call page speed insights', { url, mobile, error: error.stack })
@@ -206,6 +215,33 @@ export class ComparisonWorker implements TestListener {
     }
 
     return testOverview.tasks.map(task => task.taskType).indexOf(PSI_TYPE) === -1
+  }
+
+  /**
+   * @param testId
+   * @return
+   */
+  private constructScreenshotLink(testId: string): string {
+    const year = testId.slice(0,2)
+    const month = testId.slice(2,4)
+    const day = testId.slice(4,6)
+    const IdMatch = [...testId.matchAll(/_([^_]*)/g)]
+    return `${credentials.wpt_dns}/results/${year}/${month}/${day}/${IdMatch[0][1]}/${IdMatch[1][1]}/1_screen.jpg`
+  }
+
+  /**
+   * @param testId
+   * @param url
+   * @param isDesktop
+   */
+  private async createScreenshot(testId: string, url: string, isDesktop: boolean = true): Promise<binding.File | null> {
+    try {
+      const device = isDesktop ? 'desktop' : 'mobile'
+      const screenshotLink = this.constructScreenshotLink(testId)
+      return await toFile(this.db, screenshotLink, `/www/screenshots/${urlToFilename(url)}/${device}/${generateHash()}.jpg`)
+    } catch {
+      return null;
+    }
   }
 
   private hasPuppeteerFinished(testOverview: model.TestOverview): boolean {

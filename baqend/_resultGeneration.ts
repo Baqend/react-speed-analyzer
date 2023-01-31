@@ -1,4 +1,4 @@
-import { truncateUrl } from './_helpers'
+import { generateHash, truncateUrl, urlToFilename } from './_helpers'
 import { VIEWPORT_HEIGHT_DESKTOP, VIEWPORT_WIDTH_DESKTOP } from './_TestScriptBuilder'
 import { toFile } from './_toFile'
 import { getAdSet } from './_adBlocker'
@@ -26,9 +26,12 @@ export async function generateTestResult(wptTestId: string, pendingTest: model.T
     return pendingTest
   }
 
+
   const rawData = await getResultRawData(wptTestId)
+  const url = await truncateUrl(rawData.testUrl)
+
   pendingTest.location = rawData.location
-  pendingTest.url = await truncateUrl(rawData.testUrl)
+  pendingTest.url = url
   pendingTest.summaryUrl = rawData.summary
   pendingTest.testDataMissing = false
 
