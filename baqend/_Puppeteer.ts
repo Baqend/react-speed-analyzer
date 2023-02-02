@@ -189,6 +189,7 @@ export class Puppeteer {
       puppeteer.host = host
       puppeteer.protocol = protocol
       puppeteer.domains = domains
+      puppeteer.screenshot = new this.db.File('') // Fix to prevent plesk from crashing because of object model
       puppeteer.type = new this.db.PuppeteerType(data.type!)
       puppeteer.stats = new this.db.PuppeteerStats(data.stats!)
       puppeteer.speedKit = data.speedKit ? new this.db.PuppeteerSpeedKit(data.speedKit) : null
