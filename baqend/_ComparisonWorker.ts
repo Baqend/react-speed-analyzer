@@ -151,7 +151,7 @@ export class ComparisonWorker implements TestListener {
     try {
       const comparison = await this.findComparisonByTest(test)
       if (!comparison) throw new Error('Could not find comparison by test')
-      if (test.testInfo.isTestWithSpeedKit) {
+      if (!test.isClone) {
         const { url, webPagetests } = test
         const isDesktop = !test.testInfo.testOptions.mobile
         const testId = webPagetests[webPagetests.length - 1].testId
