@@ -6,7 +6,7 @@ import credentials from './credentials'
 import { API, WptRequest, WptTestResult, WptTestResultOptions, WptView } from './_Pagetest'
 import { countHits } from './_countHits'
 import { getFMPData } from './_getFMPData'
-import { baqend, binding, model } from 'baqend'
+import { baqend, binding, model } from "baqend";
 
 export class ViewportError extends Error {}
 
@@ -77,7 +77,48 @@ export async function generateTestResult(wptTestId: string, pendingTest: model.T
   // Now the test is finished with data
   pendingTest.testDataMissing = false
 
+  const wptWaterfall = await createWaterfall(wptTestId, url, isDesktop, db);
+  const wptFilmstrip = await createFilmStrip(wptTestId, url, isDesktop, db);
+  pendingTest.wptWaterfall = wptWaterfall;
+  pendingTest.wptFilmstrip = wptFilmstrip;
+
   return pendingTest
+}
+
+/**
+ * Creates the waterfall screenshot.
+ *
+ * @param wptTestId
+ * @param url
+ * @param isDesktop
+ * @param db- baqend database.
+ */
+async function createWaterfall(wptTestId: string, url: string, isDesktop: boolean = true, db:baqend): Promise<binding.File | null> {
+  try {
+    const device = isDesktop ? 'desktop' : 'mobile'
+    const screenshotLink = `https://wpt.baqend.com/waterfall.php?test=${wptTestId}`;
+    return await toFile(db, screenshotLink, `/www/screenshots/${urlToFilename(url)}/${device}/${generateHash()}.jpg`)
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Creates the filmstrip screenshot.
+ *
+ * @param wptTestId
+ * @param url
+ * @param isDesktop
+ * @param db- baqend database.
+ */
+async function createFilmStrip(wptTestId: string, url: string, isDesktop: boolean = true, db:baqend): Promise<binding.File | null> {
+  try {
+    const device = isDesktop ? 'desktop' : 'mobile'
+    const screenshotLink = `https://wpt.baqend.com/video/filmstrip.php?tests=${wptTestId}-l:%20`;
+    return await toFile(db, screenshotLink, `/www/screenshots/${urlToFilename(url)}/${device}/${generateHash()}.jpg`)
+  } catch {
+    return null;
+  }
 }
 
 function getResultRawData(wptTestId: string): Promise<WptTestResult> {
