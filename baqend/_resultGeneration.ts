@@ -77,7 +77,50 @@ export async function generateTestResult(wptTestId: string, pendingTest: model.T
   // Now the test is finished with data
   pendingTest.testDataMissing = false
 
+  const wptWaterfall = await createWaterfall(wptTestId, url, isDesktop, db);
+  const wptFilmstrip = await createFilmStrip(wptTestId, url, isDesktop, db);
+  pendingTest.wptWaterfall = wptWaterfall;
+  pendingTest.wptFilmstrip = wptFilmstrip;
+
   return pendingTest
+}
+
+/**
+ * Creates the waterfall screenshot.
+ *
+ * @param wptTestId The id of the executed WebPagetest test.
+ * @param url The url where the file gets saved.
+ * @param isDesktop The device type.
+ * @param db The Baqend instance.
+ * @return A promise resolving with the file created or null.
+ */
+async function createWaterfall(wptTestId: string, url: string, isDesktop: boolean = true, db:baqend): Promise<binding.File | null> {
+  try {
+    const device = isDesktop ? 'desktop' : 'mobile'
+    const screenshotLink = `${credentials.wpt_dns}/waterfall.php?test=${wptTestId}`;
+    return await toFile(db, screenshotLink, `/www/screenshots/${urlToFilename(url)}/${device}/${generateHash()}.jpg`)
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Creates the filmstrip screenshot.
+ *
+ * @param wptTestId The id of the executed WebPagetest test.
+ * @param url The url where the file gets saved.
+ * @param isDesktop The device type.
+ * @param db The Baqend instance.
+ * @return A promise resolving with the file created or null.
+ */
+async function createFilmStrip(wptTestId: string, url: string, isDesktop: boolean = true, db:baqend): Promise<binding.File | null> {
+  try {
+    const device = isDesktop ? 'desktop' : 'mobile'
+    const screenshotLink = `${credentials.wpt_dns}/video/filmstrip.php?tests=${wptTestId}-l:%20`;
+    return await toFile(db, screenshotLink, `/www/screenshots/${urlToFilename(url)}/${device}/${generateHash()}.jpg`)
+  } catch {
+    return null;
+  }
 }
 
 function getResultRawData(wptTestId: string): Promise<WptTestResult> {

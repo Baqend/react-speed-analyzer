@@ -191,6 +191,10 @@ declare module 'baqend' {
       retries: number;
       checked: Date;
       wptScreenshot: binding.File | null;
+
+      wptWaterfall: binding.File | null;
+
+      wptFilmstrip: binding.File | null;
     }
 
     interface Prewarms extends binding.Entity {
