@@ -6,7 +6,7 @@ import credentials from './credentials'
 import { API, WptRequest, WptTestResult, WptTestResultOptions, WptView } from './_Pagetest'
 import { countHits } from './_countHits'
 import { getFMPData } from './_getFMPData'
-import { baqend, binding, model } from 'baqend';
+import { baqend, binding, model } from 'baqend'
 
 export class ViewportError extends Error {}
 
