@@ -6,7 +6,7 @@ import credentials from './credentials'
 import { API, WptRequest, WptTestResult, WptTestResultOptions, WptView } from './_Pagetest'
 import { countHits } from './_countHits'
 import { getFMPData } from './_getFMPData'
-import { baqend, binding, model } from "baqend";
+import { baqend, binding, model } from 'baqend';
 
 export class ViewportError extends Error {}
 
@@ -88,15 +88,16 @@ export async function generateTestResult(wptTestId: string, pendingTest: model.T
 /**
  * Creates the waterfall screenshot.
  *
- * @param wptTestId
- * @param url
- * @param isDesktop
- * @param db- baqend database.
+ * @param wptTestId The id of the executed WebPagetest test.
+ * @param url The url where the file gets saved.
+ * @param isDesktop The device type.
+ * @param db The Baqend instance.
+ * @return A promise resolving with the file created or null.
  */
 async function createWaterfall(wptTestId: string, url: string, isDesktop: boolean = true, db:baqend): Promise<binding.File | null> {
   try {
     const device = isDesktop ? 'desktop' : 'mobile'
-    const screenshotLink = `https://wpt.baqend.com/waterfall.php?test=${wptTestId}`;
+    const screenshotLink = `${credentials.wpt_dns}/waterfall.php?test=${wptTestId}`;
     return await toFile(db, screenshotLink, `/www/screenshots/${urlToFilename(url)}/${device}/${generateHash()}.jpg`)
   } catch {
     return null;
@@ -106,15 +107,16 @@ async function createWaterfall(wptTestId: string, url: string, isDesktop: boolea
 /**
  * Creates the filmstrip screenshot.
  *
- * @param wptTestId
- * @param url
- * @param isDesktop
- * @param db- baqend database.
+ * @param wptTestId The id of the executed WebPagetest test.
+ * @param url The url where the file gets saved.
+ * @param isDesktop The device type.
+ * @param db The Baqend instance.
+ * @return A promise resolving with the file created or null.
  */
 async function createFilmStrip(wptTestId: string, url: string, isDesktop: boolean = true, db:baqend): Promise<binding.File | null> {
   try {
     const device = isDesktop ? 'desktop' : 'mobile'
-    const screenshotLink = `https://wpt.baqend.com/video/filmstrip.php?tests=${wptTestId}-l:%20`;
+    const screenshotLink = `${credentials.wpt_dns}/video/filmstrip.php?tests=${wptTestId}-l:%20`;
     return await toFile(db, screenshotLink, `/www/screenshots/${urlToFilename(url)}/${device}/${generateHash()}.jpg`)
   } catch {
     return null;
