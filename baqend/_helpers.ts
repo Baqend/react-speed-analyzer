@@ -222,3 +222,28 @@ export async function truncateUrl(url: string): Promise<string> {
 
   return truncateUrl(url.substr(0, lastParamIndex))
 }
+
+/**
+ * Creates the filmstrip screenshot.
+ *
+ * @param db The Baqend instance.
+ * @param wptTestIds A lis of webPageTest ids to be included in the filmstrip.
+ * @param url The url where the file gets saved.
+ * @param isDesktop The device type.
+ * @return A promise resolving with the file created or null.
+ */
+export async function createFilmStrip(
+  db:baqend,
+  wptTestIds: string[],
+  url: string,
+  isDesktop: boolean
+): Promise<binding.File | null> {
+  try {
+    const device = isDesktop ? 'desktop' : 'mobile'
+    const tests = wptTestIds.map(id => `${id}-l:%20`).join(',')
+    const screenshotLink = `${credentials.wpt_dns}/video/filmstrip.php?tests=${tests}`;
+    return await toFile(db, screenshotLink, `/www/screenshots/${urlToFilename(url)}/${device}/${generateHash()}.jpg`)
+  } catch {
+    return null;
+  }
+}

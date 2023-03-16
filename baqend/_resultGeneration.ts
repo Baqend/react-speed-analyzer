@@ -1,4 +1,4 @@
-import { generateHash, truncateUrl, urlToFilename } from './_helpers'
+import { createFilmStrip, generateHash, truncateUrl, urlToFilename } from './_helpers'
 import { VIEWPORT_HEIGHT_DESKTOP, VIEWPORT_WIDTH_DESKTOP } from './_TestScriptBuilder'
 import { toFile } from './_toFile'
 import { getAdSet } from './_adBlocker'
@@ -78,7 +78,7 @@ export async function generateTestResult(wptTestId: string, pendingTest: model.T
   pendingTest.testDataMissing = false
 
   const wptWaterfall = await createWaterfall(wptTestId, url, isDesktop, db);
-  const wptFilmstrip = await createFilmStrip(wptTestId, url, isDesktop, db);
+  const wptFilmstrip = await createFilmStrip(db, [wptTestId], url, isDesktop);
   pendingTest.wptWaterfall = wptWaterfall;
   pendingTest.wptFilmstrip = wptFilmstrip;
 
@@ -98,25 +98,6 @@ async function createWaterfall(wptTestId: string, url: string, isDesktop: boolea
   try {
     const device = isDesktop ? 'desktop' : 'mobile'
     const screenshotLink = `${credentials.wpt_dns}/waterfall.php?test=${wptTestId}`;
-    return await toFile(db, screenshotLink, `/www/screenshots/${urlToFilename(url)}/${device}/${generateHash()}.jpg`)
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Creates the filmstrip screenshot.
- *
- * @param wptTestId The id of the executed WebPagetest test.
- * @param url The url where the file gets saved.
- * @param isDesktop The device type.
- * @param db The Baqend instance.
- * @return A promise resolving with the file created or null.
- */
-async function createFilmStrip(wptTestId: string, url: string, isDesktop: boolean = true, db:baqend): Promise<binding.File | null> {
-  try {
-    const device = isDesktop ? 'desktop' : 'mobile'
-    const screenshotLink = `${credentials.wpt_dns}/video/filmstrip.php?tests=${wptTestId}-l:%20`;
     return await toFile(db, screenshotLink, `/www/screenshots/${urlToFilename(url)}/${device}/${generateHash()}.jpg`)
   } catch {
     return null;

@@ -190,10 +190,7 @@ declare module 'baqend' {
       webPagetests: Array<WebPagetest>;
       retries: number;
       checked: Date;
-      wptScreenshot: binding.File | null;
-
       wptWaterfall: binding.File | null;
-
       wptFilmstrip: binding.File | null;
     }
 
@@ -236,6 +233,7 @@ declare module 'baqend' {
       documentRequestFailed: boolean;
       error?: { message: string, status: number };
       metaData?: { hostname: string, pageViews: number };
+      wptFilmstrip: binding.File | null
     }
 
     interface Hits extends binding.Managed {

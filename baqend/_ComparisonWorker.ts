@@ -1,6 +1,6 @@
 import { baqend, binding, model } from 'baqend'
 import { ComparisonFactory } from './_ComparisonFactory'
-import { generateHash, parallelize, urlToFilename } from './_helpers'
+import { createFilmStrip, generateHash, parallelize, urlToFilename } from './_helpers'
 import {
   isFailed,
   isFinished,
@@ -81,7 +81,7 @@ export class ComparisonWorker implements TestListener {
       }
     }
 
-    const { competitorTestResult: competitor, speedKitTestResult: speedKit } = comparison
+    const { url, mobile, competitorTestResult: competitor, speedKitTestResult: speedKit } = comparison
 
     // Handle PageSpeed Insights
     if (this.shouldStartPageSpeedInsights(comparison)) {
@@ -101,13 +101,16 @@ export class ComparisonWorker implements TestListener {
       }
 
       await chooseFMP(competitor, speedKit)
+      const skTestId = speedKit.webPagetests[speedKit.webPagetests.length - 1].testId
+      const compTestId = competitor.webPagetests[competitor.webPagetests.length - 1].testId
+      const wptFilmstrip = await createFilmStrip(this.db, [compTestId, skTestId], url, !mobile);
 
       await comparison.optimisticSave(() => {
         const failed = isFailed(competitor) && isFailed(speedKit)
         const incomplete = isIncomplete(competitor) || isIncomplete(speedKit)
         failed ? setFailed(comparison) : (incomplete ? setIncomplete(comparison) : setSuccess(comparison))
 
-        // comparison.speedKitConfig = speedKit.speedKitConfig
+        comparison.wptFilmstrip = wptFilmstrip
         comparison.factors = this.calculateFactors(competitor, speedKit)
         comparison.documentRequestFailed = speedKit.firstView ? speedKit.firstView.documentRequestFailed : false
       })
