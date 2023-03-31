@@ -15,6 +15,7 @@ import {
   Status,
 } from './_Status'
 import { updateMultiComparison } from './_updateMultiComparison'
+import { resolveUrl } from './resolveUrl'
 
 const ONE_MINUTE = 1000 * 60
 
@@ -77,7 +78,8 @@ export class MultiComparisonWorker implements ComparisonListener {
       const testParams = Object.assign(multiComparison.params, { skipPrewarm: !!currentComparison })
 
       // Start next comparison
-      const comparison = await this.comparisonFactory.create(multiComparison.puppeteer!, testParams, true)
+      const resolvedURL = await resolveUrl(testParams.url);
+      const comparison = await this.comparisonFactory.create(resolvedURL, testParams)
       await multiComparison.optimisticSave(() => {
         multiComparison.testOverviews.push(comparison)
       })

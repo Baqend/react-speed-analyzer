@@ -1,11 +1,11 @@
-import { baqend } from 'baqend'
+import { model } from 'baqend'
 import fetch from 'node-fetch'
 import { getAdSet } from './_adBlocker'
 import { Config } from './_Config'
 import { ConfigBuilder } from './_ConfigBuilder'
 import { getTLD } from './_getSpeedKitUrl'
 import { dollarRegExp, escapeRegExp, removeDuplicates, toRegExp } from './_helpers'
-import { PuppeteerResource, ResourceType } from './_Puppeteer'
+import { ResourceType } from './ResourceType'
 import credentials from './credentials'
 
 export const CDN_LOCAL_URL = 'https://makefast.app.baqend.com/v1/file/www/selfMaintainedCDNList'
@@ -52,38 +52,33 @@ export class ConfigGenerator {
    * @param {string} url The site to test.
    * @param {boolean} mobile true if it is a mobile test, false otherwise.
    * @param {boolean} thirdParty true if third party domains should be added to the config, false otherwise.
-   * @param {boolean} imageOptimization true if images should be optimized, false otherwise.
    * @param {boolean} preload true if css and fonts should be preloaded, false otherwise.
    * @param {string} app The name of the Baqend app to connect to.
    * @param {string[]} whitelist The custom whitelist to be merged with smart whitelist.
    * @param {string} host The host of the tested site.
    * @param {string[]} domains The domains loaded by the tested site.
-   * @param {PuppeteerResource[]} resources The resources loaded by the tested site.
+   * @param {model.Resource[]} resources The resources loaded by the tested site.
    * @return {Promise<Config>} A smart config for Speed Kit.
    */
   async generateSmart(
     url: string,
     mobile: boolean,
     thirdParty: boolean,
-    imageOptimization: boolean,
     preload: boolean,
     app: string,
     whitelist: string[],
-    { host, domains, resources }: { host: string, domains: string[], resources: PuppeteerResource[] }): Promise<Config>
+    { domains, resources }: { domains: string[], resources: model.Resource[] }): Promise<Config>
   {
+    const { host } = new URL(url);
     const configBuilder = new ConfigBuilder(app, mobile)
 
-    // Add image optimization
-    if (imageOptimization) {
-      // TODO implement actual IO
-      configBuilder.addImageOptions({ rules: [{ url: [''] }], options: { quality: 1, webp: true} });
-    }
     // Add host to whitelist
     const hostMatcher = this.matchAllSubdomains(host)
     configBuilder.whitelistHost(hostMatcher)
 
     // Add custom whitelist
     whitelist
+      .filter(url => !!url)
       .map(url => this.stripResourceUrl(url))
       .forEach(url => configBuilder.whitelistUrl(url))
 
@@ -138,7 +133,6 @@ export class ConfigGenerator {
 
       // Whitelist .min.js and .min.css URLs without cookies
       resources
-        .filter(resource => !resource.cookies.length)
         .filter(resource => resource.url.match(/\.min\.(?:css|js)$/))
         .filter(resource => !resource.host.match(hostMatcher)) // filter already whitelisted urls
         .map(resource => this.stripResourceUrl(resource.url))
@@ -282,7 +276,7 @@ export class ConfigGenerator {
   /**
    * Determines whether a resource is a cachable Google request e.g. Google Analytics.
    */
-  private isCacheableGoogleRequest(resource: PuppeteerResource) {
+  private isCacheableGoogleRequest(resource: model.Resource) {
     return resource.url.match(/^(?:http(s)?:\/\/)?www\.google-analytics\.com\/analytics\.js/)
       || resource.url.match(/^(?:http(s)?:\/\/)?www\.googletagmanager\.com\/gtm\.js/)
       || resource.url.match(/^(?:http(s)?:\/\/)?www\.googletagservices\.com\/tag\/js\/gpt\.js/)
@@ -291,14 +285,14 @@ export class ConfigGenerator {
   /**
    * Determines whether a resource is a jQuery callback.
    */
-  private isJQueryCallback(resource: PuppeteerResource): boolean {
+  private isJQueryCallback(resource: model.Resource): boolean {
     return !!resource.url.match(/[?&]callback=/) || !!resource.url.match(/[?&]jsonp_callback =/)
   }
 
   /**
    * Determines if the given resources contain jQuery.
    */
-  private containsJQuery(resources: PuppeteerResource[]): boolean {
+  private containsJQuery(resources: model.Resource[]): boolean {
     return resources.find((resource) => {
       const { pathname } = resource
 

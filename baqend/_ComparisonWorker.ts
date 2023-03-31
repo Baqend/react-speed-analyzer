@@ -1,26 +1,20 @@
-import { baqend, binding, model } from 'baqend'
+import { baqend, model } from 'baqend'
 import { ComparisonFactory } from './_ComparisonFactory'
-import { createFilmStrip, generateHash, parallelize, urlToFilename } from './_helpers'
+import { createFilmStrip, parallelize } from './_helpers'
 import {
   isFailed,
   isFinished,
   isIncomplete,
   isUnfinished,
-  isWaitForPuppeteer,
   setCanceled, setFailed,
   setIncomplete,
   setRunning,
   setSuccess,
   Status,
 } from './_Status'
-import { toFile } from './_toFile'
 import { factorize } from './_updateMultiComparison'
 import { chooseFMP } from './_chooseFMP'
-import { callPageSpeed } from './_callPageSpeed'
 import { TestListener, TestWorker } from './_TestWorker'
-import credentials from './credentials'
-
-const PSI_TYPE = 'psi'
 
 export interface ComparisonListener {
   handleComparisonFinished(comparison: model.TestOverview): any
@@ -54,19 +48,15 @@ export class ComparisonWorker implements TestListener {
     // Ensure comparison is loaded with depth 1
     await comparison.load({ depth: 1, refresh: true })
 
-    // Is this comparison already finished or is it still waiting for Puppeteer result
+    // Is this comparison already finished
     if (isFinished(comparison)) {
       return
     }
 
-    // Check if comparison is still queued
-    if (isWaitForPuppeteer(comparison)) {
-      const started = Math.ceil((Date.now() - comparison.updatedAt.getTime()) / 1000)
-      if (started > 300) {
-        const message = `Comparison was still not finished after ${started} seconds.`
-        await this.comparisonFactory.updateComparisonWithError(comparison, message, 599)
-      }
-
+    const started = Math.ceil((Date.now() - comparison.updatedAt.getTime()) / 1000)
+    if (started > 300) {
+      const message = `Comparison was still not finished after ${started} seconds.`
+      await this.comparisonFactory.updateComparisonWithError(comparison, message, 599)
       return
     }
 
@@ -82,15 +72,6 @@ export class ComparisonWorker implements TestListener {
     }
 
     const { url, mobile, competitorTestResult: competitor, speedKitTestResult: speedKit } = comparison
-
-    // Handle PageSpeed Insights
-    if (this.shouldStartPageSpeedInsights(comparison)) {
-      this.setPsiMetrics(comparison)
-      comparison.tasks.push(new this.db.Task({
-        taskType: PSI_TYPE,
-        lastExecution: new Date(),
-      }))
-    }
 
     // Is TestOverview finished?
     if (isFinished(competitor) && isFinished(speedKit)) {
@@ -121,11 +102,12 @@ export class ComparisonWorker implements TestListener {
       return
     }
 
-    // Start competitor and speed kit tests
+    // Start competitor right away
     if (!competitor.hasFinished) {
       this.testWorker.next(competitor).catch((err) => this.db.log.error(err.message, err))
     }
-    if (!speedKit.hasFinished) {
+    // Start speed kit run only if competitor finished because we need meta data of the competitor run
+    if (competitor.hasFinished && !speedKit.hasFinished) {
       this.testWorker.next(speedKit).catch((err) => this.db.log.error(err.message, err))
     }
   }
@@ -154,13 +136,9 @@ export class ComparisonWorker implements TestListener {
     try {
       const comparison = await this.findComparisonByTest(test)
       if (!comparison) throw new Error('Could not find comparison by test')
+
       if (!test.isClone) {
-        const { url, webPagetests } = test
-        const isDesktop = !test.testInfo.testOptions.mobile
-        const testId = webPagetests[webPagetests.length - 1].testId
-        const wptScreenshot = await this.createScreenshot(testId, url, isDesktop)
-        await comparison.ready()
-        await comparison.optimisticSave((comp: model.TestOverview) => comp.psiScreenshot = wptScreenshot)
+        await this.comparisonFactory.updateComparisonWithCompetitorData(comparison, test)
       }
 
       this.db.log.info(`Test finished: ${test.id}`)
@@ -181,74 +159,6 @@ export class ComparisonWorker implements TestListener {
       this.db.log.warn(`Could not calculate factors for overview with competitor ${compResult.id}`)
       return null
     }
-  }
-
-  /**
-   * Sets the PageSpeed Insight metrics on a test overview.
-   *
-   * @param testOverview The test overview to get the insights for.
-   * @return
-   */
-  private async setPsiMetrics(testOverview: model.TestOverview): Promise<void> {
-    const { url, mobile } = testOverview
-    try {
-      const pageSpeedInsights = await callPageSpeed(this.db, url, mobile)
-      await testOverview.ready()
-      await testOverview.optimisticSave((test: model.TestOverview) => {
-        test.psiDomains = pageSpeedInsights.domains
-        test.psiRequests = pageSpeedInsights.requests
-        test.psiResponseSize = `${pageSpeedInsights.bytes}`
-      })
-    } catch (error) {
-      this.db.log.warn('Could not call page speed insights', { url, mobile, error: error.stack })
-    }
-  }
-
-  shouldStartPageSpeedInsights(testOverview: model.TestOverview): boolean {
-    if (!this.hasPuppeteerFinished(testOverview)) {
-      return false
-    }
-
-    if (testOverview.psiDomains && testOverview.psiRequests && testOverview.psiResponseSize && testOverview.psiScreenshot) {
-      return false
-    }
-
-    if (!testOverview.tasks || !testOverview.tasks.length) {
-      return true
-    }
-
-    return testOverview.tasks.map(task => task.taskType).indexOf(PSI_TYPE) === -1
-  }
-
-  /**
-   * @param testId
-   * @return
-   */
-  private constructScreenshotLink(testId: string): string {
-    const year = testId.slice(0,2)
-    const month = testId.slice(2,4)
-    const day = testId.slice(4,6)
-    const IdMatch = [...testId.matchAll(/_([^_]*)/g)]
-    return `${credentials.wpt_dns}/results/${year}/${month}/${day}/${IdMatch[0][1]}/${IdMatch[1][1]}/1_screen.jpg`
-  }
-
-  /**
-   * @param testId
-   * @param url
-   * @param isDesktop
-   */
-  private async createScreenshot(testId: string, url: string, isDesktop: boolean = true): Promise<binding.File | null> {
-    try {
-      const device = isDesktop ? 'desktop' : 'mobile'
-      const screenshotLink = this.constructScreenshotLink(testId)
-      return await toFile(this.db, screenshotLink, `/www/screenshots/${urlToFilename(url)}/${device}/${generateHash()}.jpg`)
-    } catch {
-      return null;
-    }
-  }
-
-  private hasPuppeteerFinished(testOverview: model.TestOverview): boolean {
-    return testOverview.puppeteer !== null
   }
 
   private async findComparisonByTest(test: model.TestResult): Promise<model.TestOverview | null> {

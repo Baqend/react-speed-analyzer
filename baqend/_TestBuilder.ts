@@ -59,6 +59,35 @@ export const DEFAULT_TEST_OPTIONS: Partial<model.TestOptions> = {
   iq: 100,
   extensions: DEFAULT_EXTENSIONS,
   timeout: 2 * DEFAULT_TIMEOUT,
+  custom: `[speedKit]
+    function normalizeData(data) {
+      if (typeof data === 'string' || typeof data === 'number' || typeof data === 'boolean') {
+        return data;
+      }
+
+      if (data instanceof Array) {
+        return data.map(datum => normalizeData(datum));
+      }
+
+      if (data instanceof RegExp) {
+        return 'regexp:/' + data.source + '/' + data.flags;
+      }
+
+      if (typeof data === 'object' && data !== null) {
+        const obj = Object.create(null);
+        for (const [key, value] of Object.entries(data)) {
+          obj[key] = normalizeData(value);
+        }
+        return obj;
+      }
+
+      return null;
+    }
+
+  return normalizeData(window.speedKit);
+  [serviceWorker]
+  return navigator.serviceWorker.controller.scriptURL;
+  `
 }
 
 export class TestBuilder {

@@ -62,7 +62,7 @@ export default function config(state = initialState, action = {}) {
     case SWITCH_CACHING:
       return { ...state, caching: action.payload }
     case COMPETITOR_RESULT_LOAD:
-      return { ...state, cookie: action.payload.testInfo.cookie }
+      return { ...state }
     case TESTOVERVIEW_LOAD:
       return {
         ...state,

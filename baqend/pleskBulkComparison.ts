@@ -95,7 +95,7 @@ export async function get(db: baqend, request: Request, response: Response) {
   }
 
   if (!bulkComparisonId) {
-    const comparison = await loadTestOverview(db, url, depth)
+    const comparison = await loadTestOverview(db, url as string, depth)
     if (!comparison) {
       throw new Abort('There could be no test analysis found for your url.')
     }
@@ -104,7 +104,7 @@ export async function get(db: baqend, request: Request, response: Response) {
     return
   }
 
-  const bulkComparison = await db.BulkComparison.load(bulkComparisonId, { depth })
+  const bulkComparison = await db.BulkComparison.load(bulkComparisonId as string, { depth })
   if (!url) {
     const comparisons: any = {};
     bulkComparison.multiComparisons.forEach((multiComparison) => {

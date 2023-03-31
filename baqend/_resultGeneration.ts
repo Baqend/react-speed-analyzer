@@ -1,4 +1,5 @@
 import { createFilmStrip, generateHash, truncateUrl, urlToFilename } from './_helpers'
+import { DataType, Serializer } from './_Serializer'
 import { VIEWPORT_HEIGHT_DESKTOP, VIEWPORT_WIDTH_DESKTOP } from './_TestScriptBuilder'
 import { toFile } from './_toFile'
 import { getAdSet } from './_adBlocker'
@@ -36,6 +37,7 @@ export async function generateTestResult(wptTestId: string, pendingTest: model.T
   pendingTest.testDataMissing = false
 
   const view = rawData.runs['1'].firstView
+
   const stepIndex = view.numSteps
   const step = view ? (view.steps ? view.steps[stepIndex - 1] : view) : null
 
@@ -81,6 +83,24 @@ export async function generateTestResult(wptTestId: string, pendingTest: model.T
   const wptFilmstrip = await createFilmStrip(db, [wptTestId], url, isDesktop);
   pendingTest.wptWaterfall = wptWaterfall;
   pendingTest.wptFilmstrip = wptFilmstrip;
+
+  const technologies = view['detected_technologies']
+  for (const [, value] of Object.entries(technologies)) {
+    if (value.confidence === 100 && value.name !== 'Cart Functionality') {
+      pendingTest.framework = value.name
+      break
+    }
+  }
+
+  const controllingSW = view['serviceWorker']
+  pendingTest.controllingSW = controllingSW || null
+
+  const speedKitConfig = view['speedKit'];
+  if (!pendingTest.isClone && !!speedKitConfig) {
+    const serializer = new Serializer()
+    const denormalize = serializer.denormalize(speedKitConfig)
+    pendingTest.speedKitConfig = serializer.serialize(denormalize, DataType.JAVASCRIPT)
+  }
 
   return pendingTest
 }
@@ -213,6 +233,7 @@ async function createRun(db: baqend, data: WptView | undefined, testId: string, 
   completeness.p99 = data.visualComplete99
   completeness.p100 = data.visualComplete
   run.visualCompleteness = completeness
+  run.resources = createResourceList(data)
 
   const [FMPData, domains] = await Promise.all([getFMPData(db, data, testId, stepIndex), createDomainList(data)])
   run.fmpData = FMPData
@@ -330,6 +351,25 @@ async function createDomainList(data: WptView): Promise<model.Domain[]> {
   } catch (e) {
     return []
   }
+}
+
+/**
+ * Creates an array of resources being requested in a WPT view.
+ */
+function createResourceList(data: WptView): model.Resource[] {
+  const resources: model.Resource[] = []
+  for (const request of data.requests) {
+    const { url, host, priority } = request
+    resources.push({
+      host,
+      priority,
+      pathname: url,
+      url: request.full_url,
+      type: request.request_type
+    })
+  }
+
+  return resources
 }
 
 /**

@@ -4,6 +4,7 @@ import { truncateUrl } from './_helpers'
 import { setFailed, setRunning } from './_Status'
 import { TestBuilder } from './_TestBuilder'
 import { TestParams } from './_TestParams'
+import { resolveUrl } from './resolveUrl'
 
 /**
  * Creates multi comparisons, which are comparisons with multiple runs.
@@ -20,26 +21,22 @@ export class MultiComparisonFactory implements AsyncFactory<model.BulkTest> {
    *
    * @return A promise which resolves with the created object.
    */
-  async create(puppeteer: model.Puppeteer | null, params: TestParams, createdBy: string | null = null, runs: number = 1): Promise<model.BulkTest> {
+  async create(params: TestParams, createdBy: string | null = null, runs: number = 1): Promise<model.BulkTest> {
     const usedParams = this.testBuilder.buildSingleTestParams(params, null, 9)
     const { location, mobile, priority, url } = usedParams
 
-    // Repopulate the class
-    if (puppeteer && !(puppeteer instanceof this.db.Puppeteer)) {
-      puppeteer.stats = new this.db.PuppeteerStats(puppeteer.stats)
-      puppeteer.type = new this.db.PuppeteerType(puppeteer.type)
-      puppeteer.speedKit = puppeteer.speedKit ? new this.db.PuppeteerSpeedKit(puppeteer.speedKit) : null
-      puppeteer = new this.db.Puppeteer(puppeteer)
-    }
-
     const multiComparison: model.BulkTest = new this.db.BulkTest()
-    const truncatedUrl = await truncateUrl(puppeteer ? puppeteer.url : url)
-    puppeteer ? setRunning(multiComparison) : setFailed(multiComparison)
-    multiComparison.url = truncatedUrl
-    multiComparison.displayUrl = truncatedUrl;
-    usedParams.url = truncatedUrl;
-    if (puppeteer) {
-      multiComparison.puppeteer = puppeteer
+    try {
+      const resolvedURL = await resolveUrl(url)
+      const truncatedUrl = await truncateUrl(resolvedURL)
+      multiComparison.url = truncatedUrl
+      multiComparison.displayUrl = truncatedUrl
+      usedParams.url = truncatedUrl
+      setRunning(multiComparison)
+    } catch(e) {
+      multiComparison.url = url
+      setFailed(multiComparison)
+      this.db.log.warn(`Error while multiComparison creation`, { id: multiComparison.id, error: e.stack })
     }
 
     multiComparison.createdBy = createdBy

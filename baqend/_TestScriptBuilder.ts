@@ -691,7 +691,7 @@ export class TestScriptBuilder {
   createTestScript(
     url: string,
     isTestWithSpeedKit: boolean,
-    speedKitConfig: string,
+    speedKitConfig: string | null = null,
     location: string,
     isMobile: boolean = false,
     activityTimeout = DEFAULT_ACTIVITY_TIMEOUT,
@@ -705,7 +705,7 @@ export class TestScriptBuilder {
       return this.buildForSpeedKitTest(
         url,
         appName,
-        speedKitConfig,
+        speedKitConfig!,
         location,
         isMobile,
         activityTimeout,

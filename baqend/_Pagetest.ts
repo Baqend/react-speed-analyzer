@@ -13,6 +13,10 @@ export interface WptResult<T> {
 
 export interface WptRequest {
   url: string
+  full_url: string
+  request_type: string
+  host: string
+  priority: string
   responseCode: number
   headers: { response: string[] }
 }
@@ -56,8 +60,15 @@ export interface WptView {
   viewport: WPTViewport
 }
 
+export interface Technology {
+  name: string;
+  confidence: number;
+}
 export interface WptStepView extends WptView {
+  detected_technologies: { [technology: string]: Technology };
   steps?: WptView[]
+  speedKit?: string // SpeedKit config
+  serviceWorker?: string
 }
 
 export interface WptRun {
@@ -346,7 +357,7 @@ export class Pagetest {
     })
   }
 
-  private async startTestManually(testScript: string, options: model.TestOptions) {
+  private async startTestManually(testScript: string, options: model.TestOptions): Promise<any> {
     const formData = new FormData()
     formData.append('script', testScript)
     for (const key in options) {

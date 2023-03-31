@@ -25,6 +25,6 @@ export async function get(db: baqend, req: Request, res: Response) {
   if (!req.query.id) {
     throw new Abort('Please provide a "id" parameter')
   }
-  const comparisonStatus = await getComparisonStatus(db, req.query.id)
+  const comparisonStatus = await getComparisonStatus(db, req.query.id as string)
   res.send(comparisonStatus)
 }
