@@ -60,31 +60,76 @@ export const DEFAULT_TEST_OPTIONS: Partial<model.TestOptions> = {
   extensions: DEFAULT_EXTENSIONS,
   timeout: 2 * DEFAULT_TIMEOUT,
   custom: `[speedKit]
-    function normalizeData(data) {
-      if (typeof data === 'string' || typeof data === 'number' || typeof data === 'boolean') {
-        return data;
-      }
-
-      if (data instanceof Array) {
-        return data.map(datum => normalizeData(datum));
-      }
-
-      if (data instanceof RegExp) {
-        return 'regexp:/' + data.source + '/' + data.flags;
-      }
-
-      if (typeof data === 'object' && data !== null) {
-        const obj = Object.create(null);
-        for (const [key, value] of Object.entries(data)) {
-          obj[key] = normalizeData(value);
+  function getConfig() {
+    return new Promise(function(resolve) {
+      try {
+        var indexedDB = window.indexedDB;
+        if (!indexedDB) {
+          resolve(null);
+          return;
         }
-        return obj;
-      }
 
-      return null;
+        var open = indexedDB.open('baqend-speedkit', 1);
+        open.onerror = function () {
+          resolve(null);
+        };
+
+        open.onsuccess = function() {
+          var db = open.result;
+          if (!db.objectStoreNames.contains('baqend-speedkit-store')) {
+              db.close();
+              resolve(null);
+              return;
+          }
+          
+          var tx = db.transaction('baqend-speedkit-store', 'readonly');
+          var store = tx.objectStore('baqend-speedkit-store');
+          var getKey = store.get('/com.baqend.speedkit.config');
+
+          getKey.onsuccess = function() {
+            resolve(normalizeData(getKey.result));
+          };
+
+          tx.onerror = function () {
+            resolve(null);
+          };
+
+          tx.oncomplete = function () {
+            db.close();
+          };
+        };
+      } catch(e) {
+        resolve(null);
+      }
+    });
+  }
+  function normalizeData(data) {
+    if (typeof data === 'string' || typeof data === 'number' || typeof data === 'boolean') {
+      return data;
     }
 
-  return normalizeData(window.speedKit);
+    if (data instanceof Array) {
+      return data.map(datum => normalizeData(datum));
+    }
+
+    if (data instanceof RegExp) {
+      return 'regexp:/' + data.source + '/' + data.flags;
+    }
+
+    if (typeof data === 'object' && data !== null) {
+      const obj = Object.create(null);
+      for (const [key, value] of Object.entries(data)) {
+        obj[key] = normalizeData(value);
+      }
+      return obj;
+    }
+
+    return null;
+  }
+  if (!!window.speedKit) {
+    return normalizeData(window.speedKit);
+  }
+  return getConfig();
   [serviceWorker]
   return navigator.serviceWorker.controller.scriptURL;
   `
