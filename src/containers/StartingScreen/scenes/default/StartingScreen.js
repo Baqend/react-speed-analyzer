@@ -1,89 +1,110 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
 
-import './StartingScreen.css'
-import StartingScreenComponent from './StartingScreenComponent'
+import "./StartingScreen.css";
+import StartingScreenComponent from "./StartingScreenComponent";
 
-import { getObjectKey } from 'helper/utils'
+import { getObjectKey } from "helper/utils";
 
-import { handleUrlInput, resetConfig } from 'actions/config'
-import { resetResult, resetTestStatus } from 'actions/result'
-import { prepareTest, startTest } from 'actions/test'
-
+import {
+  handleUrlInput,
+  resetConfig,
+  handleLocationChange,
+  handleMobileSwitch,
+} from "actions/config";
+import { resetResult, resetTestStatus } from "actions/result";
+import { prepareTest, startTest } from "actions/test";
 
 class StartingScreen extends Component {
   constructor(props) {
-    super(props)
-    let showAdvancedConfig = false
+    super(props);
+    let showAdvancedConfig = false;
 
     if (!this.props.result.isInitiated) {
-      this.reset()
+      this.reset();
     }
 
-    const params = this.parseQueryString(this.props.location.search)
+    const params = this.parseQueryString(this.props.location.search);
     if (params.advanced) {
-      showAdvancedConfig = true
+      showAdvancedConfig = true;
     }
 
     this.state = {
-      showAdvancedConfig
-    }
-
-    if (params.url) {
-      const { history } = this.props
-      const url = decodeURIComponent(params.url)
-
-      history.push('/')
-      this.props.actions.handleUrlInput(url)
-      this.startTest(url)
-    }
+      showAdvancedConfig,
+    };
+    this.handleURLProps(params);
   }
 
   reset = () => {
-    this.props.actions.resetConfig()
-    this.props.actions.resetResult()
-  }
+    this.props.actions.resetConfig();
+    this.props.actions.resetResult();
+  };
 
   parseQueryString = (queryString) => {
-    const params = {}
-    queryString.replace('?','').split('&').forEach(p => {
-      const param = p.split('=')
-      params[param[0]] = param[1] ? param[1] : true
-    })
-    return params
-  }
+    const params = {};
+    queryString
+      .replace("?", "")
+      .split("&")
+      .forEach((p) => {
+        const param = p.split("=");
+        params[param[0]] = param[1] ? param[1] : true;
+      });
+    return params;
+  };
 
   startTest = async (url = null) => {
-    const { history } = this.props
-    const useAdvancedConfig = this.state.showAdvancedConfig
+    const { history } = this.props;
+    const useAdvancedConfig = this.state.showAdvancedConfig;
     try {
-      await this.props.actions.prepareTest(url)
-      const testOverview = await this.props.actions.startTest(useAdvancedConfig)
-      history.push(`/test/${getObjectKey(testOverview.id)}${history.location.search}`)
+      await this.props.actions.prepareTest(url);
+      const testOverview = await this.props.actions.startTest(
+        useAdvancedConfig
+      );
+      history.push(
+        `/test/${getObjectKey(testOverview.id)}${history.location.search}`
+      );
     } catch (e) {
-      this.props.actions.resetTestStatus()
+      this.props.actions.resetTestStatus();
     }
-  }
+  };
 
   onSubmit = () => {
-    this.startTest(this.props.config.url)
-  }
+    this.startTest(this.props.config.url);
+  };
 
   onToggleAdvancedConfig = (showAdvancedConfig) => {
-    this.setState({ showAdvancedConfig })
-  }
+    this.setState({ showAdvancedConfig });
+  };
 
   render() {
     return (
       <StartingScreenComponent
-        { ...this.props }
-        { ...this.state}
+        {...this.props}
+        {...this.state}
         onToggleAdvancedConfig={this.onToggleAdvancedConfig}
         onSubmit={this.onSubmit}
       />
-    )
+    );
+  }
+
+  handleURLProps(params) {
+    if (params.mobile !== undefined) {
+      const mobile = params.mobile === "true" ? true : false;
+      this.props.actions.handleMobileSwitch(!mobile);
+    }
+
+    if (params.region !== undefined) {
+      this.props.actions.handleLocationChange(params.region);
+    }
+    if (params.url) {
+      const { history } = this.props;
+      const url = decodeURIComponent(params.url);
+      history.push("/");
+      this.props.actions.handleUrlInput(url);
+      this.startTest(url);
+    }
   }
 }
 
@@ -95,7 +116,7 @@ StartingScreen.propTypes = {
   isBaqendApp: PropTypes.bool.isRequired,
   competitorTest: PropTypes.object.isRequired,
   speedKitTest: PropTypes.object.isRequired,
-}
+};
 
 function mapStateToProps(state) {
   return {
@@ -106,20 +127,25 @@ function mapStateToProps(state) {
     competitorTest: state.result.competitorTest,
     speedKitTest: state.result.speedKitTest,
     result: state.result,
-  }
+  };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators({
-      handleUrlInput,
-      resetResult,
-      resetTestStatus,
-      resetConfig,
-      prepareTest,
-      startTest,
-    }, dispatch),
-  }
+    actions: bindActionCreators(
+      {
+        handleUrlInput,
+        resetResult,
+        resetTestStatus,
+        resetConfig,
+        prepareTest,
+        startTest,
+        handleLocationChange,
+        handleMobileSwitch,
+      },
+      dispatch
+    ),
+  };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(StartingScreen)
+export default connect(mapStateToProps, mapDispatchToProps)(StartingScreen);
