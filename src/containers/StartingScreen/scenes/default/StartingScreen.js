@@ -92,7 +92,6 @@ class StartingScreen extends Component {
   handleURLProps(params) {
     if (params.mobile !== undefined) {
       const mobile = params.mobile === "true" ? true : false;
-      console.log(mobile);
       this.props.actions.handleMobileSwitch(!mobile);
     }
 
