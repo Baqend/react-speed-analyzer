@@ -18,6 +18,7 @@ export interface WptRequest {
   host: string
   priority: string
   responseCode: number
+  protocol?: string
   headers: { response: string[] }
 }
 

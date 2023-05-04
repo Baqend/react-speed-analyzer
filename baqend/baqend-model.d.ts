@@ -66,6 +66,7 @@ declare module 'baqend' {
       type: string
       host: string
       pathname: string
+      protocol?: string
       priority?: string
     }
 

@@ -359,10 +359,11 @@ async function createDomainList(data: WptView): Promise<model.Domain[]> {
 function createResourceList(data: WptView): model.Resource[] {
   const resources: model.Resource[] = []
   for (const request of data.requests) {
-    const { url, host, priority } = request
+    const { url, host, priority, protocol } = request
     resources.push({
       host,
       priority,
+      protocol,
       pathname: url,
       url: request.full_url,
       type: request.request_type

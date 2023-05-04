@@ -72,20 +72,18 @@ export function categorizeIOFact(competitorContentSize, speedKitContentSize, isS
 /**
  * Categorizes whether the website has HTTP/2
  *
- * @param {Object} puppeteer The puppeteer data
+ * @param {boolean} isH1 true, if the website uses H1
  * @param {boolean} isSpeedKitComparison true, if the website has Speed Kit installed
  * @param {Array} applied The facts that are not in need of improvement
  * @param {Array} improvements The facts that are in need of improvement
  */
-export function categorizeSSLFact(puppeteer, isSpeedKitComparison, applied, improvements) {
+export function categorizeSSLFact(isH1, isSpeedKitComparison, applied, improvements) {
   const sslFact = ['Use HTTP/2']
 
-  if (puppeteer) {
-    if (isSpeedKitComparison || puppeteer.protocol === 'h2') {
-      sslFact.push(`Your website uses HTTP/2.`)
-      applied.push(sslFact)
-      return
-    }
+  if (isSpeedKitComparison || !isH1) {
+    sslFact.push(`Your website uses HTTP/2.`)
+    applied.push(sslFact)
+    return
   }
   sslFact.push(`Your website is currently using <strong>HTTP/1.1</strong>. With Speed Kit, everything will be fetched over an encrypted <strong>HTTP/2</strong> connection.`)
   improvements.push(sslFact)
