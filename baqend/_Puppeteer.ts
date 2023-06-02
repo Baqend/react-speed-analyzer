@@ -18,28 +18,6 @@ export enum PuppeteerSegment {
   URLS = 'urls',
 }
 
-/**
- * Resource type as it was perceived by the rendering engine.
- */
-export enum ResourceType {
-  DOCUMENT = 'Document',
-  STYLESHEET = 'Stylesheet',
-  IMAGE = 'Image',
-  MEDIA = 'Media',
-  FONT = 'Font',
-  SCRIPT = 'Script',
-  TEXT_TRACK = 'TextTrack',
-  XHR = 'XHR',
-  FETCH = 'Fetch',
-  EVENT_SOURCE = 'EventSource',
-  WEB_SOCKET = 'WebSocket',
-  MANIFEST = 'Manifest',
-  SIGNED_EXCHANGE = 'SignedExchange',
-  PING = 'Ping',
-  CSP_VIOLATION_REPORT = 'CSPViolationReport',
-  OTHER = 'Other',
-}
-
 export interface PuppeteerResponse {
   query: string
   mobile: boolean
@@ -171,12 +149,13 @@ export class Puppeteer {
       // Generate smart config
       const { url: normalizedUrl, displayUrl, protocol, host, scheme } = data
       const domains = data.domains!
-      const resources = data.resources!
+      const resources: model.Resource[] = data.resources!.map(res => {
+        const { url, type, host, pathname } = res
+        return { url, type, host, pathname }
+      })
       const whitelistArray = whitelist.replace(/\s/g,'').split(',')
-      const isImageOptimization = false // location.includes('-docker') // FIXME only active for new test setup
       const smartConfig =
-        await this.configGenerator.generateSmart(normalizedUrl, mobile, thirdParty, isImageOptimization, preload, app, whitelistArray, {
-          host,
+        await this.configGenerator.generateSmart(normalizedUrl, mobile, thirdParty, preload, app, whitelistArray, {
           domains,
           resources,
         })
@@ -219,7 +198,7 @@ export class Puppeteer {
 
     const response = await this.sendJsonRequest(`http://${host}/`, bodyObject)
     if (response.status !== 200) {
-      const { message, status, stack } = await response.json()
+      const { message, status, stack } = await response.json() as any
       const reasonPhrase = this.reasonPhraseForStatus(status)
       this.db.log.error(`Puppeteer Error: ${message}`, { message, status, reasonPhrase, stack })
 
@@ -230,7 +209,7 @@ export class Puppeteer {
       throw error
     }
 
-    return response.json()
+    return response.json() as unknown as PuppeteerResponse
   }
 
   /**
@@ -242,6 +221,7 @@ export class Puppeteer {
     const body = JSON.stringify(bodyObj)
     const timeout = DEFAULT_TIMEOUT
 
+    // @ts-ignore
     return fetch(url, { method, headers, body, timeout })
   }
 

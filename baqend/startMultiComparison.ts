@@ -11,12 +11,11 @@ export interface StartMultiComparisonParams extends TestParams {
  * Baqend code API call.
  */
 export async function call(db: baqend, data: StartMultiComparisonParams): Promise<model.BulkTest> {
-  const { multiComparisonWorker, multiComparisonFactory, puppeteer } = bootstrap(db)
+  const { multiComparisonWorker, multiComparisonFactory } = bootstrap(db)
 
   // Get necessary options
   const { createdBy, runs, ...params } = data
-  const puppeteerInfo = await puppeteer.analyze(params.url, params.mobile, params.location, true, params.preload, params.app, params.whitelist)
-  const multiComparison = await multiComparisonFactory.create(puppeteerInfo, params, createdBy, runs)
+  const multiComparison = await multiComparisonFactory.create(params, createdBy, runs)
   multiComparisonWorker.next(multiComparison)
 
   return multiComparison

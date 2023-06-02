@@ -332,7 +332,7 @@ export class TestWorker {
   private buildScriptForTestWithConfig(test: model.TestResult): string {
     const { testInfo, location } = test
     const { url, isTestWithSpeedKit, activityTimeout, appName, testOptions, cookie, navigateUrls } = testInfo
-    const config = this.getConfigForTest(test).replace(/{/, '{ preloadBloomFilter: false,')
+    const config = isTestWithSpeedKit ? this.getConfigForTest(test).replace(/{/, '{ preloadBloomFilter: false,') : null
 
     return this.testScriptBuilder.createTestScript(
       url,

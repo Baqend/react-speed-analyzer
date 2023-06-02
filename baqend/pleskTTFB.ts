@@ -17,6 +17,7 @@ interface PleskTTFBResponse {
  */
 export async function calcTTFB(url: string): Promise<PleskTTFBResponse> {
   const requestStart = Date.now()
+  // @ts-ignore
   await fetch(url, { timeout: 15_000 })
 
   const ttfb = Date.now() - requestStart

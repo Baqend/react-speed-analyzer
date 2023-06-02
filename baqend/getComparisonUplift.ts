@@ -51,5 +51,5 @@ export async function get(db: baqend, request: Request, response: Response) {
     throw new Abort('You have to provide a "comparisonId" query parameter.')
   }
 
-  response.send(await getComparisonUplift(db, comparisonId))
+  response.send(await getComparisonUplift(db, comparisonId as string))
 }

@@ -1,8 +1,6 @@
 import { baqend, model } from 'baqend'
-import { bootstrap } from './_compositionRoot'
 import { MultiComparisonFactory } from './_MultiComparisonFactory'
 import { MultiComparisonListener, MultiComparisonWorker } from './_MultiComparisonWorker'
-import { Puppeteer } from './_Puppeteer'
 import {
   isFailed,
   isFinished,
@@ -70,13 +68,13 @@ export class BulkComparisonWorker implements MultiComparisonListener {
             return
           }
 
-          if (this.isBulkIncomplete(multiComparisons)){
-            setIncomplete(bulkComparison)
+          if (this.isBulkFailed(multiComparisons)) {
+            setFailed(bulkComparison)
             return
           }
 
-          if (this.isBulkFailed(multiComparisons)) {
-            setFailed(bulkComparison)
+          if (this.isBulkIncomplete(multiComparisons)){
+            setIncomplete(bulkComparison)
             return
           }
 
@@ -88,9 +86,7 @@ export class BulkComparisonWorker implements MultiComparisonListener {
 
       // Start next multi comparison
       const { runs, ...params } = bulkComparison.comparisonsToStart[nextIndex]
-      const puppeteer = await this.getPuppeteerInfo(params.url, params.mobile, params.location, params.preload, params.app, params.whitelist)
-
-      const multiComparison = await this.multiComparisonFactory.create(puppeteer, params, createdBy, runs)
+      const multiComparison = await this.multiComparisonFactory.create(params, createdBy, runs)
 
       await bulkComparison.ready()
       await bulkComparison.optimisticSave((it: model.BulkComparison) => {
@@ -126,19 +122,6 @@ export class BulkComparisonWorker implements MultiComparisonListener {
   }
 
   /**
-   * Gets the Puppeteer information of a given url
-   */
-  async getPuppeteerInfo(url: string, mobile: boolean, location: string, preload: boolean, app: string, whitelist: string): Promise<model.Puppeteer | null> {
-    const { puppeteer } = bootstrap(this.db)
-    try {
-      return await this.callPuppeteerWithRetries(puppeteer, url, mobile, location, preload, app, whitelist)
-    } catch ({ message, stack }) {
-      this.db.log.error(`Puppeteer failed for ${url}: ${message}`, { stack })
-      return null
-    }
-  }
-
-  /**
    * Cancels the given bulk comparison.
    */
   async cancel(bulkComparison: model.BulkComparison): Promise<boolean> {
@@ -161,30 +144,8 @@ export class BulkComparisonWorker implements MultiComparisonListener {
   async handleMultiComparisonFinished(multiComparison: model.BulkTest): Promise<void> {
     const bulkComparison = await this.db.BulkComparison.find().in('multiComparisons', multiComparison.id).singleResult()
     if (bulkComparison) {
-      console.log(`Multi comparison finished: ${multiComparison.id}`)
+      this.db.log.info(`Multi comparison finished: ${multiComparison.id}`)
       this.next(bulkComparison)
-    }
-  }
-
-  private async callPuppeteerWithRetries(
-    puppeteer: Puppeteer,
-    url: string,
-    mobile: boolean,
-    location: string,
-    preload: boolean,
-    app: string,
-    whitelist: string,
-    retries = 0
-  ): Promise<model.Puppeteer> {
-    try {
-      return await puppeteer.analyze(url, mobile, location, true, preload, app, whitelist)
-    } catch (err) {
-      if (retries < 3) {
-        await new Promise<void>(resolve => setTimeout(() => resolve(), 10000))
-        return this.callPuppeteerWithRetries(puppeteer, url, mobile, location, preload, app, whitelist, retries + 1)
-      }
-
-      throw err
     }
   }
 

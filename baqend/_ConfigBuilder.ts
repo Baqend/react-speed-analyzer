@@ -1,5 +1,5 @@
 import { Condition, Config, ImageRule, ResourceRule, Rule, StripParamsRule } from './_Config'
-import { PuppeteerResource } from './_Puppeteer'
+import { model } from 'baqend'
 
 export const CONFIG_MAX_SIZE: number = 50
 
@@ -97,14 +97,14 @@ export class ConfigBuilder {
     this.stripQueryParams.push(stripQueryParamsRule);
   }
 
-  public matchOnWhitelist(puppeteerResource: PuppeteerResource): boolean {
+  public matchOnWhitelist(resource: model.Resource): boolean {
     return this.whitelist.some((rule) => {
       //Remove protocol from URL
-      const strippedUrl = puppeteerResource.url.replace(/(^\w+:|^)\/\//, '');
+      const strippedUrl = resource.url.replace(/(^\w+:|^)\/\//, '');
       // rule could be url, host or pathName
       const isUrlOnWhitelist = rule.url ? this.testCondition(strippedUrl, rule.url) : true
-      const isHostOnWhitelist = rule.host ? this.testCondition(puppeteerResource.host, rule.host) : true
-      const isPathnameOnWhitelist = rule.pathname ? this.testCondition(puppeteerResource.pathname, rule.pathname) : true
+      const isHostOnWhitelist = rule.host ? this.testCondition(resource.host, rule.host) : true
+      const isPathnameOnWhitelist = rule.pathname ? this.testCondition(resource.pathname, rule.pathname) : true
 
       return isUrlOnWhitelist && isHostOnWhitelist && isPathnameOnWhitelist
     });

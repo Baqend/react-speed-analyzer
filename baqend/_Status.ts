@@ -20,10 +20,6 @@ export interface StatefulEntity {
   hasFinished: boolean
 }
 
-export function isWaitForPuppeteer(entity: StatefulEntity) {
-  return !entity.hasFinished && hasStatus(entity, Status.WAIT_FOR_PUPPETEER)
-}
-
 export function isQueued(entity: StatefulEntity) {
   return !entity.hasFinished && hasStatus(entity, Status.QUEUED)
 }

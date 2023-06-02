@@ -102,5 +102,5 @@ const html = (id: string) => `
 `
 
 export function get(db: baqend, req: Request, res: Response) {
-  res.send(html(req.query.id))
+  res.send(html(req.query.id as string))
 }

@@ -357,7 +357,11 @@ exports.post = async function (db: baqend, req: Request, res: Response) {
 
 exports.get = async function (db: baqend, req: Request, res: Response) {
   try {
-    const param = req.query.url
+    if (!req.query.url) {
+      new Abort('No valid url as query parameter')
+    }
+
+    const param = req.query.url as string
     const input = new URL(param)
     const API_KEY = credentials.cruxApi
     var response = await fetch(
@@ -367,7 +371,7 @@ exports.get = async function (db: baqend, req: Request, res: Response) {
         body: JSON.stringify({origin: param}),
       }
     )
-    const json = await response.json()
+    const json: any = await response.json()
     db.log.info("CRUX Response: ", json)
     const metrics = json.record.metrics
     const fastString = metrics["largest_contentful_paint"].histogram[0].density.toLocaleString(undefined, {

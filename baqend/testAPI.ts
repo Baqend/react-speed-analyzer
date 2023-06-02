@@ -36,12 +36,12 @@ export async function get(db: baqend, request: Request, response: Response) {
   }
 
   const pageTest = new Pagetest()
-  const status = await pageTest.getTestStatus(wptTestId)
+  const status = await pageTest.getTestStatus(wptTestId as string)
   if (!status || status.statusCode !== 200) {
     response.send({ testResult: null })
   }
 
-  const testResult = await pageTest.getTestResults(wptTestId, DEFAULT_RESULT_OPTIONS)
+  const testResult = await pageTest.getTestResults(wptTestId as string, DEFAULT_RESULT_OPTIONS)
   response.send({ testResult })
 }
 

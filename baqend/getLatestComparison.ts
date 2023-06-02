@@ -71,11 +71,11 @@ export async function getLatestComparison(db: baqend, url: string, isSpeedKitCom
  */
 export async function get(db: baqend, request: Request, response: Response) {
   const { query: { url, speedKit: isSpeedKitComparisonStr = 'false' } } = request
-  const isSpeedKitComparison = booleanOf(isSpeedKitComparisonStr)
+  const isSpeedKitComparison = booleanOf(isSpeedKitComparisonStr as string | boolean)
 
   if (!url) {
     throw new Abort('You have to provide a "url" query parameter.')
   }
 
-  response.send(await getLatestComparison(db, url, isSpeedKitComparison))
+  response.send(await getLatestComparison(db, url as string, isSpeedKitComparison))
 }

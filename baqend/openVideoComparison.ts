@@ -41,5 +41,5 @@ const html = (ids: string[]) => `
 `
 
 export function get(db: baqend, req: Request, res: Response) {
-  res.send(html(req.query.ids))
+  res.send(html(req.query.ids as string[]))
 }

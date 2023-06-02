@@ -62,6 +62,14 @@ declare module 'baqend' {
       isAdDomain: boolean
     }
 
+    interface Resource extends UrlAware {
+      type: string
+      host: string
+      pathname: string
+      protocol?: string
+      priority?: string
+    }
+
     interface BulkComparison extends binding.Entity {
       status: StatusString;
       hasFinished: boolean;
@@ -155,15 +163,16 @@ declare module 'baqend' {
     interface TestInfo {
       url: string
       isTestWithSpeedKit: boolean
-      isSpeedKitComparison: boolean
       activityTimeout: number
       skipPrewarm: boolean
       preload: boolean
       ignoreConfig: boolean
       testOptions: TestOptions
       cookie: string
-      appName: string | null
       navigateUrls: string[]
+      whitelist?: string
+      appName?: string
+      isSpeedKitComparison?: boolean
     }
 
     interface TestResult extends binding.Entity {
@@ -192,6 +201,8 @@ declare module 'baqend' {
       checked: Date;
       wptWaterfall: binding.File | null;
       wptFilmstrip: binding.File | null;
+      controllingSW: string | null;
+      framework: string;
     }
 
     interface Prewarms extends binding.Entity {
@@ -282,6 +293,7 @@ declare module 'baqend' {
       requests: number;
       failedRequests: number;
       domains: Domain[];
+      resources: Resource[];
       bytes: number;
       domElements: number;
       basePageCDN: string;
@@ -295,7 +307,7 @@ declare module 'baqend' {
 
     interface ConfigAnalysis extends binding.Managed {
       configMissing: boolean;
-      swPath: string;
+      swPath: string | null;
       swPathMatches: boolean;
       isDisabled: boolean;
     }

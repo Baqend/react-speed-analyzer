@@ -40,11 +40,13 @@ class ResultAction extends Component {
   getCTAContent = () => {
     const improvements = [];
     const applied = [];
-    const { isSpeedKitComparison } = this.props.testOverview;
+    const { isSpeedKitComparison, puppeteer } = this.props.testOverview;
 
     // Request Latency
     const competitorData = this.props.competitorTest.firstView || {};
     const speedKitData = this.props.speedKitTest.firstView || {};
+    const hasPuppeteer = !!puppeteer && !!puppeteer.protocol;
+    const isH1 = hasPuppeteer ? puppeteer.protocol !== 'h2' : competitorData.resources.find(e => e.type === 'Document' && /http\/1/i.test(e.protocol));
     categorizeTtfbFact(
       competitorData.ttfb,
       speedKitData.ttfb,
@@ -71,7 +73,7 @@ class ResultAction extends Component {
 
     // SSL information
     categorizeSSLFact(
-      this.props.testOverview.puppeteer,
+      isH1,
       isSpeedKitComparison,
       applied,
       improvements

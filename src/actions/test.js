@@ -203,7 +203,7 @@ const computeTestProgress = () => ({
 
       const getUpperBorder = () => {
         const { testOverview, speedKitTest, competitorTest } = getState().result
-        const { puppeteer: puppeteerFinished, hasFinished: testOverviewFinished } = testOverview
+        const { hasFinished: testOverviewFinished } = testOverview
         const { hasFinished: speedKitFinished, webPagetests } = speedKitTest
         const { hasFinished: competitorFinished } = competitorTest
 
@@ -214,7 +214,7 @@ const computeTestProgress = () => ({
         }
 
         // Check if the puppeteer analysis is finished.
-        if (!puppeteerFinished) {
+        if (!competitorFinished) {
           return 50
         }
 
