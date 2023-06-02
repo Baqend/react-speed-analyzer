@@ -106,7 +106,7 @@ const initialState = {
   speedKitTest: {},
   competitorError: false,
   speedKitError: false,
-  mainMetric: 'firstMeaningfulPaint',
+  mainMetric: 'largestContentfulPaint',
   secondaryMetric: 'speedIndex',
   whiteListCandidates: [],
   startTime: null,

@@ -13,16 +13,16 @@ import Barcut from "../BarCut/Barcut";
 
 const userMetrics = [
   {
-    name: "firstMeaningfulPaint",
-    label: "1st Meaningful Paint",
-    tooltip:
-      "Represents the time when a page's primary content appears on the screen.",
-  },
-  {
     name: "largestContentfulPaint",
     label: "Largest Contentful Paint",
     tooltip:
       "Represents the time when the largest content element in the viewport becomes visible.",
+  },
+  {
+    name: "firstMeaningfulPaint",
+    label: "1st Meaningful Paint",
+    tooltip:
+      "Represents the time when a page's primary content appears on the screen.",
   },
   {
     name: "speedIndex",
@@ -95,16 +95,7 @@ class ResultMetrics extends Component {
     const positiveFactors = Object.entries(testOverview.factors)
       .map(([metric, factor]) => ({ metric, factor }))
       .filter((entry) => {
-        const mainMetric = this.props.result.mainMetric;
-        const metricToRemove =
-          mainMetric === "largestContentfulPaint"
-            ? "firstMeaningfulPaint"
-            : "largestContentfulPaint";
-        return (
-          entry.factor > 1 &&
-          entry.metric !== metricToRemove &&
-          entry.metric !== "load"
-        );
+        return entry.factor > 1 && entry.metric !== "load";
       }) // Load event should not be displayed as metric
       .sort((curr, prev) => {
         if (curr.metric === "ttfb") {
@@ -207,14 +198,6 @@ class ResultMetrics extends Component {
     return (
       <div className="result__details-metrics">
         {metrics
-          .filter((entry) => {
-            const mainMetric = this.props.result.mainMetric;
-            const metricToRemove =
-              mainMetric === "largestContentfulPaint"
-                ? "firstMeaningfulPaint"
-                : "largestContentfulPaint";
-            return entry.name !== metricToRemove;
-          })
           .map((metric, index) => {
             const absolute = calculateAbsolute(
               competitorData[metric.name],
