@@ -6,7 +6,7 @@ import { ConfigGenerator } from './_ConfigGenerator'
 import { getTLD } from './_getSpeedKitUrl'
 import { generateHash, truncateUrl, urlToFilename } from './_helpers'
 import { DataType, Serializer } from './_Serializer'
-import { setFailed, setRunning } from './_Status'
+import { setFailed, setRunning, setSuccess } from './_Status'
 import { TestBuilder } from './_TestBuilder'
 import { TestFactory } from './_TestFactory'
 import { TestParams } from './_TestParams'
@@ -138,23 +138,22 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
    * Sets the given error on the comparison.
    */
   async updateComparisonWithError(comparison: model.TestOverview, message: string, status: number): Promise<void> {
-    // use default params => needed for plesk
-    comparison.caching = false
-    comparison.mobile = false
-    comparison.isSpeedKitComparison = false
-    comparison.error = { message, status }
+    if (comparison.competitorTestResult) {
+      await comparison.competitorTestResult.optimisticSave((test: model.TestResult) => setFailed(test))
+    }
 
-    // Create failed tests
-    const [competitorTest, speedKitTest] = await Promise.all([
-      this.createCompetitorTestWithError(comparison.url),
-      this.createSpeedKitTestWithError(comparison.url),
-    ])
+    if (comparison.speedKitTestResult) {
+      await comparison.speedKitTestResult.optimisticSave((test: model.TestResult) => setFailed(test))
+    }
 
-    comparison.competitorTestResult = competitorTest
-    comparison.speedKitTestResult = speedKitTest
-    setFailed(comparison)
-
-    await comparison.save()
+    await comparison.optimisticSave((comp: model.TestOverview) => {
+      // use default params => needed for plesk
+      comp.caching = false
+      comp.mobile = false
+      comp.isSpeedKitComparison = false
+      comp.error = { message, status }
+      setFailed(comp)
+    })
   }
 
   /**
@@ -279,26 +278,5 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
    */
   private createTest(url: string, isClone: boolean, params: Required<TestParams>) {
     return this.testFactory.create(url, isClone, params)
-  }
-
-  /**
-   * Creates a failed competitor test.
-   */
-  private createCompetitorTestWithError(url: string): Promise<model.TestResult> {
-    return this.createTestWithError(url, false)
-  }
-
-  /**
-   * Creates a failed Speed Kit test.
-   */
-  private createSpeedKitTestWithError(url: string): Promise<model.TestResult> {
-    return this.createTestWithError(url, true)
-  }
-
-  /**
-   * Creates a failed test.
-   */
-  private createTestWithError(url: string, isClone: boolean) {
-    return this.testFactory.createWithError(url, isClone)
   }
 }

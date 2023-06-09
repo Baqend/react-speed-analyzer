@@ -69,7 +69,7 @@ export class WebPagetestResultHandler {
             return this.handleViewportError(test, webPagetest)
           }
 
-          if (test.isClone && !test.speedKitConfig.includes('SCRAPING')) {
+          if (test.isClone && !!test.speedKitConfig && !test.speedKitConfig.includes('SCRAPING')) {
             this.db.log.info(`Retry test with scraping`, { test: test.id, wptTestId, error: error.stack })
             return this.retryTestWithScraping(test, webPagetest)
           }

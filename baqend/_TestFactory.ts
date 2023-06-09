@@ -31,13 +31,6 @@ export class TestFactory implements AsyncFactory<model.TestResult> {
     return testResult.save()
   }
 
-  createWithError(url: string, isClone: boolean) {
-    const testResult = new this.db.TestResult({ url, isClone, testDataMissing: true })
-    setFailed(testResult)
-
-    return testResult.save()
-  }
-
   /**
    * Creates a string that is used to execute the WebPageTest with some custom commands.
    * If the URL is http only, it adds an extra flag to inject SpeedKit into non secure websites.
