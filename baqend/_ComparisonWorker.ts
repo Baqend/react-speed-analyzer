@@ -1,6 +1,7 @@
 import { baqend, model } from 'baqend'
 import { ComparisonFactory } from './_ComparisonFactory'
-import { createFilmStrip, parallelize } from './_helpers'
+import { cancelTest, createFilmStrip, parallelize } from './_helpers'
+import { Pagetest } from './_Pagetest'
 import {
   isFailed,
   isFinished,
@@ -31,6 +32,7 @@ export interface ComparisonListener {
 export class ComparisonWorker implements TestListener {
   constructor(
     private readonly db: baqend,
+    private readonly api: Pagetest,
     private testWorker: TestWorker,
     private comparisonFactory: ComparisonFactory,
     private listener?: ComparisonListener,
@@ -56,7 +58,7 @@ export class ComparisonWorker implements TestListener {
     const started = Math.ceil((Date.now() - comparison.updatedAt.getTime()) / 1000)
     if (started > 300) {
       const message = `Comparison was still not finished after ${started} seconds.`
-      await this.comparisonFactory.updateComparisonWithError(comparison, message, 599)
+      await this.comparisonFactory.updateComparisonWithError(comparison, this.api, { message, status: 599 })
       return
     }
 
@@ -123,7 +125,7 @@ export class ComparisonWorker implements TestListener {
     // Cancel all tests
     await [comparison.competitorTestResult, comparison.speedKitTestResult]
       .filter(test => isUnfinished(test))
-      .map(test => this.testWorker.cancel(test))
+      .map(test => cancelTest(test, this.api))
       .reduce(parallelize)
 
     // Mark comparison as cancelled

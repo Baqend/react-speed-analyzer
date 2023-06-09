@@ -1,6 +1,8 @@
-import { baqend, binding } from 'baqend'
+import { baqend, binding, model } from 'baqend'
 import { concat, filter, map, mapValues, mergeWith, pick, reduce } from 'lodash'
 import {Blob} from 'buffer'
+import { Pagetest } from './_Pagetest'
+import { isFinished, isUnfinished, setCanceled } from './_Status'
 import { toFile } from './_toFile'
 import credentials from './credentials'
 
@@ -246,4 +248,33 @@ export async function createFilmStrip(
   } catch {
     return null;
   }
+}
+
+/**
+ * Cancels the given test.
+ */
+export async function cancelTest(test: model.TestResult, api: Pagetest): Promise<boolean> {
+  if (isFinished(test)) {
+    return false
+  }
+
+  if (!!test.webPagetests && test.webPagetests.length >= 1) {
+    // Cancel each WebpageTest
+    await test.webPagetests
+      .filter(webPagetest => isUnfinished(webPagetest))
+      .map(webPagetest => api.cancelTest(webPagetest.testId))
+      .reduce(parallelize, Promise.resolve())
+  }
+
+  // Mark test and WebPagetests as canceled
+  await test.optimisticSave(() => {
+    setCanceled(test)
+    if (!!test.webPagetests) {
+      test.webPagetests
+        .filter(webPagetest => isUnfinished(webPagetest))
+        .forEach(webPagetest => setCanceled(webPagetest))
+    }
+  })
+
+  return true
 }

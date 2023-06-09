@@ -4,9 +4,10 @@ import { Config } from './_Config'
 import { ConfigCache } from './_ConfigCache'
 import { ConfigGenerator } from './_ConfigGenerator'
 import { getTLD } from './_getSpeedKitUrl'
-import { generateHash, truncateUrl, urlToFilename } from './_helpers'
+import { cancelTest, generateHash, truncateUrl, urlToFilename } from './_helpers'
+import { Pagetest } from './_Pagetest'
 import { DataType, Serializer } from './_Serializer'
-import { setFailed, setRunning, setSuccess } from './_Status'
+import { setFailed, setRunning } from './_Status'
 import { TestBuilder } from './_TestBuilder'
 import { TestFactory } from './_TestFactory'
 import { TestParams } from './_TestParams'
@@ -137,13 +138,20 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
   /**
    * Sets the given error on the comparison.
    */
-  async updateComparisonWithError(comparison: model.TestOverview, message: string, status: number): Promise<void> {
-    if (comparison.competitorTestResult) {
-      await comparison.competitorTestResult.optimisticSave((test: model.TestResult) => setFailed(test))
+  async updateComparisonWithError(
+    comparison: model.TestOverview,
+    api: Pagetest,
+    error: { message: string, status: number }
+  ): Promise<void> {
+    const { competitorTestResult, speedKitTestResult } = comparison
+    if (competitorTestResult) {
+      cancelTest(competitorTestResult, api)
+      await competitorTestResult.optimisticSave((test: model.TestResult) => setFailed(test))
     }
 
-    if (comparison.speedKitTestResult) {
-      await comparison.speedKitTestResult.optimisticSave((test: model.TestResult) => setFailed(test))
+    if (speedKitTestResult) {
+      cancelTest(speedKitTestResult, api)
+      await speedKitTestResult.optimisticSave((test: model.TestResult) => setFailed(test))
     }
 
     await comparison.optimisticSave((comp: model.TestOverview) => {
@@ -151,7 +159,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
       comp.caching = false
       comp.mobile = false
       comp.isSpeedKitComparison = false
-      comp.error = { message, status }
+      comp.error = error
       setFailed(comp)
     })
   }

@@ -8,7 +8,7 @@ import { resolveUrl } from './resolveUrl'
  * Baqend code API call.
  */
 export async function post(db: baqend, req: Request, res: Response) {
-  const { comparisonWorker, comparisonFactory } = bootstrap(db)
+  const { comparisonWorker, comparisonFactory, pagetest } = bootstrap(db)
 
   const updateWithResolvedUrl = async (db: baqend, params: TestParams, comparison: model.TestOverview) => {
     try {
@@ -18,7 +18,7 @@ export async function post(db: baqend, req: Request, res: Response) {
 
       return updatedComparison
     } catch ({ message, status = 500 }) {
-      await comparisonFactory.updateComparisonWithError(comparison, message, status)
+      await comparisonFactory.updateComparisonWithError(comparison, pagetest, { message, status })
       return comparison
     }
   }

@@ -45,7 +45,7 @@ export function bootstrap(db: baqend) {
 
   // Create workers
   const testWorker = new TestWorker(db, pagetest, webPagetestResultHandler, configGenerator, testScriptBuilder, serializer)
-  const comparisonWorker = new ComparisonWorker(db, testWorker, comparisonFactory)
+  const comparisonWorker = new ComparisonWorker(db, pagetest, testWorker, comparisonFactory)
   const multiComparisonWorker = new MultiComparisonWorker(db, comparisonFactory, comparisonWorker)
   const bulkComparisonWorker = new BulkComparisonWorker(db, multiComparisonFactory, multiComparisonWorker)
 

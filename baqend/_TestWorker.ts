@@ -1,8 +1,8 @@
 import { baqend, model } from 'baqend'
 import { ConfigGenerator } from './_ConfigGenerator'
-import { parallelize } from './_helpers'
+import { cancelTest } from './_helpers'
 import { DataType, Serializer } from './_Serializer'
-import { isFinished, isIncomplete, isUnfinished, setCanceled, setFailed, setRunning, Status } from './_Status'
+import { isFinished, isIncomplete, setFailed, setRunning, Status } from './_Status'
 import { DEFAULT_TIMEOUT } from './_TestBuilder'
 import { TestScriptBuilder } from './_TestScriptBuilder'
 import { Pagetest } from './_Pagetest'
@@ -77,7 +77,7 @@ export class TestWorker {
       // Check if the test was not updated within the last two hours
       const isOlderThanTwoHours = (new Date().getTime() - test.updatedAt.getTime()) / ONE_HOUR > 2
       if (test.status === Status.RUNNING && isOlderThanTwoHours) {
-        this.cancel(test)
+        cancelTest(test, this.api)
         await test.optimisticSave(() => setFailed(test))
 
         return
@@ -109,33 +109,6 @@ export class TestWorker {
     } catch (error) {
       this.db.log.warn(`Error while next iteration`, { id: test.id, error: error.stack })
     }
-  }
-
-  /**
-   * Cancels the given test.
-   */
-  async cancel(test: model.TestResult): Promise<boolean> {
-    if (isFinished(test)) {
-      return false
-    }
-
-    if (test.webPagetests.length >= 1) {
-      // Cancel each WebpageTest
-      await test.webPagetests
-        .filter(webPagetest => isUnfinished(webPagetest))
-        .map(webPagetest => this.api.cancelTest(webPagetest.testId))
-        .reduce(parallelize, Promise.resolve())
-    }
-
-    // Mark test and WebPagetests as canceled
-    await test.optimisticSave(() => {
-      setCanceled(test)
-      test.webPagetests
-        .filter(webPagetest => isUnfinished(webPagetest))
-        .forEach(webPagetest => setCanceled(webPagetest))
-    })
-
-    return true
   }
 
   /**
