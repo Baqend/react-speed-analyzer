@@ -113,7 +113,8 @@ export class WebPagetestResultHandler {
       test.speedKitConfig = test.speedKitConfig.replace('{', '{ customVariation: [{\n' +
         '    rules: [{ contentType: ["navigate", "fetch"] }],\n' +
         '    variationFunction: () => "SCRAPING"\n' +
-        '  }],')
+        '  }],\n' +
+        'userAgentDetection: false,')
 
       const wptIndex = test.webPagetests.findIndex(wptTest => wptTest.testId === webPagetest.testId)
       test.webPagetests.splice(wptIndex, 1)

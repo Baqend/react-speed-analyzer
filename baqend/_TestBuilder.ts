@@ -32,6 +32,7 @@ export const DEFAULT_PARAMS: Required<TestParams> = {
   cookie: '',
   hostname: '',
   navigateUrls: [],
+  panicMode: false,
 }
 
 /**

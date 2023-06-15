@@ -96,6 +96,12 @@ export interface TestParams {
    * A list of URLs which should be navigated to (multi navigation tests).
    */
   navigateUrls?: string[];
+
+  /**
+   * Whether to automatically retry the comparison until the ${@link PANIC_MODE_MIN_FACTOR } was
+   * reached or the ${@link PANIC_MODE_RETRY_LIMIT} was exceeded.
+   * */
+  panicMode?: boolean;
 }
 
 export interface MultiTestParams extends TestParams {

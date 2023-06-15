@@ -153,9 +153,11 @@ function pickResults(bulkTest: model.BulkTest, prefix: TestResultFieldPrefix): m
 /**
  * Updates aggregates on a bulk test.
  */
-export async function updateMultiComparison(db: baqend, bulkTestRef: model.BulkTest): Promise<model.BulkTest> {
-  const bulkTest = bulkTestRef
-
+export async function updateMultiComparison(
+  db: baqend,
+  bulkTest: model.BulkTest,
+  incrementCompletedCount = true,
+): Promise<model.BulkTest> {
   try {
     // We must not use the refresh option because we have the same DB object when updating test results.
     await bulkTest.load({ depth: 2 })
@@ -165,7 +167,9 @@ export async function updateMultiComparison(db: baqend, bulkTestRef: model.BulkT
     bulkTest.factors = aggregateBulkTestFactors(db, bulkTest)
     bulkTest.bestFactors = calcBestFactors(db, bulkTest)
     bulkTest.worstFactors = calcWorstFactors(db, bulkTest)
-    bulkTest.completedRuns += 1
+    if (incrementCompletedCount) {
+      bulkTest.completedRuns += 1
+    }
 
     return bulkTest.save()
   } catch (e) {

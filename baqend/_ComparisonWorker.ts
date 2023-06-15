@@ -86,7 +86,7 @@ export class ComparisonWorker implements TestListener {
       await chooseFMP(competitor, speedKit)
       const skTestId = speedKit.webPagetests[speedKit.webPagetests.length - 1].testId
       const compTestId = competitor.webPagetests[competitor.webPagetests.length - 1].testId
-      const wptFilmstrip = await createFilmStrip(this.db, [compTestId, skTestId], url, !mobile);
+      const wptFilmstrip = await createFilmStrip(this.db, [compTestId, skTestId], url, !mobile)
 
       await comparison.optimisticSave(() => {
         const failed = isFailed(competitor) && isFailed(speedKit)
@@ -150,7 +150,7 @@ export class ComparisonWorker implements TestListener {
     }
   }
 
-  private calculateFactors(compResult: model.TestResult, skResult: model.TestResult) {
+  calculateFactors(compResult: model.TestResult, skResult: model.TestResult) {
     if (skResult.testDataMissing || compResult.testDataMissing || !compResult.firstView || !skResult.firstView) {
       return null
     }
