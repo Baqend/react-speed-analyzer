@@ -3,6 +3,10 @@ import { toASCII } from 'punycode'
 
 export async function resolveUrl(url: string, retried = false): Promise<string> {
   try {
+    // quick fix to allow testing of kik.de
+    if (/kik\.de/.test(url) || /eu\.puma\.com/.test(url)) {
+      return url
+    }
     const preparedUrl = getPreparedUrl(url, retried)
     const response = await fetchUrl(preparedUrl)
     return response.url
@@ -22,6 +26,7 @@ async function fetchUrl(url: string): Promise<Response> {
   const options = {
     method: 'GET',
     redirect: 'follow' as RequestRedirect,
+    follow: 10,
     signal: controller.signal
   }
 

@@ -27,7 +27,7 @@ export class BulkComparisonWorker implements MultiComparisonListener {
   }
 
   async next(bulkComparison: model.BulkComparison) {
-    this.db.log.debug(`BulkComparisonWorker.next("${bulkComparison.key}")`)
+    this.db.log.info(`BulkComparisonWorker.next("${bulkComparison.key}")`)
     try {
       // Ensure bulk comparison is loaded with depth 1
       await bulkComparison.load({ depth: 1, refresh: true })
@@ -142,7 +142,10 @@ export class BulkComparisonWorker implements MultiComparisonListener {
   }
 
   async handleMultiComparisonFinished(multiComparison: model.BulkTest): Promise<void> {
-    const bulkComparison = await this.db.BulkComparison.find().in('multiComparisons', multiComparison.id).singleResult()
+    const bulkComparison = await this.db.BulkComparison.find()
+      .greaterThanOrEqualTo('createdAt', new Date(Date.now() - 1000 * 60 * 120))
+      .in('multiComparisons', multiComparison.id).singleResult()
+
     if (bulkComparison) {
       this.db.log.info(`Multi comparison finished: ${multiComparison.id}`)
       this.next(bulkComparison)

@@ -124,7 +124,10 @@ export class MultiComparisonWorker implements ComparisonListener {
    * Triggers the re-aggregation of a multi comparison.
    */
   async handleComparisonFinished(comparison: model.TestOverview): Promise<void> {
-    const multiComparison = await this.db.BulkTest.find().in('testOverviews', comparison.id).singleResult()
+    const multiComparison = await this.db.BulkTest.find()
+      .greaterThanOrEqualTo('createdAt', new Date(Date.now() - 1000 * 60 * 120))
+      .in('testOverviews', comparison.id).singleResult()
+
     if (multiComparison) {
       this.db.log.info(`Comparison finished: ${comparison.id}`)
 

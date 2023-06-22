@@ -24,6 +24,6 @@ export async function run(db: baqend) {
 
   for (const bulkComparison of bulkComparisons) {
     db.log.info(`Running bulkComparisonWorker job for comparison ${bulkComparison.key}`)
-    await bulkComparisonWorker.next(bulkComparison)
+    bulkComparisonWorker.next(bulkComparison)
   }
 }
