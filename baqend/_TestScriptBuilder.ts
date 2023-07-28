@@ -669,7 +669,8 @@ export class TestScriptBuilder {
    */
   private addCookies(ts: TestScript, cookie: string, url: string): void {
     const origin = new URL(url).origin;
-    const cookieList = DEFAULT_COOKIES.concat(cookie.split(';'));
+    const defaultCookies = url.startsWith('https://www.dictum.com') ? [] : DEFAULT_COOKIES;
+    const cookieList = defaultCookies.concat(cookie.split(';'));
     cookieList.forEach(cookie => ts.setCookie(cookie, origin));
   }
 
