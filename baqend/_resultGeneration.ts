@@ -248,7 +248,7 @@ async function createRun(db: baqend, data: WptView | undefined, testId: string, 
  * @param requests An array of request objects.
  */
 function hasDocumentRequestFailed(requests: WptRequest[]): boolean {
-  const firstDocument = requests.find((req) => {
+  const assetRequests = requests.filter((req) => {
     const requestUrl = req.url
     const servedByBaqend = req.headers.response.indexOf('via: baqend') !== -1
     if (!requestUrl || !servedByBaqend) {
@@ -258,7 +258,8 @@ function hasDocumentRequestFailed(requests: WptRequest[]): boolean {
     return requestUrl.startsWith('/v1/asset/')
   })
 
-  return firstDocument ? firstDocument.responseCode >= 400 : false;
+  // todo: add comment
+  return assetRequests.length ? (assetRequests[0].responseCode >= 400 || assetRequests[1].responseCode) >= 400 : false
 }
 
 /**

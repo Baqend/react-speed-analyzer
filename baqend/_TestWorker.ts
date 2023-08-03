@@ -50,6 +50,7 @@ export class TestWorker {
   }
 
   async next(test: model.TestResult): Promise<void> {
+    this.db.log.info('foo next')
     this.db.log.debug(`TestWorker.next("${test.key}")`)
     try {
       // Ensure test is loaded
@@ -115,6 +116,8 @@ export class TestWorker {
    * Handles the result of a test from WebPagetest.
    */
   async handleWebPagetestResult(wptTestId: string): Promise<void> {
+    this.db.log.info('foo handleWebPagetestResult 1')
+
     try {
       const test = await this.db.TestResult.find().equal('webPagetests.testId', wptTestId).singleResult()
       if (!test) {
@@ -128,6 +131,8 @@ export class TestWorker {
         return
       }
 
+      this.db.log.info('foo handleWebPagetestResult 2')
+
       const updatedTest = await this.webPagetestResultHandler.handleResult(test, webPagetest)
       this.next(updatedTest).catch((err) => this.db.log.error(err.message, err))
     } catch (error) {
@@ -139,6 +144,7 @@ export class TestWorker {
    * Handles the failure of a test from WebPagetest.
    */
   async handleWebPagetestFailure(wptTestId: string): Promise<void> {
+    this.db.log.info('foo failure')
     try {
       const test = await this.db.TestResult.find().equal('webPagetests.testId', wptTestId).singleResult()
       if (!test) {
@@ -163,6 +169,7 @@ export class TestWorker {
    * Checks whether the performance run of a given test is incomplete.
    */
   private isPerformanceRunIncomplete(test: model.TestResult): boolean {
+    this.db.log.info('foo incomplete')
     if (test.webPagetests.length === 0) {
       return false
     }
@@ -176,6 +183,7 @@ export class TestWorker {
    * Determines whether a prewarm test against WebPagetest should be started.
    */
   private shouldStartPrewarmWebPagetest(test: model.TestResult): boolean {
+    this.db.log.info('foo shouldStartPrewarmWebPagetest')
     if (test.testInfo.skipPrewarm) {
       return false
     }
@@ -186,6 +194,7 @@ export class TestWorker {
    * Determines whether a performance test against WebPagetest should be started.
    */
   private shouldStartPerformanceWebPagetest(test: model.TestResult): boolean {
+    this.db.log.info('foo shouldStartPerformanceWebPagetest')
     return test.webPagetests.map(wpt => wpt.testType).indexOf('performance') === -1
   }
 
@@ -193,6 +202,7 @@ export class TestWorker {
    * Checks whether all WebPagetest tests have been finished or not.
    */
   private hasNotFinishedWebPagetests(test: model.TestResult): boolean {
+    this.db.log.info('foo hasNotFinishedWebPagetests')
     return test.webPagetests.filter(wpt => !isFinished(wpt)).length > 0
   }
 
@@ -200,6 +210,7 @@ export class TestWorker {
    * Is executed when WebPagetest tests are currently running.
    */
   private async checkWebPagetestsStatus(test: model.TestResult): Promise<void> {
+    this.db.log.info('foo check')
     this.db.log.debug(`TestWorker.checkWebPagetestsStatus("${test.key}")`, { test })
     test.webPagetests
       .filter(wpt => !isFinished(wpt))
@@ -211,10 +222,12 @@ export class TestWorker {
 
           // status code 200 means the test has finished
           if (test.statusCode === 200) {
+            this.db.log.info('foo handle result')
             await this.handleWebPagetestResult(wptTestId)
             return true
             // status code >= 400 means there was an error
           } else if (test.statusCode >= 400) {
+            this.db.log.info('foo handle failure')
             await this.handleWebPagetestFailure(wptTestId)
             return true
           }
@@ -231,6 +244,7 @@ export class TestWorker {
    * Starts a prewarm against WebPagetest.
    */
   private startPrewarmWebPagetest(test: model.TestResult): Promise<void> {
+    this.db.log.info('foo startPrewarmWebPagetest')
     const { testInfo: { testOptions } } = test
     const prewarmTestScript = this.buildScriptForTestWithConfig(test)
     const prewarmTestOptions = Object.assign({ pingback: PING_BACK_URL }, testOptions, prewarmOptions)
@@ -242,6 +256,7 @@ export class TestWorker {
    * Starts a performance test against WebPagetest.
    */
   private startPerformanceWebPagetest(test: model.TestResult): Promise<void> {
+    this.db.log.info('foo startPerformanceWebPagetest')
     const { testInfo: { testOptions } } = test
     const performanceTestScript = this.buildScriptForTestWithConfig(test)
     const performanceTestOptions = Object.assign({ pingback: PING_BACK_URL }, testOptions)
@@ -253,6 +268,7 @@ export class TestWorker {
    * Starts a test against WebPagetest.
    */
   private async startWebPagetest(test: model.TestResult, testType: TestType, testScript: string, testOptions: any): Promise<void> {
+    this.db.log.info('foo startPerformanceWebPagetest')
     try {
       const testId = await this.api.runTestWithoutWait(testScript, testOptions)
       await this.pushWebPagetestToTestResult(test, new this.db.WebPagetest({
@@ -304,8 +320,15 @@ export class TestWorker {
    */
   private buildScriptForTestWithConfig(test: model.TestResult): string {
     const { testInfo, location } = test
-    const { url, isTestWithSpeedKit, activityTimeout, appName, testOptions, cookie, navigateUrls } = testInfo
-    const config = isTestWithSpeedKit ? this.getConfigForTest(test).replace(/{/, '{ preloadBloomFilter: false,') : null
+    const { url, isTestWithSpeedKit, activityTimeout, appName, testOptions, cookie, navigateUrls, withScraping } = testInfo
+    let config = isTestWithSpeedKit ? this.getConfigForTest(test).replace(/{/, '{ preloadBloomFilter: false,') : null
+
+    if (config && withScraping) {
+      config = config.replace('{', '{ customVariation: [{\n' +
+      '    rules: [{ contentType: ["navigate", "fetch"] }],\n' +
+      '    variationFunction: () => "SCRAPING"\n' +
+      '  }],')
+    }
 
     return this.testScriptBuilder.createTestScript(
       url,
