@@ -97,6 +97,9 @@ export interface TestParams {
    */
   navigateUrls?: string[];
 
+  /**
+   * Whether the test should run in scraping mode.
+   */
   withScraping?: boolean;
 }
 

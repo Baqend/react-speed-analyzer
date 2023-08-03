@@ -46,7 +46,6 @@ export class WebPagetestResultHandler {
    * Updates the test after a WebPagetest test is finished.
    */
   private async updateTestWithResult(test: model.TestResult, webPagetest: model.WebPagetest): Promise<model.TestResult> {
-    this.db.log.info('foo updateTestWithResult')
     const wptTestId = webPagetest.testId
 
     switch (webPagetest.testType) {
@@ -57,7 +56,6 @@ export class WebPagetestResultHandler {
         })
 
         try {
-          this.db.log.info('foo updateTestWithResult switch')
           await generateTestResult(wptTestId, test, this.db)
 
           return await test.optimisticSave(() => {

@@ -258,7 +258,7 @@ function hasDocumentRequestFailed(requests: WptRequest[]): boolean {
     return requestUrl.startsWith('/v1/asset/')
   })
 
-  // todo: add comment
+  // check if the first response or the next asset errors
   return assetRequests.length ? (assetRequests[0].responseCode >= 400 || assetRequests[1].responseCode) >= 400 : false
 }
 
