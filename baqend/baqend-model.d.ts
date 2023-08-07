@@ -173,6 +173,7 @@ declare module 'baqend' {
       whitelist?: string
       appName?: string
       isSpeedKitComparison?: boolean
+      withScraping?: boolean
     }
 
     interface TestResult extends binding.Entity {
@@ -203,6 +204,7 @@ declare module 'baqend' {
       wptFilmstrip: binding.File | null;
       controllingSW: string | null;
       framework: string;
+      withScraping: boolean;
     }
 
     interface Prewarms extends binding.Entity {

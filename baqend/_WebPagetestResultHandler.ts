@@ -118,6 +118,7 @@ export class WebPagetestResultHandler {
       const wptIndex = test.webPagetests.findIndex(wptTest => wptTest.testId === webPagetest.testId)
       test.webPagetests.splice(wptIndex, 1)
       test.retries = retries + 1
+      test.testInfo.withScraping = true
     })
   }
 

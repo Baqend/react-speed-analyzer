@@ -712,7 +712,7 @@ export class TestScriptBuilder {
         activityTimeout,
         cookie,
         timeout,
-        navigateUrls
+        navigateUrls,
       ).toString()
     }
 
@@ -724,7 +724,7 @@ export class TestScriptBuilder {
       activityTimeout,
       cookie,
       timeout,
-      navigateUrls
+      navigateUrls,
     ).toString()
   }
 }

@@ -96,6 +96,11 @@ export interface TestParams {
    * A list of URLs which should be navigated to (multi navigation tests).
    */
   navigateUrls?: string[];
+
+  /**
+   * Whether the test should run in scraping mode.
+   */
+  withScraping?: boolean;
 }
 
 export interface MultiTestParams extends TestParams {

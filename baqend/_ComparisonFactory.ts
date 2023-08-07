@@ -141,7 +141,8 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
   async updateComparisonWithError(
     comparison: model.TestOverview,
     api: Pagetest,
-    error: { message: string, status: number }
+    error: { message: string, status: number },
+    documentFailed = false
   ): Promise<void> {
     const { competitorTestResult, speedKitTestResult } = comparison
     if (competitorTestResult) {
@@ -160,6 +161,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
       comp.mobile = false
       comp.isSpeedKitComparison = false
       comp.error = error
+      comp.documentRequestFailed = documentFailed
       setFailed(comp)
     })
   }

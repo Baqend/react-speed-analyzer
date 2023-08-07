@@ -304,8 +304,15 @@ export class TestWorker {
    */
   private buildScriptForTestWithConfig(test: model.TestResult): string {
     const { testInfo, location } = test
-    const { url, isTestWithSpeedKit, activityTimeout, appName, testOptions, cookie, navigateUrls } = testInfo
-    const config = isTestWithSpeedKit ? this.getConfigForTest(test).replace(/{/, '{ preloadBloomFilter: false,') : null
+    const { url, isTestWithSpeedKit, activityTimeout, appName, testOptions, cookie, navigateUrls, withScraping } = testInfo
+    let config = isTestWithSpeedKit ? this.getConfigForTest(test).replace(/{/, '{ preloadBloomFilter: false,') : null
+
+    if (config && withScraping) {
+      config = config.replace('{', '{ customVariation: [{\n' +
+      '    rules: [{ contentType: ["navigate", "fetch"] }],\n' +
+      '    variationFunction: () => "SCRAPING"\n' +
+      '  }],')
+    }
 
     return this.testScriptBuilder.createTestScript(
       url,
