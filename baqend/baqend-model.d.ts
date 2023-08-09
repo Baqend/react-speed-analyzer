@@ -246,7 +246,8 @@ declare module 'baqend' {
       documentRequestFailed: boolean;
       error?: { message: string, status: number };
       metaData?: { hostname: string, pageViews: number };
-      wptFilmstrip: binding.File | null
+      wptFilmstrip: binding.File | null;
+      withScraping?: boolean;
     }
 
     interface Hits extends binding.Managed {

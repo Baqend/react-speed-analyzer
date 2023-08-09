@@ -96,6 +96,7 @@ export class ComparisonWorker implements TestListener {
         comparison.wptFilmstrip = wptFilmstrip
         comparison.factors = this.calculateFactors(competitor, speedKit)
         comparison.documentRequestFailed = speedKit.firstView ? speedKit.firstView.documentRequestFailed : false
+        comparison.withScraping = speedKit.testInfo.withScraping;
       })
 
       // Inform the listener that this comparison has finished
