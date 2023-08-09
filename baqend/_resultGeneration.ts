@@ -85,10 +85,12 @@ export async function generateTestResult(wptTestId: string, pendingTest: model.T
   pendingTest.wptFilmstrip = wptFilmstrip;
 
   const technologies = view['detected_technologies']
-  for (const [, value] of Object.entries(technologies)) {
-    if (value.confidence === 100 && value.name !== 'Cart Functionality') {
-      pendingTest.framework = value.name
-      break
+  if (!!technologies) {
+    for (const [, value] of Object.entries(technologies)) {
+      if (value.confidence === 100 && value.name !== 'Cart Functionality') {
+        pendingTest.framework = value.name
+        break
+      }
     }
   }
 
@@ -258,8 +260,21 @@ function hasDocumentRequestFailed(requests: WptRequest[]): boolean {
     return requestUrl.startsWith('/v1/asset/')
   })
 
-  // check if the first response or the next asset errors
-  return assetRequests.length ? (assetRequests[0].responseCode >= 400 || assetRequests[1].responseCode) >= 400 : false
+  // Return false if there are no baqend requests to analyze
+  if (!assetRequests.length) {
+    return false
+  }
+
+  // Return true if the document request was blocked already
+  if (assetRequests[0].responseCode >= 400) {
+    return true
+  }
+
+  // Remove document request
+  assetRequests.shift()
+
+  // check if all asset requests were blocked by the origin server
+  return !!assetRequests.length && assetRequests.every(req => req.responseCode >= 400)
 }
 
 /**
