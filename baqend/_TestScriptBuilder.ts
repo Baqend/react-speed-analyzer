@@ -64,7 +64,7 @@ export class TestScriptBuilder {
 
     const ts = testScript()
 
-    this.addCookies(ts, cookie, url);
+    // this.addCookies(ts, cookie, url);
 
     if (isMobile) {
     //   ts.setViewport(480, 987); // Maximum viewport
