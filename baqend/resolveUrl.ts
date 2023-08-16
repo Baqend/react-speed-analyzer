@@ -1,16 +1,17 @@
 import fetch, { Response } from 'node-fetch'
 import { toASCII } from 'punycode'
+import { sleep } from './_sleep'
 
 export async function resolveUrl(url: string, retried = false): Promise<string> {
   try {
     const preparedUrl = getPreparedUrl(url, retried)
-    const response = await fetchUrl(preparedUrl)
-    return response.url
+    const response = await Promise.race([fetchUrl(preparedUrl), sleep(60_000)])
+    return response ? (response as Response).url : url
   } catch (error: any) {
     const { name, message } = error
     const isSSLError = name === 'FetchError' && (message.includes('certificate') || message.includes('SSL'))
     if (!isSSLError || retried) {
-      throw error
+      return url
     }
 
     return resolveUrl(url, true)
