@@ -94,11 +94,7 @@ export function resultIsValid(
     (speedKitResult.testInfo && speedKitResult.testInfo.isSpeedKitComparison) ||
     isPlesk
   ) {
-    const mainCompetitor = competitorResult.firstView[mainMetric];
-    const mainSpeedKit = speedKitResult.firstView[mainMetric];
-    const factor = calculateFactor(mainCompetitor, mainSpeedKit);
-
-    return factor < 4.9;
+    return true;
   }
 
   const mainCompetitor = competitorResult.firstView[mainMetric];
