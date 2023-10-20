@@ -14,14 +14,11 @@ class ContactForm extends Component {
       subject: `[Analyzer] ${this.props.testOverview.url} - ${this.props.testOverview.status}`,
     };
 
-    console.log(this.props.testOverview);
-
     const resp = await fetch("https://bbq.app.baqend.com/v1/code/mailUs", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
-    console.log(await resp.json());
 
     return;
   };
