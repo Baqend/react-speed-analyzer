@@ -43,7 +43,7 @@ export const prepareTest = (url = null) => ({
 /**
  * Triggers the start of a new test.
  */
-export const startTest = (useAdvancedConfig = true) => ({
+export const startTest = (useAdvancedConfig = true, isFireHorse = false) => ({
   'BAQEND': async ({ dispatch, getState, db }) => {
     dispatch({
       type: RESET_TEST_RESULT
@@ -77,6 +77,7 @@ export const startTest = (useAdvancedConfig = true) => ({
         speedKitConfig,
         activityTimeout,
         cookie,
+        app: isFireHorse ? 'firehorse' : 'makefast',
         withPuppeteer: false,
         hostname: window.location.hostname,
       })

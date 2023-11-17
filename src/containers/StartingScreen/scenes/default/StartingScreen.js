@@ -54,13 +54,14 @@ class StartingScreen extends Component {
     return params;
   };
 
-  startTest = async (url = null) => {
+  startTest = async (url = null, isFireHorse = false) => {
     const { history } = this.props;
     const useAdvancedConfig = this.state.showAdvancedConfig;
     try {
       await this.props.actions.prepareTest(url);
       const testOverview = await this.props.actions.startTest(
-        useAdvancedConfig
+        useAdvancedConfig,
+        isFireHorse
       );
       history.push(
         `/test/${getObjectKey(testOverview.id)}${history.location.search}`
@@ -103,7 +104,7 @@ class StartingScreen extends Component {
       const url = decodeURIComponent(params.url);
       history.push("/");
       this.props.actions.handleUrlInput(url);
-      this.startTest(url);
+      this.startTest(url, true);
     }
   }
 }
