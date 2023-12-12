@@ -6,12 +6,14 @@ import ContactFormComponent from "./ContactFormComponent";
 
 class ContactForm extends Component {
   onSubmit = async (formData) => {
+    const caller = this.props.onlyMail ? "Manual Test Required" : "Success";
+
     const data = {
       ...formData,
       website: this.props.testOverview.url,
       config: this.props.config,
       testOverview: this.props.testOverview,
-      subject: `[Analyzer] ${this.props.testOverview.url} - ${this.props.testOverview.status}`,
+      subject: `from page speed analyzer - ${caller}`,
     };
 
     const resp = await fetch("https://bbq.app.baqend.com/v1/code/mailUs", {
