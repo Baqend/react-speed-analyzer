@@ -11,12 +11,7 @@ export const Customers = [
     title: "(Bayerische Motoren Werke AG)",
     copy: "Speed Kit has been rolled out for 118 countries and achieved a 1.5x faster LCP overall.",
   },
-  {
-    logo: "soliver",
-    name: "Maike Wöhler",
-    title: "Team Lead Product Management",
-    copy: "We have seen significant uplift in funnel progression metrics, conversion rate and revenue.",
-  },
+
   {
     logo: "galeria",
     name: "Lars Mehler",
@@ -35,30 +30,14 @@ export const Customers = [
     title: "Group CPO & CTO",
     copy: "Speed Kit was able to improve our website performance in Italy by delivering fast loading times.",
   },
-  {
-    logo: "jochenschweizer",
-    name: "Nihad Zehic",
-    title: "Head of Engineering & Technology",
-    copy: "Google rating for fast First Contentful Paint increased by 68%.",
-  },
+
   {
     logo: "carhartt",
     name: "Marc Lohausen",
     title: "Head of E-Commerce",
     copy: "go live within a matter of days […] across our biggest markets, Germany, France, and UK",
   },
-  {
-    logo: "awn",
-    name: "Ado Nolte",
-    title: "Head of E-Commerce",
-    copy: "Speed Kit accelerated loads on our website […] led to a double digit uplift in conversion rate.",
-  },
-  {
-    logo: "besamex",
-    name: "Torben Berning",
-    title: "Managing Director",
-    copy: "Speed Kit offers an easy to use approach that delivered impressive results.",
-  },
+
   {
     logo: "hsv",
     name: "Dr. Karsten Zimmermann",
