@@ -44,6 +44,10 @@ export function isFailed(entity: StatefulEntity) {
   return entity.hasFinished && hasStatus(entity, Status.FAILED)
 }
 
+export function isCanceled(entity: StatefulEntity) {
+  return entity.hasFinished && hasStatus(entity, Status.CANCELED)
+}
+
 /**
  * Sets the given entity to the queued state.
  */

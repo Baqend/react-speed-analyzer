@@ -55,13 +55,6 @@ export class ComparisonWorker implements TestListener {
       return
     }
 
-    const started = Math.ceil((Date.now() - comparison.updatedAt.getTime()) / 1000)
-    if (started > 300) {
-      const message = `Comparison was still not finished after ${started} seconds.`
-      await this.comparisonFactory.updateComparisonWithError(comparison, this.api, { message, status: 599 })
-      return
-    }
-
     // Set comparison to running
     if (comparison.status !== Status.RUNNING) {
       try {

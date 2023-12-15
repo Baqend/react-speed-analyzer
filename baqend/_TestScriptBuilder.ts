@@ -406,7 +406,7 @@ export class TestScriptBuilder {
     // SW always needs to be installed
     const ts = testScript()
 
-    this.addCookies(ts, cookie, url);
+    // this.addCookies(ts, cookie, url);
 
     if (isMobile) {
     //   ts.setViewport(480, 987); // Maximum viewport

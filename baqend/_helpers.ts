@@ -258,23 +258,23 @@ export async function cancelTest(test: model.TestResult, api: Pagetest): Promise
     return false
   }
 
-  if (!!test.webPagetests && test.webPagetests.length >= 1) {
-    // Cancel each WebpageTest
-    await test.webPagetests
-      .filter(webPagetest => isUnfinished(webPagetest))
-      .map(webPagetest => api.cancelTest(webPagetest.testId))
-      .reduce(parallelize, Promise.resolve())
-  }
+  const unfinishedTests = !!test.webPagetests ? test.webPagetests
+    .filter(webPagetest => isUnfinished(webPagetest)) : []
 
   // Mark test and WebPagetests as canceled
   await test.optimisticSave(() => {
     setCanceled(test)
-    if (!!test.webPagetests) {
-      test.webPagetests
-        .filter(webPagetest => isUnfinished(webPagetest))
-        .forEach(webPagetest => setCanceled(webPagetest))
+    if (unfinishedTests.length) {
+      unfinishedTests.forEach(webPagetest => setCanceled(webPagetest))
     }
   })
+
+  if (unfinishedTests.length) {
+    // Cancel each WebpageTest
+    await unfinishedTests
+      .map(webPagetest => api.cancelTest(webPagetest.testId))
+      .reduce(parallelize, Promise.resolve())
+  }
 
   return true
 }

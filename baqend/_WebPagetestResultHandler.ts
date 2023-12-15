@@ -1,6 +1,6 @@
 import { baqend, model } from 'baqend'
 import { generateTestResult, ViewportError } from './_resultGeneration'
-import { setFailed, setSuccess } from './_Status'
+import { setFailed, setRunning, setSuccess } from './_Status'
 
 export enum TestType {
   PERFORMANCE = 'performance',
@@ -69,7 +69,7 @@ export class WebPagetestResultHandler {
             return this.handleViewportError(test, webPagetest)
           }
 
-          if (test.isClone && !!test.speedKitConfig && !test.speedKitConfig.includes('SCRAPING')) {
+          if (test.isClone && !!test.speedKitConfig && !test.testInfo.withScraping) {
             this.db.log.info(`Retry test with scraping`, { test: test.id, wptTestId, error: error.stack })
             return this.retryTestWithScraping(test, webPagetest)
           }
@@ -111,7 +111,7 @@ export class WebPagetestResultHandler {
     const retries = test.retries || 0
     return test.optimisticSave(() => {
       test.speedKitConfig = test.speedKitConfig.replace('{', '{ customVariation: [{\n' +
-        '    rules: [{ contentType: ["navigate", "fetch"] }],\n' +
+        '    rules: [{ contentType: ["navigate", "fetch", "style", "image", "script"] }],\n' +
         '    variationFunction: () => "SCRAPING"\n' +
         '  }],')
 
@@ -119,6 +119,7 @@ export class WebPagetestResultHandler {
       test.webPagetests.splice(wptIndex, 1)
       test.retries = retries + 1
       test.testInfo.withScraping = true
+      setRunning(test)
     })
   }
 

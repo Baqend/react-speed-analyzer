@@ -146,13 +146,16 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
   ): Promise<void> {
     const { competitorTestResult, speedKitTestResult } = comparison
     if (competitorTestResult) {
-      cancelTest(competitorTestResult, api)
-      await competitorTestResult.optimisticSave((test: model.TestResult) => setFailed(test))
+      await cancelTest(competitorTestResult, api)
     }
 
     if (speedKitTestResult) {
-      cancelTest(speedKitTestResult, api)
-      await speedKitTestResult.optimisticSave((test: model.TestResult) => setFailed(test))
+      await cancelTest(speedKitTestResult, api)
+    }
+
+    // Do not set comparison to failed if the retry with SCRAPING can still be done
+    if (!!speedKitTestResult.speedKitConfig && !speedKitTestResult.testInfo.withScraping) {
+      return;
     }
 
     await comparison.optimisticSave((comp: model.TestOverview) => {

@@ -2,7 +2,7 @@ import { baqend, model } from 'baqend'
 import { ConfigGenerator } from './_ConfigGenerator'
 import { cancelTest } from './_helpers'
 import { DataType, Serializer } from './_Serializer'
-import { isFinished, isIncomplete, setFailed, setRunning, Status } from './_Status'
+import { isCanceled, isFinished, isIncomplete, setFailed, setRunning, Status } from './_Status'
 import { DEFAULT_TIMEOUT } from './_TestBuilder'
 import { TestScriptBuilder } from './_TestScriptBuilder'
 import { Pagetest } from './_Pagetest'
@@ -70,16 +70,13 @@ export class TestWorker {
 
       if (this.isPerformanceRunIncomplete(test)) {
         await test.optimisticSave(() => setFailed(test))
-
         return
       }
 
-      // Check if the test was not updated within the last two hours
-      const isOlderThanTwoHours = (new Date().getTime() - test.updatedAt.getTime()) / ONE_HOUR > 2
-      if (test.status === Status.RUNNING && isOlderThanTwoHours) {
-        cancelTest(test, this.api)
-        await test.optimisticSave(() => setFailed(test))
-
+      // Check if the test was not updated within the last three minutes
+      const isOlderThanThreeMinutes = (new Date().getTime() - test.updatedAt.getTime()) / ONE_MINUTE > 3
+      if (test.status === Status.RUNNING && isOlderThanThreeMinutes) {
+        await cancelTest(test, this.api)
         return
       }
 
@@ -116,15 +113,21 @@ export class TestWorker {
    */
   async handleWebPagetestResult(wptTestId: string): Promise<void> {
     try {
-      const test = await this.db.TestResult.find().equal('webPagetests.testId', wptTestId).singleResult()
+      const date = new Date()
+      date.setDate(date.getDate() - 1)
+      const test = await this.db.TestResult.find()
+        .greaterThan('createdAt', date)
+        .equal('webPagetests.testId', wptTestId)
+        .singleResult()
+
       if (!test) {
         this.db.log.warn('There was no testResult found for testId', { wptTestId })
         return
       }
 
       const webPagetest = this.getWebPagetestInfo(test, wptTestId)
-      if (isFinished(webPagetest)) {
-        this.db.log.debug(`WebPagetest ${wptTestId} was already finished or canceled`, { test })
+      if (isFinished(webPagetest) && !isCanceled(webPagetest)) {
+        this.db.log.info(`WebPagetest ${wptTestId} was already finished or canceled`, { test })
         return
       }
 
@@ -309,7 +312,7 @@ export class TestWorker {
 
     if (config && withScraping) {
       config = config.replace('{', '{ customVariation: [{\n' +
-      '    rules: [{ contentType: ["navigate", "fetch"] }],\n' +
+      '    rules: [{ contentType: ["navigate", "fetch", "style", "image", "script"] }],\n' +
       '    variationFunction: () => "SCRAPING"\n' +
       '  }],')
     }

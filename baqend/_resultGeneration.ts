@@ -1,5 +1,6 @@
 import { createFilmStrip, generateHash, truncateUrl, urlToFilename } from './_helpers'
 import { DataType, Serializer } from './_Serializer'
+import { isCanceled } from './_Status'
 import { VIEWPORT_HEIGHT_DESKTOP, VIEWPORT_WIDTH_DESKTOP } from './_TestScriptBuilder'
 import { toFile } from './_toFile'
 import { getAdSet } from './_adBlocker'
@@ -22,11 +23,10 @@ export class ViewportError extends Error {}
 export async function generateTestResult(wptTestId: string, pendingTest: model.TestResult, db: baqend): Promise<model.TestResult> {
   db.log.info(`Generating test result: ${wptTestId}`, { test: pendingTest.id, wptTestId })
 
-  if (pendingTest.hasFinished) {
+  if (pendingTest.hasFinished && !isCanceled(pendingTest)) {
     db.log.warn(`Test was already finished: ${wptTestId}`)
     return pendingTest
   }
-
 
   const rawData = await getResultRawData(wptTestId)
   const url = await truncateUrl(rawData.testUrl)
