@@ -56,6 +56,7 @@ export const startTest = (useAdvancedConfig = true, isFireHorse = false) => ({
       const { testOverview } = getState().result
 
       const speedKit = testOverview.isSpeedKitComparison
+      const withScraping = testOverview.withScraping || false
       let speedKitConfig = !speedKit || (speedKit && useAdvancedConfig) ? getState().config.speedKitConfig : null
 
       if (mobile && speedKitConfig) {
@@ -77,6 +78,7 @@ export const startTest = (useAdvancedConfig = true, isFireHorse = false) => ({
         speedKitConfig,
         activityTimeout,
         cookie,
+        withScraping,
         app: isFireHorse ? 'firehorse' : 'makefast',
         withPuppeteer: false,
         hostname: window.location.hostname,

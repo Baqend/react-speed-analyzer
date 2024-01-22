@@ -278,3 +278,12 @@ export async function cancelTest(test: model.TestResult, api: Pagetest): Promise
 
   return true
 }
+
+export function getVariation(mobile: boolean, location: string): string {
+  const isUS = location.startsWith('us')
+  if (mobile) {
+    return isUS ? 'SCRAPING_MOBILE_US' : 'SCRAPING_MOBILE'
+  }
+
+  return isUS ? 'SCRAPING_US' : 'SCRAPING'
+}

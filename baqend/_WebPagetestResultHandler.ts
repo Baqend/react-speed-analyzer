@@ -1,4 +1,5 @@
 import { baqend, model } from 'baqend'
+import { getVariation } from './_helpers'
 import { generateTestResult, ViewportError } from './_resultGeneration'
 import { setFailed, setRunning, setSuccess } from './_Status'
 
@@ -109,10 +110,11 @@ export class WebPagetestResultHandler {
    */
   private retryTestWithScraping(test: model.TestResult, webPagetest: model.WebPagetest): Promise<model.TestResult> {
     const retries = test.retries || 0
+    const variation = getVariation(test.testInfo.testOptions.mobile, test.location)
     return test.optimisticSave(() => {
       test.speedKitConfig = test.speedKitConfig.replace('{', '{ customVariation: [{\n' +
         '    rules: [{ contentType: ["navigate", "fetch", "style", "image", "script"] }],\n' +
-        '    variationFunction: () => "SCRAPING"\n' +
+        '    variationFunction: () => "' + variation + '"\n' +
         '  }],')
 
       const wptIndex = test.webPagetests.findIndex(wptTest => wptTest.testId === webPagetest.testId)

@@ -1,6 +1,6 @@
 import { baqend, model } from 'baqend'
 import { ConfigGenerator } from './_ConfigGenerator'
-import { cancelTest } from './_helpers'
+import { cancelTest, getVariation } from './_helpers'
 import { DataType, Serializer } from './_Serializer'
 import { isCanceled, isFinished, isIncomplete, setFailed, setRunning, Status } from './_Status'
 import { DEFAULT_TIMEOUT } from './_TestBuilder'
@@ -307,13 +307,13 @@ export class TestWorker {
    */
   private buildScriptForTestWithConfig(test: model.TestResult): string {
     const { testInfo, location } = test
+    const variation = getVariation(testInfo.testOptions.mobile, location)
     const { url, isTestWithSpeedKit, activityTimeout, appName, testOptions, cookie, navigateUrls, withScraping } = testInfo
     let config = isTestWithSpeedKit ? this.getConfigForTest(test).replace(/{/, '{ preloadBloomFilter: false,') : null
-
     if (config && withScraping) {
       config = config.replace('{', '{ customVariation: [{\n' +
       '    rules: [{ contentType: ["navigate", "fetch", "style", "image", "script"] }],\n' +
-      '    variationFunction: () => "SCRAPING"\n' +
+      '    variationFunction: () => "' + variation + '"\n' +
       '  }],')
     }
 
