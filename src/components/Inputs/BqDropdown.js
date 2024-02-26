@@ -48,6 +48,7 @@ export class BqDropdown extends Component {
             <div>{this.state.modelValue}</div>
           </div>
           <div>{this.getArrowIcon()}</div>
+          <div></div>
         </button>
         <select ref={this.selectRef}>{this.getObjectChildren()}</select>
       </div>
