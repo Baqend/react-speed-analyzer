@@ -1,10 +1,11 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
 
-import ConfigForm from 'components/ConfigForm/ConfigForm'
+import ConfigForm from "components/ConfigForm/ConfigForm";
 
-import DeviceContainer from 'components/DeviceContainer/DeviceContainer'
-import Header from '../../../../components/Header/Header'
+import DeviceContainer from "components/DeviceContainer/DeviceContainer";
+import Header from "../../../../components/Header/Header";
+import { BqDropdown } from "../../../../components/Inputs/BqDropdown/BqDropdown";
 
 class StartingScreenComponent extends Component {
   renderForm() {
@@ -23,7 +24,7 @@ class StartingScreenComponent extends Component {
           />
         </div>
       </div>
-    )
+    );
   }
 
   render() {
@@ -35,14 +36,12 @@ class StartingScreenComponent extends Component {
           mobile={this.props.config.mobile}
           content={
             <div className={`flex-grow-1 flex justify-center`}>
-              <div className="flex-grow-1">
-                {this.renderForm()}
-              </div>
+              <div className="flex-grow-1">{this.renderForm()}</div>
             </div>
           }
         />
       </div>
-    )
+    );
   }
 }
 
@@ -50,6 +49,6 @@ StartingScreenComponent.propTypes = {
   config: PropTypes.object.isRequired,
   onToggleAdvancedConfig: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
-}
+};
 
-export default StartingScreenComponent
+export default StartingScreenComponent;

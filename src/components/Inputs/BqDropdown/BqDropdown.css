@@ -1,0 +1,64 @@
+.bqDropdown {
+  display: flex;
+  flex-direction: column;
+  max-width: fit-content;
+  position: relative;
+}
+
+.bqDropdown button {
+  all: unset;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  background-color: #004aba;
+  border: solid 1px #3d86f6;
+}
+
+.bqDropdown-label {
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.5;
+  letter-spacing: -0.24px;
+  text-align: left;
+  color: rgba(255, 255, 255, 0.64);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: Poppins;
+}
+
+.bqDropdown-state {
+  flex-grow: 0;
+  font-family: Poppins;
+  font-size: 18px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.5;
+  letter-spacing: -0.36px;
+  text-align: left;
+  color: #fff;
+}
+
+.bqDropdown-dropdown.expanded {
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  border: solid 1px #3d86f6;
+  overflow: hidden;
+  position: absolute;
+  top: 70px;
+  width: 100%;
+}
+
+.bqDropdown-dropdown-entry {
+  background-color: #004aba;
+  padding: 10px 20px;
+}
+
+.bqDropdown-dropdown-entry:not(:last-child) {
+  border-bottom: solid 1px #3d86f6;
+}

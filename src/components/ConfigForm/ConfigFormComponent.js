@@ -13,6 +13,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronUp, faChevronDown } from "@fortawesome/free-solid-svg-icons";
 
 import "./ConfigForm.css";
+import { BqDropdown } from "../Inputs/BqDropdown/BqDropdown";
 
 export function splitUrl(url) {
   try {
@@ -62,6 +63,13 @@ class ConfigFormComponent extends Component {
       showCookies: window.location.search.indexOf("showCookie") !== -1,
     };
   }
+
+  static locationStates = {
+    "eu-central-2-docker:Chrome.FIOSNoLatency": "Switzerland",
+    "ap-northeast-1-docker:Chrome.FIOSNoLatency": "Japan",
+    "eu-central-1-docker:Chrome.FIOSNoLatency": "EU",
+    "us-east-1-docker:Chrome.FIOSNoLatency": "USA",
+  };
 
   isDefaultConfig = (speedKitConfig) =>
     speedKitConfig ===
@@ -335,21 +343,15 @@ class ConfigFormComponent extends Component {
               placeholder="https://www.example.com"
               noValidate
             />
-            <div
-              className={`config__form-submit-wrapper ${
-                !this.state.restartAllowed ? "presentation" : ""
-              } flex`}
-            >
-              {this.props.showConfigToggle && (
-                <a
-                  onClick={this.toggleConfig}
-                  className="config__form-settings flex justify-center items-center mr1"
-                  style={{ width: "auto", background: "none" }}
-                >
-                  <img width="24" src={settings} alt="settings" />
-                </a>
-              )}
-            </div>
+            <BqDropdown
+              label="LOCATION"
+              modelValue={
+                ConfigFormComponent.locationStates[this.props.config.location]
+              }
+              states={Object.values(ConfigFormComponent.locationStates)}
+            ></BqDropdown>
+            <BqDropdown></BqDropdown>
+
             {this.state.restartAllowed && (
               <button className="config__form-submit" type="submit">
                 Start Test
