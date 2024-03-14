@@ -177,6 +177,7 @@
 }
 @font-face {
     font-family: "Poppins";
+    font-weight: 400;
     src: url("./fonts/Poppins-Regular.ttf");
 }
 @font-face {

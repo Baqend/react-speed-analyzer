@@ -332,7 +332,7 @@ class ConfigFormComponent extends Component {
           onSubmit={this.handleSubmit}
           noValidate
         >
-          <div className="config__form-input-wrapper">
+          <div className="config__form-input-wrapper flex">
             <input
               className="config__form-input"
               type="url"
@@ -340,9 +340,10 @@ class ConfigFormComponent extends Component {
               spellCheck="false"
               value={this.props.config.url}
               onChange={this.handleUrlChange}
-              placeholder="https://www.example.com"
+              placeholder="https://yoursite.com"
               noValidate
             />
+            <BqDropdown></BqDropdown>
             <BqDropdown
               label="LOCATION"
               modelValue={
@@ -350,11 +351,10 @@ class ConfigFormComponent extends Component {
               }
               states={Object.values(ConfigFormComponent.locationStates)}
             ></BqDropdown>
-            <BqDropdown></BqDropdown>
 
             {this.state.restartAllowed && (
               <button className="config__form-submit" type="submit">
-                Start Test
+                Test Your Speed
               </button>
             )}
           </div>
