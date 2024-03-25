@@ -13,6 +13,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronUp, faChevronDown } from "@fortawesome/free-solid-svg-icons";
 
 import "./ConfigForm.css";
+import { BqDropdown } from "../Inputs/BqDropdown/BqDropdown";
 
 export function splitUrl(url) {
   try {
@@ -63,6 +64,13 @@ class ConfigFormComponent extends Component {
     };
   }
 
+  static locationStates = {
+    "eu-central-2-docker:Chrome.FIOSNoLatency": "Switzerland",
+    "ap-northeast-1-docker:Chrome.FIOSNoLatency": "Japan",
+    "eu-central-1-docker:Chrome.FIOSNoLatency": "EU",
+    "us-east-1-docker:Chrome.FIOSNoLatency": "USA",
+  };
+
   isDefaultConfig = (speedKitConfig) =>
     speedKitConfig ===
     stringifyObject(
@@ -96,15 +104,20 @@ class ConfigFormComponent extends Component {
   };
 
   handleLocationChange = (changeEvent) => {
-    this.props.onLocationChange(changeEvent.target.value);
+    const entrie = Object.entries(ConfigFormComponent.locationStates).find(
+      ([key, value]) => value === changeEvent
+    );
+    console.log(entrie);
+    this.props.onLocationChange(entrie[0]);
   };
 
   handleTimeoutChange = (changeEvent) => {
     this.props.onTimeoutChange(changeEvent.target.value);
   };
 
-  handleMobileSwitch = () => {
-    this.props.onMobileSwitch();
+  handleMobileSwitch = (changeEvent) => {
+    const checked = changeEvent === "Mobile";
+    this.props.onMobileSwitch(checked);
   };
 
   handleCachingSwitch = () => {
@@ -324,7 +337,7 @@ class ConfigFormComponent extends Component {
           onSubmit={this.handleSubmit}
           noValidate
         >
-          <div className="config__form-input-wrapper">
+          <div className="config__form-input-wrapper flex">
             <input
               className="config__form-input"
               type="url"
@@ -332,27 +345,27 @@ class ConfigFormComponent extends Component {
               spellCheck="false"
               value={this.props.config.url}
               onChange={this.handleUrlChange}
-              placeholder="https://www.example.com"
+              placeholder="https://yoursite.com"
               noValidate
             />
-            <div
-              className={`config__form-submit-wrapper ${
-                !this.state.restartAllowed ? "presentation" : ""
-              } flex`}
-            >
-              {this.props.showConfigToggle && (
-                <a
-                  onClick={this.toggleConfig}
-                  className="config__form-settings flex justify-center items-center mr1"
-                  style={{ width: "auto", background: "none" }}
-                >
-                  <img width="24" src={settings} alt="settings" />
-                </a>
-              )}
-            </div>
+            <BqDropdown
+              label="DEVICE"
+              modelValue={this.props.config.mobile ? "Mobile" : "Desktop"}
+              states={["Mobile", "Desktop"]}
+              onChange={this.handleMobileSwitch}
+            ></BqDropdown>
+            <BqDropdown
+              label="LOCATION"
+              modelValue={
+                ConfigFormComponent.locationStates[this.props.config.location]
+              }
+              states={Object.values(ConfigFormComponent.locationStates)}
+              onChange={this.handleLocationChange}
+            ></BqDropdown>
+
             {this.state.restartAllowed && (
               <button className="config__form-submit" type="submit">
-                Start Test
+                Test Your Speed
               </button>
             )}
           </div>
@@ -360,7 +373,7 @@ class ConfigFormComponent extends Component {
             <div className="mv2 flex-grow-1 flex flex-column justify-between">
               {this.state.showAdvancedConfig
                 ? this.renderAdvancedConfig()
-                : this.renderConfig()}
+                : undefined}
               <div className="toggleAdvancedSettings-wrapper">
                 <div className="toggle">
                   <a onClick={this.toggleAdvancedConfig}>

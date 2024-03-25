@@ -34,10 +34,7 @@ export function handleLocationChange(location) {
   location = location.toLowerCase();
   return {
     type: CHANGE_LOCATION,
-    payload:
-      location === "us"
-        ? "us-east-1-docker:Chrome.FIOSNoLatency"
-        : "eu-central-1-docker:Chrome.FIOSNoLatency",
+    payload: location,
   };
 }
 
