@@ -34,7 +34,8 @@ export class BqDropdown extends Component {
   };
 
   changeState = (state) => {
-    this.setState({ modelValue: state });
+    this.setState({ modelValue: state, showDropdown: false });
+    this.props.onChange(state);
   };
 
   renderStates = () =>

@@ -104,15 +104,20 @@ class ConfigFormComponent extends Component {
   };
 
   handleLocationChange = (changeEvent) => {
-    this.props.onLocationChange(changeEvent.target.value);
+    const entrie = Object.entries(ConfigFormComponent.locationStates).find(
+      ([key, value]) => value === changeEvent
+    );
+    console.log(entrie);
+    this.props.onLocationChange(entrie[0]);
   };
 
   handleTimeoutChange = (changeEvent) => {
     this.props.onTimeoutChange(changeEvent.target.value);
   };
 
-  handleMobileSwitch = () => {
-    this.props.onMobileSwitch();
+  handleMobileSwitch = (changeEvent) => {
+    const checked = changeEvent === "Mobile";
+    this.props.onMobileSwitch(checked);
   };
 
   handleCachingSwitch = () => {
@@ -343,13 +348,19 @@ class ConfigFormComponent extends Component {
               placeholder="https://yoursite.com"
               noValidate
             />
-            <BqDropdown></BqDropdown>
+            <BqDropdown
+              label="DEVICE"
+              modelValue={this.props.config.mobile ? "Mobile" : "Desktop"}
+              states={["Mobile", "Desktop"]}
+              onChange={this.handleMobileSwitch}
+            ></BqDropdown>
             <BqDropdown
               label="LOCATION"
               modelValue={
                 ConfigFormComponent.locationStates[this.props.config.location]
               }
               states={Object.values(ConfigFormComponent.locationStates)}
+              onChange={this.handleLocationChange}
             ></BqDropdown>
 
             {this.state.restartAllowed && (
@@ -362,7 +373,7 @@ class ConfigFormComponent extends Component {
             <div className="mv2 flex-grow-1 flex flex-column justify-between">
               {this.state.showAdvancedConfig
                 ? this.renderAdvancedConfig()
-                : this.renderConfig()}
+                : undefined}
               <div className="toggleAdvancedSettings-wrapper">
                 <div className="toggle">
                   <a onClick={this.toggleAdvancedConfig}>

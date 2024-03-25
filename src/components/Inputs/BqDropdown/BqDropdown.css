@@ -8,8 +8,9 @@
   all: unset;
   display: flex;
   flex-direction: row;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
+
   gap: 16px;
   padding: 10px 20px;
   border-radius: 8px;
@@ -17,8 +18,10 @@
   border: solid 1px #3d86f6;
 }
 
-.bqDropdown:nth-of-type(2){
-  width: 176px;
+@media (width > 765) {
+  .bqDropdown:nth-of-type(2) {
+    width: 176px;
+  }
 }
 
 .bqDropdown-label {
