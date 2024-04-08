@@ -104,11 +104,7 @@ class ConfigFormComponent extends Component {
   };
 
   handleLocationChange = (changeEvent) => {
-    const entrie = Object.entries(ConfigFormComponent.locationStates).find(
-      ([key, value]) => value === changeEvent
-    );
-    console.log(entrie);
-    this.props.onLocationChange(entrie[0]);
+    this.props.onLocationChange(changeEvent);
   };
 
   handleTimeoutChange = (changeEvent) => {

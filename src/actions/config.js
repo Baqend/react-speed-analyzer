@@ -31,10 +31,15 @@ export function handleCookieInput(url) {
 }
 
 export function handleLocationChange(location) {
-  location = location.toLowerCase();
+  const locationStates = {
+    Switzerland: "eu-central-2-docker:Chrome.FIOSNoLatency",
+    Japan: "ap-northeast-1-docker:Chrome.FIOSNoLatency",
+    EU: "eu-central-1-docker:Chrome.FIOSNoLatency",
+    USA: "us-east-1-docker:Chrome.FIOSNoLatency",
+  };
   return {
     type: CHANGE_LOCATION,
-    payload: location,
+    payload: locationStates[location] ?? locationStates.EU,
   };
 }
 
