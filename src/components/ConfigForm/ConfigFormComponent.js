@@ -221,50 +221,10 @@ class ConfigFormComponent extends Component {
     }
   }
 
-  renderConfig() {
-    return (
-      <div className="pa2">
-        <div className="pt1">
-          <div className="flex items-center">
-            <span className="flex-auto w-100 text-right">Desktop</span>
-            <Toggle
-              checked={this.props.config.mobile}
-              icons={false}
-              onChange={this.handleMobileSwitch}
-            />
-            <span className="flex-auto w-100">Mobile</span>
-          </div>
-        </div>
-        <div className="pt1">
-          <div className="flex items-center">
-            <span className="flex-auto w-100 text-right">EU</span>
-            <Toggle
-              checked={this.props.config.location.indexOf("us-east-1") !== -1}
-              icons={false}
-              value={
-                this.props.config.location.indexOf("us-east-1") !== -1
-                  ? "EU"
-                  : "US"
-              }
-              onChange={this.handleLocationChange}
-            />
-            <span className="flex-auto w-100">USA</span>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   renderAdvancedConfig() {
     return (
       <div className="advanced">
         <div className="flex flex-wrap">
-          <div
-            className="flex-grow-1 flex-shrink-0"
-            style={{ flexBasis: "100%" }}
-          >
-            {this.renderConfig()}
-          </div>
           <div
             className="flex-grow-1 flex-shrink-0"
             style={{ maxWidth: "100%", marginBottom: "19px" }}
