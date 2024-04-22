@@ -1,166 +1,336 @@
 @import "../../styles/_variables.css";
 
+/*.config__form {*/
+/*  font-family: "Poppins";*/
+/*  &-input-wrapper {*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*    @media (--breakpoint-medium-device) {*/
+/*      flex-direction: row;*/
+/*      flex-wrap: wrap;*/
+/*    }*/
+/*  }*/
+/*  &-input {*/
+/*    font-size: 20px;*/
+/*    border-radius: 4px;*/
+/*    background-color: rgba(0, 0, 0, 0.24);*/
+/*    color: var(--white);*/
+/*    border: none;*/
+/*    flex-grow: 1;*/
+/*    !*padding: 14px 45px 14px 20px;*!*/
+/*    box-shadow: none;*/
+/*    min-height: 56px;*/
+/*    @media (--breakpoint-medium-device) {*/
+/*      min-height: 60px;*/
+/*    }*/
+/*    &.no-text {*/
+/*      color: transparent;*/
+/*      caret-color: white;*/
+/*    }*/
+/*    &::placeholder {*/
+/*      color: rgba(255, 255, 255, 0.64);*/
+/*    }*/
+/*  }*/
+/*  &-cookie {*/
+/*    font-size: 16px;*/
+/*    border-radius: 4px;*/
+/*    background-color: rgba(0, 0, 0, 0.24);*/
+/*    color: var(--white);*/
+/*    border: none;*/
+/*    flex-grow: 1;*/
+/*    padding: 14px 45px 14px 20px;*/
+/*    box-shadow: none;*/
+/*    height: 42px;*/
+/*    &.no-text {*/
+/*      color: transparent;*/
+/*      caret-color: white;*/
+/*    }*/
+/*    &::placeholder {*/
+/*      color: rgba(255, 255, 255, 0.64);*/
+/*    }*/
+/*  }*/
+/*  &-submit {*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    justify-content: center;*/
+/*    border-radius: 4px;*/
+/*    border: solid 3px #ffffff;*/
+/*    font-size: 16px;*/
+/*    font-weight: bold;*/
+/*    font-family: "Poppins";*/
+/*    letter-spacing: 0.15em;*/
+/*    cursor: pointer;*/
+/*    padding: 16px 40px;*/
+/*    margin-top: 15px;*/
+/*    margin-left: 0;*/
+/*    background: none;*/
+/*    color: color(#fff);*/
+/*    outline: none !important;*/
+/*    box-shadow: none !important;*/
+/*    @media (--breakpoint-medium-device) {*/
+/*      margin-top: 0;*/
+/*      margin-left: 15px;*/
+/*      padding: 18px 40px;*/
+/*    }*/
+/*    &:hover {*/
+/*      background: #ffffff;*/
+/*      color: var(--custom-purple);*/
+/*    }*/
+/*  }*/
+/*  &-settings {*/
+/*    border-radius: 50%;*/
+/*    width: 44px;*/
+/*    height: 44px;*/
+/*    border: none;*/
+/*    opacity: 0.8;*/
+/*    cursor: pointer;*/
+/*    &:hover {*/
+/*      opacity: 1;*/
+/*    }*/
+/*  }*/
+/*  .config__form-input-wrapper {*/
+/*    position: relative;*/
+/*  }*/
+/*  .config__form-submit-wrapper {*/
+/*    position: absolute;*/
+/*    top: 8px;*/
+/*    right: 8px;*/
+/*    &:not(.presentation) {*/
+/*      @media (--breakpoint-medium-device) {*/
+/*        right: 225px;*/
+/*      }*/
+/*    }*/
+/*  }*/
+/*  .advanced {*/
+/*    width: 100%;*/
+/*    margin: 0 auto;*/
+/*    @media (--breakpoint-medium-device) {*/
+/*      max-width: 75%;*/
+/*    }*/
+/*    .CodeMirror {*/
+/*      height: auto;*/
+/*      font-size: 16px;*/
+/*      background-color: rgba(0, 0, 0, 0.24);*/
+/*      color: var(--white);*/
+/*      border-radius: 4px;*/
+/*      outline: none;*/
+/*      .CodeMirror-cursor {*/
+/*        border-color: white;*/
+/*      }*/
+/*      .CodeMirror-selected {*/
+/*        background: rgba(255, 255, 255, 0.2);*/
+/*      }*/
+/*    }*/
+/*  }*/
+/*  .toggleAdvancedSettings-wrapper {*/
+/*    display: flex;*/
+/*    justify-content: center;*/
+/*    margin-top: 15px;*/
+/*    .toggle {*/
+/*      display: flex;*/
+/*      justify-content: center;*/
+/*      padding: 8px 22px;*/
+/*      align-items: center;*/
+/*      border-radius: 21.5px;*/
+/*      border: solid 2px rgba(255, 255, 255, 0.24);*/
+/*      a {*/
+/*        font-size: 16px;*/
+/*        font-weight: 400;*/
+/*        color: #f4f4f4;*/
+/*        cursor: pointer;*/
+/*      }*/
+/*    }*/
+/*  }*/
+/*}*/
+/*.device__phone {*/
+/*  .config__form {*/
+/*    &-input-wrapper {*/
+/*      flex-direction: column;*/
+/*      @media (--breakpoint-medium-device) {*/
+/*        padding: 0 30px;*/
+/*      }*/
+/*    }*/
+/*    &-submit {*/
+/*      margin-top: 15px;*/
+/*      margin-left: 0;*/
+/*    }*/
+/*    .advanced {*/
+/*      @media (--breakpoint-medium-device) {*/
+/*        width: auto !important;*/
+/*        max-width: none;*/
+/*        margin: 0 20px;*/
+/*      }*/
+/*    }*/
+/*  }*/
+/*}*/
+
 .config__form {
   font-family: "Poppins";
-  &-input-wrapper {
-    display: flex;
-    flex-direction: column;
-    @media (--breakpoint-medium-device) {
-      flex-direction: row;
-      flex-wrap: wrap;
-    }
-  }
-  &-input {
-    font-size: 20px;
-    border-radius: 4px;
-    background-color: rgba(0, 0, 0, 0.24);
-    color: var(--white);
-    border: none;
-    flex-grow: 1;
-    padding: 14px 45px 14px 20px;
-    box-shadow: none;
-    min-height: 56px;
-    @media (--breakpoint-medium-device) {
-      min-height: 60px;
-    }
-    &.no-text {
-      color: transparent;
-      caret-color: white;
-    }
-    &::placeholder {
-      color: rgba(255, 255, 255, 0.64);
-    }
-  }
-  &-cookie {
-    font-size: 16px;
-    border-radius: 4px;
-    background-color: rgba(0, 0, 0, 0.24);
-    color: var(--white);
-    border: none;
-    flex-grow: 1;
-    padding: 14px 45px 14px 20px;
-    box-shadow: none;
-    height: 42px;
-    &.no-text {
-      color: transparent;
-      caret-color: white;
-    }
-    &::placeholder {
-      color: rgba(255, 255, 255, 0.64);
-    }
-  }
-  &-submit {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-    border: solid 3px #ffffff;
-    font-size: 16px;
-    font-weight: bold;
-    font-family: "Poppins";
-    letter-spacing: 0.15em;
-    cursor: pointer;
-    padding: 16px 40px;
-    margin-top: 15px;
-    margin-left: 0;
-    background: none;
-    color: color(#fff);
-    outline: none !important;
-    box-shadow: none !important;
-    @media (--breakpoint-medium-device) {
-      margin-top: 0;
-      margin-left: 15px;
-      padding: 18px 40px;
-    }
-    &:hover {
-      background: #ffffff;
-      color: var(--custom-purple);
-    }
-  }
-  &-settings {
-    border-radius: 50%;
-    width: 44px;
-    height: 44px;
-    border: none;
-    opacity: 0.8;
-    cursor: pointer;
-    &:hover {
-      opacity: 1;
-    }
-  }
+}
+.config__form-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  justify-content: space-between;
+}
+@media (--breakpoint-medium-device) {
   .config__form-input-wrapper {
-    position: relative;
-  }
-  .config__form-submit-wrapper {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    &:not(.presentation) {
-      @media (--breakpoint-medium-device) {
-        right: 225px;
-      }
-    }
-  }
-  .advanced {
-    width: 100%;
-    margin: 0 auto;
-    @media (--breakpoint-medium-device) {
-      max-width: 75%;
-    }
-    .CodeMirror {
-      height: auto;
-      font-size: 16px;
-      background-color: rgba(0, 0, 0, 0.24);
-      color: var(--white);
-      border-radius: 4px;
-      outline: none;
-      .CodeMirror-cursor {
-        border-color: white;
-      }
-      .CodeMirror-selected {
-        background: rgba(255, 255, 255, 0.2);
-      }
-    }
-  }
-  .toggleAdvancedSettings-wrapper {
-    display: flex;
-    justify-content: center;
-    margin-top: 15px;
-    .toggle {
-      display: flex;
-      justify-content: center;
-      padding: 8px 22px;
-      align-items: center;
-      border-radius: 21.5px;
-      border: solid 2px rgba(255, 255, 255, 0.24);
-      a {
-        font-size: 16px;
-        font-weight: 400;
-        color: #f4f4f4;
-        cursor: pointer;
-      }
-    }
+    flex-direction: row;
+    flex-wrap: nowrap;
   }
 }
-.device__phone {
-  .config__form {
-    &-input-wrapper {
-      flex-direction: column;
-      @media (--breakpoint-medium-device) {
-        padding: 0 30px;
-      }
-    }
-    &-submit {
-      margin-top: 15px;
-      margin-left: 0;
-    }
-    .advanced {
-      @media (--breakpoint-medium-device) {
-        width: auto !important;
-        max-width: none;
-        margin: 0 20px;
-      }
-    }
+.config__form-input {
+  font-size: 18px;
+  font-weight: 400;
+  border-radius: 8px;
+  background-color: rgba(0, 0, 0, 0.24);
+  color: var(--white);
+  border: none;
+  flex-grow: 1;
+  padding: 10px 20px;
+  box-shadow: none;
+  min-height: 56px;
+}
+@media (--breakpoint-medium-device) {
+  .config__form-input {
+    min-height: 60px;
+  }
+}
+.config__form-input.no-text {
+  color: transparent;
+  caret-color: white;
+}
+.config__form-input::placeholder {
+  color: rgba(255, 255, 255, 0.64);
+}
+.config__form-cookie {
+  font-size: 16px;
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.24);
+  color: var(--white);
+  border: none;
+  flex-grow: 1;
+  padding: 14px 45px 14px 20px;
+  box-shadow: none;
+  height: 42px;
+}
+.config__form-cookie.no-text {
+  color: transparent;
+  caret-color: white;
+}
+.config__form-cookie::placeholder {
+  color: rgba(255, 255, 255, 0.64);
+}
+.config__form-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: solid 3px #ffffff;
+  font-size: 18px;
+  font-weight: 600;
+  font-family: "Poppins", sans-serif;
+  letter-spacing: -0.36px;
+  cursor: pointer;
+  padding: 10px 20px;
+  margin-top: 15px;
+  margin-left: 0;
+  background: var(--white);
+  color: var(--custom-purple);
+}
+@media (--breakpoint-medium-device) {
+  .config__form-submit {
+    margin-top: 0;
+  }
+}
+.config__form-submit:hover {
+  background: #ffffff;
+  color: var(--custom-purple);
+}
+.config__form-settings {
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  border: none;
+  opacity: 0.8;
+  cursor: pointer;
+}
+.config__form-settings:hover {
+  opacity: 1;
+}
+.config__form .config__form-input-wrapper {
+  position: relative;
+}
+.config__form .config__form-submit-wrapper {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+@media (--breakpoint-medium-device) {
+  .config__form .config__form-submit-wrapper:not(.presentation) {
+    right: 225px;
+  }
+}
+.config__form .advanced {
+  width: 100%;
+  margin: 0 auto;
+}
+@media (--breakpoint-medium-device) {
+  .config__form .advanced {
+    max-width: 75%;
+  }
+}
+.config__form .advanced .CodeMirror {
+  height: auto;
+  font-size: 16px;
+  background-color: rgba(0, 0, 0, 0.24);
+  color: var(--white);
+  border-radius: 4px;
+  outline: none;
+}
+.config__form .advanced .CodeMirror .CodeMirror-cursor {
+  border-color: white;
+}
+.config__form .advanced .CodeMirror .CodeMirror-selected {
+  background: rgba(255, 255, 255, 0.2);
+}
+.config__form .toggleAdvancedSettings-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 15px;
+}
+.config__form .toggleAdvancedSettings-wrapper .toggle {
+  display: flex;
+  justify-content: center;
+  padding: 8px 22px;
+  align-items: center;
+  border-radius: 21.5px;
+  border: solid 2px rgba(255, 255, 255, 0.24);
+}
+.config__form .toggleAdvancedSettings-wrapper .toggle a {
+  font-size: 16px;
+  font-weight: 400;
+  color: #f4f4f4;
+  cursor: pointer;
+}
+
+.device__phone .config__form-input-wrapper {
+  flex-direction: column;
+}
+@media (--breakpoint-medium-device) {
+  .device__phone .config__form-input-wrapper {
+    padding: 0 30px;
+  }
+}
+.device__phone .config__form-submit {
+  margin-top: 15px;
+  margin-left: 0;
+}
+@media (--breakpoint-medium-device) {
+  .device__phone .config__form .advanced {
+    width: auto !important;
+    max-width: none;
+    margin: 0 20px;
   }
 }
 
@@ -213,4 +383,8 @@
   color: black;
   border-right: 4px solid #fafafa;
   border-bottom: 4px solid #fafafa;
+}
+
+.location-dropdown {
+  width: 176px;
 }

@@ -37,9 +37,6 @@ body {
   font-size: 18px;
   line-height: 1.48;
   color: color(#fff);
-  @media (--breakpoint-small-device) {
-    font-size: 20px;
-  }
 }
 
 html,
@@ -54,13 +51,10 @@ body,
   padding: 0;
   flex-grow: 1;
   font-family: "Poppins", sans-serif;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1.48;
   color: color(#fff);
   background-color: var(--custom-purple);
-  @media (--breakpoint-small-device) {
-    font-size: 20px;
-  }
   @media (--breakpoint-medium-device) {
     background-color: #f4f4f4;
     background-image: none;
