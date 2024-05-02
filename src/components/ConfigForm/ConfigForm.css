@@ -240,6 +240,7 @@
 }
 @media (--breakpoint-medium-device) {
   .config__form-submit {
+    font-size: clamp(0.9rem, -6.75rem + 12.5vw, 1rem);
     margin-top: 0;
   }
 }
@@ -323,6 +324,7 @@
   }
 }
 .device__phone .config__form-submit {
+  font-size: 1rem;
   margin-top: 15px;
   margin-left: 0;
 }
