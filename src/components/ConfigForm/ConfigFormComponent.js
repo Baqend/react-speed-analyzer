@@ -311,6 +311,7 @@ class ConfigFormComponent extends Component {
               onChange={this.handleMobileSwitch}
             ></BqDropdown>
             <BqDropdown
+              className="location-dropdown"
               label="LOCATION"
               modelValue={
                 ConfigFormComponent.locationStates[this.props.config.location]

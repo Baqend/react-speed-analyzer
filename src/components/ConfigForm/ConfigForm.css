@@ -334,6 +334,13 @@
     max-width: none;
     margin: 0 20px;
   }
+
+  .location-dropdown {
+    width: 165px;
+  }
+  .device__phone .location-dropdown {
+    width: unset;
+  }
 }
 
 .checkbox-custom {
@@ -385,8 +392,4 @@
   color: black;
   border-right: 4px solid #fafafa;
   border-bottom: 4px solid #fafafa;
-}
-
-.location-dropdown {
-  width: 176px;
 }

@@ -52,7 +52,7 @@ export class BqDropdown extends Component {
 
   render() {
     return (
-      <div className="bqDropdown">
+      <div className={`bqDropdown ${this.props.className ?? ""}`}>
         <button onClick={() => this.toggleDropdown()} type="button">
           <div>
             <div className="bqDropdown-label">{this.props.label}</div>
