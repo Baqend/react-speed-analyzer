@@ -240,7 +240,7 @@
 }
 @media (--breakpoint-medium-device) {
   .config__form-submit {
-    font-size: clamp(0.9rem, -6.75rem + 12.5vw, 1rem);
+    font-size: clamp(0.75rem, -14.75rem + 25vw, 1rem);
     margin-top: 0;
   }
 }
