@@ -60,7 +60,7 @@ export function handleSpeedKitConfigChange(config) {
 export function handleMobileSwitch(mobile) {
   return {
     type: SWITCH_MOBILE,
-    payload: !mobile,
+    payload: mobile,
   };
 }
 

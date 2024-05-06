@@ -17,12 +17,6 @@
   border: solid 1px #3d86f6;
 }
 
-@media (width > 765px) {
-  .bqDropdown:nth-of-type(2) {
-    width: 176px;
-  }
-}
-
 .bqDropdown-label {
   font-stretch: normal;
   font-style: normal;

@@ -240,6 +240,7 @@
 }
 @media (--breakpoint-medium-device) {
   .config__form-submit {
+    font-size: clamp(0.75rem, -14.75rem + 25vw, 1rem);
     margin-top: 0;
   }
 }
@@ -323,6 +324,7 @@
   }
 }
 .device__phone .config__form-submit {
+  font-size: 1rem;
   margin-top: 15px;
   margin-left: 0;
 }
@@ -331,6 +333,13 @@
     width: auto !important;
     max-width: none;
     margin: 0 20px;
+  }
+
+  .location-dropdown {
+    width: 165px;
+  }
+  .device__phone .location-dropdown {
+    width: unset;
   }
 }
 
@@ -383,8 +392,4 @@
   color: black;
   border-right: 4px solid #fafafa;
   border-bottom: 4px solid #fafafa;
-}
-
-.location-dropdown {
-  width: 176px;
 }
