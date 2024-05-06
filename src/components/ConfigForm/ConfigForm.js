@@ -37,7 +37,6 @@ class ConfigForm extends Component {
   };
 
   onMobileSwitch = (data) => {
-    console.log({ data, mobile: this.props.config.mobile });
     this.props.actions.handleMobileSwitch(data);
   };
 
