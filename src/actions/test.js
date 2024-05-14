@@ -122,23 +122,18 @@ export const monitorTest = (testId, onAfterFinish) => ({
 
 const subscribeToTestResult = (testId, isSpeedKitComparison) => ({
   BAQEND: async ({ dispatch, getState, db }) => {
-    const stream = db.TestResult.find().equal("id", testId).resultStream();
-    const subscription = stream.subscribe((res) => {
-      const testResult = res[0] ? res[0].toJSON() : null;
-      if (!testResult) {
-        return;
-      }
+    const testResult = await db.TestResult.find()
+      .equal("id", testId)
+      .singleResult();
 
-      dispatch({
-        type: isSpeedKitComparison
-          ? SPEED_KIT_RESULT_NEXT
-          : COMPETITOR_RESULT_NEXT,
-        payload: testResult,
-      });
-
-      if (testResult.hasFinished) {
-        subscription.unsubscribe();
-      }
+    if (!testResult) {
+      return;
+    }
+    dispatch({
+      type: isSpeedKitComparison
+        ? SPEED_KIT_RESULT_NEXT
+        : COMPETITOR_RESULT_NEXT,
+      payload: testResult,
     });
   },
 });
