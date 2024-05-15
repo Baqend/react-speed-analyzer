@@ -138,6 +138,29 @@ const subscribeToTestResult = (testId, isSpeedKitComparison) => ({
   },
 });
 
+const updateTestOverviewState = async (db, testId, getState, dispatch) => {
+  const testOverview = await db.TestOverview.find()
+    .equal("id", `/db/TestOverview/${testId}`)
+    .singleResult();
+
+  console.log("###", { testOverview, testId });
+
+  if (
+    testOverview.competitorTestResult &&
+    !getState().result.speedKitTestResult
+  ) {
+    dispatch(subscribeToTestResult(testOverview.competitorTestResult, false));
+  }
+  if (
+    testOverview.speedKitTestResult &&
+    !getState().result.speedKitTestResult
+  ) {
+    dispatch(subscribeToTestResult(testOverview.speedKitTestResult, true));
+  }
+
+  return testOverview;
+};
+
 const subscribeToTestOverview = ({ testId, onAfterFinish }) => ({
   BAQEND: async ({ dispatch, getState, db }) => {
     let isResolved = false;
