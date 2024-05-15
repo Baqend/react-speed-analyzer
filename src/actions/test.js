@@ -122,9 +122,7 @@ export const monitorTest = (testId, onAfterFinish) => ({
 
 const subscribeToTestResult = (testId, isSpeedKitComparison) => ({
   BAQEND: async ({ dispatch, getState, db }) => {
-    const testResult = await db.TestResult.find()
-      .equal("id", testId)
-      .singleResult();
+    const testResult = await db.TestResult.load(testId);
 
     if (!testResult) {
       return;
@@ -139,21 +137,23 @@ const subscribeToTestResult = (testId, isSpeedKitComparison) => ({
 });
 
 const updateTestOverviewState = async (db, testId, getState, dispatch) => {
-  const testOverview = await db.TestOverview.find()
-    .equal("id", `/db/TestOverview/${testId}`)
-    .singleResult();
+  const testOverview = await db.TestOverview.load(testId);
 
   if (
     testOverview.competitorTestResult &&
+    testOverview.competitorTestResult.id &&
     !getState().result.speedKitTestResult
   ) {
-    dispatch(subscribeToTestResult(testOverview.competitorTestResult, false));
+    dispatch(
+      subscribeToTestResult(testOverview.competitorTestResult.id, false)
+    );
   }
   if (
     testOverview.speedKitTestResult &&
+    testOverview.speedKitTestResult.id &&
     !getState().result.speedKitTestResult
   ) {
-    dispatch(subscribeToTestResult(testOverview.speedKitTestResult, true));
+    dispatch(subscribeToTestResult(testOverview.speedKitTestResult.id, true));
   }
 
   return testOverview;
