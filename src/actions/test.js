@@ -143,8 +143,6 @@ const updateTestOverviewState = async (db, testId, getState, dispatch) => {
     .equal("id", `/db/TestOverview/${testId}`)
     .singleResult();
 
-  console.log("###", { testOverview, testId });
-
   if (
     testOverview.competitorTestResult &&
     !getState().result.speedKitTestResult
