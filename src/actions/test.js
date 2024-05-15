@@ -163,66 +163,65 @@ const updateTestOverviewState = async (db, testId, getState, dispatch) => {
 
 const subscribeToTestOverview = ({ testId, onAfterFinish }) => ({
   BAQEND: async ({ dispatch, getState, db }) => {
-    let isResolved = false;
     let trackUnload = null;
-    const testOverviewStream = db.TestOverview.find()
-      .equal("id", `/db/TestOverview/${testId}`)
-      .resultStream();
-    const testOverviewPromise = new Promise((resolve, reject) => {
-      const testOverviewSubscription = testOverviewStream.subscribe((res) => {
-        const testOverview = res[0] ? res[0].toJSON() : null;
-        if (testOverview) {
-          if (
-            testOverview.competitorTestResult &&
-            !getState().result.speedKitTestResult
-          ) {
-            dispatch(
-              subscribeToTestResult(testOverview.competitorTestResult, false)
-            );
-          }
-          if (
-            testOverview.speedKitTestResult &&
-            !getState().result.speedKitTestResult
-          ) {
-            dispatch(
-              subscribeToTestResult(testOverview.speedKitTestResult, true)
-            );
-          }
 
-          if (!trackUnload) {
-            trackUnload = () => {
-              trackURL("leaveDuringTest", testOverview.url, {
-                startTime: getState().result.startTime,
-              });
-            };
-            window.addEventListener("beforeunload", trackUnload);
-          }
+    const testOverviewPromise = new Promise(async (resolve, reject) => {
+      const testOverview = await updateTestOverviewState(
+        db,
+        testId,
+        getState,
+        dispatch
+      );
 
-          if (testOverview.hasFinished) {
+      // Dispatch initial testOverview State
+      dispatch({
+        type: TESTOVERVIEW_LOAD,
+        payload: testOverview,
+      });
+
+      if (testOverview.hasFinished) {
+        dispatch({
+          type: TESTOVERVIEW_NEXT,
+          payload: testOverview,
+        });
+
+        onAfterFinish &&
+          getState().result.isStarted &&
+          onAfterFinish({ testId });
+      } else {
+        if (!trackUnload) {
+          trackUnload = () => {
+            trackURL("leaveDuringTest", testOverview.url, {
+              startTime: getState().result.startTime,
+            });
+          };
+          window.addEventListener("beforeunload", trackUnload);
+        }
+
+        const interval = setInterval(async () => {
+          const next = await updateTestOverviewState(
+            db,
+            testId,
+            getState,
+            dispatch
+          );
+          // Dispatch updated testOverview state
+          dispatch({
+            type: TESTOVERVIEW_NEXT,
+            payload: next,
+          });
+
+          if (next.hasFinished) {
+            clearInterval(interval);
             window.removeEventListener("beforeunload", trackUnload);
-            testOverviewSubscription && testOverviewSubscription.unsubscribe();
-            // Do not trigger reload if the test is not started anymore e.g. because of backward navigation
+
             onAfterFinish &&
               getState().result.isStarted &&
               onAfterFinish({ testId });
           }
-          if (isResolved) {
-            dispatch({
-              type: TESTOVERVIEW_NEXT,
-              payload: testOverview,
-            });
-          } else {
-            dispatch({
-              type: TESTOVERVIEW_LOAD,
-              payload: testOverview,
-            });
-          }
-          testOverviewPromise.then(() => {
-            isResolved = true;
-          });
-          resolve(testOverview);
-        }
-      });
+        }, 10_000);
+      }
+      resolve(testOverview);
     });
     return testOverviewPromise;
   },
