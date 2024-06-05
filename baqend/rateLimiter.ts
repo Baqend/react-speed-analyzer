@@ -1,3 +1,4 @@
+// @ts-ignore
 import NodeCache from 'node-cache'
 import { RateLimiter } from 'limiter'
 import { Request } from 'express'

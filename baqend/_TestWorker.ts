@@ -74,14 +74,14 @@ export class TestWorker {
       }
 
       // Check if the test was not updated within the last three minutes
-      const isOlderThanThreeMinutes = (new Date().getTime() - test.updatedAt.getTime()) / ONE_MINUTE > 3
+      const isOlderThanThreeMinutes = (new Date().getTime() - test.updatedAt!.getTime()) / ONE_MINUTE > 3
       if (test.status === Status.RUNNING && isOlderThanThreeMinutes) {
         await cancelTest(test, this.api)
         return
       }
 
       // Is WebPagetest still running this test? Check the status and start over.
-      const isOlderThanTwoMinutes = (new Date().getTime() - test.updatedAt.getTime()) / ONE_MINUTE > 2
+      const isOlderThanTwoMinutes = (new Date().getTime() - test.updatedAt!.getTime()) / ONE_MINUTE > 2
       if (isOlderThanTwoMinutes && this.hasNotFinishedWebPagetests(test)) {
         this.checkWebPagetestsStatus(test)
           .catch((err) => this.db.log.error(`TestWorker.checkWebPagetestsStatus failed: ${err.message}`, err))

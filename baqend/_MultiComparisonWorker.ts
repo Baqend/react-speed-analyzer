@@ -61,7 +61,7 @@ export class MultiComparisonWorker implements ComparisonListener {
       const currentComparison = testOverviews[testOverviews.length - 1]
       if (currentComparison && isUnfinished(currentComparison)) {
         // Is WebPagetest still running this test? Check the status and start over.
-        const isOlderThanFiveMinutes = (new Date().getTime() - multiComparison.updatedAt.getTime()) / ONE_MINUTE > 5
+        const isOlderThanFiveMinutes = (new Date().getTime() - multiComparison.updatedAt!.getTime()) / ONE_MINUTE > 5
         if (isOlderThanFiveMinutes) {
           setPending(multiComparison)
         }

@@ -111,8 +111,8 @@ function worstResult(bulkTest: model.BulkTest, prefix: TestResultFieldPrefix, fi
 function calcBestFactors(db: baqend, bulkTest: model.BulkTest): model.Mean {
   const result = new db.Mean()
   for (const field of fields) {
-    const competitorWorst = worstResult(bulkTest, 'competitor', field)
-    const speedKitBest = bestResult(bulkTest, 'speedKit', field)
+    const competitorWorst = worstResult(bulkTest, 'competitor', field as string)
+    const speedKitBest = bestResult(bulkTest, 'speedKit', field as string)
 
     result[field] = (competitorWorst / speedKitBest) || null
   }
@@ -130,8 +130,8 @@ function calcBestFactors(db: baqend, bulkTest: model.BulkTest): model.Mean {
 function calcWorstFactors(db: baqend, bulkTest: model.BulkTest): model.Mean {
   const result = new db.Mean()
   for (const field of fields) {
-    const competitorBest = bestResult(bulkTest, 'competitor', field)
-    const speedKitWorst = worstResult(bulkTest, 'speedKit', field)
+    const competitorBest = bestResult(bulkTest, 'competitor', field as string)
+    const speedKitWorst = worstResult(bulkTest, 'speedKit', field as string)
 
     result[field] = (competitorBest / speedKitWorst) || null
   }

@@ -4,36 +4,36 @@ declare module 'baqend' {
 
   export type StatusString = 'WAIT_FOR_PUPPETEER' | 'QUEUED' | 'RUNNING' | 'SUCCESS' | 'CANCELED' | 'INCOMPLETE' | 'FAILED' | 'PENDING'
 
-  interface baqend {
-    BulkComparison: binding.EntityFactory<model.BulkComparison>;
-    BulkTest: binding.EntityFactory<model.BulkTest>;
-    Testseries: binding.EntityFactory<model.Testseries>;
-    PipedriveTest: binding.EntityFactory<model.PipedriveTest>;
-    TestResult: binding.EntityFactory<model.TestResult>;
-    Prewarms: binding.EntityFactory<model.Prewarms>;
-    CachedConfig: binding.EntityFactory<model.CachedConfig>;
-    TestOverview: binding.EntityFactory<model.TestOverview>;
-    ChromeUXReport: binding.EntityFactory<model.ChromeUXReport>;
-    Hits: binding.ManagedFactory<model.Hits>;
-    ContentSize: binding.ManagedFactory<model.ContentSize>;
-    TestEntry: binding.ManagedFactory<model.TestEntry>;
-    Task: binding.ManagedFactory<model.Task>;
-    WebPagetest: binding.ManagedFactory<model.WebPagetest>;
-    Run: binding.ManagedFactory<model.Run>;
-    ConfigAnalysis: binding.ManagedFactory<model.ConfigAnalysis>;
-    Completeness: binding.ManagedFactory<model.Completeness>;
-    Mean: binding.ManagedFactory<model.Mean>;
-    UrlAnalysis: binding.ManagedFactory<model.UrlAnalysis>;
-    Tasks: binding.ManagedFactory<model.Tasks>;
-    Means: binding.ManagedFactory<model.Means>;
-    Puppeteer: binding.ManagedFactory<model.Puppeteer>;
-    PuppeteerType: binding.ManagedFactory<model.PuppeteerType>;
-    PuppeteerStats: binding.ManagedFactory<model.PuppeteerStats>;
-    PuppeteerSpeedKit: binding.ManagedFactory<model.PuppeteerSpeedKit>;
-    PuppeteerServiceWorkers: binding.ManagedFactory<model.PuppeteerServiceWorkers>;
-    Candidate: binding.ManagedFactory<model.Candidate>;
-    FMPData: binding.ManagedFactory<model.FMPData>;
-  }
+  // interface baqend {
+  //   BulkComparison: binding.EntityFactory<model.BulkComparison>;
+  //   BulkTest: binding.EntityFactory<model.BulkTest>;
+  //   Testseries: binding.EntityFactory<model.Testseries>;
+  //   PipedriveTest: binding.EntityFactory<model.PipedriveTest>;
+  //   TestResult: binding.EntityFactory<model.TestResult>;
+  //   Prewarms: binding.EntityFactory<model.Prewarms>;
+  //   CachedConfig: binding.EntityFactory<model.CachedConfig>;
+  //   TestOverview: binding.EntityFactory<model.TestOverview>;
+  //   ChromeUXReport: binding.EntityFactory<model.ChromeUXReport>;
+  //   Hits: binding.ManagedFactory<model.Hits>;
+  //   ContentSize: binding.ManagedFactory<model.ContentSize>;
+  //   TestEntry: binding.ManagedFactory<model.TestEntry>;
+  //   Task: binding.ManagedFactory<model.Task>;
+  //   WebPagetest: binding.ManagedFactory<model.WebPagetest>;
+  //   Run: binding.ManagedFactory<model.Run>;
+  //   ConfigAnalysis: binding.ManagedFactory<model.ConfigAnalysis>;
+  //   Completeness: binding.ManagedFactory<model.Completeness>;
+  //   Mean: binding.ManagedFactory<model.Mean>;
+  //   UrlAnalysis: binding.ManagedFactory<model.UrlAnalysis>;
+  //   Tasks: binding.ManagedFactory<model.Tasks>;
+  //   Means: binding.ManagedFactory<model.Means>;
+  //   Puppeteer: binding.ManagedFactory<model.Puppeteer>;
+  //   PuppeteerType: binding.ManagedFactory<model.PuppeteerType>;
+  //   PuppeteerStats: binding.ManagedFactory<model.PuppeteerStats>;
+  //   PuppeteerSpeedKit: binding.ManagedFactory<model.PuppeteerSpeedKit>;
+  //   PuppeteerServiceWorkers: binding.ManagedFactory<model.PuppeteerServiceWorkers>;
+  //   Candidate: binding.ManagedFactory<model.Candidate>;
+  //   FMPData: binding.ManagedFactory<model.FMPData>;
+  // }
 
   namespace model {
     interface UrlAware {

@@ -107,9 +107,9 @@ export async function get(db: baqend, request: Request, response: Response) {
   const bulkComparison = await db.BulkComparison.load(bulkComparisonId as string, { depth })
   if (!url) {
     const comparisons: any = {};
-    bulkComparison.multiComparisons.forEach((multiComparison) => {
+    bulkComparison.multiComparisons.forEach((multiComparison: model.BulkTest) => {
       if (multiComparison.hasFinished) {
-        const comparison = bulkComparison.comparisonsToStart.find((comparison) => {
+        const comparison = bulkComparison.comparisonsToStart.find((comparison: model.TestOverview) => {
           return comparison.multiComparisonId === multiComparison.id;
         })
         if (comparison) {
@@ -132,7 +132,7 @@ export async function get(db: baqend, request: Request, response: Response) {
   }
 
   // Find bulk test for URL
-  const comparisonToStart = bulkComparison.comparisonsToStart.find((comparison) => comparison.url === url)
+  const comparisonToStart = bulkComparison.comparisonsToStart.find((comparison: model.TestOverview) => comparison.url === url)
   if (!comparisonToStart) {
     const comparison = Object.assign(defaultComparison, { url })
     response.send({
@@ -144,7 +144,7 @@ export async function get(db: baqend, request: Request, response: Response) {
   }
 
   const { multiComparisonId } = comparisonToStart
-  const bulkTest = bulkComparison.multiComparisons.find((multiComparison) => multiComparison.id === multiComparisonId)
+  const bulkTest = bulkComparison.multiComparisons.find((multiComparison: model.BulkTest) => multiComparison.id === multiComparisonId)
   // Check if there is no bulkTest or the bulkTest has not finished yet
   if (!bulkTest || !bulkTest.hasFinished) {
     // The corresponding bulkComparison is already finished (probably because of an error)

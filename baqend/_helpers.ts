@@ -1,5 +1,6 @@
 import { baqend, binding, model } from 'baqend'
 import { concat, filter, map, mapValues, mergeWith, pick, reduce } from 'lodash'
+// @ts-ignore
 import {Blob} from 'buffer'
 import { Pagetest } from './_Pagetest'
 import { isFinished, isUnfinished, setCanceled } from './_Status'

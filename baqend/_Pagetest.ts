@@ -226,7 +226,7 @@ export class Pagetest {
 
         // 200 indicates test is completed
         if (statusCode === 200) {
-          db.TestResult.find().equal('testId', testId).singleResult((testResult) => {
+          db.TestResult.find().equal('testId', testId).singleResult((testResult: model.TestResult) => {
             if (!testResult || !testResult.firstView) {
               this.resolveTest(db, testId)
             }

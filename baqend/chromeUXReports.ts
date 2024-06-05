@@ -1,4 +1,5 @@
 // Imports the Google Cloud client library.
+// @ts-ignore
 import {BigQuery} from '@google-cloud/bigquery'
 import {URL} from 'url'
 import credentials from './credentials'
