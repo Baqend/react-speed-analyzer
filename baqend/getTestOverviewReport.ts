@@ -12,6 +12,12 @@ interface SortedDomain {
   statuses: DomainStatus;
 }
 
+const EXCLUDED_DOMAINS = [
+  "kicker.de",
+  "plesk.com",
+  "speed-kit-test.com"
+];
+
 /**
  * Extracts the origin from a given URL.
  * 
@@ -25,6 +31,16 @@ function extractOrigin(url: string): string {
   } catch {
     return url;
   }
+}
+
+/**
+ * Strips the protocol and 'www.' from a given origin.
+ * 
+ * @param {string} origin - The origin to process.
+ * @returns {string} - The processed origin.
+ */
+function processOrigin(origin: string): string {
+  return origin.replace(/(^\w+:|^)\/\//, '').replace(/^www\./, '');
 }
 
 /**
@@ -121,13 +137,14 @@ function calculateDomainStatus(testOverviews: TestOverview[]): SortedDomain[] {
   const domainStatusCount: Record<string, { count: number, statuses: Record<string, number> }> = {};
 
   testOverviews.forEach(entry => {
-    const domain = extractOrigin(entry.url);
-    if (domain) {
-      if (!domainStatusCount[domain]) {
-        domainStatusCount[domain] = { count: 0, statuses: {} };
+    const origin = extractOrigin(entry.url);
+    const processedOrigin = processOrigin(origin);
+    if (processedOrigin && !EXCLUDED_DOMAINS.includes(processedOrigin)) {
+      if (!domainStatusCount[origin]) {
+        domainStatusCount[origin] = { count: 0, statuses: {} };
       }
-      domainStatusCount[domain].count += 1;
-      domainStatusCount[domain].statuses[entry.status] = (domainStatusCount[domain].statuses[entry.status] || 0) + 1;
+      domainStatusCount[origin].count += 1;
+      domainStatusCount[origin].statuses[entry.status] = (domainStatusCount[origin].statuses[entry.status] || 0) + 1;
     }
   });
 
@@ -149,11 +166,10 @@ export async function post(db: EntityManager, req: Request, res: Response): Prom
     if (typeof body === 'string') {
       body = JSON.parse(body);
     }
-
+    
     const endDate = body?.endDate ? new Date(body.endDate) : new Date();
     const hours = body?.hours ?? 48;
-    const millis = Number(endDate);
-    const startDate = new Date(millis - (hours * 3_600_000));
+    const startDate = new Date(endDate.getTime() - (hours * 3_600_000));
 
     const testOverviewIds = await fetchAllTestOverviewIdsFromBulkTests(db, startDate, endDate);
     const testOverviews = await fetchTestOverviews(db, startDate, endDate, testOverviewIds);
@@ -164,10 +180,10 @@ export async function post(db: EntityManager, req: Request, res: Response): Prom
       hours,
       sortedDomains
     });
-  } catch (error: any) {
+  } catch (error) {
     res.status(500).send({
       message: 'An error occurred while generating the report.',
-      error: error.message
+      error: (error as Error).message
     });
   }
 }
