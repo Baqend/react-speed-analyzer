@@ -1,4 +1,4 @@
-import { baqend, binding, model } from 'baqend'
+import { EntityManager, baqend, binding, model, query } from 'baqend'
 import { concat, filter, map, mapValues, mergeWith, pick, reduce } from 'lodash'
 // @ts-ignore
 import {Blob} from 'buffer'
@@ -287,4 +287,56 @@ export function getVariation(mobile: boolean, location: string): string {
   }
 
   return isUS ? 'SCRAPING_US' : 'SCRAPING'
+}
+
+/**
+ * Iterates over a query to fetch all results using the specified builder, accumulating them into an array.
+ *
+ * @template T The type of the entities being queried.
+ * @param {EntityManager} db - The database entity manager.
+ * @param {query.Builder<any>} builder - The query builder used to fetch results.
+ * @param {T[]} [acc=[]] - The accumulator array to store the fetched results.
+ * @param {string} [id=''] - The last fetched id to continue fetching results from.
+ * @returns {Promise<T[]>} - A promise that resolves to an array of all fetched results.
+ */
+export async function iterateQuery<T>(db: EntityManager, builder: query.Builder<any>, acc: any[] = [], id = ''): Promise<T[]> {
+  const result = await builder
+    .gt('id', id)
+    .ascending('id')
+    .resultList();
+
+  // Check iteration done
+  if (!result.length) {
+    return acc;
+  }
+
+  // eslint-disable-next-line no-param-reassign
+  acc = acc.concat(result);
+  db.clear();
+  return iterateQuery(db, builder, acc, result[result.length - 1].id);
+}
+
+/**
+ * Extracts the origin from a given URL.
+ *
+ * @param {string} url - The URL to extract the origin from.
+ * @returns {string} - The extracted origin.
+ */
+export function extractOrigin(url: string): string {
+  try {
+    const { origin } = new URL(url);
+    return origin;
+  } catch {
+    return url;
+  }
+}
+
+/**
+ * Strips the protocol and 'www.' from a given origin.
+ *
+ * @param {string} origin - The origin to process.
+ * @returns {string} - The processed origin.
+ */
+export function processOrigin(origin: string): string {
+  return origin.replace(/(^\w+:|^)\/\//, '').replace(/^www\./, '');
 }

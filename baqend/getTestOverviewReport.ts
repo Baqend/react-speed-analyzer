@@ -1,6 +1,7 @@
 import { EntityManager } from 'baqend';
 import { BulkTest, TestOverview } from 'baqend/commonjs/lib/model';
 import { Request, Response } from 'express';
+import { iterateQuery, extractOrigin, processOrigin } from './_helpers';
 
 interface DomainStatus {
   [status: string]: number;
@@ -13,123 +14,69 @@ interface SortedDomain {
 }
 
 const EXCLUDED_DOMAINS = [
-  "kicker.de",
-  "plesk.com",
-  "speed-kit-test.com"
+  'kicker.de',
+  'plesk.com',
+  'speed-kit-test.com'
 ];
 
 /**
- * Extracts the origin from a given URL.
- * 
- * @param {string} url - The URL to extract the origin from.
- * @returns {string} - The extracted origin.
- */
-function extractOrigin(url: string): string {
-  try {
-    const { origin } = new URL(url);
-    return origin;
-  } catch {
-    return url;
-  }
-}
-
-/**
- * Strips the protocol and 'www.' from a given origin.
- * 
- * @param {string} origin - The origin to process.
- * @returns {string} - The processed origin.
- */
-function processOrigin(origin: string): string {
-  return origin.replace(/(^\w+:|^)\/\//, '').replace(/^www\./, '');
-}
-
-/**
  * Fetches all test overview IDs within bulk tests for the specified date range.
- * 
+ *
  * @param {EntityManager} db - The database entity manager.
  * @param {Date} startDate - The start date of the range.
  * @param {Date} endDate - The end date of the range.
- * @returns {Promise<string[]>} - A promise that resolves to an array of test overview IDs.
+ * @returns {Promise<Set<string>>} - A promise that resolves to a set of test overview IDs.
  */
 async function fetchAllTestOverviewIdsFromBulkTests(
   db: EntityManager,
   startDate: Date,
   endDate: Date
-): Promise<string[]> {
-  const testOverviewIds: string[] = [];
-  const limit = 500;
-  let lastCreatedAt = startDate;
+): Promise<Set<string>> {
+  const builder = db.BulkTest.find()
+    .greaterThanOrEqualTo('createdAt', startDate)
+    .lessThan('createdAt', endDate)
 
-  while (true) {
-    const batch: BulkTest[] = await db.BulkTest.find()
-      .greaterThanOrEqualTo('createdAt', lastCreatedAt)
-      .lessThan('createdAt', endDate)
-      .limit(limit)
-      .ascending('createdAt')
-      .resultList();
-
-    if (batch.length === 0) break;
-
-    for (const bulkTest of batch) {
-      testOverviewIds.push(...bulkTest.testOverviews.map((overview: TestOverview) => overview.id).filter((id): id is string => id !== null));
-    }
-
-    const lastCreatedAtDate = batch[batch.length - 1].createdAt;
-    if (lastCreatedAtDate) {
-      lastCreatedAt = new Date(new Date(lastCreatedAtDate).getTime() + 1);
-    } else {
-      break;
-    }
-  }
-
-  return [...new Set(testOverviewIds)];
+  const result = await iterateQuery<BulkTest>(db, builder);
+  return new Set(result.flatMap((bulkTest: BulkTest) => bulkTest.testOverviews.map((overview: TestOverview) => overview.id).filter((id): id is string => id !== null)));
 }
 
 /**
- * Fetches test overview entries within the specified date range, excluding the specified IDs.
- * 
+ * Fetches all test overview entries within the specified date range.
+ *
  * @param {EntityManager} db - The database entity manager.
  * @param {Date} startDate - The start date of the range.
  * @param {Date} endDate - The end date of the range.
- * @param {string[]} excludedIds - An array of IDs to exclude.
  * @returns {Promise<TestOverview[]>} - A promise that resolves to an array of test overviews.
  */
-async function fetchTestOverviews(
+async function fetchAllTestOverviews(
   db: EntityManager,
   startDate: Date,
-  endDate: Date,
-  excludedIds: string[]
+  endDate: Date
 ): Promise<TestOverview[]> {
-  const testOverviews: TestOverview[] = [];
-  const limit = 500;
-  let lastCreatedAt = startDate;
+  const builder = db.TestOverview.find()
+    .greaterThanOrEqualTo('createdAt', startDate)
+    .lessThan('createdAt', endDate)
 
-  while (true) {
-    const batch = await db.TestOverview.find()
-      .greaterThanOrEqualTo('createdAt', lastCreatedAt)
-      .lessThan('createdAt', endDate)
-      .notIn('id', excludedIds)
-      .limit(limit)
-      .ascending('createdAt')
-      .resultList();
+  return await iterateQuery<TestOverview>(db, builder);
+}
 
-    if (batch.length === 0) break;
-    testOverviews.push(...batch);
-
-    const lastCreatedAtDate = batch[batch.length - 1].createdAt;
-    if (lastCreatedAtDate) {
-      lastCreatedAt = new Date(new Date(lastCreatedAtDate).getTime() + 1);
-    } else {
-      break;
-    }
-  }
-
-  return testOverviews;
+/**
+ * Filters the test overviews to exclude the specified IDs.
+ *
+ * @param {TestOverview[]} testOverviews - An array of test overviews.
+ * @param {Set<string>} excludedIdsSet - A set of IDs to exclude.
+ * @returns {TestOverview[]} - A filtered array of test overviews.
+ */
+function filterTestOverviews(
+  testOverviews: TestOverview[],
+  excludedIdsSet: Set<string>
+): TestOverview[] {
+  return testOverviews.filter(overview => overview.id !== null && !excludedIdsSet.has(overview.id));
 }
 
 /**
  * Calculates the domain status from an array of test overviews.
- * 
+ *
  * @param {TestOverview[]} testOverviews - An array of test overviews.
  * @returns {SortedDomain[]} - An array of sorted domains with their counts and statuses.
  */
@@ -154,25 +101,24 @@ function calculateDomainStatus(testOverviews: TestOverview[]): SortedDomain[] {
 }
 
 /**
- * Handles the HTTP POST request to generate a test overview report.
- * 
+ * Handles the HTTP GET request to generate a test overview report.
+ *
  * @param {EntityManager} db - The database entity manager.
  * @param {Request} req - The HTTP request object.
  * @param {Response} res - The HTTP response object.
  */
-export async function post(db: EntityManager, req: Request, res: Response): Promise<void> {
+export async function get(db: EntityManager, req: Request, res: Response): Promise<void> {
   try {
-    let { body } = req;
-    if (typeof body === 'string') {
-      body = JSON.parse(body);
-    }
-    
-    const endDate = body?.endDate ? new Date(body.endDate) : new Date();
-    const hours = body?.hours ?? 48;
-    const startDate = new Date(endDate.getTime() - (hours * 3_600_000));
+    const endDate = req.query.endDate ? new Date(req.query.endDate as string) : new Date();
+    const hours = req.query.hours ? parseInt(req.query.hours as string, 10) : 24;
 
-    const testOverviewIds = await fetchAllTestOverviewIdsFromBulkTests(db, startDate, endDate);
-    const testOverviews = await fetchTestOverviews(db, startDate, endDate, testOverviewIds);
+    // add one hour to the BulkTest query to equalize delays
+    const startDateForBulkTests = new Date(endDate.getTime() - ((hours + 1) * 3_600_000));
+    const startDateForTestOverviews = new Date(endDate.getTime() - (hours * 3_600_000));
+
+    const excludedIdsSet = await fetchAllTestOverviewIdsFromBulkTests(db, startDateForBulkTests, endDate);
+    const allTestOverviews = await fetchAllTestOverviews(db, startDateForTestOverviews, endDate);
+    const testOverviews = filterTestOverviews(allTestOverviews, excludedIdsSet);
     const sortedDomains = calculateDomainStatus(testOverviews);
 
     res.status(200).send({
