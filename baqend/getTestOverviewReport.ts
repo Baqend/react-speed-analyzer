@@ -37,7 +37,7 @@ async function fetchAllTestOverviewIdsFromBulkTests(
     .lessThan('createdAt', endDate)
 
   const result = await iterateQuery<BulkTest>(db, builder);
-  return new Set(result.flatMap((bulkTest: BulkTest) => bulkTest.testOverviews.map((overview: TestOverview) => overview.id).filter((id): id is string => id !== null)));
+  return new Set(result.flatMap((bulkTest: BulkTest) => bulkTest.testOverviews.map((overview: TestOverview) => overview.id!)));
 }
 
 /**
@@ -58,20 +58,6 @@ async function fetchAllTestOverviews(
     .lessThan('createdAt', endDate)
 
   return await iterateQuery<TestOverview>(db, builder);
-}
-
-/**
- * Filters the test overviews to exclude the specified IDs.
- *
- * @param {TestOverview[]} testOverviews - An array of test overviews.
- * @param {Set<string>} excludedIdsSet - A set of IDs to exclude.
- * @returns {TestOverview[]} - A filtered array of test overviews.
- */
-function filterTestOverviews(
-  testOverviews: TestOverview[],
-  excludedIdsSet: Set<string>
-): TestOverview[] {
-  return testOverviews.filter(overview => overview.id !== null && !excludedIdsSet.has(overview.id));
 }
 
 /**
@@ -118,7 +104,7 @@ export async function get(db: EntityManager, req: Request, res: Response): Promi
 
     const excludedIdsSet = await fetchAllTestOverviewIdsFromBulkTests(db, startDateForBulkTests, endDate);
     const allTestOverviews = await fetchAllTestOverviews(db, startDateForTestOverviews, endDate);
-    const testOverviews = filterTestOverviews(allTestOverviews, excludedIdsSet);
+    const testOverviews = allTestOverviews.filter(overview => !excludedIdsSet.has(overview.id!));
     const sortedDomains = calculateDomainStatus(testOverviews);
 
     res.status(200).send({
