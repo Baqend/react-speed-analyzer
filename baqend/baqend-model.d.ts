@@ -245,7 +245,7 @@ declare module 'baqend' {
       hasMultiComparison: boolean;
       documentRequestFailed: boolean;
       error?: { message: string, status: number };
-      metaData?: { hostname: string, pageViews: number };
+      metaData?: { hostname: string, pageViews: number, withSpeedKitExtension: boolean };
       wptFilmstrip: binding.File | null;
       withScraping?: boolean;
     }

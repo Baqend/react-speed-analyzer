@@ -104,8 +104,10 @@ export async function get(db: EntityManager, req: Request, res: Response): Promi
 
     const excludedIdsSet = await fetchAllTestOverviewIdsFromBulkTests(db, startDateForBulkTests, endDate);
     const allTestOverviews = await fetchAllTestOverviews(db, startDateForTestOverviews, endDate);
-    const testOverviews = allTestOverviews.filter(overview => !excludedIdsSet.has(overview.id!));
-    const sortedDomains = calculateDomainStatus(testOverviews);
+    const filteredTestOverviews = allTestOverviews.filter(overview => 
+      !excludedIdsSet.has(overview.id!) && !(overview.metaData?.withSpeedKitExtension));
+
+    const sortedDomains = calculateDomainStatus(filteredTestOverviews);
 
     res.status(200).send({
       endDate: endDate.toISOString(),
