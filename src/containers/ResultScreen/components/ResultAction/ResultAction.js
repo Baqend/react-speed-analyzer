@@ -27,16 +27,6 @@ import {
 } from "../../../../helper/ctaFacts";
 
 class ResultAction extends Component {
-  restartAnalyzer = async () => {
-    const { history } = this.props;
-    try {
-      await this.props.actions.prepareTest(this.props.config.url);
-      history.push("/");
-      const testOverview = await this.props.actions.startTest();
-      history.push(`/test/${getObjectKey(testOverview.id)}`);
-    } catch (e) {}
-  };
-
   getCTAContent = () => {
     const improvements = [];
     const applied = [];

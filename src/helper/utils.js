@@ -105,6 +105,21 @@ export const shuffle = (a) => {
   return a
 }
 
+export const hasSpeedKitExtension = (): Promise<boolean> => {
+  let promiseResolver = null
+  const promise = new Promise(resolve => promiseResolver = resolve)
+  const script = document.createElement('script')
+
+  script.onload = () => promiseResolver(true);
+  script.onerror = () => promiseResolver(false);
+
+  script.src = "chrome-extension://ekpbkffokdenmgfbndohifiehdifcnge/contentscript/inject.global.js"
+  document.body.appendChild(script)
+  script.remove()
+
+  return Promise.race([new Promise(resolve => setTimeout(resolve, 5_000)), promise])
+}
+
 /**
  * Verify whether the browser is IE or not.
  * @return {boolean}

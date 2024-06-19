@@ -101,6 +101,11 @@ export interface TestParams {
    * Whether the test should run in scraping mode.
    */
   withScraping?: boolean;
+
+  /**
+   * Whether the client had the Speed Kit extension installed.
+   */
+  withSpeedKitExtension?: boolean;
 }
 
 export interface MultiTestParams extends TestParams {

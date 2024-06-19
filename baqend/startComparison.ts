@@ -29,7 +29,7 @@ export async function post(db: baqend, req: Request, res: Response) {
   }
 
   const hostname = params.hostname || req.hostname;
-  const comparison = await comparisonFactory.createComparison(params.url, hostname)
+  const comparison = await comparisonFactory.createComparison(params.url, hostname, params.withSpeedKitExtension)
 
   if (withPuppeteer) {
     const updatedComparison = await updateWithResolvedUrl(db, params, comparison)

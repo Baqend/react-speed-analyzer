@@ -11,6 +11,7 @@ import { loadResult, resetResult } from 'actions/result'
 
 import { getObjectKey } from 'helper/utils'
 import {addError} from "../../../../actions/errors";
+import { hasSpeedKitExtension } from '../../../../helper/utils';
 
 class ResultScreen extends Component {
   constructor(props) {
@@ -57,7 +58,8 @@ class ResultScreen extends Component {
 
     try {
       await this.props.actions.prepareTest(this.props.config.url)
-      const testOverview = await this.props.actions.startTest(useAdvancedConfig)
+      const withSpeedKitExtension = await hasSpeedKitExtension()
+      const testOverview = await this.props.actions.startTest(useAdvancedConfig, withSpeedKitExtension)
       history.push(`/test/${getObjectKey(testOverview.id)}${history.location.search}`)
     } catch (e) {}
   }

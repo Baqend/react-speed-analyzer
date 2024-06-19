@@ -46,7 +46,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
   /**
    * Create the comparison object itself.
    */
-  async createComparison(url: string, hostname?: string) {
+  async createComparison(url: string, hostname: string = '', withSpeedKitExtension: boolean = false) {
     const uniqueId = await generateUniqueId(this.db, 'TestOverview')
     const tld = getTLD(url, this.db.log)
     const id = uniqueId + tld.split('.')[0]
@@ -56,10 +56,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
     comparison.url = await truncateUrl(url)
     comparison.puppeteer = new this.db.Puppeteer({ scheme: '', protocol: '' }) // dummy Puppeteer needed for Plesk
 
-    if (hostname) {
-      comparison.metaData = { hostname, pageViews: 0 }
-    }
-
+    comparison.metaData = { hostname, withSpeedKitExtension, pageViews: 0 }
     return comparison.save()
   }
 

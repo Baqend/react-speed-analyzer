@@ -16,6 +16,7 @@ import {
 } from "actions/config";
 import { resetResult, resetTestStatus } from "actions/result";
 import { prepareTest, startTest } from "actions/test";
+import { hasSpeedKitExtension } from '../../../../helper/utils';
 
 class StartingScreen extends Component {
   constructor(props) {
@@ -59,9 +60,11 @@ class StartingScreen extends Component {
     const useAdvancedConfig = this.state.showAdvancedConfig;
     try {
       await this.props.actions.prepareTest(url);
+      const withSpeedKitExtension = await hasSpeedKitExtension()
       const testOverview = await this.props.actions.startTest(
         useAdvancedConfig,
-        isFireHorse
+        withSpeedKitExtension,
+        isFireHorse,
       );
       history.push(
         `/test/${getObjectKey(testOverview.id)}${history.location.search}`
