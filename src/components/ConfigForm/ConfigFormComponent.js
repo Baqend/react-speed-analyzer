@@ -63,12 +63,16 @@ class ConfigFormComponent extends Component {
       showCookies: window.location.search.indexOf("showCookie") !== -1,
     };
   }
-
   static locationStates = {
-    "eu-central-2-docker:Chrome.FIOSNoLatency": "Switzerland",
-    "ap-northeast-1-docker:Chrome.FIOSNoLatency": "Japan",
-    "eu-central-1-docker:Chrome.FIOSNoLatency": "EU",
-    "us-east-1-docker:Chrome.FIOSNoLatency": "USA",
+    "eu-central-2-docker:Chrome": "Switzerland",
+    "ap-northeast-1-docker:Chrome": "Japan",
+    "eu-central-1-docker:Chrome": "EU",
+    "us-east-1-docker:Chrome": "USA",
+  };
+  getLocation = (location) => {
+    const prefix = location.substr(0, location.lastIndexOf("."));
+
+    return ConfigFormComponent.locationStates[prefix] ?? "EU";
   };
 
   isDefaultConfig = (speedKitConfig) =>
@@ -313,9 +317,7 @@ class ConfigFormComponent extends Component {
             <BqDropdown
               className="location-dropdown"
               label="LOCATION"
-              modelValue={
-                ConfigFormComponent.locationStates[this.props.config.location]
-              }
+              modelValue={this.getLocation(this.props.config.location)}
               states={Object.values(ConfigFormComponent.locationStates)}
               onChange={this.handleLocationChange}
             ></BqDropdown>
