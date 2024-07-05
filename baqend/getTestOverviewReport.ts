@@ -1,16 +1,17 @@
 import { EntityManager } from 'baqend';
 import { BulkTest, TestOverview } from 'baqend/commonjs/lib/model';
 import { Request, Response } from 'express';
-import { iterateQuery, extractOrigin, processOrigin } from './_helpers';
+import { iterateQuery } from './_helpers';
 
 interface DomainStatus {
   [status: string]: number;
 }
 
 interface SortedDomain {
-  domain: string;
+  url: string;
   count: number;
   statuses: DomainStatus;
+  lastTested: string;
 }
 
 const EXCLUDED_DOMAINS = [
@@ -67,22 +68,37 @@ async function fetchAllTestOverviews(
  * @returns {SortedDomain[]} - An array of sorted domains with their counts and statuses.
  */
 function calculateDomainStatus(testOverviews: TestOverview[]): SortedDomain[] {
-  const domainStatusCount: Record<string, { count: number, statuses: Record<string, number> }> = {};
+  const urlStatusCount: Record<string, { count: number, statuses: Record<string, number>, lastTested: Date }> = {};
 
   testOverviews.forEach(entry => {
-    const origin = extractOrigin(entry.url);
-    const processedOrigin = processOrigin(origin);
-    if (processedOrigin && !EXCLUDED_DOMAINS.includes(processedOrigin)) {
-      if (!domainStatusCount[origin]) {
-        domainStatusCount[origin] = { count: 0, statuses: {} };
+    const fullUrl = entry.url;
+    if (!EXCLUDED_DOMAINS.some(domain => fullUrl.includes(domain))) {
+      if (!urlStatusCount[fullUrl]) {
+        urlStatusCount[fullUrl] = { 
+          count: 0, 
+          statuses: {}, 
+          lastTested: new Date(0)
+        };
       }
-      domainStatusCount[origin].count += 1;
-      domainStatusCount[origin].statuses[entry.status] = (domainStatusCount[origin].statuses[entry.status] || 0) + 1;
+      urlStatusCount[fullUrl].count += 1;
+      urlStatusCount[fullUrl].statuses[entry.status] = (urlStatusCount[fullUrl].statuses[entry.status] || 0) + 1;
+
+      if (entry.createdAt) {
+        const currentCreatedAt = new Date(entry.createdAt);
+        if (currentCreatedAt > urlStatusCount[fullUrl].lastTested) {
+          urlStatusCount[fullUrl].lastTested = currentCreatedAt;
+        }
+      }
     }
   });
 
-  return Object.entries(domainStatusCount)
-    .map(([domain, { count, statuses }]) => ({ domain, count, statuses }))
+  return Object.entries(urlStatusCount)
+    .map(([url, { count, statuses, lastTested }]) => ({
+      url,
+      count,
+      statuses,
+      lastTested: lastTested.toISOString()
+    }))
     .sort((a, b) => b.count - a.count);
 }
 
