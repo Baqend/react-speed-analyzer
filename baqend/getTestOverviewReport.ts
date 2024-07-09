@@ -72,23 +72,24 @@ function calculateDomainStatus(testOverviews: TestOverview[]): SortedDomain[] {
 
   testOverviews.forEach(entry => {
     const fullUrl = entry.url;
-    if (!EXCLUDED_DOMAINS.some(domain => fullUrl.includes(domain))) {
-      if (!urlStatusCount[fullUrl]) {
-        urlStatusCount[fullUrl] = { 
-          count: 0, 
-          statuses: {}, 
-          lastTested: new Date(0)
-        };
-      }
-      urlStatusCount[fullUrl].count += 1;
-      urlStatusCount[fullUrl].statuses[entry.status] = (urlStatusCount[fullUrl].statuses[entry.status] || 0) + 1;
+    if (EXCLUDED_DOMAINS.some(domain => fullUrl.includes(domain))) {
+        return;
+    }
 
-      if (entry.createdAt) {
-        const currentCreatedAt = new Date(entry.createdAt);
-        if (currentCreatedAt > urlStatusCount[fullUrl].lastTested) {
-          urlStatusCount[fullUrl].lastTested = currentCreatedAt;
-        }
-      }
+    if (!urlStatusCount[fullUrl]) {
+        urlStatusCount[fullUrl] = {
+            count: 1,
+            statuses: { [entry.status]: 1 },
+            lastTested: new Date(entry.createdAt!)
+        };
+        return;
+    }
+    urlStatusCount[fullUrl].count += 1;
+    urlStatusCount[fullUrl].statuses[entry.status] = (urlStatusCount[fullUrl].statuses[entry.status] || 0) + 1;
+
+    const currentCreatedAt = new Date(entry.createdAt!);
+    if (currentCreatedAt > urlStatusCount[fullUrl].lastTested) {
+        urlStatusCount[fullUrl].lastTested = currentCreatedAt;
     }
   });
 
