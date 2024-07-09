@@ -315,28 +315,3 @@ export async function iterateQuery<T>(db: EntityManager, builder: query.Builder<
   db.clear();
   return iterateQuery(db, builder, acc, result[result.length - 1].id);
 }
-
-/**
- * Extracts the origin from a given URL.
- *
- * @param {string} url - The URL to extract the origin from.
- * @returns {string} - The extracted origin.
- */
-export function extractOrigin(url: string): string {
-  try {
-    const { origin } = new URL(url);
-    return origin;
-  } catch {
-    return url;
-  }
-}
-
-/**
- * Strips the protocol and 'www.' from a given origin.
- *
- * @param {string} origin - The origin to process.
- * @returns {string} - The processed origin.
- */
-export function processOrigin(origin: string): string {
-  return origin.replace(/(^\w+:|^)\/\//, '').replace(/^www\./, '');
-}
