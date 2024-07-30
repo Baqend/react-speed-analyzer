@@ -366,8 +366,9 @@ export class Pagetest {
       formData.append(key, value.toString())
     }
 
-    const url = `${credentials.wpt_dns}/runtest.php?f=json&k=${credentials.wpt_api_key}`
-    const res = await fetch(url, { method: 'POST', body: formData })
+    const url = `${credentials.wpt_dns}/runtest.php?f=json`
+    const headers = { 'X-WPT-API-KEY': credentials.wpt_api_key };
+    const res = await fetch(url, { headers, method: 'POST', body: formData })
     return await res.json()
   }
 }
