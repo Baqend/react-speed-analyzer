@@ -160,7 +160,7 @@ export class TestBuilder {
   }
 
   buildOptions(params: Required<TestParams>, url: string, isClone: boolean, cmdline: string = ''): model.TestOptions {
-    const mobileDevice = params.mobile ? 'iPhone6' : ''
+    const mobileDevice = params.mobile ? 'iPhoneSE2022' : ''
     const testOptions: model.TestOptions = {
       cmdline,
       mobileDevice,
