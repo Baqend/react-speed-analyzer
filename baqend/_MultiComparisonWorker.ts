@@ -14,7 +14,7 @@ import {
   setSuccess,
   Status,
 } from './_Status'
-import { updateMultiComparison } from './_updateMultiComparison'
+import { createOptimizedComparison, updateMultiComparison } from './_updateMultiComparison'
 import { resolveUrl } from './resolveUrl'
 
 const ONE_MINUTE = 1000 * 60
@@ -128,17 +128,48 @@ export class MultiComparisonWorker implements ComparisonListener {
    * Finalizes a finished multi comparison.
    */
   private async finalize(multiComparison: model.BulkTest): Promise<void> {
-    this.db.log.info(`MultiComparison ${multiComparison.key} is finished.`, { multiComparison })
+    this.db.log.info(`MultiComparison ${multiComparison.key} is finished.`, { multiComparison });
+
     if (isFinished(multiComparison)) {
-      this.db.log.warn(`MultiComparison ${multiComparison.key} was already finished.`, { multiComparison })
-      return
+      this.db.log.warn(`MultiComparison ${multiComparison.key} was already finished.`, { multiComparison });
+      return;
     }
 
-    // Save is finished state
-    await this.updateFinishStatus(multiComparison)
+    const optimizedComparison = await createOptimizedComparison(this.db, multiComparison, this.comparisonFactory);
 
-    // Inform the listener that this multi comparison has finished
-    this.listener && this.listener.handleMultiComparisonFinished(multiComparison)
+    if (!optimizedComparison) {
+      // Save the finished state
+      await this.updateFinishStatus(multiComparison);
+      // Inform the listener that this multi comparison has finished
+      this.listener?.handleMultiComparisonFinished(multiComparison);
+      return;
+    }
+
+    await multiComparison.optimisticSave(() => {
+      multiComparison.testOverviews.push(optimizedComparison);
+    });
+
+    await this.setupOptimizedComparisonListener(multiComparison, optimizedComparison);
+  }
+
+  /**
+   * Sets up a listener for the optimized comparison to handle its completion.
+   * @param multiComparison The bulk test containing multiple comparisons
+   * @param optimizedComparison The optimized comparison to listen for
+   */
+  private async setupOptimizedComparisonListener(multiComparison: model.BulkTest, optimizedComparison: model.TestOverview): Promise<void> {
+    const optimizedComparisonListener: ComparisonListener = {
+      handleComparisonFinished: async (finishedComparison: model.TestOverview) => {
+        if (finishedComparison.id === optimizedComparison.id) {
+          await this.updateFinishStatus(multiComparison);
+          this.listener?.handleMultiComparisonFinished(multiComparison);
+          // Remove the temporary listener
+          this.comparisonWorker.setListener(this);
+        }
+      }
+    };
+
+    this.comparisonWorker.setListener(optimizedComparisonListener);
   }
 
   /**
