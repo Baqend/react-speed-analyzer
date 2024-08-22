@@ -72,6 +72,14 @@ export class TestScriptBuilder {
       ts.setViewport(VIEWPORT_WIDTH_DESKTOP, VIEWPORT_HEIGHT_DESKTOP); // Good desktop viewport
     }
 
+    if (url.startsWith('https://www.odido.nl/')) {
+      ts.logData(false);
+      ts.navigate("https://www.odido.nl/");
+      ts.push('exec document.cookie="tm_cookie_setting=Analytics;"')
+      ts.navigate('http://127.0.0.1:8888/orange.html');
+      ts.logData(true);
+    }
+
     // Hack to circumvent zip code protection for "shop.rewe.de"
     if (url.startsWith('https://shop.rewe.de/')) {
       // Cookies to choose a marked
@@ -342,6 +350,13 @@ export class TestScriptBuilder {
 
     if(url.startsWith("https://mobile.yoox.com") && url.includes('#')) {
       url = url.substr(0, url.indexOf('#'))
+    }
+
+    if (url.startsWith('https://www.odido.nl/') && !isMobile) {
+      speedKitConfig = speedKitConfig.replace('{', '{ customVariation: [{\n' +
+        '    rules: [{ contentType: ["navigate"] }],\n' +
+        '    variationFunction: () => "ODIDO"\n' +
+        '  }],');
     }
 
     if (url.startsWith("https://oleo.io")) {

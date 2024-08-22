@@ -161,12 +161,13 @@ export class TestBuilder {
 
   buildOptions(params: Required<TestParams>, url: string, isClone: boolean, cmdline: string = ''): model.TestOptions {
     const mobileDevice = params.mobile ? 'iPhoneSE2022' : ''
+    const isDocMorrisTest = url.includes('www.docmorris.de')
     const testOptions: model.TestOptions = {
       cmdline,
       mobileDevice,
       fvonly: !params.caching,
       priority: params.priority,
-      location: params.location,
+      location: isDocMorrisTest ? 'eu-central-1-internal-docker:Chrome.FIOSNoLatency' : params.location,
       timeout: 2 * params.timeout,
       mobile: params.mobile,
       label: isClone ? `Speed Kit ${url}` : url
