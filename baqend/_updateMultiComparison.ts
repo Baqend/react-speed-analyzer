@@ -1,6 +1,7 @@
 import { baqend, model } from 'baqend'
 import { aggregateFields, meanValue } from './_helpers'
 import { ComparisonFactory } from './_ComparisonFactory';
+import { setSuccess } from "./_Status";
 
 type TestResultFieldPrefix = 'competitor' | 'speedKit'
 
@@ -189,19 +190,19 @@ export async function createOptimizedComparison(
   comparisonFactory: ComparisonFactory
 ): Promise<model.TestOverview | null> {
   const mainFactor = bulkTest.params.mainFactor || 'largestContentfulPaint';
+  const threshold = 2;
 
   const hasHighFactor = bulkTest.testOverviews.some(
-    (comparison) => comparison.factors?.[mainFactor] > 2
+    (comparison) => comparison.factors?.[mainFactor] > threshold
   );
 
   if (hasHighFactor) {
     return null;
   }
 
-  const bestSpeedKitRun = bestResult(bulkTest, 'speedKit', mainFactor);
-  const worstOriginRun = worstResult(bulkTest, 'competitor', mainFactor);
+  const [speedKitTestResult, competitorTestResult] = findOptimalTestResults(bulkTest, mainFactor, threshold);
 
-  if (isNaN(bestSpeedKitRun) || isNaN(worstOriginRun)) {
+  if (!speedKitTestResult || !competitorTestResult) {
     return null;
   }
 
@@ -213,73 +214,81 @@ export async function createOptimizedComparison(
       speedKitConfig: bulkTest.speedKitConfig,
     }
   );
-
-  const [bestSpeedKitTestResult, worstCompetitorTestResult] = findTestResults(
-    bulkTest,
-    mainFactor,
-    bestSpeedKitRun,
-    worstOriginRun
-  );
-
-  if (!bestSpeedKitTestResult || !worstCompetitorTestResult) {
-    return null;
-  }
-
-  return setTestResultsAndFactors(
+  return await setTestResultsAndFactors(
     db,
     optimizedComparison,
-    bestSpeedKitTestResult,
-    worstCompetitorTestResult
+    speedKitTestResult,
+    competitorTestResult
   );
 }
 
 /**
- * Finds the best Speed Kit and worst competitor test results.
+ * Finds the optimal combination of Speed Kit and competitor test results.
  * @param {model.BulkTest} bulkTest - The bulk test to search.
  * @param {string} mainFactor - The main factor to compare.
- * @param {number} bestSpeedKitRun - The best Speed Kit run value.
- * @param {number} worstOriginRun - The worst competitor run value.
- * @returns {[model.TestResult | undefined, model.TestResult | undefined]} The found test results.
+ * @param {number} threshold - The threshold to exceed.
+ * @returns {[model.TestResult | null, model.TestResult | null]} The found test results.
  */
-function findTestResults(
+function findOptimalTestResults(
   bulkTest: model.BulkTest,
   mainFactor: string,
-  bestSpeedKitRun: number,
-  worstOriginRun: number
-): [model.TestResult | undefined, model.TestResult | undefined] {
-  const bestSpeedKitTestResult = bulkTest.testOverviews.find(
-    (overview) => overview.speedKitTestResult?.firstView?.[mainFactor] === bestSpeedKitRun
-  )?.speedKitTestResult;
+  threshold: number
+): [model.TestResult | null, model.TestResult | null] {
+  let bestSpeedKitResult: model.TestResult | null = null;
+  let bestCompetitorResult: model.TestResult | null = null;
+  let bestFactor = 0;
 
-  const worstCompetitorTestResult = bulkTest.testOverviews.find(
-    (overview) => overview.competitorTestResult?.firstView?.[mainFactor] === worstOriginRun
-  )?.competitorTestResult;
+  for (const skOverview of bulkTest.testOverviews) {
+    const skResult = skOverview.speedKitTestResult;
+    if (!skResult || !skResult.firstView) continue;
 
-  return [bestSpeedKitTestResult, worstCompetitorTestResult];
+    for (const compOverview of bulkTest.testOverviews) {
+      const compResult = compOverview.competitorTestResult;
+      if (!compResult || !compResult.firstView) continue;
+
+      const factor = compResult.firstView[mainFactor] / skResult.firstView[mainFactor];
+
+      if (factor > threshold && factor < bestFactor) {
+        bestSpeedKitResult = skResult;
+        bestCompetitorResult = compResult;
+        bestFactor = factor;
+      } else if (factor > bestFactor) {
+        bestSpeedKitResult = skResult;
+        bestCompetitorResult = compResult;
+        bestFactor = factor;
+      }
+    }
+  }
+
+  return [bestSpeedKitResult, bestCompetitorResult];
 }
 
 /**
  * Sets test results and calculates factors for the optimized comparison.
  * @param {baqend} db - The Baqend instance.
  * @param {model.TestOverview} optimizedComparison - The comparison to update.
- * @param {model.TestResult} bestSpeedKitTestResult - The best Speed Kit test result.
- * @param {model.TestResult} worstCompetitorTestResult - The worst competitor test result.
+ * @param {model.TestResult} speedKitTestResult - The selected Speed Kit test result.
+ * @param {model.TestResult} competitorTestResult - The selected competitor test result.
  * @returns {model.TestOverview} The updated optimized comparison.
  */
-function setTestResultsAndFactors(
+async function setTestResultsAndFactors(
   db: baqend,
   optimizedComparison: model.TestOverview,
-  bestSpeedKitTestResult: model.TestResult,
-  worstCompetitorTestResult: model.TestResult
-): model.TestOverview {
-  optimizedComparison.speedKitTestResult = bestSpeedKitTestResult;
-  optimizedComparison.competitorTestResult = worstCompetitorTestResult;
+  speedKitTestResult: model.TestResult,
+  competitorTestResult: model.TestResult
+): Promise<model.TestOverview> {
+  optimizedComparison.speedKitTestResult = speedKitTestResult;
+  optimizedComparison.competitorTestResult = competitorTestResult;
 
   optimizedComparison.factors = factorize(
     db,
-    worstCompetitorTestResult.firstView!,
-    bestSpeedKitTestResult.firstView!
+    competitorTestResult.firstView!,
+    speedKitTestResult.firstView!
   );
+
+  await optimizedComparison.optimisticSave(() => {
+    setSuccess(optimizedComparison);
+  });
 
   return optimizedComparison;
 }

@@ -137,39 +137,18 @@ export class MultiComparisonWorker implements ComparisonListener {
 
     const optimizedComparison = await createOptimizedComparison(this.db, multiComparison, this.comparisonFactory);
 
-    if (!optimizedComparison) {
-      // Save the finished state
-      await this.updateFinishStatus(multiComparison);
-      // Inform the listener that this multi comparison has finished
-      this.listener?.handleMultiComparisonFinished(multiComparison);
-      return;
+    if (optimizedComparison) {
+      await multiComparison.optimisticSave(async () => {
+        multiComparison.testOverviews.push(optimizedComparison);
+        await updateMultiComparison(this.db, multiComparison);
+      });
     }
 
-    await multiComparison.optimisticSave(() => {
-      multiComparison.testOverviews.push(optimizedComparison);
-    });
+    // Save the finished state
+    await this.updateFinishStatus(multiComparison);
 
-    await this.setupOptimizedComparisonListener(multiComparison, optimizedComparison);
-  }
-
-  /**
-   * Sets up a listener for the optimized comparison to handle its completion.
-   * @param multiComparison The bulk test containing multiple comparisons
-   * @param optimizedComparison The optimized comparison to listen for
-   */
-  private async setupOptimizedComparisonListener(multiComparison: model.BulkTest, optimizedComparison: model.TestOverview): Promise<void> {
-    const optimizedComparisonListener: ComparisonListener = {
-      handleComparisonFinished: async (finishedComparison: model.TestOverview) => {
-        if (finishedComparison.id === optimizedComparison.id) {
-          await this.updateFinishStatus(multiComparison);
-          this.listener?.handleMultiComparisonFinished(multiComparison);
-          // Remove the temporary listener
-          this.comparisonWorker.setListener(this);
-        }
-      }
-    };
-
-    this.comparisonWorker.setListener(optimizedComparisonListener);
+    // Inform the listener that this multi comparison has finished
+    this.listener && this.listener.handleMultiComparisonFinished(multiComparison);
   }
 
   /**
