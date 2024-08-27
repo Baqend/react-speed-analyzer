@@ -1,5 +1,7 @@
 import { baqend, model } from 'baqend'
 import { aggregateFields, meanValue } from './_helpers'
+import { ComparisonFactory } from './_ComparisonFactory';
+import { setSuccess } from "./_Status";
 
 type TestResultFieldPrefix = 'competitor' | 'speedKit'
 
@@ -173,4 +175,117 @@ export async function updateMultiComparison(db: baqend, bulkTestRef: model.BulkT
 
     return bulkTest
   }
+}
+
+/**
+ * Creates an optimized comparison if no existing comparison has a high factor.
+ * @param {baqend} db - The Baqend instance.
+ * @param {model.BulkTest} bulkTest - The bulk test to analyze.
+ * @param {ComparisonFactory} comparisonFactory - Factory for creating comparisons.
+ * @returns {Promise<model.TestOverview | null>} The optimized comparison or null.
+ */
+export async function createOptimizedComparison(
+  db: baqend,
+  bulkTest: model.BulkTest,
+  comparisonFactory: ComparisonFactory
+): Promise<model.TestOverview | null> {
+  const mainFactor = bulkTest.params.mainFactor || 'largestContentfulPaint';
+  const threshold = 2;
+
+  const hasHighFactor = bulkTest.testOverviews.some(
+    (comparison) => comparison.factors?.[mainFactor] > threshold
+  );
+
+  if (hasHighFactor) {
+    return null;
+  }
+
+  const [speedKitTestResult, competitorTestResult] = findOptimalTestResults(bulkTest, mainFactor, threshold);
+
+  if (!speedKitTestResult || !competitorTestResult) {
+    return null;
+  }
+
+  const optimizedComparison = await comparisonFactory.create(
+    bulkTest.params.url,
+    {
+      ...bulkTest.params,
+      skipPrewarm: true,
+      speedKitConfig: bulkTest.speedKitConfig,
+    }
+  );
+  return await setTestResultsAndFactors(
+    db,
+    optimizedComparison,
+    speedKitTestResult,
+    competitorTestResult
+  );
+}
+
+/**
+ * Finds the optimal combination of Speed Kit and competitor test results.
+ * @param {model.BulkTest} bulkTest - The bulk test to search.
+ * @param {string} mainFactor - The main factor to compare.
+ * @param {number} threshold - The threshold to exceed.
+ * @returns {[model.TestResult | null, model.TestResult | null]} The found test results.
+ */
+function findOptimalTestResults(
+  bulkTest: model.BulkTest,
+  mainFactor: string,
+  threshold: number
+): [model.TestResult | null, model.TestResult | null] {
+  let bestSpeedKitResult: model.TestResult | null = null;
+  let bestCompetitorResult: model.TestResult | null = null;
+  let bestFactor = 0;
+
+  for (const skOverview of bulkTest.testOverviews) {
+    const skResult = skOverview.speedKitTestResult;
+    if (!skResult || !skResult.firstView) continue;
+
+    for (const compOverview of bulkTest.testOverviews) {
+      const compResult = compOverview.competitorTestResult;
+      if (!compResult || !compResult.firstView) continue;
+
+      const factor = compResult.firstView[mainFactor] / skResult.firstView[mainFactor];
+
+      // Find the result closest to but still above the threshold, or the best overall if none are above
+      if ((factor >= threshold && factor < bestFactor) || (factor < threshold && factor > bestFactor)) {
+        bestSpeedKitResult = skResult;
+        bestCompetitorResult = compResult;
+        bestFactor = factor;
+      }
+    }
+  }
+
+  return [bestSpeedKitResult, bestCompetitorResult];
+}
+
+/**
+ * Sets test results and calculates factors for the optimized comparison.
+ * @param {baqend} db - The Baqend instance.
+ * @param {model.TestOverview} optimizedComparison - The comparison to update.
+ * @param {model.TestResult} speedKitTestResult - The selected Speed Kit test result.
+ * @param {model.TestResult} competitorTestResult - The selected competitor test result.
+ * @returns {model.TestOverview} The updated optimized comparison.
+ */
+async function setTestResultsAndFactors(
+  db: baqend,
+  optimizedComparison: model.TestOverview,
+  speedKitTestResult: model.TestResult,
+  competitorTestResult: model.TestResult
+): Promise<model.TestOverview> {
+  optimizedComparison.speedKitTestResult = speedKitTestResult;
+  optimizedComparison.competitorTestResult = competitorTestResult;
+
+  optimizedComparison.factors = factorize(
+    db,
+    competitorTestResult.firstView!,
+    speedKitTestResult.firstView!
+  );
+
+  await optimizedComparison.optimisticSave(() => {
+    setSuccess(optimizedComparison);
+  });
+
+  return optimizedComparison;
 }

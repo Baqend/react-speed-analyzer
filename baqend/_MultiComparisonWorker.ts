@@ -14,7 +14,7 @@ import {
   setSuccess,
   Status,
 } from './_Status'
-import { updateMultiComparison } from './_updateMultiComparison'
+import { createOptimizedComparison, updateMultiComparison } from './_updateMultiComparison'
 import { resolveUrl } from './resolveUrl'
 
 const ONE_MINUTE = 1000 * 60
@@ -128,17 +128,26 @@ export class MultiComparisonWorker implements ComparisonListener {
    * Finalizes a finished multi comparison.
    */
   private async finalize(multiComparison: model.BulkTest): Promise<void> {
-    this.db.log.info(`MultiComparison ${multiComparison.key} is finished.`, { multiComparison })
+    this.db.log.info(`MultiComparison ${multiComparison.key} is finished.`, { multiComparison });
+
     if (isFinished(multiComparison)) {
-      this.db.log.warn(`MultiComparison ${multiComparison.key} was already finished.`, { multiComparison })
-      return
+      this.db.log.warn(`MultiComparison ${multiComparison.key} was already finished.`, { multiComparison });
+      return;
     }
 
-    // Save is finished state
-    await this.updateFinishStatus(multiComparison)
+    const optimizedComparison = await createOptimizedComparison(this.db, multiComparison, this.comparisonFactory);
+
+    if (optimizedComparison) {
+      await multiComparison.optimisticSave(async () => {
+        multiComparison.testOverviews.push(optimizedComparison);
+      });
+    }
+
+    // Save the finished state
+    await this.updateFinishStatus(multiComparison);
 
     // Inform the listener that this multi comparison has finished
-    this.listener && this.listener.handleMultiComparisonFinished(multiComparison)
+    this.listener && this.listener.handleMultiComparisonFinished(multiComparison);
   }
 
   /**
