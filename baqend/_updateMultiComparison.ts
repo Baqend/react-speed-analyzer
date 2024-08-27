@@ -248,11 +248,8 @@ function findOptimalTestResults(
 
       const factor = compResult.firstView[mainFactor] / skResult.firstView[mainFactor];
 
-      if (factor > threshold && factor < bestFactor) {
-        bestSpeedKitResult = skResult;
-        bestCompetitorResult = compResult;
-        bestFactor = factor;
-      } else if (factor > bestFactor) {
+      // Find the result closest to but still above the threshold, or the best overall if none are above
+      if ((factor > threshold && factor < bestFactor) || factor > bestFactor) {
         bestSpeedKitResult = skResult;
         bestCompetitorResult = compResult;
         bestFactor = factor;

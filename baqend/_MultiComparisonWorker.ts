@@ -140,7 +140,6 @@ export class MultiComparisonWorker implements ComparisonListener {
     if (optimizedComparison) {
       await multiComparison.optimisticSave(async () => {
         multiComparison.testOverviews.push(optimizedComparison);
-        await updateMultiComparison(this.db, multiComparison);
       });
     }
 
