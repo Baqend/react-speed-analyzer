@@ -135,12 +135,13 @@ export class MultiComparisonWorker implements ComparisonListener {
       return;
     }
 
-    const optimizedComparison = await createOptimizedComparison(this.db, multiComparison, this.comparisonFactory);
-
-    if (optimizedComparison) {
-      await multiComparison.optimisticSave(async () => {
-        multiComparison.testOverviews.push(optimizedComparison);
-      });
+    if (multiComparison.runs > 4) {
+      const optimizedComparison = await createOptimizedComparison(this.db, multiComparison, this.comparisonFactory);
+      if (optimizedComparison) {
+        await multiComparison.optimisticSave(async () => {
+          multiComparison.testOverviews.push(optimizedComparison);
+        });
+      }
     }
 
     // Save the finished state

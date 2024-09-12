@@ -35,12 +35,12 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
    *
    * @return A promise which resolves with the created object.
    */
-  async create(url: string, params: TestParams): Promise<model.TestOverview> {
+  async create(url: string, params: TestParams, isArtificial = false): Promise<model.TestOverview> {
     // Create the comparison object
     const comparison = await this.createComparison(url)
 
     // Update the comparison object with detailed information
-    return this.updateComparison(url, comparison, params)
+    return this.updateComparison(url, comparison, params, isArtificial)
   }
 
   /**
@@ -60,17 +60,25 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
     return comparison.save()
   }
 
-  async updateComparison(url: string, comparison: model.TestOverview, params: TestParams): Promise<model.TestOverview> {
+  async updateComparison(
+    url: string,
+    comparison: model.TestOverview,
+    params: TestParams,
+    isArtificial = false,
+  ): Promise<model.TestOverview> {
     const requiredParams = this.testBuilder.buildSingleTestParams(params)
 
     // Create the tests
-    const [competitorTest, speedKitTest] = await Promise.all([
-      this.createCompetitorTest(url, requiredParams),
-      this.createSpeedKitTest(url, requiredParams),
-    ])
+    if (!isArtificial) {
+      const [competitorTest, speedKitTest] = await Promise.all([
+        this.createCompetitorTest(url, requiredParams),
+        this.createSpeedKitTest(url, requiredParams),
+      ])
 
-    comparison.competitorTestResult = competitorTest
-    comparison.speedKitTestResult = speedKitTest
+      comparison.competitorTestResult = competitorTest
+      comparison.speedKitTestResult = speedKitTest
+    }
+
     comparison.tasks = []
     comparison.url = await truncateUrl(url)
     comparison.isSecured = url.startsWith('https://')

@@ -189,37 +189,32 @@ export async function createOptimizedComparison(
   bulkTest: model.BulkTest,
   comparisonFactory: ComparisonFactory
 ): Promise<model.TestOverview | null> {
-  const mainFactor = bulkTest.params.mainFactor || 'largestContentfulPaint';
-  const threshold = 2;
+  const mainFactor = bulkTest.params.mainFactor || 'largestContentfulPaint'
+  const threshold = 2
 
   const hasHighFactor = bulkTest.testOverviews.some(
     (comparison) => comparison.factors?.[mainFactor] > threshold
-  );
+  )
 
   if (hasHighFactor) {
-    return null;
+    return null
   }
 
   const [speedKitTestResult, competitorTestResult] = findOptimalTestResults(bulkTest, mainFactor, threshold);
 
   if (!speedKitTestResult || !competitorTestResult) {
-    return null;
+    return null
   }
 
-  const optimizedComparison = await comparisonFactory.create(
-    bulkTest.params.url,
-    {
-      ...bulkTest.params,
-      skipPrewarm: true,
-      speedKitConfig: bulkTest.speedKitConfig,
-    }
-  );
+  const params = {...bulkTest.params, skipPrewarm: true, speedKitConfig: bulkTest.speedKitConfig }
+  const optimizedComparison = await comparisonFactory.create(bulkTest.params.url, params, true)
   return await setTestResultsAndFactors(
     db,
+    bulkTest,
     optimizedComparison,
     speedKitTestResult,
     competitorTestResult
-  );
+  )
 }
 
 /**
@@ -263,6 +258,7 @@ function findOptimalTestResults(
 /**
  * Sets test results and calculates factors for the optimized comparison.
  * @param {baqend} db - The Baqend instance.
+ * @param {model.BulkTest} bulkTest - The bulk test to analyze.
  * @param {model.TestOverview} optimizedComparison - The comparison to update.
  * @param {model.TestResult} speedKitTestResult - The selected Speed Kit test result.
  * @param {model.TestResult} competitorTestResult - The selected competitor test result.
@@ -270,6 +266,7 @@ function findOptimalTestResults(
  */
 async function setTestResultsAndFactors(
   db: baqend,
+  bulkTest: model.BulkTest,
   optimizedComparison: model.TestOverview,
   speedKitTestResult: model.TestResult,
   competitorTestResult: model.TestResult
@@ -277,6 +274,7 @@ async function setTestResultsAndFactors(
   optimizedComparison.speedKitTestResult = speedKitTestResult;
   optimizedComparison.competitorTestResult = competitorTestResult;
 
+  optimizedComparison.psiScreenshot = bulkTest.testOverviews.find(to => !!to.psiScreenshot)!.psiScreenshot
   optimizedComparison.factors = factorize(
     db,
     competitorTestResult.firstView!,
