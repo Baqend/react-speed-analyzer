@@ -1,6 +1,7 @@
 import { createFilmStrip, generateHash, truncateUrl, urlToFilename } from './_helpers'
 import { DataType, Serializer } from './_Serializer'
 import { isCanceled } from './_Status'
+import { TestError } from './_TestFactory'
 import { VIEWPORT_HEIGHT_DESKTOP, VIEWPORT_WIDTH_DESKTOP } from './_TestScriptBuilder'
 import { toFile } from './_toFile'
 import { getAdSet } from './_adBlocker'
@@ -41,16 +42,16 @@ export async function generateTestResult(wptTestId: string, pendingTest: model.T
   const stepIndex = view.numSteps
   const step = view ? (view.steps ? view.steps[stepIndex - 1] : view) : null
 
-  if (step && hasDocumentRequestFailed(step.requests)) {
+  if (step && hasDocumentRequestFailed(step.requests, pendingTest.isClone)) {
     const run = new db.Run()
     run.documentRequestFailed = true
     pendingTest.firstView = run;
 
-    throw new Error(`Document request failed for ${rawData.id}`)
+    throw new Error(TestError.DOCUMENT_FAILED)
   }
 
   if (!step || !isValidStep(step)) {
-    throw new Error(`No valid test run found in ${rawData.id}`)
+    throw new Error(TestError.NO_VALID_TEST)
   }
 
   const viewport = view.viewport
@@ -248,8 +249,13 @@ async function createRun(db: baqend, data: WptView | undefined, testId: string, 
  * Checks whether the document request failed.
  *
  * @param requests An array of request objects.
+ * @param isClone Whether the test is the Speed Kit run.
  */
-function hasDocumentRequestFailed(requests: WptRequest[]): boolean {
+function hasDocumentRequestFailed(requests: WptRequest[], isClone: boolean): boolean {
+  if (!isClone) {
+    return (requests.filter(r => r.request_type === 'Document') || requests)[0].responseCode >= 400
+  }
+
   const assetRequests = requests.filter((req) => {
     const requestUrl = req.url
     const servedByBaqend = req.headers.response.indexOf('via: baqend') !== -1

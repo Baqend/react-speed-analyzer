@@ -4,6 +4,7 @@ import { cancelTest, getVariation } from './_helpers'
 import { DataType, Serializer } from './_Serializer'
 import { isCanceled, isFinished, isIncomplete, setFailed, setRunning, Status } from './_Status'
 import { DEFAULT_TIMEOUT } from './_TestBuilder'
+import { TestError } from './_TestFactory'
 import { TestScriptBuilder } from './_TestScriptBuilder'
 import { Pagetest } from './_Pagetest'
 import { TestType, WebPagetestResultHandler } from './_WebPagetestResultHandler'
@@ -76,7 +77,7 @@ export class TestWorker {
       // Check if the test was not updated within the last three minutes
       const isOlderThanThreeMinutes = (new Date().getTime() - test.updatedAt!.getTime()) / ONE_MINUTE > 3
       if (test.status === Status.RUNNING && isOlderThanThreeMinutes) {
-        await cancelTest(test, this.api)
+        await cancelTest(test, this.api, TestError.WPT_TIMEOUT)
         return
       }
 
@@ -131,6 +132,11 @@ export class TestWorker {
         return
       }
 
+      // Ensure Speed Kit config is set in case a retry with scraping is needed
+      if (test.isClone) {
+        test.speedKitConfig = this.getConfigForTest(test);
+      }
+
       const updatedTest = await this.webPagetestResultHandler.handleResult(test, webPagetest)
       this.next(updatedTest).catch((err) => this.db.log.error(err.message, err))
     } catch (error) {
@@ -141,7 +147,7 @@ export class TestWorker {
   /**
    * Handles the failure of a test from WebPagetest.
    */
-  async handleWebPagetestFailure(wptTestId: string): Promise<void> {
+  async handleWebPagetestFailure(wptTestId: string, reason: string): Promise<void> {
     try {
       const test = await this.db.TestResult.find().equal('webPagetests.testId', wptTestId).singleResult()
       if (!test) {
@@ -155,7 +161,7 @@ export class TestWorker {
         return
       }
 
-      const updatedTest = await this.webPagetestResultHandler.handleFailure(test, webPagetest)
+      const updatedTest = await this.webPagetestResultHandler.handleFailure(test, webPagetest, reason)
       this.next(updatedTest).catch((err) => this.db.log.error(err.message, err))
     } catch (error) {
       this.db.log.error(`Cannot handle WPT result: ${error.message}`, { wptTestId, error: error.stack })
@@ -218,7 +224,7 @@ export class TestWorker {
             return true
             // status code >= 400 means there was an error
           } else if (test.statusCode >= 400) {
-            await this.handleWebPagetestFailure(wptTestId)
+            await this.handleWebPagetestFailure(wptTestId, test.statusText)
             return true
           }
 

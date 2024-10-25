@@ -205,6 +205,7 @@ declare module 'baqend' {
       controllingSW: string | null;
       framework: string;
       withScraping: boolean;
+      errorCause: string;
     }
 
     interface Prewarms extends binding.Entity {

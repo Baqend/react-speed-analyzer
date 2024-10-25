@@ -111,7 +111,7 @@ export class ComparisonWorker implements TestListener {
   /**
    * Cancels the given comparison.
    */
-  async cancel(comparison: model.TestOverview): Promise<boolean> {
+  async cancel(comparison: model.TestOverview, reason: string): Promise<boolean> {
     if (isFinished(comparison)) {
       return false
     }
@@ -119,7 +119,7 @@ export class ComparisonWorker implements TestListener {
     // Cancel all tests
     await [comparison.competitorTestResult, comparison.speedKitTestResult]
       .filter(test => isUnfinished(test))
-      .map(test => cancelTest(test, this.api))
+      .map(test => cancelTest(test, this.api, reason))
       .reduce(parallelize)
 
     // Mark comparison as cancelled

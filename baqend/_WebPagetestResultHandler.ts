@@ -2,6 +2,7 @@ import { baqend, model } from 'baqend'
 import { getVariation } from './_helpers'
 import { generateTestResult, ViewportError } from './_resultGeneration'
 import { setFailed, setRunning, setSuccess } from './_Status'
+import { TestError } from './_TestFactory'
 
 export enum TestType {
   PERFORMANCE = 'performance',
@@ -36,11 +37,16 @@ export class WebPagetestResultHandler {
    *
    * @param test The abstract test model.
    * @param webPagetest The actual WebPagetest run.
+   * @param failureText The message of the failure.
    * @return The updated test result.
    */
-  async handleFailure(test: model.TestResult, webPagetest: model.WebPagetest): Promise<model.TestResult> {
+  async handleFailure(
+    test: model.TestResult,
+    webPagetest: model.WebPagetest,
+    failureText: string,
+  ): Promise<model.TestResult> {
     // Handle the failure by type
-    return this.updateTestWithFailure(test, webPagetest)
+    return this.updateTestWithFailure(test, webPagetest, failureText)
   }
 
   /**
@@ -75,8 +81,10 @@ export class WebPagetestResultHandler {
             return this.retryTestWithScraping(test, webPagetest)
           }
 
+          const errorCause = !test.isClone ? TestError.ORIGIN_BLOCKED : (test.testInfo.withScraping ? TestError.SERVER_BLOCKED : error.message)
           // Now the test is finished without data
           return test.optimisticSave(() => {
+            test.errorCause = errorCause
             setFailed(webPagetest);
             setFailed(test);
           })
@@ -128,7 +136,11 @@ export class WebPagetestResultHandler {
   /**
    * Updates the test after a WebPagetest test is finished.
    */
-  private updateTestWithFailure(test: model.TestResult, webPagetest: model.WebPagetest): Promise<model.TestResult> {
+  private updateTestWithFailure(
+    test: model.TestResult,
+    webPagetest: model.WebPagetest,
+    failureText: string,
+  ): Promise<model.TestResult> {
     const wptTestId = webPagetest.testId
 
     switch (webPagetest.testType) {
@@ -140,6 +152,7 @@ export class WebPagetestResultHandler {
 
         return test.optimisticSave(() => {
           test.testDataMissing = true
+          test.errorCause = failureText
           setFailed(webPagetest);
           setFailed(test);
         })

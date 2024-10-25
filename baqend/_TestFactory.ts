@@ -1,9 +1,18 @@
 import { baqend, model } from 'baqend'
 import { AsyncFactory } from './_AsyncFactory'
 import { truncateUrl } from './_helpers'
-import { setFailed, setQueued } from './_Status'
+import { setQueued } from './_Status'
 import { TestBuilder } from './_TestBuilder'
 import { TestParams } from './_TestParams'
+
+export enum TestError {
+  WPT_TIMEOUT = 'Canceled after WPT timeout',
+  CANCEL_POST_REQUEST = 'Canceled via POST',
+  SERVER_BLOCKED = 'SK blocked despite scraping',
+  ORIGIN_BLOCKED = 'Origin blocked',
+  DOCUMENT_FAILED = 'Document request failed',
+  NO_VALID_TEST = 'No valid test run',
+}
 
 /**
  * Creates TestResult objects, that have all the information needed in order to be processed by the TestWorker.

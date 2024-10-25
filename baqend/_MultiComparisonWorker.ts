@@ -93,7 +93,7 @@ export class MultiComparisonWorker implements ComparisonListener {
   /**
    * Cancels the given multi comparison.
    */
-  async cancel(multiComparison: model.BulkTest): Promise<boolean> {
+  async cancel(multiComparison: model.BulkTest, reason: string): Promise<boolean> {
     if (isFinished(multiComparison)) {
       return false
     }
@@ -102,7 +102,7 @@ export class MultiComparisonWorker implements ComparisonListener {
     const unfinished = multiComparison.testOverviews.filter(comparison => isUnfinished(comparison))
     if (unfinished.length > 0) {
       await multiComparison.testOverviews
-        .map(comparison => this.comparisonWorker.cancel(comparison))
+        .map(comparison => this.comparisonWorker.cancel(comparison, reason))
         .reduce(parallelize)
     }
 

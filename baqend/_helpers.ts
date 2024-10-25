@@ -254,7 +254,7 @@ export async function createFilmStrip(
 /**
  * Cancels the given test.
  */
-export async function cancelTest(test: model.TestResult, api: Pagetest): Promise<boolean> {
+export async function cancelTest(test: model.TestResult, api: Pagetest, reason: string): Promise<boolean> {
   if (isFinished(test)) {
     return false
   }
@@ -265,6 +265,7 @@ export async function cancelTest(test: model.TestResult, api: Pagetest): Promise
   // Mark test and WebPagetests as canceled
   await test.optimisticSave(() => {
     setCanceled(test)
+    test.errorCause = reason
     if (unfinishedTests.length) {
       unfinishedTests.forEach(webPagetest => setCanceled(webPagetest))
     }

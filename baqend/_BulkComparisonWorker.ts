@@ -124,7 +124,7 @@ export class BulkComparisonWorker implements MultiComparisonListener {
   /**
    * Cancels the given bulk comparison.
    */
-  async cancel(bulkComparison: model.BulkComparison): Promise<boolean> {
+  async cancel(bulkComparison: model.BulkComparison, reason: string): Promise<boolean> {
     if (isFinished(bulkComparison)) {
       return false
     }
@@ -133,7 +133,7 @@ export class BulkComparisonWorker implements MultiComparisonListener {
     const unfinished = bulkComparison.multiComparisons.filter(multiComparison => isUnfinished(multiComparison))
     if (unfinished.length > 0) {
       await bulkComparison.multiComparisons
-        .map(multiComparison => this.multiComparisonWorker.cancel(multiComparison))
+        .map(multiComparison => this.multiComparisonWorker.cancel(multiComparison, reason))
         .reduce(parallelize)
     }
 

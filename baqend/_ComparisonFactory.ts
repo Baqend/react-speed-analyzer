@@ -151,11 +151,11 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
   ): Promise<void> {
     const { competitorTestResult, speedKitTestResult } = comparison
     if (competitorTestResult) {
-      await cancelTest(competitorTestResult, api)
+      await cancelTest(competitorTestResult, api, error.message)
     }
 
     if (speedKitTestResult) {
-      await cancelTest(speedKitTestResult, api)
+      await cancelTest(speedKitTestResult, api, error.message)
     }
 
     // Do not set comparison to failed if the retry with SCRAPING can still be done
