@@ -78,7 +78,6 @@ export function resultIsValid(
   secondaryMetric,
   isPlesk
 ) {
-  console.log(speedKitResult);
   if (!competitorResult.firstView || !speedKitResult.firstView) {
     return false;
   }
@@ -106,10 +105,7 @@ export function resultIsValid(
   if (factor > 4.9) return false;
 
   if (mainCompetitor > 0 && mainSpeedKit > 0) {
-    if (
-      mainSpeedKit / mainCompetitor < 0.95 ||
-      mainCompetitor - mainSpeedKit > 200
-    ) {
+    if (mainSpeedKit / mainCompetitor < 0.95) {
       return true;
     } else if (mainSpeedKit + 50 <= mainCompetitor) {
       if (secondarySpeedKit / secondaryCompetitor < 0.9) {
