@@ -1,5 +1,6 @@
 /* global window fbq ga */
 import punycode from 'punycode'
+/* global window fbq ga plausible */
 
 const DOMAIN_PATTERN =  /^(www\.)?[-a-z0-9]+(\.[-a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?$/i
 
@@ -28,12 +29,12 @@ export const trackURL = (name, url, { fmp, startTime } = {}) => {
     waitingTime = Math.round((new Date().getTime() - startTime.getTime()) / 1000)
   }
 
-  if (typeof fbq !== 'undefined') {
-    fbq('trackCustom', name, { url, fmp, waitingTime })
+  if (typeof ga !== "undefined") {
+    ga("send", "event", "speed-analyzer", name, url, fmp || waitingTime);
   }
 
-  if (typeof ga !== 'undefined') {
-    ga('send', 'event', 'speed-analyzer', name, url, fmp || waitingTime)
+  if (typeof plausible !== "undefined") {
+    plausible(name, { props: { url, fmp, waitingTime } });
   }
 }
 
