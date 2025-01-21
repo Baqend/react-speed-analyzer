@@ -9,7 +9,6 @@ var _redux = require('redux');
 var _index = require('./index');
 
 var createStoreWithBaqend = function createStoreWithBaqend(db, reducer, initialState, middleware) {
-  console.log("hier")
   var _createEnhancers = (0, _index.createEnhancers)(db),
       baqendConnect = _createEnhancers.baqendConnect,
       baqendMiddleware = _createEnhancers.baqendMiddleware;
