@@ -88,7 +88,6 @@
     "react-toggle": "^4.1.2",
     "react-tooltip": "^4.2.21",
     "redux": "^4.1.0",
-    "redux-baqend": "^1.1.3",
     "redux-logger": "^3.0.6",
     "tachyons": "^4.12.0",
     "typeface-open-sans": "^1.1.13",
