@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./ResultComparison.css";
 import ReactTooltip from "react-tooltip";
 import { db } from "baqend";
+import { trackURL } from "../../../../helper/utils";
 
 const MAX_COMPETITORS = 5;
 
@@ -128,14 +129,10 @@ class ResultComparison extends Component {
       this.setState({ showSpinner: true });
 
       const data = await db.modules.get("chromeUXReports", `url=${input}`);
-      var found = false;
-      this.state.companyArray.forEach((element) => {
-        if (element.hostname === this.prettyURL(data.hostname)) {
-          found = true;
-        }
-      });
+      const found = this.state.companyArray.some((element) => {
+        return element.hostname === this.prettyURL(data.hostname)
+      })
 
-      console.log(this.state.beforeSpeedKit);
       if (!found && this.state.companyArray.length + 1 < MAX_COMPETITORS) {
 
         this.addCompetitor({
@@ -147,6 +144,8 @@ class ResultComparison extends Component {
           medium: data.medium,
           slow: data.slow,
         });
+
+        trackURL('AddCompetitor', this.prettyURL(data.hostname))
       } else {
         const errorMessage =
           this.state.companyArray.length + 1 === MAX_COMPETITORS
@@ -161,6 +160,8 @@ class ResultComparison extends Component {
       if (secondRun) {
         this.setState({ showSpinner: false });
         this.props.actions.addError("CRUX Data could not be found");
+
+        trackURL('AddCompetitorFailed', input)
       } else {
         await this.getCruxReportData(true);
       }
