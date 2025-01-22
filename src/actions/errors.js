@@ -6,7 +6,6 @@ import {isURL} from "../helper/utils";
 
 export const addError = (error) => ({
   'BAQEND': async ({ dispatch, getState, db }) => {
-    console.log("ERRRRRROOOOOR", error)
     dispatch({
       type: ADD_ERROR,
       payload: error,

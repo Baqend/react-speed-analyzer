@@ -128,14 +128,10 @@ class ResultComparison extends Component {
       this.setState({ showSpinner: true });
 
       const data = await db.modules.get("chromeUXReports", `url=${input}`);
-      var found = false;
-      this.state.companyArray.forEach((element) => {
-        if (element.hostname === this.prettyURL(data.hostname)) {
-          found = true;
-        }
-      });
+      const found = this.state.companyArray.some((element) => {
+        return element.hostname === this.prettyURL(data.hostname)
+      })
 
-      console.log(this.state.beforeSpeedKit);
       if (!found && this.state.companyArray.length + 1 < MAX_COMPETITORS) {
 
         this.addCompetitor({
