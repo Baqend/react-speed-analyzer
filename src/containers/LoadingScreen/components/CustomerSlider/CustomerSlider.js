@@ -14,7 +14,7 @@ export default class CustomerSlider extends Component {
   }
 
   componentDidMount() {
-    this.state.randomCustomers = this.randomCustomers();
+    this.state.randomCustomers = this.randomizeCustomers();
     this.interval = setInterval(() => this.slider.slickNext(), 5000);
   }
 
@@ -22,19 +22,19 @@ export default class CustomerSlider extends Component {
     clearInterval(this.interval);
   }
 
-  randomCustomers() {
-    const randomCustomers = [];
-    while (randomCustomers.length !== 6) {
-      const randomNumber = Math.floor(Math.random() * Customers.length);
-      if (
-        !randomCustomers.find(
-          (customer) => customer.logo === Customers[randomNumber].logo
-        )
-      ) {
-        randomCustomers.push(Customers[randomNumber]);
-      }
-    }
+  randomizeCustomers() {
+    const max = Math.min(6, Customers.length)
+    const randomCustomers = this.shuffleArray(Customers).slice(0, max - 1);
+
     return randomCustomers;
+  }
+
+  shuffleArray(array) {
+      for (let i = array.length - 1; i >= 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array
   }
 
   render() {
