@@ -1,8 +1,6 @@
 import lebara from "./lebara-black.png";
 import galeriaLogo from "./galeria-black.svg";
-import decathlonLogo from "./decathlon-black.svg";
 import carharttLogo from "./carhartt-black.svg";
-import snipesLogo from "./snipes-black.svg";
 import hsvLogo from "./hsv-black.svg";
 import titusLogo from "./titus-black.svg";
 import defshopLogo from "./DefShop_Logo.svg";
@@ -22,9 +20,7 @@ import oneLogo from "./onede-black.svg";
 export const CUSTOMER_MAP = {
   BMW: bmw,
   Galeria: galeriaLogo,
-  Decathlon: decathlonLogo,
   Carhartt: carharttLogo,
-  Snipes: snipesLogo,
   Defshop: defshopLogo,
   HSV: hsvLogo,
   Titus: titusLogo,
