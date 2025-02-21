@@ -23,8 +23,7 @@ export default class CustomerSlider extends Component {
   }
 
   randomizeCustomers() {
-    const max = Math.min(6, Customers.length)
-    const randomCustomers = this.shuffleArray(Customers).slice(0, max - 1);
+    const randomCustomers = this.shuffleArray(Customers).slice(0, 6);
 
     return randomCustomers;
   }
