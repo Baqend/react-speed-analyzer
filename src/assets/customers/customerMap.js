@@ -19,7 +19,6 @@ import oneLogo from "./onede-black.svg";
 
 export const CUSTOMER_MAP = {
   BMW: bmw,
-  Galeria: galeriaLogo,
   Carhartt: carharttLogo,
   Defshop: defshopLogo,
   HSV: hsvLogo,
@@ -29,7 +28,6 @@ export const CUSTOMER_MAP = {
   Brogle: brogleLogo,
   Solebox: soleboxLogo,
   Melitta: melittaLogo,
-  Plesk: pleskLogo,
   Lebara: lebara,
   newport: newportLogo,
   one: oneLogo,
