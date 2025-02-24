@@ -1,29 +1,11 @@
 export const Customers = [
   {
-    logo: "decathlon",
-    name: "Florian Bischoff",
-    title: "Director E-Commerce, Decathlon Deutschland",
-    copy: "Speed Kit accelerated our site by 2.5x […]. There is no doubt about the great ROI.",
-  },
-  {
     logo: "bmw",
     name: "BMW",
     title: "(Bayerische Motoren Werke AG)",
     copy: "Speed Kit has been rolled out for 118 countries and achieved a 1.5x faster LCP overall.",
   },
 
-  {
-    logo: "galeria",
-    name: "Lars Mehler",
-    title: "VP Platform Management",
-    copy: "Speed Kit has delivered a clearly noticeable performance increase for our online shop.",
-  },
-  {
-    logo: "snipes",
-    name: "Jeanine Schneider",
-    title: "Head of Digital",
-    copy: "Speed Kit has delivered on its promise to reliably achieve best-in-class performance!",
-  },
   {
     logo: "interflora",
     name: "Nicolas Pastorino",

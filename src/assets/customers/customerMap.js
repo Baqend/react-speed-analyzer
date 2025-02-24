@@ -1,8 +1,5 @@
 import lebara from "./lebara-black.png";
-import galeriaLogo from "./galeria-black.svg";
-import decathlonLogo from "./decathlon-black.svg";
 import carharttLogo from "./carhartt-black.svg";
-import snipesLogo from "./snipes-black.svg";
 import hsvLogo from "./hsv-black.svg";
 import titusLogo from "./titus-black.svg";
 import defshopLogo from "./DefShop_Logo.svg";
@@ -11,7 +8,6 @@ import bugabooLogo from "./bugaboo-black.png";
 import brogleLogo from "./brogle-black.png";
 import soleboxLogo from "./solebox-black.svg";
 import melittaLogo from "./melitta-black.svg";
-import pleskLogo from "./plesk-black.svg";
 import bmw from "./bmw-black.svg";
 import newportLogo from "./newport-black.svg";
 import elevenTeamsportsLogo from "./11teamsports-black.svg";
@@ -21,10 +17,7 @@ import oneLogo from "./onede-black.svg";
 
 export const CUSTOMER_MAP = {
   BMW: bmw,
-  Galeria: galeriaLogo,
-  Decathlon: decathlonLogo,
   Carhartt: carharttLogo,
-  Snipes: snipesLogo,
   Defshop: defshopLogo,
   HSV: hsvLogo,
   Titus: titusLogo,
@@ -33,7 +26,6 @@ export const CUSTOMER_MAP = {
   Brogle: brogleLogo,
   Solebox: soleboxLogo,
   Melitta: melittaLogo,
-  Plesk: pleskLogo,
   Lebara: lebara,
   newport: newportLogo,
   one: oneLogo,

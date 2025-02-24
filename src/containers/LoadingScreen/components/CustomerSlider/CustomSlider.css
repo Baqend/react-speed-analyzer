@@ -56,35 +56,14 @@ a {
   @media (--breakpoint-small-device) {
     background-size: auto 30px;
   }
-  &.galeria {
-    background-image: url("../../../../assets/customers/galeria-white.svg");
-  }
-  &.decathlon {
-    background-image: url("../../../../assets/customers/decathlon-white.svg");
-  }
   &.carhartt {
     background-image: url("../../../../assets/customers/carhartt-white.svg");
-  }
-  &.awn {
-    background-image: url("../../../../assets/customers/awn-white.png");
   }
   &.hsv {
     background-image: url("../../../../assets/customers/hsv-white.svg");
   }
-  &.snipes {
-    background-image: url("../../../../assets/customers/snipes-white.svg");
-  }
   &.interflora {
     background-image: url("../../../../assets/customers/interflora-white.svg");
-  }
-  &.jochenschweizer {
-    background-image: url("../../../../assets/customers/mydays-white.svg");
-  }
-  &.besamex {
-    background-image: url("../../../../assets/customers/besamex-white.png");
-  }
-  &.soliver {
-    background-image: url("../../../../assets/customers/soliver-white.svg");
   }
   &.bmw {
     background-image: url("../../../../assets/customers/bmw-white.svg");
