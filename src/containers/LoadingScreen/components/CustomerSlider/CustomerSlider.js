@@ -23,12 +23,13 @@ export default class CustomerSlider extends Component {
   }
 
   randomizeCustomers() {
-    const randomCustomers = this.shuffleArray(Customers).slice(0, 6);
+    const randomCustomers = this.shuffle(Customers).slice(0, 6);
 
     return randomCustomers;
   }
 
-  shuffleArray(array) {
+  shuffle(customers) {
+      let array = Array.from(customers)
       for (let i = array.length - 1; i >= 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
           [array[i], array[j]] = [array[j], array[i]];
