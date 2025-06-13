@@ -65,9 +65,10 @@ export async function getPublishedWaterfallLink(db: baqend, testResultId: string
     throw new Error('publishWaterfalls: Could not find test ID')
   }
 
-  const publishedURL = await publishWaterfall(webPageTestId, db)
-  await (testResult as any).partialUpdate().set('publishedSummaryUrl', publishedURL).execute()
-  return publishedURL
+  //TODO reactivate once WPT unblocks our publish feature
+  //const publishedURL = await publishWaterfall(webPageTestId, db);
+  //await testResult.partialUpdate().set('publishedSummaryUrl', publishedURL).execute();
+  return webPageTestId
 }
 
 export async function post(db: baqend, req: Request, res: Response) {

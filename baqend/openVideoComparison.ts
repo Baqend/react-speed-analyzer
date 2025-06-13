@@ -6,12 +6,13 @@ import { getPublishedWaterfallLink } from './publishWaterfalls'
 export async function post(db: baqend, req: Request, res: Response) {
   try {
     const testResultIds: string[] = req.body.ids.split(',')
-    const publishedURLs: string[] = await Promise.all(
+    const webPageTestIds: string[] = await Promise.all(
       testResultIds.map(testResultId => getPublishedWaterfallLink(db, testResultId))
     )
 
-    const webPageTestIds = publishedURLs.map(publishedURL => new URL(publishedURL).searchParams.get('test'))
-    const videoComparisonURL = `https://www.webpagetest.org/video/compare.php?tests=${webPageTestIds.join()}&thumbSize=50&ival=100&end=visual`
+    //TODO change back to official wpt instance once unblocked
+    //const webPageTestIds = publishedURLs.map(publishedURL => new URL(publishedURL).searchParams.get('test'))
+    const videoComparisonURL = `https://wpt.baqend.com/video/compare.php?tests=${webPageTestIds.join()}&thumbSize=50&ival=100&end=visual`
     res.send(videoComparisonURL)
   } catch (error) {
     db.log.error(error.message)
