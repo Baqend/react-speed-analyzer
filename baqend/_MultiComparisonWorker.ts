@@ -128,27 +128,47 @@ export class MultiComparisonWorker implements ComparisonListener {
    * Finalizes a finished multi comparison.
    */
   private async finalize(multiComparison: model.BulkTest): Promise<void> {
-    this.db.log.info(`MultiComparison ${multiComparison.key} is finished.`, { multiComparison });
+    this.db.log.info(`MultiComparison ${multiComparison.key} is finished.`, { multiComparison })
 
     if (isFinished(multiComparison)) {
-      this.db.log.warn(`MultiComparison ${multiComparison.key} was already finished.`, { multiComparison });
-      return;
+      this.db.log.warn(`MultiComparison ${multiComparison.key} was already finished.`, { multiComparison })
+      return
     }
 
     if (multiComparison.runs > 4) {
-      const optimizedComparison = await createOptimizedComparison(this.db, multiComparison, this.comparisonFactory);
+      const optimizedComparison = await createOptimizedComparison(this.db, multiComparison, this.comparisonFactory)
       if (optimizedComparison) {
         await multiComparison.optimisticSave(async () => {
-          multiComparison.testOverviews.push(optimizedComparison);
-        });
+          multiComparison.testOverviews.push(optimizedComparison)
+        })
       }
     }
 
+    const { app, mainFactor, allowRetry } = multiComparison.params;
+    const retryRequired = !multiComparison.testOverviews.find((comparison) => {
+      return comparison.factors?.[mainFactor || 'largestContentfulPaint'] >= 1.5
+    })
+
+    if (app === 'makefast' && retryRequired && allowRetry) {
+      // Reset existing multiComparison to start firehorse retry with a fresh instance
+      await multiComparison.optimisticSave(async () => {
+        multiComparison.testOverviews = []
+        multiComparison.completedRuns = 0
+        multiComparison.speedKitMeanValues = new this.db.Mean()
+        multiComparison.competitorMeanValues = new this.db.Mean()
+        multiComparison.factors = new this.db.Mean()
+        multiComparison.bestFactors = new this.db.Mean()
+        multiComparison.worstFactors = new this.db.Mean()
+        multiComparison.params = Object.assign(multiComparison.params, { app: 'firehorse' })
+      })
+      return this.next(multiComparison)
+    }
+
     // Save the finished state
-    await this.updateFinishStatus(multiComparison);
+    await this.updateFinishStatus(multiComparison)
 
     // Inform the listener that this multi comparison has finished
-    this.listener && this.listener.handleMultiComparisonFinished(multiComparison);
+    this.listener && this.listener.handleMultiComparisonFinished(multiComparison)
   }
 
   /**

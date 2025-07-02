@@ -105,7 +105,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
     const { preload, whitelist, ignoreConfig } = testInfo
     const { domains, resources } = firstView
     const app = testInfo.appName || credentials.app
-    const domainList = domains.map(domain => domain.url)
+    const domainList = domains ? domains.map(domain => domain.url) : []
     const whitelistArray = (whitelist || '').replace(/\s/g,'').split(',')
     const smartConfig =
       await this.configGenerator.generateSmart(url, mobile, true, preload, app, whitelistArray, {

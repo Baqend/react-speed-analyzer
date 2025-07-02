@@ -9,6 +9,7 @@ import { TestParams } from './_TestParams'
  */
 export interface BulkTestParams extends TestParams {
   runs?: number
+  allowRetry?: boolean;
 }
 
 type StartBulkComparisonParams = BulkTestParams[] | {

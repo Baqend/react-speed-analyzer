@@ -263,7 +263,7 @@ function hasDocumentRequestFailed(requests: WptRequest[], isClone: boolean): boo
       return false;
     }
 
-    return requestUrl.startsWith('/v1/asset/')
+    return requestUrl.includes('/v1/asset/')
   })
 
   // Return false if there are no baqend requests to analyze
