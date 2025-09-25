@@ -1,4 +1,4 @@
-import { baqend, model } from 'baqend'
+import { baqend, binding, model } from 'baqend'
 import { ComparisonFactory } from './_ComparisonFactory'
 import { cancelTest, createFilmStrip, parallelize } from './_helpers'
 import { Pagetest } from './_Pagetest'
@@ -76,20 +76,23 @@ export class ComparisonWorker implements TestListener {
         return
       }
 
-      await chooseFMP(competitor, speedKit)
-      const skTestId = speedKit.webPagetests[speedKit.webPagetests.length - 1].testId
-      const compTestId = competitor.webPagetests[competitor.webPagetests.length - 1].testId
-      const wptFilmstrip = await createFilmStrip(this.db, [compTestId, skTestId], url, !mobile);
+      const failed = isFailed(competitor) && isFailed(speedKit)
+      const incomplete = isIncomplete(competitor) || isIncomplete(speedKit)
+
+      let wptFilmstrip: binding.File | null = null;
+      if (!failed && !incomplete) {
+        await chooseFMP(competitor, speedKit)
+        const skTestId = speedKit.webPagetests[speedKit.webPagetests.length - 1].testId
+        const compTestId = competitor.webPagetests[competitor.webPagetests.length - 1].testId
+        wptFilmstrip = await createFilmStrip(this.db, [compTestId, skTestId], url, !mobile)
+      }
 
       await comparison.optimisticSave(() => {
-        const failed = isFailed(competitor) && isFailed(speedKit)
-        const incomplete = isIncomplete(competitor) || isIncomplete(speedKit)
         failed ? setFailed(comparison) : (incomplete ? setIncomplete(comparison) : setSuccess(comparison))
-
         comparison.wptFilmstrip = wptFilmstrip
         comparison.factors = this.calculateFactors(competitor, speedKit)
         comparison.documentRequestFailed = speedKit.firstView ? speedKit.firstView.documentRequestFailed : false
-        comparison.withScraping = speedKit.testInfo.withScraping;
+        comparison.withScraping = speedKit.testInfo.withScraping
       })
 
       // Inform the listener that this comparison has finished
@@ -145,7 +148,7 @@ export class ComparisonWorker implements TestListener {
   }
 
   private calculateFactors(compResult: model.TestResult, skResult: model.TestResult) {
-    if (skResult.testDataMissing || compResult.testDataMissing || !compResult.firstView || !skResult.firstView) {
+    if (!compResult || !skResult || skResult.testDataMissing || compResult.testDataMissing || !compResult.firstView || !skResult.firstView) {
       return null
     }
 
