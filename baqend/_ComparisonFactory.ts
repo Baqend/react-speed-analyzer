@@ -7,7 +7,7 @@ import { getTLD } from './_getSpeedKitUrl'
 import { cancelTest, generateHash, truncateUrl, urlToFilename } from './_helpers'
 import { Pagetest } from './_Pagetest'
 import { DataType, Serializer } from './_Serializer'
-import { setFailed, setRunning } from './_Status'
+import { setFailed, setRunning, setSuccess } from './_Status'
 import { TestBuilder } from './_TestBuilder'
 import { TestFactory } from './_TestFactory'
 import { TestParams } from './_TestParams'
@@ -90,7 +90,7 @@ export class ComparisonFactory implements AsyncFactory<model.TestOverview> {
     comparison.mobile = requiredParams.mobile
     comparison.activityTimeout = requiredParams.activityTimeout
     comparison.speedKitConfig = requiredParams.speedKitConfig
-    setRunning(comparison)
+    isArtificial ? setSuccess(comparison) : setRunning(comparison)
 
     return comparison.save()
   }
