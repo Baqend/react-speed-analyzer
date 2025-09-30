@@ -79,6 +79,7 @@ export class TestFactory implements AsyncFactory<model.TestResult> {
       cookie: params.cookie,
       navigateUrls: params.navigateUrls,
       withScraping: params.withScraping,
+      withSSR: params.withSSR,
     }
   }
 }

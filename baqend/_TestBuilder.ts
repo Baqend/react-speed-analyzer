@@ -33,6 +33,7 @@ export const DEFAULT_PARAMS: Required<TestParams> = {
   hostname: '',
   navigateUrls: [],
   withScraping: false,
+  withSSR: false,
   withSpeedKitExtension: false,
 }
 

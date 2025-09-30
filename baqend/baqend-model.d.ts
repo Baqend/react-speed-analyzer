@@ -174,6 +174,7 @@ declare module 'baqend' {
       appName?: string
       isSpeedKitComparison?: boolean
       withScraping?: boolean
+      withSSR?: boolean
     }
 
     interface TestResult extends binding.Entity {

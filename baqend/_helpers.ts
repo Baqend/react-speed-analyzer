@@ -281,7 +281,11 @@ export async function cancelTest(test: model.TestResult, api: Pagetest, reason: 
   return true
 }
 
-export function getVariation(mobile: boolean, location: string): string {
+export function getVariation(mobile: boolean, location: string, withSSR: boolean = false): string {
+  if (withSSR) {
+    return mobile ? 'SSR-MOBILE' : 'SSR-DESKTOP'
+  }
+
   const isUS = location.startsWith('us')
   if (mobile) {
     return isUS ? 'SCRAPING_MOBILE_US' : 'SCRAPING_MOBILE'

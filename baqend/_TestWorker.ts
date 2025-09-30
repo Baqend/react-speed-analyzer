@@ -313,14 +313,10 @@ export class TestWorker {
    */
   private buildScriptForTestWithConfig(test: model.TestResult): string {
     const { testInfo, location } = test
-    const variation = getVariation(testInfo.testOptions.mobile, location)
-    const { url, isTestWithSpeedKit, activityTimeout, appName, testOptions, cookie, navigateUrls, withScraping } = testInfo
+    const { url, isTestWithSpeedKit, activityTimeout, appName, testOptions, cookie, navigateUrls, withScraping, withSSR } = testInfo
     let config = isTestWithSpeedKit ? this.getConfigForTest(test).replace(/{/, '{ preloadBloomFilter: false,') : null
-    if (config && withScraping) {
-      config = config.replace('{', '{ customVariation: [{\n' +
-      '    rules: [{ contentType: ["navigate", "fetch", "style", "image", "script"] }],\n' +
-      '    variationFunction: () => "' + variation + '"\n' +
-      '  }],')
+    if (config && withScraping || withSSR) {
+      config = this.applyCustomVariation(config!, location, testOptions.mobile, withScraping, withSSR)
     }
 
     return this.testScriptBuilder.createTestScript(
@@ -335,6 +331,35 @@ export class TestWorker {
       DEFAULT_TIMEOUT,
       navigateUrls,
     )
+  }
+
+  /**
+   * Apply custom variation based on scraping or ssr if configured.
+   */
+  private applyCustomVariation(
+    config: string,
+    location: string,
+    mobile: boolean,
+    withScraping?: boolean,
+    withSSR?: boolean,
+  ): string {
+    const variation = getVariation(mobile, location, withSSR)
+    // TODO: Combine SSR and scraping, must also be applied in the speedKit.Asset module
+    if (withSSR) {
+      return config.replace('{', '{ customVariation: [{\n' +
+        '    rules: [{ contentType: ["navigate"] }],\n' +
+        '    variationFunction: () => "' + variation + '"\n' +
+        '  }],')
+    }
+
+    if (withScraping) {
+      return config.replace('{', '{ customVariation: [{\n' +
+        '    rules: [{ contentType: ["navigate", "fetch", "style", "image", "script"] }],\n' +
+        '    variationFunction: () => "' + variation + '"\n' +
+        '  }],')
+    }
+
+    return config
   }
 
   /**

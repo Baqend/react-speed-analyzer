@@ -106,6 +106,11 @@ export interface TestParams {
    * Whether the client had the Speed Kit extension installed.
    */
   withSpeedKitExtension?: boolean;
+
+  /**
+  * Whether the test should use server side rendering.
+  */
+  withSSR?: boolean;
 }
 
 export interface MultiTestParams extends TestParams {
