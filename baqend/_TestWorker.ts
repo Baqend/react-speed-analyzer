@@ -315,7 +315,7 @@ export class TestWorker {
     const { testInfo, location } = test
     const { url, isTestWithSpeedKit, activityTimeout, appName, testOptions, cookie, navigateUrls, withScraping, withSSR } = testInfo
     let config = isTestWithSpeedKit ? this.getConfigForTest(test).replace(/{/, '{ preloadBloomFilter: false,') : null
-    if (config && withScraping || withSSR) {
+    if (config && (withScraping || withSSR)) {
       config = this.applyCustomVariation(config!, location, testOptions.mobile, withScraping, withSSR)
     }
 
